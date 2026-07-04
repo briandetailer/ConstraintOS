@@ -1,10 +1,11 @@
 [project]
 name = "constraintos"
-version = "0.1.0"
+version = "0.2.0"
 description = "ConstraintOS CLI for specification-first AI workflow tooling"
 requires-python = ">=3.10"
 dependencies = [
-  "pyyaml>=6.0"
+  "pyyaml>=6.0",
+  "jsonschema>=4.22"
 ]
 
 [project.scripts]
