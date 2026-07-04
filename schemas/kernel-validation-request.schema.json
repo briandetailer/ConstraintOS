@@ -1,0 +1,19 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://constraintos.local/schemas/kernel-validation-request.schema.json",
+  "title": "ConstraintOS Kernel Validation Request",
+  "type": "object",
+  "required": ["validation_request"],
+  "properties": {
+    "validation_request": {
+      "type": "object",
+      "required": ["id", "artifact_ref", "schema_ref", "created"],
+      "properties": {
+        "id": {"type": "string", "pattern": "^VALIDATE-[0-9]{4}$"},
+        "artifact_ref": {"type": "string"},
+        "schema_ref": {"type": "string"},
+        "created": {"type": "string"}
+      }
+    }
+  }
+}
