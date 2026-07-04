@@ -1,0 +1,19 @@
+[project]
+name = "constraintos"
+version = "0.1.0"
+description = "ConstraintOS CLI for specification-first AI workflow tooling"
+requires-python = ">=3.10"
+dependencies = [
+  "pyyaml>=6.0"
+]
+
+[project.scripts]
+constraintos = "constraintos.cli:main"
+cos = "constraintos.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
