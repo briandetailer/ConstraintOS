@@ -1,0 +1,21 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://constraintos.local/schemas/runtime-health-report.schema.json",
+  "title": "ConstraintOS Runtime Health Report",
+  "type": "object",
+  "required": ["runtime_health_report", "queue_status", "worker_status", "failure_status"],
+  "properties": {
+    "runtime_health_report": {
+      "type": "object",
+      "required": ["id", "status", "created"],
+      "properties": {
+        "id": {"type": "string", "pattern": "^HEALTH-[0-9]{4}$"},
+        "status": {"enum": ["ok", "degraded", "down"]},
+        "created": {"type": "string"}
+      }
+    },
+    "queue_status": {"type": "object"},
+    "worker_status": {"type": "object"},
+    "failure_status": {"type": "object"}
+  }
+}
