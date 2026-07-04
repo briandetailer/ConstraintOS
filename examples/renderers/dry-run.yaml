@@ -1,0 +1,10 @@
+name: dry-run
+version: '0.1'
+supported_constraint_types:
+  - semantic
+  - visual
+  - stylistic
+  - negative
+supports_patch: false
+supports_structured_output: true
+notes: No-op renderer profile used for adapter-boundary testing. It never calls a live renderer.
