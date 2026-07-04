@@ -14,8 +14,14 @@ try:
 except ImportError:  # pragma: no cover
     yaml = None
 
+try:
+    from jsonschema import Draft202012Validator
+except ImportError:  # pragma: no cover
+    Draft202012Validator = None
+
 
 ID_PATTERN = re.compile(r"^[A-Z]+-[0-9]{4}$")
+FR_PATTERN = re.compile(r"^FR-[0-9]{4}$")
 
 
 @dataclass
@@ -41,6 +47,47 @@ def write_yaml(path: Path, data: dict[str, Any]) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     with path.open("w", encoding="utf-8") as handle:
         yaml.safe_dump(data, handle, sort_keys=False)
+
+
+def load_json(path: Path) -> dict[str, Any]:
+    with path.open("r", encoding="utf-8") as handle:
+        data = json.load(handle)
+    if not isinstance(data, dict):
+        raise ValueError(f"{path} must contain a JSON object")
+    return data
+
+
+def detect_schema(data: dict[str, Any]) -> str | None:
+    if "failure" in data:
+        return "schemas/failure.schema.json"
+    if "report" in data and "constraint_results" in data:
+        return "schemas/compliance-report.schema.json"
+    if "registry" in data:
+        return "schemas/id-registry.schema.json"
+    if "artifact" in data and "constraints" in data and "validation" in data:
+        return "schemas/csl.schema.json"
+    return None
+
+
+def validate_against_schema(path: Path, data: dict[str, Any], repo_root: Path) -> list[str]:
+    schema_path = detect_schema(data)
+    if schema_path is None:
+        return []
+    if Draft202012Validator is None:
+        return ["jsonschema is required. Install with: pip install jsonschema"]
+
+    full_schema_path = repo_root / schema_path
+    if not full_schema_path.exists():
+        return [f"Schema not found: {schema_path}"]
+
+    schema = load_json(full_schema_path)
+    validator = Draft202012Validator(schema)
+    errors = sorted(validator.iter_errors(data), key=lambda error: list(error.path))
+    messages: list[str] = []
+    for error in errors:
+        location = ".".join(str(part) for part in error.path) or "<root>"
+        messages.append(f"schema:{schema_path}:{location}: {error.message}")
+    return messages
 
 
 def new_artifact(args: argparse.Namespace) -> int:
@@ -78,7 +125,7 @@ def new_artifact(args: argparse.Namespace) -> int:
 
 def new_failure(args: argparse.Namespace) -> int:
     failure_id = args.id.upper()
-    if not failure_id.startswith("FR-") or not ID_PATTERN.match(failure_id):
+    if not FR_PATTERN.match(failure_id):
         print(f"Invalid failure id: {failure_id}. Expected format like FR-0001.", file=sys.stderr)
         return 2
 
@@ -109,67 +156,179 @@ def new_failure(args: argparse.Namespace) -> int:
     return 0
 
 
-def validate_artifact(path: Path) -> ValidationResult:
+def new_compliance(args: argparse.Namespace) -> int:
+    report_id = args.id.upper()
+    if not ID_PATTERN.match(report_id) or not report_id.startswith("VAL-"):
+        print(f"Invalid compliance report id: {report_id}. Expected format like VAL-0001.", file=sys.stderr)
+        return 2
+    target = Path(args.output or f"reports/compliance/{report_id}.yaml")
+    data = {
+        "report": {
+            "id": report_id,
+            "version": "0.1",
+            "created": date.today().isoformat(),
+            "validator_version": "constraintos-0.3.0",
+        },
+        "artifact": {
+            "id": args.artifact_id,
+            "version": args.artifact_version,
+            "specification_id": args.specification_id,
+        },
+        "summary": {
+            "blocker_failures": 0,
+            "major_failures": 0,
+            "minor_failures": 0,
+            "uncertain_results": 0,
+        },
+        "constraint_results": [],
+        "recommendation": "escalate",
+    }
+    write_yaml(target, data)
+    print(f"Created compliance report: {target}")
+    return 0
+
+
+def validate_artifact(path: Path, repo_root: Path) -> ValidationResult:
     messages: list[str] = []
     try:
         data = load_yaml(path)
     except Exception as exc:
         return ValidationResult(path, "fail", [str(exc)])
 
-    artifact = data.get("artifact") or data.get("failure")
+    artifact = data.get("artifact") or data.get("failure") or data.get("report")
     if not isinstance(artifact, dict):
-        messages.append("Missing artifact or failure object.")
+        messages.append("Missing artifact, failure, or report object.")
     else:
-        artifact_id = artifact.get("id")
-        if not artifact_id or not ID_PATTERN.match(str(artifact_id)):
+        object_id = artifact.get("id")
+        if not object_id or not ID_PATTERN.match(str(object_id)):
             messages.append("Missing or invalid id.")
-        for field in ["title", "status", "version"]:
-            if field not in artifact and data.get("artifact") is not None:
-                messages.append(f"Missing artifact.{field}.")
+        if data.get("artifact") is not None:
+            for field in ["title", "status", "version"]:
+                if field not in artifact:
+                    messages.append(f"Missing artifact.{field}.")
 
-    if "traceability" not in data:
+    if "traceability" not in data and "report" not in data:
         messages.append("Missing traceability section.")
 
+    messages.extend(validate_against_schema(path, data, repo_root))
     status = "pass" if not messages else "fail"
     return ValidationResult(path, status, messages)
 
 
+def collect_yaml_files(paths: list[str]) -> list[Path]:
+    files: list[Path] = []
+    for raw in paths:
+        root = Path(raw)
+        if root.is_file() and root.suffix in {".yaml", ".yml"}:
+            files.append(root)
+        elif root.is_dir():
+            files.extend(sorted(root.rglob("*.yaml")))
+            files.extend(sorted(root.rglob("*.yml")))
+    return sorted(set(files))
+
+
 def validate(args: argparse.Namespace) -> int:
-    root = Path(args.path)
-    files = [root] if root.is_file() else sorted(root.rglob("*.yaml"))
+    repo_root = Path(args.repo_root).resolve()
+    files = collect_yaml_files(args.paths)
     if not files:
         print("No YAML files found.")
         return 0
 
-    results = [validate_artifact(path) for path in files]
+    results = [validate_artifact(path, repo_root) for path in files]
+    duplicate_messages = find_duplicate_ids(files)
     for result in results:
         print(f"{result.status.upper()}: {result.path}")
         for message in result.messages:
             print(f"  - {message}")
+    for message in duplicate_messages:
+        print(f"FAIL: {message}")
 
     failures = [r for r in results if r.status == "fail"]
-    return 1 if failures else 0
+    return 1 if failures or duplicate_messages else 0
+
+
+def extract_record(path: Path) -> dict[str, Any] | None:
+    try:
+        data = load_yaml(path)
+    except Exception:
+        return None
+    obj = data.get("artifact") or data.get("failure") or data.get("report")
+    if not isinstance(obj, dict):
+        return None
+    traceability = data.get("traceability", {})
+    record_type = "artifact"
+    if "failure" in data:
+        record_type = "failure"
+    elif "report" in data:
+        record_type = "compliance_report"
+    return {
+        "path": str(path),
+        "id": obj.get("id"),
+        "title": obj.get("title", obj.get("id")),
+        "type": obj.get("type", record_type),
+        "status": obj.get("status", "unknown"),
+        "depends_on": traceability.get("depends_on", []),
+        "failures": traceability.get("related_failures", traceability.get("requirements", [])),
+        "requirements": traceability.get("related_requirements", traceability.get("requirements", [])),
+        "adrs": traceability.get("related_adrs", traceability.get("adrs", [])),
+        "validators": traceability.get("validators", []),
+    }
+
+
+def find_duplicate_ids(files: list[Path]) -> list[str]:
+    seen: dict[str, Path] = {}
+    duplicates: list[str] = []
+    for path in files:
+        record = extract_record(path)
+        if not record or not record.get("id"):
+            continue
+        record_id = str(record["id"])
+        if record_id in seen:
+            duplicates.append(f"duplicate id {record_id}: {seen[record_id]} and {path}")
+        else:
+            seen[record_id] = path
+    return duplicates
 
 
 def trace(args: argparse.Namespace) -> int:
-    root = Path(args.path)
-    rows: list[dict[str, Any]] = []
-    for path in sorted(root.rglob("*.yaml")):
-        try:
-            data = load_yaml(path)
-        except Exception:
-            continue
-        artifact = data.get("artifact") or data.get("failure") or {}
-        traceability = data.get("traceability", {})
-        rows.append({
-            "path": str(path),
-            "id": artifact.get("id"),
-            "title": artifact.get("title"),
-            "depends_on": traceability.get("depends_on", []),
-            "failures": traceability.get("related_failures", traceability.get("requirements", [])),
-            "adrs": traceability.get("related_adrs", traceability.get("adrs", [])),
-        })
+    files = collect_yaml_files(args.paths)
+    rows = [record for path in files if (record := extract_record(path))]
     print(json.dumps(rows, indent=2))
+    return 0
+
+
+def registry(args: argparse.Namespace) -> int:
+    files = collect_yaml_files(args.paths)
+    rows = [record for path in files if (record := extract_record(path))]
+    registry_data = {"registry": rows}
+    if args.output:
+        target = Path(args.output)
+        write_yaml(target, registry_data)
+        print(f"Wrote ID registry: {target}")
+    else:
+        print(yaml.safe_dump(registry_data, sort_keys=False))
+    return 0
+
+
+def export_markdown(args: argparse.Namespace) -> int:
+    source = Path(args.source)
+    data = load_yaml(source)
+    obj = data.get("artifact") or data.get("failure") or data.get("report") or {}
+    title = obj.get("title") or obj.get("id") or source.stem
+    lines = [f"# {title}", ""]
+    for key, value in obj.items():
+        lines.append(f"- **{key}:** {value}")
+    lines.append("")
+    if "description" in data:
+        lines.extend(["## Description", "", str(data.get("description") or ""), ""])
+    if "content" in data:
+        lines.extend(["## Content", "", "```yaml", yaml.safe_dump(data["content"], sort_keys=False).strip(), "```", ""])
+    if "traceability" in data:
+        lines.extend(["## Traceability", "", "```yaml", yaml.safe_dump(data["traceability"], sort_keys=False).strip(), "```", ""])
+    target = Path(args.output or source.with_suffix(".md"))
+    target.parent.mkdir(parents=True, exist_ok=True)
+    target.write_text("\n".join(lines), encoding="utf-8")
+    print(f"Wrote markdown: {target}")
     return 0
 
 
@@ -192,13 +351,32 @@ def build_parser() -> argparse.ArgumentParser:
     failure.add_argument("--output")
     failure.set_defaults(func=new_failure)
 
-    val = sub.add_parser("validate", help="Validate metadata and traceability scaffolds")
-    val.add_argument("path", nargs="?", default="docs")
+    compliance = sub.add_parser("new-compliance", help="Create a compliance report YAML scaffold")
+    compliance.add_argument("id")
+    compliance.add_argument("artifact_id")
+    compliance.add_argument("specification_id")
+    compliance.add_argument("--artifact-version", default="0.1")
+    compliance.add_argument("--output")
+    compliance.set_defaults(func=new_compliance)
+
+    val = sub.add_parser("validate", help="Validate metadata, schemas, and duplicate IDs")
+    val.add_argument("paths", nargs="*", default=["docs", "examples", "reports"])
+    val.add_argument("--repo-root", default=".")
     val.set_defaults(func=validate)
 
     tr = sub.add_parser("trace", help="Generate a traceability JSON report")
-    tr.add_argument("path", nargs="?", default="docs")
+    tr.add_argument("paths", nargs="*", default=["docs", "examples", "reports"])
     tr.set_defaults(func=trace)
+
+    reg = sub.add_parser("registry", help="Generate an ID registry YAML document")
+    reg.add_argument("paths", nargs="*", default=["docs", "examples", "reports"])
+    reg.add_argument("--output")
+    reg.set_defaults(func=registry)
+
+    md = sub.add_parser("export-md", help="Export one YAML artifact to Markdown")
+    md.add_argument("source")
+    md.add_argument("--output")
+    md.set_defaults(func=export_markdown)
 
     return parser
 
