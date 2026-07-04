@@ -1,0 +1,30 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://constraintos.local/schemas/runtime-config.schema.json",
+  "title": "ConstraintOS Runtime Configuration",
+  "type": "object",
+  "required": ["runtime_config", "boundaries"],
+  "properties": {
+    "runtime_config": {
+      "type": "object",
+      "required": ["environment", "api_enabled", "queue_backend", "storage_backend", "created"],
+      "properties": {
+        "environment": {"type": "string"},
+        "api_enabled": {"type": "boolean"},
+        "queue_backend": {"type": "string"},
+        "storage_backend": {"type": "string"},
+        "created": {"type": "string"}
+      }
+    },
+    "boundaries": {
+      "type": "object",
+      "required": ["kernel_owns_auth", "kernel_owns_billing", "kernel_owns_tenancy", "runtime_calls_kernel"],
+      "properties": {
+        "kernel_owns_auth": {"type": "boolean"},
+        "kernel_owns_billing": {"type": "boolean"},
+        "kernel_owns_tenancy": {"type": "boolean"},
+        "runtime_calls_kernel": {"type": "boolean"}
+      }
+    }
+  }
+}
