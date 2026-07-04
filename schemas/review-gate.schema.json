@@ -1,0 +1,12 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://constraintos.local/schemas/review-gate.schema.json",
+  "title": "ConstraintOS Review Gate Result",
+  "type": "object",
+  "required": ["gate", "reason", "blocked_items"],
+  "properties": {
+    "gate": {"enum": ["pass", "blocked", "escalate"]},
+    "reason": {"type": "string"},
+    "blocked_items": {"type": "array", "items": {"type": "string"}}
+  }
+}
