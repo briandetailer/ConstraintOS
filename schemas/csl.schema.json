@@ -1,0 +1,43 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://constraintos.local/schemas/csl.schema.json",
+  "title": "ConstraintOS CSL Artifact",
+  "type": "object",
+  "required": ["artifact", "constraints", "validation"],
+  "properties": {
+    "artifact": {
+      "type": "object",
+      "required": ["id", "type", "title", "status", "version"],
+      "properties": {
+        "id": {"type": "string", "pattern": "^[A-Z]+-[0-9]{4}$"},
+        "type": {"type": "string"},
+        "title": {"type": "string"},
+        "status": {"type": "string"},
+        "version": {"type": "string"}
+      }
+    },
+    "subject": {"type": "object"},
+    "constraints": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "statement", "severity", "validation_method", "acceptance"],
+        "properties": {
+          "id": {"type": "string"},
+          "statement": {"type": "string"},
+          "severity": {"enum": ["blocker", "major", "minor", "advisory"]},
+          "validation_method": {"type": "string"},
+          "acceptance": {"type": "string"}
+        }
+      }
+    },
+    "validation": {
+      "type": "object",
+      "required": ["required_pass"],
+      "properties": {
+        "required_pass": {"type": "object"}
+      }
+    },
+    "traceability": {"type": "object"}
+  }
+}
