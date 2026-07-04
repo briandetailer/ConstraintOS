@@ -1,0 +1,23 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://constraintos.local/schemas/job-queue-summary.schema.json",
+  "title": "ConstraintOS Job Queue Summary",
+  "type": "object",
+  "required": ["job_queue_summary"],
+  "properties": {
+    "job_queue_summary": {
+      "type": "object",
+      "required": ["created", "total", "queued", "running", "complete", "failed", "blocked", "unknown"],
+      "properties": {
+        "created": {"type": "string"},
+        "total": {"type": "integer", "minimum": 0},
+        "queued": {"type": "integer", "minimum": 0},
+        "running": {"type": "integer", "minimum": 0},
+        "complete": {"type": "integer", "minimum": 0},
+        "failed": {"type": "integer", "minimum": 0},
+        "blocked": {"type": "integer", "minimum": 0},
+        "unknown": {"type": "integer", "minimum": 0}
+      }
+    }
+  }
+}
