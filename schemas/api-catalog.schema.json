@@ -1,0 +1,34 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://constraintos.local/schemas/api-catalog.schema.json",
+  "title": "ConstraintOS API Catalog",
+  "type": "object",
+  "required": ["api_catalog", "endpoints"],
+  "properties": {
+    "api_catalog": {
+      "type": "object",
+      "required": ["id", "created", "version", "status"],
+      "properties": {
+        "id": {"type": "string"},
+        "created": {"type": "string"},
+        "version": {"type": "string"},
+        "status": {"type": "string"}
+      }
+    },
+    "endpoints": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["method", "path", "operation_id", "summary"],
+        "properties": {
+          "method": {"enum": ["GET", "POST", "PUT", "PATCH", "DELETE"]},
+          "path": {"type": "string"},
+          "operation_id": {"type": "string"},
+          "summary": {"type": "string"},
+          "request_schema": {"type": ["string", "null"]},
+          "response_schema": {"type": ["string", "null"]}
+        }
+      }
+    }
+  }
+}
