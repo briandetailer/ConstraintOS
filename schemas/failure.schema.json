@@ -1,0 +1,35 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://constraintos.local/schemas/failure.schema.json",
+  "title": "ConstraintOS Failure Record",
+  "type": "object",
+  "required": ["failure", "description", "observed_behavior", "impact", "root_cause_hypotheses", "mitigations", "traceability"],
+  "properties": {
+    "failure": {
+      "type": "object",
+      "required": ["id", "title", "family", "severity", "status", "created"],
+      "properties": {
+        "id": {"type": "string", "pattern": "^FR-[0-9]{4}$"},
+        "title": {"type": "string"},
+        "family": {"type": "string", "pattern": "^F[0-9]{3}$"},
+        "severity": {"enum": ["blocker", "major", "minor", "advisory"]},
+        "status": {"type": "string"},
+        "created": {"type": "string"}
+      }
+    },
+    "description": {"type": "string"},
+    "observed_behavior": {"type": "string"},
+    "impact": {"type": "string"},
+    "root_cause_hypotheses": {"type": "array", "items": {"type": "string"}},
+    "mitigations": {"type": "array", "items": {"type": "string"}},
+    "future_tests": {"type": "array", "items": {"type": "string"}},
+    "traceability": {
+      "type": "object",
+      "properties": {
+        "requirements": {"type": "array", "items": {"type": "string"}},
+        "validators": {"type": "array", "items": {"type": "string"}},
+        "adrs": {"type": "array", "items": {"type": "string"}}
+      }
+    }
+  }
+}
