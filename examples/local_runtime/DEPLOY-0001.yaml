@@ -1,0 +1,20 @@
+local_deployment_checklist:
+  id: DEPLOY-0001
+  created: '2026-07-04'
+  status: draft
+items:
+  - id: LD-001
+    description: Create virtual environment.
+    required: true
+  - id: LD-002
+    description: Install package in editable mode.
+    required: true
+  - id: LD-003
+    description: Run tests.
+    required: true
+  - id: LD-004
+    description: Run API server locally.
+    required: true
+  - id: LD-005
+    description: Verify /health endpoint.
+    required: true
