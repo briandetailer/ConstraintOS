@@ -82,6 +82,12 @@ def detect_schema(data: dict[str, Any]) -> str | None:
         return "schemas/build-plan.schema.json"
     if "iteration" in data and "stage" in data and "artifact_id" in data:
         return "schemas/iteration-record.schema.json"
+    if "render_job" in data:
+        return "schemas/render-job.schema.json"
+    if "output_reference" in data:
+        return "schemas/output-reference.schema.json"
+    if "renderer_registry" in data:
+        return "schemas/renderer-registry.schema.json"
     if "name" in data and "supported_constraint_types" in data:
         return "schemas/renderer-profile.schema.json"
     if "renderer" in data and "instruction" in data and "unsupported_constraints" in data:
@@ -102,12 +108,7 @@ def validate_against_schema(path: Path, data: dict[str, Any], repo_root: Path) -
         return [f"Schema not found: {schema_path}"]
     schema = load_json(full_schema_path)
     validator = Draft202012Validator(schema)
-    errors = sorted(validator.iter_errors(data), key=lambda error: list(error.path))
-    messages: list[str] = []
-    for error in errors:
-        location = ".".join(str(part) for part in error.path) or "<root>"
-        messages.append(f"schema:{schema_path}:{location}: {error.message}")
-    return messages
+    return [f"schema:{schema_path}:{'.'.join(str(p) for p in e.path) or '<root>'}: {e.message}" for e in sorted(validator.iter_errors(data), key=lambda error: list(error.path))]
 
 
 def record_from_data(path: Path, data: dict[str, Any]) -> dict[str, Any] | None:
@@ -146,8 +147,15 @@ def record_from_data(path: Path, data: dict[str, Any]) -> dict[str, Any] | None:
         obj = data["build_plan"]
         return {"id": obj.get("id"), "title": obj.get("id"), "type": "build_plan", "status": obj.get("status", "unknown"), "traceability": {}}
     if "iteration" in data and "stage" in data and "artifact_id" in data:
-        iteration_id = path.stem
-        return {"id": iteration_id, "title": iteration_id, "type": "iteration_record", "status": data.get("status", "unknown"), "traceability": {}}
+        return {"id": path.stem, "title": path.stem, "type": "iteration_record", "status": data.get("status", "unknown"), "traceability": {}}
+    if "render_job" in data:
+        obj = data["render_job"]
+        return {"id": obj.get("id"), "title": obj.get("id"), "type": "render_job", "status": obj.get("status", "unknown"), "traceability": {}}
+    if "output_reference" in data:
+        obj = data["output_reference"]
+        return {"id": obj.get("id"), "title": obj.get("id"), "type": "output_reference", "status": "stored", "traceability": {}}
+    if "renderer_registry" in data:
+        return {"id": "RENDERER-REGISTRY", "title": "Renderer Registry", "type": "renderer_registry", "status": "active", "traceability": {}}
     if "name" in data and "supported_constraint_types" in data:
         renderer_id = f"RENDERER-{data.get('name', path.stem)}"
         return {"id": renderer_id, "title": data.get("name", renderer_id), "type": "renderer_profile", "status": "active", "traceability": {}}
@@ -163,11 +171,7 @@ def new_artifact(args: argparse.Namespace) -> int:
         print(f"Invalid artifact id: {artifact_id}. Expected format like CPE-0007.", file=sys.stderr)
         return 2
     target = Path(args.output or f"docs/{args.type}/{artifact_id}.yaml")
-    data = {
-        "artifact": {"id": artifact_id, "title": args.title, "type": args.type, "status": "draft", "version": "0.1", "created": date.today().isoformat()},
-        "traceability": {"depends_on": [], "related_failures": [], "related_requirements": [], "related_adrs": []},
-        "content": {"summary": "", "notes": []},
-    }
+    data = {"artifact": {"id": artifact_id, "title": args.title, "type": args.type, "status": "draft", "version": "0.1", "created": date.today().isoformat()}, "traceability": {"depends_on": [], "related_failures": [], "related_requirements": [], "related_adrs": []}, "content": {"summary": "", "notes": []}}
     write_yaml(target, data)
     print(f"Created artifact: {target}")
     return 0
@@ -179,11 +183,7 @@ def new_failure(args: argparse.Namespace) -> int:
         print(f"Invalid failure id: {failure_id}. Expected format like FR-0001.", file=sys.stderr)
         return 2
     target = Path(args.output or f"docs/100_Discovery/Failure_Registry/{failure_id}.yaml")
-    data = {
-        "failure": {"id": failure_id, "title": args.title, "family": args.family, "severity": args.severity, "status": "draft", "created": date.today().isoformat()},
-        "description": "", "observed_behavior": "", "impact": "", "root_cause_hypotheses": [], "mitigations": [], "future_tests": [],
-        "traceability": {"requirements": [], "validators": [], "adrs": []},
-    }
+    data = {"failure": {"id": failure_id, "title": args.title, "family": args.family, "severity": args.severity, "status": "draft", "created": date.today().isoformat()}, "description": "", "observed_behavior": "", "impact": "", "root_cause_hypotheses": [], "mitigations": [], "future_tests": [], "traceability": {"requirements": [], "validators": [], "adrs": []}}
     write_yaml(target, data)
     print(f"Created failure record: {target}")
     return 0
@@ -195,13 +195,7 @@ def new_compliance(args: argparse.Namespace) -> int:
         print(f"Invalid compliance report id: {report_id}. Expected format like VAL-0001.", file=sys.stderr)
         return 2
     target = Path(args.output or f"reports/compliance/{report_id}.yaml")
-    data = {
-        "report": {"id": report_id, "version": "0.1", "created": date.today().isoformat(), "validator_version": "constraintos-0.9.1"},
-        "artifact": {"id": args.artifact_id, "version": args.artifact_version, "specification_id": args.specification_id},
-        "summary": {"blocker_failures": 0, "major_failures": 0, "minor_failures": 0, "uncertain_results": 0},
-        "constraint_results": [],
-        "recommendation": "escalate",
-    }
+    data = {"report": {"id": report_id, "version": "0.1", "created": date.today().isoformat(), "validator_version": "constraintos-1.0.0-alpha.10"}, "artifact": {"id": args.artifact_id, "version": args.artifact_version, "specification_id": args.specification_id}, "summary": {"blocker_failures": 0, "major_failures": 0, "minor_failures": 0, "uncertain_results": 0}, "constraint_results": [], "recommendation": "escalate"}
     write_yaml(target, data)
     print(f"Created compliance report: {target}")
     return 0
@@ -212,8 +206,7 @@ def new_patch(args: argparse.Namespace) -> int:
     if not patch_id.startswith("PATCH-") or not ID_PATTERN.match(patch_id):
         print(f"Invalid patch id: {patch_id}. Expected format like PATCH-0001.", file=sys.stderr)
         return 2
-    report = load_yaml(Path(args.report))
-    package = create_patch_package(report, patch_id)
+    package = create_patch_package(load_yaml(Path(args.report)), patch_id)
     target = Path(args.output or f"patches/{patch_id}.yaml")
     write_yaml(target, package.to_dict())
     print(f"Created patch package: {target}")
@@ -235,22 +228,18 @@ def validate_artifact(path: Path, repo_root: Path) -> ValidationResult:
         data = load_yaml(path)
     except Exception as exc:
         return ValidationResult(path, "fail", [str(exc)])
-
     record = record_from_data(path, data)
     if not record:
         messages.append("Unrecognized YAML artifact type.")
-    else:
-        object_id = record.get("id")
-        if not object_id:
-            messages.append("Missing record id.")
-        if data.get("artifact") is not None and data.get("constraints") is None:
-            for field in ["title", "status", "version"]:
-                if field not in data["artifact"]:
-                    messages.append(f"Missing artifact.{field}.")
-
-    if "traceability" not in data and not any(key in data for key in ["report", "patch", "baseline", "manifest", "approval", "review_checklist", "gate", "build_plan", "iteration", "name", "renderer"]):
+    elif not record.get("id"):
+        messages.append("Missing record id.")
+    if data.get("artifact") is not None and data.get("constraints") is None:
+        for field in ["title", "status", "version"]:
+            if field not in data["artifact"]:
+                messages.append(f"Missing artifact.{field}.")
+    schema_exempt = ["report", "patch", "baseline", "manifest", "approval", "review_checklist", "gate", "build_plan", "iteration", "render_job", "output_reference", "renderer_registry", "name", "renderer"]
+    if "traceability" not in data and not any(key in data for key in schema_exempt):
         messages.append("Missing traceability section.")
-
     messages.extend(validate_against_schema(path, data, repo_root))
     return ValidationResult(path, "pass" if not messages else "fail", messages)
 
@@ -276,18 +265,7 @@ def extract_record(path: Path) -> dict[str, Any] | None:
     if not record:
         return None
     traceability = record.get("traceability", {}) or {}
-    return {
-        "path": str(path),
-        "id": record.get("id"),
-        "title": record.get("title"),
-        "type": record.get("type"),
-        "status": record.get("status", "unknown"),
-        "depends_on": traceability.get("depends_on", []),
-        "failures": traceability.get("related_failures", traceability.get("requirements", [])),
-        "requirements": traceability.get("related_requirements", traceability.get("requirements", [])),
-        "adrs": traceability.get("related_adrs", traceability.get("adrs", [])),
-        "validators": traceability.get("validators", []),
-    }
+    return {"path": str(path), "id": record.get("id"), "title": record.get("title"), "type": record.get("type"), "status": record.get("status", "unknown"), "depends_on": traceability.get("depends_on", []), "failures": traceability.get("related_failures", traceability.get("requirements", [])), "requirements": traceability.get("related_requirements", traceability.get("requirements", [])), "adrs": traceability.get("related_adrs", traceability.get("adrs", [])), "validators": traceability.get("validators", [])}
 
 
 def find_duplicate_ids(files: list[Path]) -> list[str]:
@@ -323,14 +301,12 @@ def validate(args: argparse.Namespace) -> int:
 
 
 def trace(args: argparse.Namespace) -> int:
-    rows = [record for path in collect_yaml_files(args.paths) if (record := extract_record(path))]
-    print(json.dumps(rows, indent=2))
+    print(json.dumps([record for path in collect_yaml_files(args.paths) if (record := extract_record(path))], indent=2))
     return 0
 
 
 def registry(args: argparse.Namespace) -> int:
-    rows = [record for path in collect_yaml_files(args.paths) if (record := extract_record(path))]
-    registry_data = {"registry": rows}
+    registry_data = {"registry": [record for path in collect_yaml_files(args.paths) if (record := extract_record(path))]}
     if args.output:
         write_yaml(Path(args.output), registry_data)
         print(f"Wrote ID registry: {args.output}")
@@ -343,13 +319,12 @@ def export_markdown(args: argparse.Namespace) -> int:
     source = Path(args.source)
     data = load_yaml(source)
     record = record_from_data(source, data) or {}
-    title = record.get("title") or source.stem
-    lines = [f"# {title}", ""]
+    lines = [f"# {record.get('title') or source.stem}", ""]
     for key, value in record.items():
         if key != "traceability":
             lines.append(f"- **{key}:** {value}")
     lines.append("")
-    for section in ["description", "content", "traceability", "failed_constraints", "instruction", "approved_constraints", "regression_policy", "items", "summary", "history", "outputs", "approvals", "stages", "stop_conditions"]:
+    for section in ["description", "content", "traceability", "failed_constraints", "instruction", "approved_constraints", "regression_policy", "items", "summary", "history", "outputs", "approvals", "stages", "stop_conditions", "metadata"]:
         if section in data:
             lines.extend([f"## {section.replace('_', ' ').title()}", "", "```yaml", yaml.safe_dump(data[section], sort_keys=False).strip(), "```", ""])
     target = Path(args.output or source.with_suffix(".md"))
@@ -360,8 +335,7 @@ def export_markdown(args: argparse.Namespace) -> int:
 
 
 def compile_spec(args: argparse.Namespace) -> int:
-    spec = load_yaml(Path(args.source))
-    result = compile_to_text(spec, renderer=args.renderer)
+    result = compile_to_text(load_yaml(Path(args.source)), renderer=args.renderer)
     payload = result.to_dict()
     if args.output:
         target = Path(args.output)
