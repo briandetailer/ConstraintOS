@@ -1,0 +1,1 @@
+Dry-run artifact output for PLATE-0001.
