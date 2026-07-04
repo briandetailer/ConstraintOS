@@ -1,0 +1,86 @@
+openapi: 3.1.0
+info:
+  title: ConstraintOS API
+  version: 1.0.0-alpha.14
+  description: Draft API contract for ConstraintOS runtime-to-kernel interaction.
+paths:
+  /health:
+    get:
+      operationId: get_health
+      summary: Return runtime health.
+      responses:
+        '200':
+          description: Runtime is reachable.
+  /compile:
+    post:
+      operationId: compile_specification
+      summary: Compile a CSL specification into instructions.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '../schemas/csl.schema.json'
+      responses:
+        '200':
+          description: Compiler result.
+          content:
+            application/json:
+              schema:
+                $ref: '../schemas/compiler-result.schema.json'
+  /validate:
+    post:
+      operationId: validate_artifact
+      summary: Validate an artifact or record.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '../schemas/kernel-validation-request.schema.json'
+      responses:
+        '200':
+          description: Compliance report or validation result.
+  /render-jobs:
+    post:
+      operationId: create_render_job
+      summary: Create a render job.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '../schemas/render-job.schema.json'
+      responses:
+        '202':
+          description: Render job accepted.
+  /builds/volume:
+    post:
+      operationId: create_volume_build
+      summary: Run or queue a volume build.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '../schemas/volume-plan.schema.json'
+      responses:
+        '202':
+          description: Volume build accepted.
+  /jobs/{job_id}:
+    get:
+      operationId: get_runtime_job
+      summary: Return runtime job status.
+      parameters:
+        - name: job_id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Runtime job status.
+          content:
+            application/json:
+              schema:
+                $ref: '../schemas/runtime-job.schema.json'
