@@ -1,0 +1,15 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://constraintos.local/schemas/iteration-record.schema.json",
+  "title": "ConstraintOS Iteration Record",
+  "type": "object",
+  "required": ["iteration", "stage", "status", "artifact_id", "messages", "outputs"],
+  "properties": {
+    "iteration": {"type": "integer", "minimum": 1},
+    "stage": {"type": "string"},
+    "status": {"type": "string"},
+    "artifact_id": {"type": "string"},
+    "messages": {"type": "array", "items": {"type": "string"}},
+    "outputs": {"type": "object"}
+  }
+}
