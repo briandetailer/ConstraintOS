@@ -1,0 +1,22 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://constraintos.local/schemas/worker-fleet-status.schema.json",
+  "title": "ConstraintOS Worker Fleet Status",
+  "type": "object",
+  "required": ["worker_fleet_status"],
+  "properties": {
+    "worker_fleet_status": {
+      "type": "object",
+      "required": ["created", "total", "available", "busy", "offline", "disabled", "unknown"],
+      "properties": {
+        "created": {"type": "string"},
+        "total": {"type": "integer", "minimum": 0},
+        "available": {"type": "integer", "minimum": 0},
+        "busy": {"type": "integer", "minimum": 0},
+        "offline": {"type": "integer", "minimum": 0},
+        "disabled": {"type": "integer", "minimum": 0},
+        "unknown": {"type": "integer", "minimum": 0}
+      }
+    }
+  }
+}
