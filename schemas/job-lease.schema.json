@@ -1,0 +1,21 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://constraintos.local/schemas/job-lease.schema.json",
+  "title": "ConstraintOS Job Lease",
+  "type": "object",
+  "required": ["job_lease"],
+  "properties": {
+    "job_lease": {
+      "type": "object",
+      "required": ["id", "job_id", "worker_id", "status", "acquired_at", "expires_at"],
+      "properties": {
+        "id": {"type": "string", "pattern": "^LEASE-[0-9]{4}$"},
+        "job_id": {"type": "string"},
+        "worker_id": {"type": "string"},
+        "status": {"enum": ["active", "released", "expired"]},
+        "acquired_at": {"type": "string"},
+        "expires_at": {"type": "string"}
+      }
+    }
+  }
+}
