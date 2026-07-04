@@ -20,6 +20,7 @@ except ImportError:  # pragma: no cover
     Draft202012Validator = None
 
 from constraintos.compiler import compile_to_text
+from constraintos.patching import create_patch_package, create_regression_baseline
 
 ID_PATTERN = re.compile(r"^[A-Z]+-[0-9]{4}$")
 FR_PATTERN = re.compile(r"^FR-[0-9]{4}$")
@@ -65,6 +66,10 @@ def detect_schema(data: dict[str, Any]) -> str | None:
         return "schemas/compliance-report.schema.json"
     if "registry" in data:
         return "schemas/id-registry.schema.json"
+    if "patch" in data:
+        return "schemas/patch-package.schema.json"
+    if "baseline" in data:
+        return "schemas/regression-baseline.schema.json"
     if "artifact" in data and "constraints" in data and "validation" in data:
         return "schemas/csl.schema.json"
     return None
@@ -128,7 +133,7 @@ def new_compliance(args: argparse.Namespace) -> int:
         return 2
     target = Path(args.output or f"reports/compliance/{report_id}.yaml")
     data = {
-        "report": {"id": report_id, "version": "0.1", "created": date.today().isoformat(), "validator_version": "constraintos-0.4.0"},
+        "report": {"id": report_id, "version": "0.1", "created": date.today().isoformat(), "validator_version": "constraintos-0.6.0"},
         "artifact": {"id": args.artifact_id, "version": args.artifact_version, "specification_id": args.specification_id},
         "summary": {"blocker_failures": 0, "major_failures": 0, "minor_failures": 0, "uncertain_results": 0},
         "constraint_results": [],
@@ -139,24 +144,46 @@ def new_compliance(args: argparse.Namespace) -> int:
     return 0
 
 
+def new_patch(args: argparse.Namespace) -> int:
+    patch_id = args.id.upper()
+    if not patch_id.startswith("PATCH-") or not ID_PATTERN.match(patch_id):
+        print(f"Invalid patch id: {patch_id}. Expected format like PATCH-0001.", file=sys.stderr)
+        return 2
+    report = load_yaml(Path(args.report))
+    package = create_patch_package(report, patch_id)
+    target = Path(args.output or f"patches/{patch_id}.yaml")
+    write_yaml(target, package.to_dict())
+    print(f"Created patch package: {target}")
+    return 0
+
+
+def new_baseline(args: argparse.Namespace) -> int:
+    constraints = [item for item in args.constraints.split(",") if item]
+    data = create_regression_baseline(args.artifact_id, args.artifact_version, args.approved_report_id, constraints)
+    target = Path(args.output or f"baselines/{args.artifact_id}_{args.artifact_version}.yaml")
+    write_yaml(target, data)
+    print(f"Created regression baseline: {target}")
+    return 0
+
+
 def validate_artifact(path: Path, repo_root: Path) -> ValidationResult:
     messages: list[str] = []
     try:
         data = load_yaml(path)
     except Exception as exc:
         return ValidationResult(path, "fail", [str(exc)])
-    obj = data.get("artifact") or data.get("failure") or data.get("report")
+    obj = data.get("artifact") or data.get("failure") or data.get("report") or data.get("patch") or data.get("baseline")
     if not isinstance(obj, dict):
-        messages.append("Missing artifact, failure, or report object.")
+        messages.append("Missing artifact, failure, report, patch, or baseline object.")
     else:
-        object_id = obj.get("id")
-        if not object_id or not ID_PATTERN.match(str(object_id)):
-            messages.append("Missing or invalid id.")
+        object_id = obj.get("id") or obj.get("artifact_id")
+        if not object_id:
+            messages.append("Missing id or artifact_id.")
         if data.get("artifact") is not None:
             for field in ["title", "status", "version"]:
                 if field not in obj:
                     messages.append(f"Missing artifact.{field}.")
-    if "traceability" not in data and "report" not in data:
+    if "traceability" not in data and not any(key in data for key in ["report", "patch", "baseline"]):
         messages.append("Missing traceability section.")
     messages.extend(validate_against_schema(path, data, repo_root))
     return ValidationResult(path, "pass" if not messages else "fail", messages)
@@ -179,13 +206,22 @@ def extract_record(path: Path) -> dict[str, Any] | None:
         data = load_yaml(path)
     except Exception:
         return None
-    obj = data.get("artifact") or data.get("failure") or data.get("report")
+    obj = data.get("artifact") or data.get("failure") or data.get("report") or data.get("patch") or data.get("baseline")
     if not isinstance(obj, dict):
         return None
     traceability = data.get("traceability", {})
-    record_type = "failure" if "failure" in data else "compliance_report" if "report" in data else "artifact"
+    if "failure" in data:
+        record_type = "failure"
+    elif "report" in data:
+        record_type = "compliance_report"
+    elif "patch" in data:
+        record_type = "patch_package"
+    elif "baseline" in data:
+        record_type = "regression_baseline"
+    else:
+        record_type = "artifact"
     return {
-        "path": str(path), "id": obj.get("id"), "title": obj.get("title", obj.get("id")), "type": obj.get("type", record_type),
+        "path": str(path), "id": obj.get("id", obj.get("artifact_id")), "title": obj.get("title", obj.get("id", obj.get("artifact_id"))), "type": obj.get("type", record_type),
         "status": obj.get("status", "unknown"), "depends_on": traceability.get("depends_on", []),
         "failures": traceability.get("related_failures", traceability.get("requirements", [])),
         "requirements": traceability.get("related_requirements", traceability.get("requirements", [])),
@@ -245,18 +281,15 @@ def registry(args: argparse.Namespace) -> int:
 def export_markdown(args: argparse.Namespace) -> int:
     source = Path(args.source)
     data = load_yaml(source)
-    obj = data.get("artifact") or data.get("failure") or data.get("report") or {}
-    title = obj.get("title") or obj.get("id") or source.stem
+    obj = data.get("artifact") or data.get("failure") or data.get("report") or data.get("patch") or data.get("baseline") or {}
+    title = obj.get("title") or obj.get("id") or obj.get("artifact_id") or source.stem
     lines = [f"# {title}", ""]
     for key, value in obj.items():
         lines.append(f"- **{key}:** {value}")
     lines.append("")
-    if "description" in data:
-        lines.extend(["## Description", "", str(data.get("description") or ""), ""])
-    if "content" in data:
-        lines.extend(["## Content", "", "```yaml", yaml.safe_dump(data["content"], sort_keys=False).strip(), "```", ""])
-    if "traceability" in data:
-        lines.extend(["## Traceability", "", "```yaml", yaml.safe_dump(data["traceability"], sort_keys=False).strip(), "```", ""])
+    for section in ["description", "content", "traceability", "failed_constraints", "instruction", "approved_constraints", "regression_policy"]:
+        if section in data:
+            lines.extend([f"## {section.replace('_', ' ').title()}", "", "```yaml", yaml.safe_dump(data[section], sort_keys=False).strip(), "```", ""])
     target = Path(args.output or source.with_suffix(".md"))
     target.parent.mkdir(parents=True, exist_ok=True)
     target.write_text("\n".join(lines), encoding="utf-8")
@@ -271,10 +304,7 @@ def compile_spec(args: argparse.Namespace) -> int:
     if args.output:
         target = Path(args.output)
         target.parent.mkdir(parents=True, exist_ok=True)
-        if args.format == "json":
-            target.write_text(json.dumps(payload, indent=2), encoding="utf-8")
-        else:
-            target.write_text(result.instruction, encoding="utf-8")
+        target.write_text(json.dumps(payload, indent=2) if args.format == "json" else result.instruction, encoding="utf-8")
         print(f"Wrote compiled instruction: {target}")
     else:
         print(json.dumps(payload, indent=2) if args.format == "json" else result.instruction)
@@ -284,36 +314,16 @@ def compile_spec(args: argparse.Namespace) -> int:
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(prog="constraintos")
     sub = parser.add_subparsers(dest="command", required=True)
-
-    artifact = sub.add_parser("new-artifact", help="Create a new artifact YAML scaffold")
-    artifact.add_argument("id"); artifact.add_argument("title"); artifact.add_argument("--type", default="artifact"); artifact.add_argument("--output")
-    artifact.set_defaults(func=new_artifact)
-
-    failure = sub.add_parser("new-failure", help="Create a new failure record YAML scaffold")
-    failure.add_argument("id"); failure.add_argument("title"); failure.add_argument("--family", default="F100"); failure.add_argument("--severity", default="major", choices=["blocker", "major", "minor", "advisory"]); failure.add_argument("--output")
-    failure.set_defaults(func=new_failure)
-
-    compliance = sub.add_parser("new-compliance", help="Create a compliance report YAML scaffold")
-    compliance.add_argument("id"); compliance.add_argument("artifact_id"); compliance.add_argument("specification_id"); compliance.add_argument("--artifact-version", default="0.1"); compliance.add_argument("--output")
-    compliance.set_defaults(func=new_compliance)
-
-    val = sub.add_parser("validate", help="Validate metadata, schemas, and duplicate IDs")
-    val.add_argument("paths", nargs="*", default=["docs", "examples", "reports"]); val.add_argument("--repo-root", default=".")
-    val.set_defaults(func=validate)
-
-    tr = sub.add_parser("trace", help="Generate a traceability JSON report")
-    tr.add_argument("paths", nargs="*", default=["docs", "examples", "reports"]); tr.set_defaults(func=trace)
-
-    reg = sub.add_parser("registry", help="Generate an ID registry YAML document")
-    reg.add_argument("paths", nargs="*", default=["docs", "examples", "reports"]); reg.add_argument("--output"); reg.set_defaults(func=registry)
-
-    md = sub.add_parser("export-md", help="Export one YAML artifact to Markdown")
-    md.add_argument("source"); md.add_argument("--output"); md.set_defaults(func=export_markdown)
-
-    comp = sub.add_parser("compile", help="Compile a CSL YAML specification into renderer instructions")
-    comp.add_argument("source"); comp.add_argument("--renderer", default="generic"); comp.add_argument("--format", choices=["text", "json"], default="text"); comp.add_argument("--output"); comp.add_argument("--fail-on-unsupported", action="store_true")
-    comp.set_defaults(func=compile_spec)
-
+    artifact = sub.add_parser("new-artifact"); artifact.add_argument("id"); artifact.add_argument("title"); artifact.add_argument("--type", default="artifact"); artifact.add_argument("--output"); artifact.set_defaults(func=new_artifact)
+    failure = sub.add_parser("new-failure"); failure.add_argument("id"); failure.add_argument("title"); failure.add_argument("--family", default="F100"); failure.add_argument("--severity", default="major", choices=["blocker", "major", "minor", "advisory"]); failure.add_argument("--output"); failure.set_defaults(func=new_failure)
+    compliance = sub.add_parser("new-compliance"); compliance.add_argument("id"); compliance.add_argument("artifact_id"); compliance.add_argument("specification_id"); compliance.add_argument("--artifact-version", default="0.1"); compliance.add_argument("--output"); compliance.set_defaults(func=new_compliance)
+    patch = sub.add_parser("new-patch"); patch.add_argument("id"); patch.add_argument("report"); patch.add_argument("--output"); patch.set_defaults(func=new_patch)
+    baseline = sub.add_parser("new-baseline"); baseline.add_argument("artifact_id"); baseline.add_argument("artifact_version"); baseline.add_argument("approved_report_id"); baseline.add_argument("--constraints", default=""); baseline.add_argument("--output"); baseline.set_defaults(func=new_baseline)
+    val = sub.add_parser("validate"); val.add_argument("paths", nargs="*", default=["docs", "examples", "reports", "patches", "baselines"]); val.add_argument("--repo-root", default="."); val.set_defaults(func=validate)
+    tr = sub.add_parser("trace"); tr.add_argument("paths", nargs="*", default=["docs", "examples", "reports", "patches", "baselines"]); tr.set_defaults(func=trace)
+    reg = sub.add_parser("registry"); reg.add_argument("paths", nargs="*", default=["docs", "examples", "reports", "patches", "baselines"]); reg.add_argument("--output"); reg.set_defaults(func=registry)
+    md = sub.add_parser("export-md"); md.add_argument("source"); md.add_argument("--output"); md.set_defaults(func=export_markdown)
+    comp = sub.add_parser("compile"); comp.add_argument("source"); comp.add_argument("--renderer", default="generic"); comp.add_argument("--format", choices=["text", "json"], default="text"); comp.add_argument("--output"); comp.add_argument("--fail-on-unsupported", action="store_true"); comp.set_defaults(func=compile_spec)
     return parser
 
 
