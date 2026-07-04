@@ -1,0 +1,20 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://constraintos.local/schemas/storage-backend.schema.json",
+  "title": "ConstraintOS Storage Backend Profile",
+  "type": "object",
+  "required": ["storage_backend"],
+  "properties": {
+    "storage_backend": {
+      "type": "object",
+      "required": ["name", "type", "root", "status"],
+      "properties": {
+        "name": {"type": "string"},
+        "type": {"enum": ["local", "object_store", "repository", "external"]},
+        "root": {"type": "string"},
+        "status": {"enum": ["active", "experimental", "disabled"]},
+        "notes": {"type": "string"}
+      }
+    }
+  }
+}
