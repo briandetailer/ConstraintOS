@@ -1,0 +1,23 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://constraintos.local/schemas/failed-job.schema.json",
+  "title": "ConstraintOS Failed Job Record",
+  "type": "object",
+  "required": ["failed_job", "payload"],
+  "properties": {
+    "failed_job": {
+      "type": "object",
+      "required": ["id", "job_id", "job_type", "failure_class", "message", "attempt", "created"],
+      "properties": {
+        "id": {"type": "string", "pattern": "^FAILED-JOB-[0-9]{4}$"},
+        "job_id": {"type": "string", "pattern": "^JOB-[0-9]{4}$"},
+        "job_type": {"type": "string"},
+        "failure_class": {"enum": ["unsupported_job_type", "missing_input", "validation_failure", "runtime_failure"]},
+        "message": {"type": "string"},
+        "attempt": {"type": "integer", "minimum": 1},
+        "created": {"type": "string"}
+      }
+    },
+    "payload": {"type": "object"}
+  }
+}
