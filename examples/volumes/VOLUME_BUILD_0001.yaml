@@ -1,0 +1,22 @@
+volume_build:
+  id: BUILD-VOLUME-0001
+  volume_id: VOLUME-0001
+  created: '2026-07-04'
+  status: complete
+results:
+  - artifact_id: PLATE-0001
+    status: needs_iteration
+    reason: dry-run completed
+    iterations:
+      - iteration: 1
+        stage: compile
+        status: complete
+        artifact_id: PLATE-0001
+        messages: []
+        outputs:
+          unsupported_constraints: []
+summary:
+  total: 1
+  processed: 1
+  blocked: 0
+  complete: 1
