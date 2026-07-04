@@ -1,0 +1,9 @@
+render_job:
+  id: RENDER-0001
+  artifact_id: PLATE-0001
+  renderer: dry-run
+  status: queued
+  created: '2026-07-04'
+instruction: Render LF4 baseline front-left plate using dry-run renderer.
+metadata:
+  source_specification: examples/csl/LF4_TEST_001.yaml
