@@ -1,0 +1,20 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://constraintos.local/schemas/runtime-command.schema.json",
+  "title": "ConstraintOS Runtime Command",
+  "type": "object",
+  "required": ["runtime_command"],
+  "properties": {
+    "runtime_command": {
+      "type": "object",
+      "required": ["id", "name", "command", "purpose", "created"],
+      "properties": {
+        "id": {"type": "string", "pattern": "^COMMAND-[0-9]{4}$"},
+        "name": {"type": "string"},
+        "command": {"type": "string"},
+        "purpose": {"type": "string"},
+        "created": {"type": "string"}
+      }
+    }
+  }
+}
