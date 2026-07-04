@@ -1,0 +1,6 @@
+status: stub
+message: Validation endpoint scaffold is active. Repository-file validation remains CLI-backed.
+request:
+  artifact_ref: examples/csl/LF4_TEST_001.yaml
+  schema_ref: schemas/csl.schema.json
+repo_root: .
