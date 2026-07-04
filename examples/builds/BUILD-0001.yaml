@@ -1,0 +1,16 @@
+build_plan:
+  id: BUILD-0001
+  artifact_id: PLATE-0001
+  created: '2026-07-04'
+  status: draft
+  max_iterations: 3
+stages:
+  - compile
+  - render
+  - validate
+  - review
+  - patch
+stop_conditions:
+  pass_review_gate: true
+  max_iterations: 3
+  block_on_unsupported_constraints: true
