@@ -1,0 +1,31 @@
+review_checklist:
+  id: REVIEW-0001
+  artifact_id: PLATE-0001
+  artifact_version: '0.1'
+  created: '2026-07-04'
+  status: open
+items:
+  - constraint_id: C-0001
+    statement: Artifact must depict a V6 engine.
+    severity: blocker
+    acceptance: Visible architecture is consistent with a six-cylinder V layout.
+    validation_method: visual_review
+    reviewer_result: unreviewed
+    reviewer_confidence: 0.0
+    evidence: ''
+    notes: ''
+  - constraint_id: C-0002
+    statement: Artifact must include twin turbochargers.
+    severity: blocker
+    acceptance: Two turbocharger assemblies are visible or explicitly represented.
+    validation_method: visual_review
+    reviewer_result: unreviewed
+    reviewer_confidence: 0.0
+    evidence: ''
+    notes: ''
+summary:
+  total: 2
+  reviewed: 0
+  pass: 0
+  fail: 0
+  uncertain: 0
