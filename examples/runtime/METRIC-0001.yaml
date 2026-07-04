@@ -1,0 +1,8 @@
+metric_event:
+  id: METRIC-0001
+  name: build.duration.seconds
+  value: 12.5
+  created: '2026-07-04'
+dimensions:
+  volume: VOLUME-0001
+  runtime: local
