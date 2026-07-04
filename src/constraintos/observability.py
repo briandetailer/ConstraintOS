@@ -41,7 +41,7 @@ def summarize_queue(records: list[dict[str, Any]]) -> dict[str, Any]:
         data = record.get("queue_record", record)
         status = data.get("status", "unknown")
         counts[status if status in counts else "unknown"] += 1
-    return {"queue_summary_report": {"created": date.today().isoformat(), "total": len(records), **counts}}
+    return {"job_queue_summary": {"created": date.today().isoformat(), "total": len(records), **counts}}
 
 
 def summarize_failures(failed_jobs: list[dict[str, Any]]) -> dict[str, Any]:
