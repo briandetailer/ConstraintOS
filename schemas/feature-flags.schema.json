@@ -1,0 +1,18 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://constraintos.local/schemas/feature-flags.schema.json",
+  "title": "ConstraintOS Feature Flags",
+  "type": "object",
+  "required": ["feature_flags", "flags"],
+  "properties": {
+    "feature_flags": {
+      "type": "object",
+      "required": ["id", "created"],
+      "properties": {
+        "id": {"type": "string", "pattern": "^FLAGS-[0-9]{4}$"},
+        "created": {"type": "string"}
+      }
+    },
+    "flags": {"type": "object", "additionalProperties": {"type": "boolean"}}
+  }
+}
