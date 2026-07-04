@@ -1,0 +1,6 @@
+renderer_registry:
+  - name: dry-run
+    version: '0.1'
+    profile_path: examples/renderers/dry-run.yaml
+    status: active
+    notes: No-op renderer used for boundary testing.
