@@ -1,0 +1,15 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://constraintos.local/schemas/renderer-profile.schema.json",
+  "title": "ConstraintOS Renderer Profile",
+  "type": "object",
+  "required": ["name", "version", "supported_constraint_types"],
+  "properties": {
+    "name": {"type": "string"},
+    "version": {"type": "string"},
+    "supported_constraint_types": {"type": "array", "items": {"type": "string"}},
+    "supports_patch": {"type": "boolean"},
+    "supports_structured_output": {"type": "boolean"},
+    "notes": {"type": "string"}
+  }
+}
