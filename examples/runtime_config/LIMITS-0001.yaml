@@ -1,0 +1,7 @@
+runtime_limits:
+  id: LIMITS-0001
+  max_concurrent_jobs: 1
+  max_payload_bytes: 1048576
+  max_retries: 3
+  allow_live_renderers: false
+  created: '2026-07-04'
