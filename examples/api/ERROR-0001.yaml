@@ -1,0 +1,6 @@
+api_error:
+  id: ERROR-0001
+  code: VALIDATION_FAILED
+  message: Validation failed because the artifact did not match its schema.
+  retryable: false
+  created: '2026-07-04'
