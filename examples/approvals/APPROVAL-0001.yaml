@@ -1,0 +1,13 @@
+approval:
+  id: APPROVAL-0001
+  created: '2026-07-04'
+  approver: reviewer
+  status: approved
+artifact:
+  id: PLATE-0001
+  version: '0.1'
+  compliance_report_id: VAL-0001
+decision:
+  summary: Approved for controlled example publication.
+  notes:
+    - Example approval record for lifecycle testing.
