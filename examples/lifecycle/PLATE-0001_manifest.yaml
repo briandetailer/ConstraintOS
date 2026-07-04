@@ -1,0 +1,16 @@
+manifest:
+  id: MANIFEST-0001
+  version: '0.1'
+  created: '2026-07-04'
+artifact:
+  id: PLATE-0001
+  type: technical_plate
+  title: LF4 baseline front-left plate
+state: draft
+history:
+  - from: none
+    to: draft
+    date: '2026-07-04'
+    reason: manifest created
+outputs: []
+approvals: []
