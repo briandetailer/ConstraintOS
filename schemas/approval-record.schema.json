@@ -1,0 +1,36 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://constraintos.local/schemas/approval-record.schema.json",
+  "title": "ConstraintOS Approval Record",
+  "type": "object",
+  "required": ["approval", "artifact", "decision"],
+  "properties": {
+    "approval": {
+      "type": "object",
+      "required": ["id", "created", "approver", "status"],
+      "properties": {
+        "id": {"type": "string", "pattern": "^APPROVAL-[0-9]{4}$"},
+        "created": {"type": "string"},
+        "approver": {"type": "string"},
+        "status": {"enum": ["approved", "rejected", "exception"]}
+      }
+    },
+    "artifact": {
+      "type": "object",
+      "required": ["id", "version", "compliance_report_id"],
+      "properties": {
+        "id": {"type": "string"},
+        "version": {"type": "string"},
+        "compliance_report_id": {"type": "string"}
+      }
+    },
+    "decision": {
+      "type": "object",
+      "required": ["summary", "notes"],
+      "properties": {
+        "summary": {"type": "string"},
+        "notes": {"type": "array", "items": {"type": "string"}}
+      }
+    }
+  }
+}
