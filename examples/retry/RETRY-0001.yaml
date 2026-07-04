@@ -1,0 +1,8 @@
+retry_policy:
+  id: RETRY-0001
+  max_attempts: 3
+  retryable_statuses:
+    - failed
+    - blocked
+  backoff_strategy: linear
+  created: '2026-07-04'
