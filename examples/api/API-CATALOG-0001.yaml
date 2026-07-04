@@ -1,0 +1,24 @@
+api_catalog:
+  id: API-CATALOG-0001
+  created: '2026-07-04'
+  version: 1.0.0-alpha.14
+  status: draft
+endpoints:
+  - method: GET
+    path: /health
+    operation_id: get_health
+    summary: Return runtime health.
+    request_schema: null
+    response_schema: null
+  - method: POST
+    path: /compile
+    operation_id: compile_specification
+    summary: Compile a CSL specification into instructions.
+    request_schema: csl.schema.json
+    response_schema: compiler-result.schema.json
+  - method: POST
+    path: /builds/volume
+    operation_id: create_volume_build
+    summary: Run or queue a volume build.
+    request_schema: volume-plan.schema.json
+    response_schema: volume-build.schema.json
