@@ -1,0 +1,20 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://constraintos.local/schemas/retry-policy.schema.json",
+  "title": "ConstraintOS Retry Policy",
+  "type": "object",
+  "required": ["retry_policy"],
+  "properties": {
+    "retry_policy": {
+      "type": "object",
+      "required": ["id", "max_attempts", "retryable_statuses", "backoff_strategy", "created"],
+      "properties": {
+        "id": {"type": "string", "pattern": "^RETRY-[0-9]{4}$"},
+        "max_attempts": {"type": "integer", "minimum": 1},
+        "retryable_statuses": {"type": "array", "items": {"type": "string"}},
+        "backoff_strategy": {"enum": ["none", "linear", "exponential"]},
+        "created": {"type": "string"}
+      }
+    }
+  }
+}
