@@ -1,0 +1,13 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://constraintos.local/schemas/api-validation-stub-response.schema.json",
+  "title": "ConstraintOS API Validation Stub Response",
+  "type": "object",
+  "required": ["status", "message", "request", "repo_root"],
+  "properties": {
+    "status": {"enum": ["stub"]},
+    "message": {"type": "string"},
+    "request": {"type": "object"},
+    "repo_root": {"type": "string"}
+  }
+}
