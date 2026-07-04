@@ -1,0 +1,20 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://constraintos.local/schemas/service-boundary.schema.json",
+  "title": "ConstraintOS Service Boundary",
+  "type": "object",
+  "required": ["service_boundary", "owns", "does_not_own"],
+  "properties": {
+    "service_boundary": {
+      "type": "object",
+      "required": ["id", "name", "created"],
+      "properties": {
+        "id": {"type": "string", "pattern": "^SERVICE-[0-9]{4}$"},
+        "name": {"type": "string"},
+        "created": {"type": "string"}
+      }
+    },
+    "owns": {"type": "array", "items": {"type": "string"}},
+    "does_not_own": {"type": "array", "items": {"type": "string"}}
+  }
+}
