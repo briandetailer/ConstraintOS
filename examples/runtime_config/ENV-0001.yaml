@@ -1,0 +1,6 @@
+environment_profile:
+  id: ENV-0001
+  name: development
+  mode: development
+  description: Local development profile with dry-run execution defaults.
+  created: '2026-07-04'
