@@ -1,0 +1,6 @@
+retry_decision:
+  job_id: JOB-0001
+  decision: retry
+  reason: Retry allowed by policy.
+  next_attempt: 2
+  created: '2026-07-04'
