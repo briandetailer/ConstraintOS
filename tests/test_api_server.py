@@ -1,4 +1,12 @@
-from constraintos.api_server import compile_payload, health_payload, validate_payload, volume_build_payload
+from constraintos.api_server import (
+    compile_payload,
+    enqueue_job_payload,
+    get_job_payload,
+    health_payload,
+    queue_status_payload,
+    validate_payload,
+    volume_build_payload,
+)
 
 
 def sample_spec() -> dict:
@@ -36,3 +44,15 @@ def test_volume_build_payload() -> None:
     }
     result = volume_build_payload(plan, {"PLATE-0001": sample_spec()})
     assert result["volume_build"]["status"] == "complete"
+
+
+def test_enqueue_and_get_job_payload() -> None:
+    result = enqueue_job_payload("JOB-9991", "test", {"hello": "world"})
+    assert result["queue_record"]["id"] == "JOB-9991"
+    fetched = get_job_payload("JOB-9991")
+    assert fetched["payload"]["hello"] == "world"
+
+
+def test_queue_status_payload() -> None:
+    status = queue_status_payload()
+    assert "queue_status" in status
