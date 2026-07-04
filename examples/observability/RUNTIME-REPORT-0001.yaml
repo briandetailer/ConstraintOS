@@ -1,0 +1,32 @@
+runtime_health_report:
+  id: HEALTH-0001
+  status: ok
+  created: '2026-07-04'
+queue_status:
+  job_queue_summary:
+    created: '2026-07-04'
+    total: 1
+    queued: 1
+    running: 0
+    complete: 0
+    failed: 0
+    blocked: 0
+    unknown: 0
+worker_status:
+  worker_fleet_status:
+    created: '2026-07-04'
+    total: 1
+    available: 1
+    busy: 0
+    offline: 0
+    disabled: 0
+    unknown: 0
+failure_status:
+  failure_summary_report:
+    created: '2026-07-04'
+    total: 0
+    unsupported_job_type: 0
+    missing_input: 0
+    validation_failure: 0
+    runtime_failure: 0
+    unknown: 0
