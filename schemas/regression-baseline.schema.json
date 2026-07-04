@@ -1,0 +1,30 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://constraintos.local/schemas/regression-baseline.schema.json",
+  "title": "ConstraintOS Regression Baseline",
+  "type": "object",
+  "required": ["baseline", "approved_constraints", "regression_policy"],
+  "properties": {
+    "baseline": {
+      "type": "object",
+      "required": ["artifact_id", "artifact_version", "approved_report_id", "created", "status"],
+      "properties": {
+        "artifact_id": {"type": "string"},
+        "artifact_version": {"type": "string"},
+        "approved_report_id": {"type": "string"},
+        "created": {"type": "string"},
+        "status": {"type": "string"}
+      }
+    },
+    "approved_constraints": {"type": "array", "items": {"type": "string"}},
+    "regression_policy": {
+      "type": "object",
+      "required": ["blocker_regression_allowed", "major_regression_allowed", "minor_regression_requires_note"],
+      "properties": {
+        "blocker_regression_allowed": {"type": "boolean"},
+        "major_regression_allowed": {"type": "boolean"},
+        "minor_regression_requires_note": {"type": "boolean"}
+      }
+    }
+  }
+}
