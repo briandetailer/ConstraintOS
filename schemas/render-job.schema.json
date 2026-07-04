@@ -1,0 +1,22 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://constraintos.local/schemas/render-job.schema.json",
+  "title": "ConstraintOS Render Job",
+  "type": "object",
+  "required": ["render_job", "instruction", "metadata"],
+  "properties": {
+    "render_job": {
+      "type": "object",
+      "required": ["id", "artifact_id", "renderer", "status", "created"],
+      "properties": {
+        "id": {"type": "string", "pattern": "^RENDER-[0-9]{4}$"},
+        "artifact_id": {"type": "string"},
+        "renderer": {"type": "string"},
+        "status": {"enum": ["queued", "running", "complete", "failed", "dry_run"]},
+        "created": {"type": "string"}
+      }
+    },
+    "instruction": {"type": "string"},
+    "metadata": {"type": "object"}
+  }
+}
