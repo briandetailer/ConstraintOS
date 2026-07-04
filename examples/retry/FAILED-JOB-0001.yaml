@@ -1,0 +1,10 @@
+failed_job:
+  id: FAILED-JOB-0001
+  job_id: JOB-0001
+  job_type: unknown
+  failure_class: unsupported_job_type
+  message: 'Unsupported job type: unknown'
+  attempt: 1
+  created: '2026-07-04'
+payload:
+  job_type: unknown
