@@ -1,0 +1,54 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://constraintos.local/schemas/compliance-report.schema.json",
+  "title": "ConstraintOS Compliance Report",
+  "type": "object",
+  "required": ["report", "artifact", "summary", "constraint_results", "recommendation"],
+  "properties": {
+    "report": {
+      "type": "object",
+      "required": ["id", "version", "created", "validator_version"],
+      "properties": {
+        "id": {"type": "string", "pattern": "^VAL-[0-9]{4}$"},
+        "version": {"type": "string"},
+        "created": {"type": "string"},
+        "validator_version": {"type": "string"}
+      }
+    },
+    "artifact": {
+      "type": "object",
+      "required": ["id", "version", "specification_id"],
+      "properties": {
+        "id": {"type": "string"},
+        "version": {"type": "string"},
+        "specification_id": {"type": "string"}
+      }
+    },
+    "summary": {
+      "type": "object",
+      "required": ["blocker_failures", "major_failures", "minor_failures", "uncertain_results"],
+      "properties": {
+        "blocker_failures": {"type": "integer"},
+        "major_failures": {"type": "integer"},
+        "minor_failures": {"type": "integer"},
+        "uncertain_results": {"type": "integer"}
+      }
+    },
+    "constraint_results": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["constraint_id", "severity", "result", "confidence"],
+        "properties": {
+          "constraint_id": {"type": "string"},
+          "severity": {"enum": ["blocker", "major", "minor", "advisory"]},
+          "result": {"enum": ["pass", "fail", "uncertain", "not_applicable", "blocked_by_missing_evidence"]},
+          "confidence": {"type": "number", "minimum": 0, "maximum": 1},
+          "evidence": {"type": "string"},
+          "recommended_fix": {"type": "string"}
+        }
+      }
+    },
+    "recommendation": {"enum": ["approve", "revise", "reject", "escalate"]}
+  }
+}
