@@ -1,0 +1,14 @@
+service_boundary:
+  id: SERVICE-0001
+  name: Kernel API
+  created: '2026-07-04'
+owns:
+  - compile
+  - validate
+  - create_render_job
+  - create_volume_build
+does_not_own:
+  - authentication
+  - billing
+  - tenancy
+  - subscriptions
