@@ -1,0 +1,22 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://constraintos.local/schemas/local-runtime-profile.schema.json",
+  "title": "ConstraintOS Local Runtime Profile",
+  "type": "object",
+  "required": ["local_runtime_profile"],
+  "properties": {
+    "local_runtime_profile": {
+      "type": "object",
+      "required": ["id", "name", "api_host", "api_port", "worker_enabled", "storage_root", "created"],
+      "properties": {
+        "id": {"type": "string", "pattern": "^LOCAL-[0-9]{4}$"},
+        "name": {"type": "string"},
+        "api_host": {"type": "string"},
+        "api_port": {"type": "integer", "minimum": 1, "maximum": 65535},
+        "worker_enabled": {"type": "boolean"},
+        "storage_root": {"type": "string"},
+        "created": {"type": "string"}
+      }
+    }
+  }
+}
