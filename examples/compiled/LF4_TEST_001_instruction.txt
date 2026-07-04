@@ -1,0 +1,29 @@
+Renderer target: generic
+Artifact: PLATE-0001 - LF4 baseline front-left plate
+Artifact type: technical_plate
+
+SUBJECT
+- type: engine
+- family: LF4
+- evidence: ['EV-0001']
+
+VIEW
+{'camera': {'orientation': 'front_left', 'azimuth_degrees': 30, 'elevation_degrees': 15}}
+
+RENDERER PROFILE
+- target: any
+- style_profile: technical_atlas
+
+CONSTRAINTS
+- C-0001: Artifact must depict a V6 engine.
+  severity: blocker
+  acceptance: Visible architecture is consistent with a six-cylinder V layout.
+- C-0002: Artifact must include twin turbochargers.
+  severity: blocker
+  acceptance: Two turbocharger assemblies are visible or explicitly represented.
+- C-0003: Artifact must not substitute LS or LT V8 architecture.
+  severity: blocker
+  acceptance: No V8-specific layout or labeling appears.
+
+Do not invent unsupported details. If a detail is not specified, keep it neutral or omit it.
+Preserve all blocker constraints. Report ambiguity rather than guessing.
