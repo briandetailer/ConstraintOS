@@ -1,0 +1,5 @@
+gate: blocked
+reason: blocker constraints are failed, uncertain, or unreviewed
+blocked_items:
+  - C-0001
+  - C-0002
