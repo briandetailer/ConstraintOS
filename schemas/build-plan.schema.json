@@ -1,0 +1,22 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://constraintos.local/schemas/build-plan.schema.json",
+  "title": "ConstraintOS Build Plan",
+  "type": "object",
+  "required": ["build_plan", "stages", "stop_conditions"],
+  "properties": {
+    "build_plan": {
+      "type": "object",
+      "required": ["id", "artifact_id", "created", "status", "max_iterations"],
+      "properties": {
+        "id": {"type": "string", "pattern": "^BUILD-[0-9]{4}$"},
+        "artifact_id": {"type": "string"},
+        "created": {"type": "string"},
+        "status": {"enum": ["draft", "running", "complete", "blocked", "failed"]},
+        "max_iterations": {"type": "integer", "minimum": 1}
+      }
+    },
+    "stages": {"type": "array", "items": {"type": "string"}},
+    "stop_conditions": {"type": "object"}
+  }
+}
