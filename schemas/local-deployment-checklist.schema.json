@@ -1,0 +1,30 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://constraintos.local/schemas/local-deployment-checklist.schema.json",
+  "title": "ConstraintOS Local Deployment Checklist",
+  "type": "object",
+  "required": ["local_deployment_checklist", "items"],
+  "properties": {
+    "local_deployment_checklist": {
+      "type": "object",
+      "required": ["id", "created", "status"],
+      "properties": {
+        "id": {"type": "string", "pattern": "^DEPLOY-[0-9]{4}$"},
+        "created": {"type": "string"},
+        "status": {"enum": ["draft", "ready", "blocked", "complete"]}
+      }
+    },
+    "items": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "description", "required"],
+        "properties": {
+          "id": {"type": "string"},
+          "description": {"type": "string"},
+          "required": {"type": "boolean"}
+        }
+      }
+    }
+  }
+}
