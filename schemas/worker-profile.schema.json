@@ -1,0 +1,20 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://constraintos.local/schemas/worker-profile.schema.json",
+  "title": "ConstraintOS Worker Profile",
+  "type": "object",
+  "required": ["worker_profile"],
+  "properties": {
+    "worker_profile": {
+      "type": "object",
+      "required": ["id", "worker_type", "capabilities", "status", "registered"],
+      "properties": {
+        "id": {"type": "string", "pattern": "^WORKER-[0-9]{4}$"},
+        "worker_type": {"type": "string"},
+        "capabilities": {"type": "array", "items": {"type": "string"}},
+        "status": {"enum": ["available", "busy", "disabled", "offline"]},
+        "registered": {"type": "string"}
+      }
+    }
+  }
+}
