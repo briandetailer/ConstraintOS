@@ -1,0 +1,22 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://constraintos.local/schemas/worker-job-type.schema.json",
+  "title": "ConstraintOS Worker Job Type Registry",
+  "type": "object",
+  "required": ["worker_job_types"],
+  "properties": {
+    "worker_job_types": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["job_type", "handler", "status"],
+        "properties": {
+          "job_type": {"type": "string"},
+          "handler": {"type": "string"},
+          "status": {"enum": ["active", "experimental", "disabled"]},
+          "notes": {"type": "string"}
+        }
+      }
+    }
+  }
+}
