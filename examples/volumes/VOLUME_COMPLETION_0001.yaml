@@ -1,0 +1,11 @@
+volume_completion_report:
+  id: REPORT-BUILD-VOLUME-0001
+  volume_id: VOLUME-0001
+  created: '2026-07-04'
+  status: complete
+summary:
+  total: 1
+  processed: 1
+  blocked: 0
+  complete: 1
+recommendation: proceed
