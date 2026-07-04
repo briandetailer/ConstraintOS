@@ -1,0 +1,12 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://constraintos.local/schemas/api-health.schema.json",
+  "title": "ConstraintOS API Health Response",
+  "type": "object",
+  "required": ["status", "service", "version"],
+  "properties": {
+    "status": {"enum": ["ok", "degraded", "down"]},
+    "service": {"type": "string"},
+    "version": {"type": "string"}
+  }
+}
