@@ -1,6 +1,6 @@
 [project]
 name = "constraintos"
-version = "1.0.0-alpha.15"
+version = "1.0.0-alpha.16"
 description = "ConstraintOS CLI for specification-first AI workflow tooling"
 requires-python = ">=3.10"
 dependencies = [
