@@ -1,0 +1,43 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://constraintos.local/schemas/artifact-manifest.schema.json",
+  "title": "ConstraintOS Artifact Manifest",
+  "type": "object",
+  "required": ["manifest", "artifact", "state", "history"],
+  "properties": {
+    "manifest": {
+      "type": "object",
+      "required": ["id", "version", "created"],
+      "properties": {
+        "id": {"type": "string"},
+        "version": {"type": "string"},
+        "created": {"type": "string"}
+      }
+    },
+    "artifact": {
+      "type": "object",
+      "required": ["id", "type", "title"],
+      "properties": {
+        "id": {"type": "string"},
+        "type": {"type": "string"},
+        "title": {"type": "string"}
+      }
+    },
+    "state": {"enum": ["draft", "compiled", "rendered", "validated", "approved", "published", "archived", "rejected"]},
+    "history": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["from", "to", "date", "reason"],
+        "properties": {
+          "from": {"type": "string"},
+          "to": {"type": "string"},
+          "date": {"type": "string"},
+          "reason": {"type": "string"}
+        }
+      }
+    },
+    "outputs": {"type": "array", "items": {"type": "object"}},
+    "approvals": {"type": "array", "items": {"type": "string"}}
+  }
+}
