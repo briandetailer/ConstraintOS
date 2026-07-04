@@ -1,0 +1,28 @@
+report:
+  id: VAL-0001
+  version: '0.1'
+  created: '2026-07-04'
+  validator_version: constraintos-0.3.0
+artifact:
+  id: PLATE-0001
+  version: '0.1'
+  specification_id: PLATE-0001
+summary:
+  blocker_failures: 0
+  major_failures: 0
+  minor_failures: 0
+  uncertain_results: 1
+constraint_results:
+  - constraint_id: C-0001
+    severity: blocker
+    result: pass
+    confidence: 0.9
+    evidence: V6 layout appears visible in the reviewed artifact.
+    recommended_fix: ''
+  - constraint_id: C-0002
+    severity: blocker
+    result: uncertain
+    confidence: 0.4
+    evidence: Turbocharger visibility requires human review.
+    recommended_fix: Add explicit view or callout for both turbochargers.
+recommendation: escalate
