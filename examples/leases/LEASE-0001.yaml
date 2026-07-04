@@ -1,0 +1,7 @@
+job_lease:
+  id: LEASE-0001
+  job_id: JOB-0001
+  worker_id: WORKER-0001
+  status: active
+  acquired_at: '2026-07-04T00:00:00+00:00'
+  expires_at: '2026-07-04T00:05:00+00:00'
