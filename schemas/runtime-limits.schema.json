@@ -1,0 +1,21 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://constraintos.local/schemas/runtime-limits.schema.json",
+  "title": "ConstraintOS Runtime Limits",
+  "type": "object",
+  "required": ["runtime_limits"],
+  "properties": {
+    "runtime_limits": {
+      "type": "object",
+      "required": ["id", "max_concurrent_jobs", "max_payload_bytes", "max_retries", "allow_live_renderers", "created"],
+      "properties": {
+        "id": {"type": "string", "pattern": "^LIMITS-[0-9]{4}$"},
+        "max_concurrent_jobs": {"type": "integer", "minimum": 1},
+        "max_payload_bytes": {"type": "integer", "minimum": 1},
+        "max_retries": {"type": "integer", "minimum": 0},
+        "allow_live_renderers": {"type": "boolean"},
+        "created": {"type": "string"}
+      }
+    }
+  }
+}
