@@ -61,35 +61,23 @@ def load_json(path: Path) -> dict[str, Any]:
 
 def detect_schema(data: dict[str, Any]) -> str | None:
     schema_map = [
-        ("failure", "schemas/failure.schema.json"),
-        ("registry", "schemas/id-registry.schema.json"),
-        ("patch", "schemas/patch-package.schema.json"),
-        ("baseline", "schemas/regression-baseline.schema.json"),
-        ("approval", "schemas/approval-record.schema.json"),
-        ("review_checklist", "schemas/review-checklist.schema.json"),
-        ("build_plan", "schemas/build-plan.schema.json"),
-        ("render_job", "schemas/render-job.schema.json"),
-        ("output_reference", "schemas/output-reference.schema.json"),
-        ("renderer_registry", "schemas/renderer-registry.schema.json"),
-        ("stored_object", "schemas/stored-object.schema.json"),
-        ("storage_backend", "schemas/storage-backend.schema.json"),
-        ("volume_plan", "schemas/volume-plan.schema.json"),
-        ("volume_build", "schemas/volume-build.schema.json"),
+        ("failure", "schemas/failure.schema.json"), ("registry", "schemas/id-registry.schema.json"),
+        ("patch", "schemas/patch-package.schema.json"), ("baseline", "schemas/regression-baseline.schema.json"),
+        ("approval", "schemas/approval-record.schema.json"), ("review_checklist", "schemas/review-checklist.schema.json"),
+        ("build_plan", "schemas/build-plan.schema.json"), ("render_job", "schemas/render-job.schema.json"),
+        ("output_reference", "schemas/output-reference.schema.json"), ("renderer_registry", "schemas/renderer-registry.schema.json"),
+        ("stored_object", "schemas/stored-object.schema.json"), ("storage_backend", "schemas/storage-backend.schema.json"),
+        ("volume_plan", "schemas/volume-plan.schema.json"), ("volume_build", "schemas/volume-build.schema.json"),
         ("volume_completion_report", "schemas/volume-completion-report.schema.json"),
-        ("runtime_config", "schemas/runtime-config.schema.json"),
-        ("runtime_job", "schemas/runtime-job.schema.json"),
-        ("worker_profile", "schemas/worker-profile.schema.json"),
-        ("worker_result", "schemas/worker-result.schema.json"),
-        ("worker_job_types", "schemas/worker-job-type.schema.json"),
-        ("metric_event", "schemas/metric-event.schema.json"),
-        ("api_catalog", "schemas/api-catalog.schema.json"),
-        ("api_error", "schemas/api-error.schema.json"),
-        ("service_boundary", "schemas/service-boundary.schema.json"),
+        ("runtime_config", "schemas/runtime-config.schema.json"), ("runtime_job", "schemas/runtime-job.schema.json"),
+        ("worker_profile", "schemas/worker-profile.schema.json"), ("worker_result", "schemas/worker-result.schema.json"),
+        ("worker_job_types", "schemas/worker-job-type.schema.json"), ("worker_heartbeat", "schemas/worker-heartbeat.schema.json"),
+        ("job_lease", "schemas/job-lease.schema.json"), ("lease_decision", "schemas/lease-decision.schema.json"),
+        ("metric_event", "schemas/metric-event.schema.json"), ("api_catalog", "schemas/api-catalog.schema.json"),
+        ("api_error", "schemas/api-error.schema.json"), ("service_boundary", "schemas/service-boundary.schema.json"),
         ("validation_request", "schemas/kernel-validation-request.schema.json"),
-        ("queue_record", "schemas/queue-record.schema.json"),
-        ("queue_status", "schemas/queue-status.schema.json"),
-        ("retry_policy", "schemas/retry-policy.schema.json"),
-        ("retry_decision", "schemas/retry-decision.schema.json"),
+        ("queue_record", "schemas/queue-record.schema.json"), ("queue_status", "schemas/queue-status.schema.json"),
+        ("retry_policy", "schemas/retry-policy.schema.json"), ("retry_decision", "schemas/retry-decision.schema.json"),
         ("failed_job", "schemas/failed-job.schema.json"),
     ]
     for key, schema in schema_map:
@@ -127,10 +115,7 @@ def validate_against_schema(path: Path, data: dict[str, Any], repo_root: Path) -
         return [f"Schema not found: {schema_path}"]
     schema = load_json(full_schema_path)
     validator = Draft202012Validator(schema)
-    return [
-        f"schema:{schema_path}:{'.'.join(str(p) for p in error.path) or '<root>'}: {error.message}"
-        for error in sorted(validator.iter_errors(data), key=lambda item: list(item.path))
-    ]
+    return [f"schema:{schema_path}:{'.'.join(str(p) for p in error.path) or '<root>'}: {error.message}" for error in sorted(validator.iter_errors(data), key=lambda item: list(item.path))]
 
 
 def record_from_data(path: Path, data: dict[str, Any]) -> dict[str, Any] | None:
@@ -141,26 +126,23 @@ def record_from_data(path: Path, data: dict[str, Any]) -> dict[str, Any] | None:
         obj = data["artifact"]
         return {"id": obj.get("id"), "title": obj.get("title", obj.get("id")), "type": obj.get("type", "artifact"), "status": obj.get("status", "unknown"), "traceability": data.get("traceability", {})}
     simple_objects = [
-        ("failure", "failure"), ("report", "compliance_report"), ("patch", "patch_package"),
-        ("approval", "approval_record"), ("review_checklist", "review_checklist"),
-        ("build_plan", "build_plan"), ("render_job", "render_job"),
-        ("output_reference", "output_reference"), ("stored_object", "stored_object"),
-        ("storage_backend", "storage_backend"), ("volume_plan", "volume_plan"),
-        ("volume_build", "volume_build"), ("volume_completion_report", "volume_completion_report"),
-        ("runtime_config", "runtime_config"), ("runtime_job", "runtime_job"),
-        ("worker_profile", "worker_profile"), ("worker_result", "worker_result"),
-        ("worker_job_types", "worker_job_type_registry"), ("metric_event", "metric_event"),
-        ("api_catalog", "api_catalog"), ("api_error", "api_error"),
+        ("failure", "failure"), ("report", "compliance_report"), ("patch", "patch_package"), ("approval", "approval_record"),
+        ("review_checklist", "review_checklist"), ("build_plan", "build_plan"), ("render_job", "render_job"),
+        ("output_reference", "output_reference"), ("stored_object", "stored_object"), ("storage_backend", "storage_backend"),
+        ("volume_plan", "volume_plan"), ("volume_build", "volume_build"), ("volume_completion_report", "volume_completion_report"),
+        ("runtime_config", "runtime_config"), ("runtime_job", "runtime_job"), ("worker_profile", "worker_profile"),
+        ("worker_result", "worker_result"), ("worker_job_types", "worker_job_type_registry"),
+        ("worker_heartbeat", "worker_heartbeat"), ("job_lease", "job_lease"), ("lease_decision", "lease_decision"),
+        ("metric_event", "metric_event"), ("api_catalog", "api_catalog"), ("api_error", "api_error"),
         ("service_boundary", "service_boundary"), ("validation_request", "validation_request"),
         ("queue_record", "queue_record"), ("queue_status", "queue_status"),
-        ("retry_policy", "retry_policy"), ("retry_decision", "retry_decision"),
-        ("failed_job", "failed_job"),
+        ("retry_policy", "retry_policy"), ("retry_decision", "retry_decision"), ("failed_job", "failed_job"),
     ]
     for key, record_type in simple_objects:
         if key in data:
             obj = data[key]
             object_id = obj.get("id") if isinstance(obj, dict) else None
-            object_id = object_id or (obj.get("name") if isinstance(obj, dict) else None) or path.stem
+            object_id = object_id or (obj.get("name") if isinstance(obj, dict) else None) or (obj.get("worker_id") if isinstance(obj, dict) else None) or path.stem
             status = obj.get("status", "unknown") if isinstance(obj, dict) else "active"
             title = obj.get("title", object_id) if isinstance(obj, dict) else object_id
             return {"id": object_id, "title": title, "type": record_type, "status": status, "traceability": {}}
@@ -221,7 +203,7 @@ def new_compliance(args: argparse.Namespace) -> int:
         print(f"Invalid compliance report id: {report_id}. Expected format like VAL-0001.", file=sys.stderr)
         return 2
     target = Path(args.output or f"reports/compliance/{report_id}.yaml")
-    data = {"report": {"id": report_id, "version": "0.1", "created": date.today().isoformat(), "validator_version": "constraintos-1.0.0-alpha.18"}, "artifact": {"id": args.artifact_id, "version": args.artifact_version, "specification_id": args.specification_id}, "summary": {"blocker_failures": 0, "major_failures": 0, "minor_failures": 0, "uncertain_results": 0}, "constraint_results": [], "recommendation": "escalate"}
+    data = {"report": {"id": report_id, "version": "0.1", "created": date.today().isoformat(), "validator_version": "constraintos-1.0.0-alpha.19"}, "artifact": {"id": args.artifact_id, "version": args.artifact_version, "specification_id": args.specification_id}, "summary": {"blocker_failures": 0, "major_failures": 0, "minor_failures": 0, "uncertain_results": 0}, "constraint_results": [], "recommendation": "escalate"}
     write_yaml(target, data)
     print(f"Created compliance report: {target}")
     return 0
@@ -261,7 +243,7 @@ def validate_artifact(path: Path, repo_root: Path) -> ValidationResult:
         for field in ["title", "status", "version"]:
             if field not in data["artifact"]:
                 messages.append(f"Missing artifact.{field}.")
-    schema_exempt = ["report", "patch", "baseline", "manifest", "approval", "review_checklist", "gate", "build_plan", "iteration", "render_job", "output_reference", "renderer_registry", "stored_object", "storage_backend", "volume_plan", "volume_build", "volume_completion_report", "runtime_config", "runtime_job", "worker_profile", "worker_result", "worker_job_types", "metric_event", "api_catalog", "api_error", "service_boundary", "validation_request", "queue_record", "queue_status", "retry_policy", "retry_decision", "failed_job", "status", "name", "renderer"]
+    schema_exempt = ["report", "patch", "baseline", "manifest", "approval", "review_checklist", "gate", "build_plan", "iteration", "render_job", "output_reference", "renderer_registry", "stored_object", "storage_backend", "volume_plan", "volume_build", "volume_completion_report", "runtime_config", "runtime_job", "worker_profile", "worker_result", "worker_job_types", "worker_heartbeat", "job_lease", "lease_decision", "metric_event", "api_catalog", "api_error", "service_boundary", "validation_request", "queue_record", "queue_status", "retry_policy", "retry_decision", "failed_job", "status", "name", "renderer"]
     if "traceability" not in data and not any(key in data for key in schema_exempt):
         messages.append("Missing traceability section.")
     messages.extend(validate_against_schema(path, data, repo_root))
