@@ -1,0 +1,19 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://constraintos.local/schemas/worker-heartbeat.schema.json",
+  "title": "ConstraintOS Worker Heartbeat",
+  "type": "object",
+  "required": ["worker_heartbeat"],
+  "properties": {
+    "worker_heartbeat": {
+      "type": "object",
+      "required": ["worker_id", "status", "active_job_id", "timestamp"],
+      "properties": {
+        "worker_id": {"type": "string"},
+        "status": {"enum": ["available", "busy", "offline", "disabled"]},
+        "active_job_id": {"type": ["string", "null"]},
+        "timestamp": {"type": "string"}
+      }
+    }
+  }
+}
