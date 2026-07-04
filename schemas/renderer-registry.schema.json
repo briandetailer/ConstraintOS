@@ -1,0 +1,23 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://constraintos.local/schemas/renderer-registry.schema.json",
+  "title": "ConstraintOS Renderer Registry",
+  "type": "object",
+  "required": ["renderer_registry"],
+  "properties": {
+    "renderer_registry": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["name", "version", "profile_path", "status"],
+        "properties": {
+          "name": {"type": "string"},
+          "version": {"type": "string"},
+          "profile_path": {"type": "string"},
+          "status": {"enum": ["active", "experimental", "disabled"]},
+          "notes": {"type": "string"}
+        }
+      }
+    }
+  }
+}
