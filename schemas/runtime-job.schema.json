@@ -1,0 +1,21 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://constraintos.local/schemas/runtime-job.schema.json",
+  "title": "ConstraintOS Runtime Job",
+  "type": "object",
+  "required": ["runtime_job"],
+  "properties": {
+    "runtime_job": {
+      "type": "object",
+      "required": ["id", "job_type", "payload_ref", "status", "priority", "created"],
+      "properties": {
+        "id": {"type": "string", "pattern": "^JOB-[0-9]{4}$"},
+        "job_type": {"type": "string"},
+        "payload_ref": {"type": "string"},
+        "status": {"enum": ["queued", "running", "complete", "failed", "blocked"]},
+        "priority": {"type": "integer", "minimum": 1, "maximum": 10},
+        "created": {"type": "string"}
+      }
+    }
+  }
+}
