@@ -1,0 +1,10 @@
+worker_profile:
+  id: WORKER-0001
+  worker_type: dry-run
+  capabilities:
+    - compile
+    - render
+    - validate
+    - review
+  status: available
+  registered: '2026-07-04'
