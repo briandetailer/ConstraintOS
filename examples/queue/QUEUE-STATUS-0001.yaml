@@ -1,0 +1,7 @@
+queue_status:
+  name: default
+  created: '2026-07-04'
+  queued: 1
+  running: 0
+  complete: 0
+  failed: 0
