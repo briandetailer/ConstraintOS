@@ -1,0 +1,14 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://constraintos.local/schemas/compiler-result.schema.json",
+  "title": "ConstraintOS Compiler Result",
+  "type": "object",
+  "required": ["renderer", "artifact_id", "instruction", "unsupported_constraints", "warnings"],
+  "properties": {
+    "renderer": {"type": "string"},
+    "artifact_id": {"type": "string"},
+    "instruction": {"type": "string"},
+    "unsupported_constraints": {"type": "array", "items": {"type": "object"}},
+    "warnings": {"type": "array", "items": {"type": "string"}}
+  }
+}
