@@ -1,0 +1,11 @@
+runtime_config:
+  environment: local
+  api_enabled: false
+  queue_backend: in_memory
+  storage_backend: local
+  created: '2026-07-04'
+boundaries:
+  kernel_owns_auth: false
+  kernel_owns_billing: false
+  kernel_owns_tenancy: false
+  runtime_calls_kernel: true
