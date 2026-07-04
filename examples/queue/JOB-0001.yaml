@@ -1,5 +1,5 @@
 queue_record:
-  id: JOB-0001
+  id: JOB-0002
   job_type: volume_build
   status: queued
   priority: 5
