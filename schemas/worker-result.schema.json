@@ -1,0 +1,22 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://constraintos.local/schemas/worker-result.schema.json",
+  "title": "ConstraintOS Worker Result",
+  "type": "object",
+  "required": ["worker_result", "output", "messages"],
+  "properties": {
+    "worker_result": {
+      "type": "object",
+      "required": ["id", "job_id", "worker_id", "status", "created"],
+      "properties": {
+        "id": {"type": "string", "pattern": "^RESULT-JOB-[0-9]{4}$"},
+        "job_id": {"type": "string", "pattern": "^JOB-[0-9]{4}$"},
+        "worker_id": {"type": "string"},
+        "status": {"enum": ["complete", "failed", "blocked"]},
+        "created": {"type": "string"}
+      }
+    },
+    "output": {"type": "object"},
+    "messages": {"type": "array", "items": {"type": "string"}}
+  }
+}
