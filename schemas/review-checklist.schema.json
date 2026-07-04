@@ -1,0 +1,49 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://constraintos.local/schemas/review-checklist.schema.json",
+  "title": "ConstraintOS Review Checklist",
+  "type": "object",
+  "required": ["review_checklist", "items", "summary"],
+  "properties": {
+    "review_checklist": {
+      "type": "object",
+      "required": ["id", "artifact_id", "artifact_version", "created", "status"],
+      "properties": {
+        "id": {"type": "string", "pattern": "^REVIEW-[0-9]{4}$"},
+        "artifact_id": {"type": "string"},
+        "artifact_version": {"type": "string"},
+        "created": {"type": "string"},
+        "status": {"enum": ["open", "complete", "blocked", "escalated"]}
+      }
+    },
+    "items": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["constraint_id", "statement", "severity", "acceptance", "validation_method", "reviewer_result", "reviewer_confidence"],
+        "properties": {
+          "constraint_id": {"type": "string"},
+          "statement": {"type": "string"},
+          "severity": {"enum": ["blocker", "major", "minor", "advisory"]},
+          "acceptance": {"type": "string"},
+          "validation_method": {"type": "string"},
+          "reviewer_result": {"enum": ["unreviewed", "pass", "fail", "uncertain", "not_applicable"]},
+          "reviewer_confidence": {"type": "number", "minimum": 0, "maximum": 1},
+          "evidence": {"type": "string"},
+          "notes": {"type": "string"}
+        }
+      }
+    },
+    "summary": {
+      "type": "object",
+      "required": ["total", "reviewed", "pass", "fail", "uncertain"],
+      "properties": {
+        "total": {"type": "integer"},
+        "reviewed": {"type": "integer"},
+        "pass": {"type": "integer"},
+        "fail": {"type": "integer"},
+        "uncertain": {"type": "integer"}
+      }
+    }
+  }
+}
