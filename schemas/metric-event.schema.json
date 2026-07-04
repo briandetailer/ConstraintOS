@@ -1,0 +1,20 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://constraintos.local/schemas/metric-event.schema.json",
+  "title": "ConstraintOS Metric Event",
+  "type": "object",
+  "required": ["metric_event", "dimensions"],
+  "properties": {
+    "metric_event": {
+      "type": "object",
+      "required": ["id", "name", "value", "created"],
+      "properties": {
+        "id": {"type": "string", "pattern": "^METRIC-[0-9]{4}$"},
+        "name": {"type": "string"},
+        "value": {"type": "number"},
+        "created": {"type": "string"}
+      }
+    },
+    "dimensions": {"type": "object"}
+  }
+}
