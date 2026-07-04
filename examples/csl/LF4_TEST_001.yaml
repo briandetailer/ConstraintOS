@@ -1,0 +1,46 @@
+artifact:
+  id: PLATE-0001
+  type: technical_plate
+  title: LF4 baseline front-left plate
+  status: draft
+  version: '0.1'
+subject:
+  type: engine
+  family: LF4
+  evidence:
+    - EV-0001
+view:
+  camera:
+    orientation: front_left
+    azimuth_degrees: 30
+    elevation_degrees: 15
+constraints:
+  - id: C-0001
+    statement: Artifact must depict a V6 engine.
+    severity: blocker
+    validation_method: visual_semantic
+    acceptance: Visible architecture is consistent with a six-cylinder V layout.
+  - id: C-0002
+    statement: Artifact must include twin turbochargers.
+    severity: blocker
+    validation_method: visual_semantic
+    acceptance: Two turbocharger assemblies are visible or explicitly represented.
+  - id: C-0003
+    statement: Artifact must not substitute LS or LT V8 architecture.
+    severity: blocker
+    validation_method: visual_semantic
+    acceptance: No V8-specific layout or labeling appears.
+renderer:
+  target: any
+  style_profile: technical_atlas
+validation:
+  required_pass:
+    blocker: 100
+    major: 95
+traceability:
+  related_failures:
+    - FR-0001
+    - FR-0008
+    - FR-0018
+  related_adrs:
+    - ADR-0001
