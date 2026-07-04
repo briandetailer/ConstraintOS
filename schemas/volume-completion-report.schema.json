@@ -1,0 +1,21 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://constraintos.local/schemas/volume-completion-report.schema.json",
+  "title": "ConstraintOS Volume Completion Report",
+  "type": "object",
+  "required": ["volume_completion_report", "summary", "recommendation"],
+  "properties": {
+    "volume_completion_report": {
+      "type": "object",
+      "required": ["id", "volume_id", "created", "status"],
+      "properties": {
+        "id": {"type": "string"},
+        "volume_id": {"type": "string"},
+        "created": {"type": "string"},
+        "status": {"type": "string"}
+      }
+    },
+    "summary": {"type": "object"},
+    "recommendation": {"enum": ["proceed", "resolve_blockers"]}
+  }
+}
