@@ -1,0 +1,22 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://constraintos.local/schemas/failure-summary-report.schema.json",
+  "title": "ConstraintOS Failure Summary Report",
+  "type": "object",
+  "required": ["failure_summary_report"],
+  "properties": {
+    "failure_summary_report": {
+      "type": "object",
+      "required": ["created", "total", "unsupported_job_type", "missing_input", "validation_failure", "runtime_failure", "unknown"],
+      "properties": {
+        "created": {"type": "string"},
+        "total": {"type": "integer", "minimum": 0},
+        "unsupported_job_type": {"type": "integer", "minimum": 0},
+        "missing_input": {"type": "integer", "minimum": 0},
+        "validation_failure": {"type": "integer", "minimum": 0},
+        "runtime_failure": {"type": "integer", "minimum": 0},
+        "unknown": {"type": "integer", "minimum": 0}
+      }
+    }
+  }
+}
