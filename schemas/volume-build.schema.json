@@ -1,0 +1,42 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://constraintos.local/schemas/volume-build.schema.json",
+  "title": "ConstraintOS Volume Build",
+  "type": "object",
+  "required": ["volume_build", "results", "summary"],
+  "properties": {
+    "volume_build": {
+      "type": "object",
+      "required": ["id", "volume_id", "created", "status"],
+      "properties": {
+        "id": {"type": "string"},
+        "volume_id": {"type": "string"},
+        "created": {"type": "string"},
+        "status": {"enum": ["complete", "blocked", "failed"]}
+      }
+    },
+    "results": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["artifact_id", "status", "reason", "iterations"],
+        "properties": {
+          "artifact_id": {"type": "string"},
+          "status": {"type": "string"},
+          "reason": {"type": "string"},
+          "iterations": {"type": "array"}
+        }
+      }
+    },
+    "summary": {
+      "type": "object",
+      "required": ["total", "processed", "blocked", "complete"],
+      "properties": {
+        "total": {"type": "integer"},
+        "processed": {"type": "integer"},
+        "blocked": {"type": "integer"},
+        "complete": {"type": "integer"}
+      }
+    }
+  }
+}
