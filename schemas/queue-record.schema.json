@@ -1,0 +1,21 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://constraintos.local/schemas/queue-record.schema.json",
+  "title": "ConstraintOS Queue Record",
+  "type": "object",
+  "required": ["queue_record", "payload"],
+  "properties": {
+    "queue_record": {
+      "type": "object",
+      "required": ["id", "job_type", "status", "priority", "created"],
+      "properties": {
+        "id": {"type": "string", "pattern": "^JOB-[0-9]{4}$"},
+        "job_type": {"type": "string"},
+        "status": {"enum": ["queued", "running", "complete", "failed", "blocked"]},
+        "priority": {"type": "integer", "minimum": 1, "maximum": 10},
+        "created": {"type": "string"}
+      }
+    },
+    "payload": {"type": "object"}
+  }
+}
