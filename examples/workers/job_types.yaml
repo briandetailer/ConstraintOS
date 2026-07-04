@@ -1,0 +1,5 @@
+worker_job_types:
+  - job_type: volume_build
+    handler: constraintos.worker.volume_build_handler
+    status: active
+    notes: Executes deterministic dry-run volume builds through the atlas builder.
