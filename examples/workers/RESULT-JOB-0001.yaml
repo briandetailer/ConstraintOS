@@ -1,0 +1,14 @@
+worker_result:
+  id: RESULT-JOB-0001
+  job_id: JOB-0001
+  worker_id: WORKER-0001
+  status: complete
+  created: '2026-07-04'
+output:
+  volume_build:
+    id: BUILD-VOLUME-0001
+    volume_id: VOLUME-0001
+    created: '2026-07-04'
+    status: complete
+messages:
+  - Job executed successfully.
