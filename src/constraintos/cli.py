@@ -88,6 +88,9 @@ def detect_schema(data: dict[str, Any]) -> str | None:
         ("validation_request", "schemas/kernel-validation-request.schema.json"),
         ("queue_record", "schemas/queue-record.schema.json"),
         ("queue_status", "schemas/queue-status.schema.json"),
+        ("retry_policy", "schemas/retry-policy.schema.json"),
+        ("retry_decision", "schemas/retry-decision.schema.json"),
+        ("failed_job", "schemas/failed-job.schema.json"),
     ]
     for key, schema in schema_map:
         if key in data:
@@ -150,6 +153,8 @@ def record_from_data(path: Path, data: dict[str, Any]) -> dict[str, Any] | None:
         ("api_catalog", "api_catalog"), ("api_error", "api_error"),
         ("service_boundary", "service_boundary"), ("validation_request", "validation_request"),
         ("queue_record", "queue_record"), ("queue_status", "queue_status"),
+        ("retry_policy", "retry_policy"), ("retry_decision", "retry_decision"),
+        ("failed_job", "failed_job"),
     ]
     for key, record_type in simple_objects:
         if key in data:
@@ -216,7 +221,7 @@ def new_compliance(args: argparse.Namespace) -> int:
         print(f"Invalid compliance report id: {report_id}. Expected format like VAL-0001.", file=sys.stderr)
         return 2
     target = Path(args.output or f"reports/compliance/{report_id}.yaml")
-    data = {"report": {"id": report_id, "version": "0.1", "created": date.today().isoformat(), "validator_version": "constraintos-1.0.0-alpha.17"}, "artifact": {"id": args.artifact_id, "version": args.artifact_version, "specification_id": args.specification_id}, "summary": {"blocker_failures": 0, "major_failures": 0, "minor_failures": 0, "uncertain_results": 0}, "constraint_results": [], "recommendation": "escalate"}
+    data = {"report": {"id": report_id, "version": "0.1", "created": date.today().isoformat(), "validator_version": "constraintos-1.0.0-alpha.18"}, "artifact": {"id": args.artifact_id, "version": args.artifact_version, "specification_id": args.specification_id}, "summary": {"blocker_failures": 0, "major_failures": 0, "minor_failures": 0, "uncertain_results": 0}, "constraint_results": [], "recommendation": "escalate"}
     write_yaml(target, data)
     print(f"Created compliance report: {target}")
     return 0
@@ -256,7 +261,7 @@ def validate_artifact(path: Path, repo_root: Path) -> ValidationResult:
         for field in ["title", "status", "version"]:
             if field not in data["artifact"]:
                 messages.append(f"Missing artifact.{field}.")
-    schema_exempt = ["report", "patch", "baseline", "manifest", "approval", "review_checklist", "gate", "build_plan", "iteration", "render_job", "output_reference", "renderer_registry", "stored_object", "storage_backend", "volume_plan", "volume_build", "volume_completion_report", "runtime_config", "runtime_job", "worker_profile", "worker_result", "worker_job_types", "metric_event", "api_catalog", "api_error", "service_boundary", "validation_request", "queue_record", "queue_status", "status", "name", "renderer"]
+    schema_exempt = ["report", "patch", "baseline", "manifest", "approval", "review_checklist", "gate", "build_plan", "iteration", "render_job", "output_reference", "renderer_registry", "stored_object", "storage_backend", "volume_plan", "volume_build", "volume_completion_report", "runtime_config", "runtime_job", "worker_profile", "worker_result", "worker_job_types", "metric_event", "api_catalog", "api_error", "service_boundary", "validation_request", "queue_record", "queue_status", "retry_policy", "retry_decision", "failed_job", "status", "name", "renderer"]
     if "traceability" not in data and not any(key in data for key in schema_exempt):
         messages.append("Missing traceability section.")
     messages.extend(validate_against_schema(path, data, repo_root))
