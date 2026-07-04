@@ -15,8 +15,8 @@ def test_summarize_queue() -> None:
         {"queue_record": {"status": "queued"}},
         {"queue_record": {"status": "failed"}},
     ])
-    assert report["queue_summary_report"]["total"] == 2
-    assert report["queue_summary_report"]["queued"] == 1
+    assert report["job_queue_summary"]["total"] == 2
+    assert report["job_queue_summary"]["queued"] == 1
 
 
 def test_summarize_failures() -> None:
