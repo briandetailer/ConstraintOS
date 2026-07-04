@@ -1,0 +1,8 @@
+queue_record:
+  id: JOB-0001
+  job_type: volume_build
+  status: queued
+  priority: 5
+  created: '2026-07-04'
+payload:
+  volume_plan_ref: examples/volumes/VOLUME-0001.yaml
