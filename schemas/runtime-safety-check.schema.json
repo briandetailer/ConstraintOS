@@ -1,0 +1,18 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://constraintos.local/schemas/runtime-safety-check.schema.json",
+  "title": "ConstraintOS Runtime Safety Check",
+  "type": "object",
+  "required": ["runtime_safety_check", "findings"],
+  "properties": {
+    "runtime_safety_check": {
+      "type": "object",
+      "required": ["status", "created"],
+      "properties": {
+        "status": {"enum": ["pass", "fail"]},
+        "created": {"type": "string"}
+      }
+    },
+    "findings": {"type": "array", "items": {"type": "string"}}
+  }
+}
