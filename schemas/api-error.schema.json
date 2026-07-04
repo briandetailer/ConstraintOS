@@ -1,0 +1,20 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://constraintos.local/schemas/api-error.schema.json",
+  "title": "ConstraintOS API Error",
+  "type": "object",
+  "required": ["api_error"],
+  "properties": {
+    "api_error": {
+      "type": "object",
+      "required": ["id", "code", "message", "retryable", "created"],
+      "properties": {
+        "id": {"type": "string", "pattern": "^ERROR-[0-9]{4}$"},
+        "code": {"type": "string"},
+        "message": {"type": "string"},
+        "retryable": {"type": "boolean"},
+        "created": {"type": "string"}
+      }
+    }
+  }
+}
