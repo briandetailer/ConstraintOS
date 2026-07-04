@@ -1,0 +1,15 @@
+volume_plan:
+  id: VOLUME-0001
+  title: LF4 Engineering Atlas Volume 1
+  created: '2026-07-04'
+  status: draft
+  max_iterations_per_plate: 3
+plates:
+  - id: PLATE-0001
+    title: LF4 baseline front-left plate
+    specification_path: examples/csl/LF4_TEST_001.yaml
+    sequence: 1
+build_policy:
+  stop_on_blocked_plate: true
+  require_review_gate_pass: true
+  renderer_mode: dry-run
