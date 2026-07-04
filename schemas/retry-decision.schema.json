@@ -1,0 +1,20 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://constraintos.local/schemas/retry-decision.schema.json",
+  "title": "ConstraintOS Retry Decision",
+  "type": "object",
+  "required": ["retry_decision"],
+  "properties": {
+    "retry_decision": {
+      "type": "object",
+      "required": ["job_id", "decision", "reason", "next_attempt", "created"],
+      "properties": {
+        "job_id": {"type": "string"},
+        "decision": {"enum": ["retry", "do_not_retry", "send_to_failed_jobs"]},
+        "reason": {"type": "string"},
+        "next_attempt": {"type": "integer", "minimum": 1},
+        "created": {"type": "string"}
+      }
+    }
+  }
+}
