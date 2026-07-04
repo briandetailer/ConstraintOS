@@ -1,0 +1,22 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://constraintos.local/schemas/output-reference.schema.json",
+  "title": "ConstraintOS Output Reference",
+  "type": "object",
+  "required": ["output_reference", "metadata"],
+  "properties": {
+    "output_reference": {
+      "type": "object",
+      "required": ["id", "artifact_id", "renderer", "uri", "media_type", "created"],
+      "properties": {
+        "id": {"type": "string", "pattern": "^OUTPUT-[A-Za-z0-9_-]+$"},
+        "artifact_id": {"type": "string"},
+        "renderer": {"type": "string"},
+        "uri": {"type": "string"},
+        "media_type": {"type": "string"},
+        "created": {"type": "string"}
+      }
+    },
+    "metadata": {"type": "object"}
+  }
+}
