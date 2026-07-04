@@ -17,8 +17,12 @@ jobs:
         with:
           python-version: '3.11'
       - name: Install package
-        run: pip install -e .
-      - name: Validate repository metadata
+        run: pip install -e . pytest
+      - name: Run tests
+        run: pytest
+      - name: Validate repository metadata and schemas
         run: constraintos validate docs examples
       - name: Generate traceability report
-        run: constraintos trace docs > traceability-report.json
+        run: constraintos trace docs examples > traceability-report.json
+      - name: Generate ID registry
+        run: constraintos registry docs examples --output id-registry.yaml
