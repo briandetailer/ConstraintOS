@@ -1,0 +1,21 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://constraintos.local/schemas/queue-status.schema.json",
+  "title": "ConstraintOS Queue Status",
+  "type": "object",
+  "required": ["queue_status"],
+  "properties": {
+    "queue_status": {
+      "type": "object",
+      "required": ["name", "created", "queued", "running", "complete", "failed"],
+      "properties": {
+        "name": {"type": "string"},
+        "created": {"type": "string"},
+        "queued": {"type": "integer", "minimum": 0},
+        "running": {"type": "integer", "minimum": 0},
+        "complete": {"type": "integer", "minimum": 0},
+        "failed": {"type": "integer", "minimum": 0}
+      }
+    }
+  }
+}
