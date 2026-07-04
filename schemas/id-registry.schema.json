@@ -1,0 +1,23 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://constraintos.local/schemas/id-registry.schema.json",
+  "title": "ConstraintOS ID Registry",
+  "type": "object",
+  "required": ["registry"],
+  "properties": {
+    "registry": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "type", "path", "status"],
+        "properties": {
+          "id": {"type": "string"},
+          "type": {"type": "string"},
+          "path": {"type": "string"},
+          "title": {"type": "string"},
+          "status": {"type": "string"}
+        }
+      }
+    }
+  }
+}
