@@ -1,0 +1,6 @@
+storage_backend:
+  name: local-default
+  type: local
+  root: artifact_store
+  status: active
+  notes: Local filesystem storage backend for development and dry-run execution.
