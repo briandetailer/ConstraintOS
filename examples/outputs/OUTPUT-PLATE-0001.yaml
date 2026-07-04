@@ -1,0 +1,9 @@
+output_reference:
+  id: OUTPUT-PLATE-0001
+  artifact_id: PLATE-0001
+  renderer: dry-run
+  uri: dry-run://PLATE-0001
+  media_type: text/plain
+  created: '2026-07-04'
+metadata:
+  instruction_length: 65
