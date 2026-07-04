@@ -70,6 +70,22 @@ def detect_schema(data: dict[str, Any]) -> str | None:
         return "schemas/patch-package.schema.json"
     if "baseline" in data:
         return "schemas/regression-baseline.schema.json"
+    if "manifest" in data and "history" in data:
+        return "schemas/artifact-manifest.schema.json"
+    if "approval" in data:
+        return "schemas/approval-record.schema.json"
+    if "review_checklist" in data:
+        return "schemas/review-checklist.schema.json"
+    if "gate" in data and "blocked_items" in data:
+        return "schemas/review-gate.schema.json"
+    if "build_plan" in data:
+        return "schemas/build-plan.schema.json"
+    if "iteration" in data and "stage" in data and "artifact_id" in data:
+        return "schemas/iteration-record.schema.json"
+    if "name" in data and "supported_constraint_types" in data:
+        return "schemas/renderer-profile.schema.json"
+    if "renderer" in data and "instruction" in data and "unsupported_constraints" in data:
+        return "schemas/compiler-result.schema.json"
     if "artifact" in data and "constraints" in data and "validation" in data:
         return "schemas/csl.schema.json"
     return None
@@ -92,6 +108,53 @@ def validate_against_schema(path: Path, data: dict[str, Any], repo_root: Path) -
         location = ".".join(str(part) for part in error.path) or "<root>"
         messages.append(f"schema:{schema_path}:{location}: {error.message}")
     return messages
+
+
+def record_from_data(path: Path, data: dict[str, Any]) -> dict[str, Any] | None:
+    if "artifact" in data and "constraints" in data:
+        obj = data["artifact"]
+        return {"id": obj.get("id"), "title": obj.get("title", obj.get("id")), "type": obj.get("type", "csl_artifact"), "status": obj.get("status", "unknown"), "traceability": data.get("traceability", {})}
+    if "artifact" in data and "traceability" in data:
+        obj = data["artifact"]
+        return {"id": obj.get("id"), "title": obj.get("title", obj.get("id")), "type": obj.get("type", "artifact"), "status": obj.get("status", "unknown"), "traceability": data.get("traceability", {})}
+    if "failure" in data:
+        obj = data["failure"]
+        return {"id": obj.get("id"), "title": obj.get("title", obj.get("id")), "type": "failure", "status": obj.get("status", "unknown"), "traceability": data.get("traceability", {})}
+    if "report" in data:
+        obj = data["report"]
+        return {"id": obj.get("id"), "title": obj.get("id"), "type": "compliance_report", "status": obj.get("status", "unknown"), "traceability": {}}
+    if "patch" in data:
+        obj = data["patch"]
+        return {"id": obj.get("id"), "title": obj.get("id"), "type": "patch_package", "status": obj.get("status", "unknown"), "traceability": {}}
+    if "baseline" in data:
+        obj = data["baseline"]
+        baseline_id = f"BASELINE-{obj.get('artifact_id', path.stem)}-{obj.get('artifact_version', 'unknown')}"
+        return {"id": baseline_id, "title": baseline_id, "type": "regression_baseline", "status": obj.get("status", "unknown"), "traceability": {}}
+    if "manifest" in data:
+        obj = data["manifest"]
+        artifact = data.get("artifact", {})
+        return {"id": obj.get("id"), "title": artifact.get("title", obj.get("id")), "type": "artifact_manifest", "status": data.get("state", "unknown"), "traceability": {}}
+    if "approval" in data:
+        obj = data["approval"]
+        return {"id": obj.get("id"), "title": obj.get("id"), "type": "approval_record", "status": obj.get("status", "unknown"), "traceability": {}}
+    if "review_checklist" in data:
+        obj = data["review_checklist"]
+        return {"id": obj.get("id"), "title": obj.get("id"), "type": "review_checklist", "status": obj.get("status", "unknown"), "traceability": {}}
+    if "gate" in data and "blocked_items" in data:
+        return {"id": path.stem, "title": path.stem, "type": "review_gate", "status": data.get("gate", "unknown"), "traceability": {}}
+    if "build_plan" in data:
+        obj = data["build_plan"]
+        return {"id": obj.get("id"), "title": obj.get("id"), "type": "build_plan", "status": obj.get("status", "unknown"), "traceability": {}}
+    if "iteration" in data and "stage" in data and "artifact_id" in data:
+        iteration_id = path.stem
+        return {"id": iteration_id, "title": iteration_id, "type": "iteration_record", "status": data.get("status", "unknown"), "traceability": {}}
+    if "name" in data and "supported_constraint_types" in data:
+        renderer_id = f"RENDERER-{data.get('name', path.stem)}"
+        return {"id": renderer_id, "title": data.get("name", renderer_id), "type": "renderer_profile", "status": "active", "traceability": {}}
+    if "renderer" in data and "instruction" in data:
+        compiler_id = f"COMPILER-RESULT-{data.get('artifact_id', path.stem)}"
+        return {"id": compiler_id, "title": compiler_id, "type": "compiler_result", "status": "generated", "traceability": {}}
+    return None
 
 
 def new_artifact(args: argparse.Namespace) -> int:
@@ -133,7 +196,7 @@ def new_compliance(args: argparse.Namespace) -> int:
         return 2
     target = Path(args.output or f"reports/compliance/{report_id}.yaml")
     data = {
-        "report": {"id": report_id, "version": "0.1", "created": date.today().isoformat(), "validator_version": "constraintos-0.6.0"},
+        "report": {"id": report_id, "version": "0.1", "created": date.today().isoformat(), "validator_version": "constraintos-0.9.1"},
         "artifact": {"id": args.artifact_id, "version": args.artifact_version, "specification_id": args.specification_id},
         "summary": {"blocker_failures": 0, "major_failures": 0, "minor_failures": 0, "uncertain_results": 0},
         "constraint_results": [],
@@ -172,19 +235,22 @@ def validate_artifact(path: Path, repo_root: Path) -> ValidationResult:
         data = load_yaml(path)
     except Exception as exc:
         return ValidationResult(path, "fail", [str(exc)])
-    obj = data.get("artifact") or data.get("failure") or data.get("report") or data.get("patch") or data.get("baseline")
-    if not isinstance(obj, dict):
-        messages.append("Missing artifact, failure, report, patch, or baseline object.")
+
+    record = record_from_data(path, data)
+    if not record:
+        messages.append("Unrecognized YAML artifact type.")
     else:
-        object_id = obj.get("id") or obj.get("artifact_id")
+        object_id = record.get("id")
         if not object_id:
-            messages.append("Missing id or artifact_id.")
-        if data.get("artifact") is not None:
+            messages.append("Missing record id.")
+        if data.get("artifact") is not None and data.get("constraints") is None:
             for field in ["title", "status", "version"]:
-                if field not in obj:
+                if field not in data["artifact"]:
                     messages.append(f"Missing artifact.{field}.")
-    if "traceability" not in data and not any(key in data for key in ["report", "patch", "baseline"]):
+
+    if "traceability" not in data and not any(key in data for key in ["report", "patch", "baseline", "manifest", "approval", "review_checklist", "gate", "build_plan", "iteration", "name", "renderer"]):
         messages.append("Missing traceability section.")
+
     messages.extend(validate_against_schema(path, data, repo_root))
     return ValidationResult(path, "pass" if not messages else "fail", messages)
 
@@ -206,26 +272,21 @@ def extract_record(path: Path) -> dict[str, Any] | None:
         data = load_yaml(path)
     except Exception:
         return None
-    obj = data.get("artifact") or data.get("failure") or data.get("report") or data.get("patch") or data.get("baseline")
-    if not isinstance(obj, dict):
+    record = record_from_data(path, data)
+    if not record:
         return None
-    traceability = data.get("traceability", {})
-    if "failure" in data:
-        record_type = "failure"
-    elif "report" in data:
-        record_type = "compliance_report"
-    elif "patch" in data:
-        record_type = "patch_package"
-    elif "baseline" in data:
-        record_type = "regression_baseline"
-    else:
-        record_type = "artifact"
+    traceability = record.get("traceability", {}) or {}
     return {
-        "path": str(path), "id": obj.get("id", obj.get("artifact_id")), "title": obj.get("title", obj.get("id", obj.get("artifact_id"))), "type": obj.get("type", record_type),
-        "status": obj.get("status", "unknown"), "depends_on": traceability.get("depends_on", []),
+        "path": str(path),
+        "id": record.get("id"),
+        "title": record.get("title"),
+        "type": record.get("type"),
+        "status": record.get("status", "unknown"),
+        "depends_on": traceability.get("depends_on", []),
         "failures": traceability.get("related_failures", traceability.get("requirements", [])),
         "requirements": traceability.get("related_requirements", traceability.get("requirements", [])),
-        "adrs": traceability.get("related_adrs", traceability.get("adrs", [])), "validators": traceability.get("validators", []),
+        "adrs": traceability.get("related_adrs", traceability.get("adrs", [])),
+        "validators": traceability.get("validators", []),
     }
 
 
@@ -281,13 +342,14 @@ def registry(args: argparse.Namespace) -> int:
 def export_markdown(args: argparse.Namespace) -> int:
     source = Path(args.source)
     data = load_yaml(source)
-    obj = data.get("artifact") or data.get("failure") or data.get("report") or data.get("patch") or data.get("baseline") or {}
-    title = obj.get("title") or obj.get("id") or obj.get("artifact_id") or source.stem
+    record = record_from_data(source, data) or {}
+    title = record.get("title") or source.stem
     lines = [f"# {title}", ""]
-    for key, value in obj.items():
-        lines.append(f"- **{key}:** {value}")
+    for key, value in record.items():
+        if key != "traceability":
+            lines.append(f"- **{key}:** {value}")
     lines.append("")
-    for section in ["description", "content", "traceability", "failed_constraints", "instruction", "approved_constraints", "regression_policy"]:
+    for section in ["description", "content", "traceability", "failed_constraints", "instruction", "approved_constraints", "regression_policy", "items", "summary", "history", "outputs", "approvals", "stages", "stop_conditions"]:
         if section in data:
             lines.extend([f"## {section.replace('_', ' ').title()}", "", "```yaml", yaml.safe_dump(data[section], sort_keys=False).strip(), "```", ""])
     target = Path(args.output or source.with_suffix(".md"))
