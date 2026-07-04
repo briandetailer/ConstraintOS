@@ -1,0 +1,24 @@
+name: Validate ConstraintOS
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+      - develop
+      - phase-1-cli-tooling
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install package
+        run: pip install -e .
+      - name: Validate repository metadata
+        run: constraintos validate docs examples
+      - name: Generate traceability report
+        run: constraintos trace docs > traceability-report.json
