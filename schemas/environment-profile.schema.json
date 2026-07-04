@@ -1,0 +1,20 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://constraintos.local/schemas/environment-profile.schema.json",
+  "title": "ConstraintOS Environment Profile",
+  "type": "object",
+  "required": ["environment_profile"],
+  "properties": {
+    "environment_profile": {
+      "type": "object",
+      "required": ["id", "name", "mode", "description", "created"],
+      "properties": {
+        "id": {"type": "string", "pattern": "^ENV-[0-9]{4}$"},
+        "name": {"type": "string"},
+        "mode": {"enum": ["development", "test", "staging", "production"]},
+        "description": {"type": "string"},
+        "created": {"type": "string"}
+      }
+    }
+  }
+}
