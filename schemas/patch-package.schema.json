@@ -1,0 +1,35 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://constraintos.local/schemas/patch-package.schema.json",
+  "title": "ConstraintOS Patch Package",
+  "type": "object",
+  "required": ["patch", "failed_constraints", "instruction"],
+  "properties": {
+    "patch": {
+      "type": "object",
+      "required": ["id", "artifact_id", "source_report_id", "created", "status"],
+      "properties": {
+        "id": {"type": "string", "pattern": "^PATCH-[0-9]{4}$"},
+        "artifact_id": {"type": "string"},
+        "source_report_id": {"type": "string"},
+        "created": {"type": "string"},
+        "status": {"type": "string"}
+      }
+    },
+    "failed_constraints": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["constraint_id", "severity", "result"],
+        "properties": {
+          "constraint_id": {"type": "string"},
+          "severity": {"enum": ["blocker", "major", "minor", "advisory"]},
+          "result": {"enum": ["fail", "uncertain", "blocked_by_missing_evidence"]},
+          "evidence": {"type": "string"},
+          "recommended_fix": {"type": "string"}
+        }
+      }
+    },
+    "instruction": {"type": "string"}
+  }
+}
