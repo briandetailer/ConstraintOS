@@ -1,0 +1,5 @@
+worker_heartbeat:
+  worker_id: WORKER-0001
+  status: busy
+  active_job_id: JOB-0001
+  timestamp: '2026-07-04T00:00:00+00:00'
