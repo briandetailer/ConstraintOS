@@ -79,6 +79,8 @@ def detect_schema(data: dict[str, Any]) -> str | None:
         ("runtime_config", "schemas/runtime-config.schema.json"),
         ("runtime_job", "schemas/runtime-job.schema.json"),
         ("worker_profile", "schemas/worker-profile.schema.json"),
+        ("worker_result", "schemas/worker-result.schema.json"),
+        ("worker_job_types", "schemas/worker-job-type.schema.json"),
         ("metric_event", "schemas/metric-event.schema.json"),
         ("api_catalog", "schemas/api-catalog.schema.json"),
         ("api_error", "schemas/api-error.schema.json"),
@@ -143,7 +145,8 @@ def record_from_data(path: Path, data: dict[str, Any]) -> dict[str, Any] | None:
         ("storage_backend", "storage_backend"), ("volume_plan", "volume_plan"),
         ("volume_build", "volume_build"), ("volume_completion_report", "volume_completion_report"),
         ("runtime_config", "runtime_config"), ("runtime_job", "runtime_job"),
-        ("worker_profile", "worker_profile"), ("metric_event", "metric_event"),
+        ("worker_profile", "worker_profile"), ("worker_result", "worker_result"),
+        ("worker_job_types", "worker_job_type_registry"), ("metric_event", "metric_event"),
         ("api_catalog", "api_catalog"), ("api_error", "api_error"),
         ("service_boundary", "service_boundary"), ("validation_request", "validation_request"),
         ("queue_record", "queue_record"), ("queue_status", "queue_status"),
@@ -151,8 +154,11 @@ def record_from_data(path: Path, data: dict[str, Any]) -> dict[str, Any] | None:
     for key, record_type in simple_objects:
         if key in data:
             obj = data[key]
-            object_id = obj.get("id") or obj.get("name") or path.stem
-            return {"id": object_id, "title": obj.get("title", object_id), "type": record_type, "status": obj.get("status", "unknown"), "traceability": {}}
+            object_id = obj.get("id") if isinstance(obj, dict) else None
+            object_id = object_id or (obj.get("name") if isinstance(obj, dict) else None) or path.stem
+            status = obj.get("status", "unknown") if isinstance(obj, dict) else "active"
+            title = obj.get("title", object_id) if isinstance(obj, dict) else object_id
+            return {"id": object_id, "title": title, "type": record_type, "status": status, "traceability": {}}
     if "status" in data and "service" in data and "version" in data:
         return {"id": path.stem, "title": path.stem, "type": "api_health_response", "status": data.get("status", "unknown"), "traceability": {}}
     if "status" in data and "message" in data and "request" in data and "repo_root" in data:
@@ -210,7 +216,7 @@ def new_compliance(args: argparse.Namespace) -> int:
         print(f"Invalid compliance report id: {report_id}. Expected format like VAL-0001.", file=sys.stderr)
         return 2
     target = Path(args.output or f"reports/compliance/{report_id}.yaml")
-    data = {"report": {"id": report_id, "version": "0.1", "created": date.today().isoformat(), "validator_version": "constraintos-1.0.0-alpha.16"}, "artifact": {"id": args.artifact_id, "version": args.artifact_version, "specification_id": args.specification_id}, "summary": {"blocker_failures": 0, "major_failures": 0, "minor_failures": 0, "uncertain_results": 0}, "constraint_results": [], "recommendation": "escalate"}
+    data = {"report": {"id": report_id, "version": "0.1", "created": date.today().isoformat(), "validator_version": "constraintos-1.0.0-alpha.17"}, "artifact": {"id": args.artifact_id, "version": args.artifact_version, "specification_id": args.specification_id}, "summary": {"blocker_failures": 0, "major_failures": 0, "minor_failures": 0, "uncertain_results": 0}, "constraint_results": [], "recommendation": "escalate"}
     write_yaml(target, data)
     print(f"Created compliance report: {target}")
     return 0
@@ -250,7 +256,7 @@ def validate_artifact(path: Path, repo_root: Path) -> ValidationResult:
         for field in ["title", "status", "version"]:
             if field not in data["artifact"]:
                 messages.append(f"Missing artifact.{field}.")
-    schema_exempt = ["report", "patch", "baseline", "manifest", "approval", "review_checklist", "gate", "build_plan", "iteration", "render_job", "output_reference", "renderer_registry", "stored_object", "storage_backend", "volume_plan", "volume_build", "volume_completion_report", "runtime_config", "runtime_job", "worker_profile", "metric_event", "api_catalog", "api_error", "service_boundary", "validation_request", "queue_record", "queue_status", "status", "name", "renderer"]
+    schema_exempt = ["report", "patch", "baseline", "manifest", "approval", "review_checklist", "gate", "build_plan", "iteration", "render_job", "output_reference", "renderer_registry", "stored_object", "storage_backend", "volume_plan", "volume_build", "volume_completion_report", "runtime_config", "runtime_job", "worker_profile", "worker_result", "worker_job_types", "metric_event", "api_catalog", "api_error", "service_boundary", "validation_request", "queue_record", "queue_status", "status", "name", "renderer"]
     if "traceability" not in data and not any(key in data for key in schema_exempt):
         messages.append("Missing traceability section.")
     messages.extend(validate_against_schema(path, data, repo_root))
@@ -337,7 +343,7 @@ def export_markdown(args: argparse.Namespace) -> int:
         if key != "traceability":
             lines.append(f"- **{key}:** {value}")
     lines.append("")
-    for section in ["description", "content", "traceability", "failed_constraints", "instruction", "approved_constraints", "regression_policy", "items", "summary", "history", "outputs", "approvals", "stages", "stop_conditions", "metadata", "plates", "build_policy", "results", "recommendation", "endpoints", "owns", "does_not_own", "request", "payload"]:
+    for section in ["description", "content", "traceability", "failed_constraints", "instruction", "approved_constraints", "regression_policy", "items", "summary", "history", "outputs", "approvals", "stages", "stop_conditions", "metadata", "plates", "build_policy", "results", "recommendation", "endpoints", "owns", "does_not_own", "request", "payload", "output", "messages", "worker_job_types"]:
         if section in data:
             lines.extend([f"## {section.replace('_', ' ').title()}", "", "```yaml", yaml.safe_dump(data[section], sort_keys=False).strip(), "```", ""])
     target = Path(args.output or source.with_suffix(".md"))
