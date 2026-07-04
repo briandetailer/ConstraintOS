@@ -1,0 +1,6 @@
+runtime_command:
+  id: COMMAND-0001
+  name: run-api
+  command: uvicorn constraintos.api_server:app --host 127.0.0.1 --port 8000
+  purpose: Run the local ConstraintOS API server.
+  created: '2026-07-04'
