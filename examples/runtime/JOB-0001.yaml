@@ -1,0 +1,7 @@
+runtime_job:
+  id: JOB-0001
+  job_type: volume_build
+  payload_ref: examples/volumes/VOLUME-0001.yaml
+  status: queued
+  priority: 5
+  created: '2026-07-04'
