@@ -1,6 +1,7 @@
 import pytest
 
-from runtime.artifacts import ArtifactStore, ArtifactStoreError, RuntimeArtifact
+from runtime.artifacts import ArtifactCollector, ArtifactStore, ArtifactStoreError, RuntimeArtifact
+from runtime.execution import ExecutionResult, NodeExecutionResult
 
 
 def test_runtime_artifact_serializes_metadata() -> None:
@@ -72,3 +73,53 @@ def test_artifact_store_rejects_paths_that_escape_root(tmp_path) -> None:
 
     with pytest.raises(ArtifactStoreError, match="artifact path cannot escape"):
         store.write_text("../outside.txt", "nope")
+
+
+def test_artifact_collector_records_execution_outputs() -> None:
+    execution = ExecutionResult(
+        id="EXEC-RESULT-0001",
+        request_id="EXEC-REQ-0001",
+        status="complete",
+        node_results=[
+            NodeExecutionResult(
+                node_id="NODE-0001",
+                worker_id="WORKER-0001",
+                plugin="echo",
+                action="package",
+                status="complete",
+                outputs=["echo://NODE-0001"],
+            )
+        ],
+    )
+    store = ArtifactStore()
+    collector = ArtifactCollector(store)
+
+    artifacts = collector.collect_from_execution(execution)
+
+    assert len(artifacts) == 1
+    assert artifacts[0].id == "ARTIFACT-0001"
+    assert artifacts[0].uri == "echo://NODE-0001"
+    assert artifacts[0].producer == "NODE-0001"
+    assert artifacts[0].metadata["worker_id"] == "WORKER-0001"
+    assert artifacts[0].metadata["plugin"] == "echo"
+    assert store.to_dict()["artifact_store"]["count"] == 1
+
+
+def test_artifact_collector_ignores_empty_or_non_string_outputs() -> None:
+    execution = {
+        "node_results": [
+            {
+                "node_id": "NODE-0001",
+                "worker_id": "WORKER-0001",
+                "plugin": "echo",
+                "action": "package",
+                "status": "complete",
+                "outputs": ["", None, "echo://NODE-0001"],
+            }
+        ]
+    }
+    collector = ArtifactCollector(ArtifactStore())
+
+    artifacts = collector.collect_from_execution(execution)
+
+    assert [artifact.uri for artifact in artifacts] == ["echo://NODE-0001"]
