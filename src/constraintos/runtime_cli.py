@@ -14,6 +14,8 @@ from runtime import ArtifactStore, RuntimeContext, RuntimeEngine, RuntimeReportW
 from runtime.execution import create_default_plugin_executor
 from runtime.scheduler import WorkerCapability
 
+DEFAULT_WORKERS = ["WORKER-0001:generic,echo,dry_run"]
+
 
 def load_specification(path: Path) -> dict[str, Any]:
     if path.suffix.lower() == ".json":
@@ -37,9 +39,13 @@ def parse_worker(value: str) -> WorkerCapability:
     return WorkerCapability(worker_id=worker_id, plugins=plugin_list)
 
 
+def workers_from_args(raw_workers: list[str] | None) -> list[WorkerCapability]:
+    return [parse_worker(worker) for worker in (raw_workers or DEFAULT_WORKERS)]
+
+
 def run_runtime(args: argparse.Namespace) -> int:
     specification = load_specification(Path(args.specification))
-    workers = [parse_worker(worker) for worker in args.worker]
+    workers = workers_from_args(args.worker)
     artifact_store = ArtifactStore(Path(args.artifact_root))
     executor = create_default_plugin_executor() if args.plugin_executor else None
     engine = RuntimeEngine(executor=executor, artifact_store=artifact_store)
@@ -67,7 +73,7 @@ def run_runtime(args: argparse.Namespace) -> int:
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(prog="cos-runtime")
     parser.add_argument("specification")
-    parser.add_argument("--worker", action="append", default=["WORKER-0001:generic,echo,dry_run"])
+    parser.add_argument("--worker", action="append")
     parser.add_argument("--runtime-id", default="RUNTIME-0001")
     parser.add_argument("--workspace", default=".")
     parser.add_argument("--artifact-root", default=".constraintos/runtime/artifacts")
