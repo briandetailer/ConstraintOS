@@ -34,6 +34,16 @@ WORKER-0001:generic,echo,dry_run
 
 When no `--worker` is supplied, the CLI uses `WORKER-0001:generic,echo,dry_run`. When one or more workers are supplied, only the supplied workers are used.
 
+## Output formats
+
+The default output format is JSON. Use text format when you only need a quick summary:
+
+```powershell
+cos-runtime examples/runtime/echo_pipeline.yaml --plan-only --format text --worker WORKER-0001:echo
+```
+
+Text output summarizes runtime status, plan status, schedule status, execution status, and artifact count when those sections are present.
+
 ## Useful local commands
 
 Preview the plan and schedule without execution:
@@ -58,6 +68,12 @@ Write the runtime result to a specific file:
 
 ```powershell
 cos-runtime examples/runtime/echo_pipeline.yaml --plugin-executor --worker WORKER-0001:echo --output .constraintos/runtime/results/RUNTIME-0001.json
+```
+
+Write a human-readable text result:
+
+```powershell
+cos-runtime examples/runtime/echo_pipeline.yaml --format text --output .constraintos/runtime/results/RUNTIME-0001.txt
 ```
 
 ## Generated files
