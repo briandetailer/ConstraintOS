@@ -1,0 +1,87 @@
+from __future__ import annotations
+
+import argparse
+import json
+from pathlib import Path
+from typing import Any
+
+try:
+    import yaml
+except ImportError:  # pragma: no cover
+    yaml = None
+
+from runtime import ArtifactStore, RuntimeContext, RuntimeEngine, RuntimeReportWriter
+from runtime.execution import create_default_plugin_executor
+from runtime.scheduler import WorkerCapability
+
+
+def load_specification(path: Path) -> dict[str, Any]:
+    if path.suffix.lower() == ".json":
+        data = json.loads(path.read_text(encoding="utf-8"))
+    else:
+        if yaml is None:
+            raise RuntimeError("PyYAML is required")
+        data = yaml.safe_load(path.read_text(encoding="utf-8")) or {}
+    if not isinstance(data, dict):
+        raise ValueError(f"{path} must contain an object")
+    return data
+
+
+def parse_worker(value: str) -> WorkerCapability:
+    worker_id, separator, plugins = value.partition(":")
+    if not worker_id or not separator:
+        raise argparse.ArgumentTypeError("workers must use WORKER-ID:plugin-a,plugin-b format")
+    plugin_list = [plugin.strip() for plugin in plugins.split(",") if plugin.strip()]
+    if not plugin_list:
+        raise argparse.ArgumentTypeError("workers must declare at least one plugin")
+    return WorkerCapability(worker_id=worker_id, plugins=plugin_list)
+
+
+def run_runtime(args: argparse.Namespace) -> int:
+    specification = load_specification(Path(args.specification))
+    workers = [parse_worker(worker) for worker in args.worker]
+    artifact_store = ArtifactStore(Path(args.artifact_root))
+    executor = create_default_plugin_executor() if args.plugin_executor else None
+    engine = RuntimeEngine(executor=executor, artifact_store=artifact_store)
+    result = engine.run(
+        specification,
+        workers,
+        RuntimeContext(workspace=Path(args.workspace), variables={"specification": args.specification}),
+        runtime_id=args.runtime_id,
+    )
+    payload = result.to_dict()
+    if args.report:
+        RuntimeReportWriter(artifact_store).write_report(result)
+        payload["artifacts"] = artifact_store.to_dict()
+    output = json.dumps(payload, indent=2, sort_keys=True)
+    if args.output:
+        target = Path(args.output)
+        target.parent.mkdir(parents=True, exist_ok=True)
+        target.write_text(output + "\n", encoding="utf-8")
+        print(f"Wrote runtime result: {target}")
+    else:
+        print(output)
+    return 0 if result.success else 1
+
+
+def build_parser() -> argparse.ArgumentParser:
+    parser = argparse.ArgumentParser(prog="cos-runtime")
+    parser.add_argument("specification")
+    parser.add_argument("--worker", action="append", default=["WORKER-0001:generic,echo,dry_run"])
+    parser.add_argument("--runtime-id", default="RUNTIME-0001")
+    parser.add_argument("--workspace", default=".")
+    parser.add_argument("--artifact-root", default=".constraintos/runtime/artifacts")
+    parser.add_argument("--plugin-executor", action="store_true")
+    parser.add_argument("--report", action="store_true")
+    parser.add_argument("--output")
+    return parser
+
+
+def main(argv: list[str] | None = None) -> int:
+    parser = build_parser()
+    args = parser.parse_args(argv)
+    return run_runtime(args)
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())
