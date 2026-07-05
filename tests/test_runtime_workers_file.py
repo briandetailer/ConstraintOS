@@ -1,6 +1,8 @@
 import json
 
-from constraintos.runtime_cli import load_workers_file, main, workers_from_args
+import pytest
+
+from constraintos.runtime_cli import load_workers_file, main, normalize_plugins, workers_from_args
 
 
 def test_load_workers_file_reads_json_worker_definitions(tmp_path) -> None:
@@ -11,6 +13,19 @@ def test_load_workers_file_reads_json_worker_definitions(tmp_path) -> None:
 
     assert workers[0].worker_id == "WORKER-0003"
     assert workers[0].plugins == ["echo"]
+
+
+def test_normalize_plugins_rejects_non_string_entries() -> None:
+    with pytest.raises(ValueError, match="plugins must be non-empty strings"):
+        normalize_plugins(["echo", 123], "workers.json worker 1")
+
+
+def test_load_workers_file_rejects_empty_plugins(tmp_path) -> None:
+    source = tmp_path / "workers.json"
+    source.write_text(json.dumps({"workers": [{"worker_id": "WORKER-0003", "plugins": []}]}), encoding="utf-8")
+
+    with pytest.raises(ValueError, match="must declare plugins"):
+        load_workers_file(source)
 
 
 def test_workers_from_args_combines_file_and_inline_workers(tmp_path) -> None:
