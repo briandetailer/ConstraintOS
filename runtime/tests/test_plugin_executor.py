@@ -1,7 +1,7 @@
 import pytest
 
 from runtime.context import RuntimeContext
-from runtime.execution import ExecutionRequest, PluginExecutor
+from runtime.execution import ExecutionError, ExecutionRequest, PluginExecutor
 from runtime.plugins import DryRunPlugin, EchoPlugin, PluginDispatcher, PluginNotFoundError, PluginRegistry
 
 
@@ -47,7 +47,7 @@ def test_plugin_executor_dispatches_dry_run_assignment() -> None:
 
 
 def test_plugin_executor_rejects_invalid_assignment_collection() -> None:
-    with pytest.raises(ValueError, match="assignments must be a list"):
+    with pytest.raises(ExecutionError, match="assignments must be a list"):
         _executor_with_plugins().execute({"execution_request": {"id": "EXEC-REQ-0001"}, "assignments": {}})
 
 
