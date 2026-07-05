@@ -1,0 +1,24 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://constraintos.local/schemas/repository-audit.schema.json",
+  "title": "ConstraintOS Repository Audit",
+  "type": "object",
+  "required": ["repository_audit", "inventory", "schema_coverage", "artifact_coverage", "technical_debt", "beta_readiness"],
+  "properties": {
+    "repository_audit": {
+      "type": "object",
+      "required": ["id", "created", "repo_root", "status"],
+      "properties": {
+        "id": {"type": "string", "pattern": "^REPO-AUDIT-[0-9]{4}$"},
+        "created": {"type": "string"},
+        "repo_root": {"type": "string"},
+        "status": {"enum": ["ready", "blocked", "review", "pass", "fail"]}
+      }
+    },
+    "inventory": {"type": "object"},
+    "schema_coverage": {"type": "object"},
+    "artifact_coverage": {"type": "object"},
+    "technical_debt": {"type": "object"},
+    "beta_readiness": {"type": "object"}
+  }
+}
