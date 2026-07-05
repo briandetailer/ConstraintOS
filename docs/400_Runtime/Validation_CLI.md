@@ -2,7 +2,7 @@
 
 `cos-validate` runs the validation approval pipeline from the command line.
 
-It evaluates a render specification against supplied validation evidence, then applies approval policy to produce a combined validation and approval result.
+It evaluates a render specification against supplied validation evidence, then produces the complete post-validation result: validation report, failure report, remediation plan, and approval decision.
 
 ## Basic usage
 
@@ -19,7 +19,7 @@ Evidence File
   ↓
 Validation Approval Pipeline
   ↓
-Validation Report + Approval Decision
+Validation Report + Failure Report + Remediation Plan + Approval Decision
 ```
 
 ## Evidence file format
@@ -29,6 +29,19 @@ evidence:
   - gate_id: GATE-0001
     status: passed
     message: LF4 specificity passed.
+```
+
+## IDs
+
+The CLI assigns default IDs, but callers can override them:
+
+```powershell
+cos-validate examples/render/lf4_engine_render_specification.yaml `
+  --evidence examples/validation/lf4_passing_evidence.yaml `
+  --validation-report-id VALIDATION-REPORT-0007 `
+  --failure-report-id FAILURE-REPORT-0007 `
+  --remediation-plan-id REMEDIATION-PLAN-0007 `
+  --approval-id APPROVAL-0007
 ```
 
 ## Exit codes
