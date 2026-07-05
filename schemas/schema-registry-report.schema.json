@@ -1,0 +1,20 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://constraintos.local/schemas/schema-registry-report.schema.json",
+  "title": "ConstraintOS Schema Registry Report",
+  "type": "object",
+  "required": ["schema_registry_report", "schemas"],
+  "properties": {
+    "schema_registry_report": {
+      "type": "object",
+      "required": ["id", "created", "registered", "special_rules"],
+      "properties": {
+        "id": {"type": "string"},
+        "created": {"type": "string"},
+        "registered": {"type": "integer"},
+        "special_rules": {"type": "integer"}
+      }
+    },
+    "schemas": {"type": "array"}
+  }
+}
