@@ -1,6 +1,9 @@
+import argparse
 import json
 
-from constraintos.runtime_cli import main, parse_worker
+import pytest
+
+from constraintos.runtime_cli import main, parse_worker, workers_from_args
 
 
 def test_parse_worker_declares_capabilities() -> None:
@@ -8,6 +11,21 @@ def test_parse_worker_declares_capabilities() -> None:
 
     assert worker.worker_id == "WORKER-0001"
     assert worker.plugins == ["generic", "echo"]
+
+
+def test_parse_worker_rejects_missing_capabilities() -> None:
+    with pytest.raises(argparse.ArgumentTypeError, match="at least one plugin"):
+        parse_worker("WORKER-0001:")
+
+
+def test_workers_from_args_uses_default_only_when_none_are_supplied() -> None:
+    default_workers = workers_from_args(None)
+    explicit_workers = workers_from_args(["WORKER-0002:echo"])
+
+    assert [worker.worker_id for worker in default_workers] == ["WORKER-0001"]
+    assert default_workers[0].plugins == ["generic", "echo", "dry_run"]
+    assert [worker.worker_id for worker in explicit_workers] == ["WORKER-0002"]
+    assert explicit_workers[0].plugins == ["echo"]
 
 
 def test_runtime_cli_runs_dry_run_specification(tmp_path, capsys) -> None:
