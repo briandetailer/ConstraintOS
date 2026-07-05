@@ -4,6 +4,8 @@ from constraintos.validation.models import ValidationEvidence, ValidationGate, V
 __all__ = [
     "GATE_EVIDENCE_FAILED",
     "MISSING_EVIDENCE",
+    "ValidationApprovalPipeline",
+    "ValidationApprovalResult",
     "ValidationEvidence",
     "ValidationGate",
     "ValidationIssueCode",
@@ -11,3 +13,15 @@ __all__ = [
     "ValidationReport",
     "ValidationResult",
 ]
+
+
+def __getattr__(name: str):
+    if name in {"ValidationApprovalPipeline", "ValidationApprovalResult"}:
+        from constraintos.validation.pipeline import ValidationApprovalPipeline, ValidationApprovalResult
+
+        exports = {
+            "ValidationApprovalPipeline": ValidationApprovalPipeline,
+            "ValidationApprovalResult": ValidationApprovalResult,
+        }
+        return exports[name]
+    raise AttributeError(f"module 'constraintos.validation' has no attribute {name!r}")
