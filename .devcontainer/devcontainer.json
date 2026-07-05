@@ -1,0 +1,19 @@
+{
+  "name": "ConstraintOS Beta 1",
+  "image": "mcr.microsoft.com/devcontainers/python:3.12",
+  "features": {
+    "ghcr.io/devcontainers/features/github-cli:1": {}
+  },
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "ms-python.python",
+        "ms-python.vscode-pylance",
+        "GitHub.vscode-github-actions"
+      ]
+    }
+  },
+  "postCreateCommand": "python -m pip install --upgrade pip && pip install -e . pytest pyyaml jsonschema fastapi uvicorn",
+  "postAttachCommand": "python --version && constraintos --help",
+  "remoteUser": "vscode"
+}
