@@ -44,6 +44,17 @@ def parse_worker(value: str) -> WorkerCapability:
     return WorkerCapability(worker_id=worker_id, plugins=plugin_list)
 
 
+def normalize_plugins(value: Any, source: str) -> list[str]:
+    if not isinstance(value, list) or not value:
+        raise ValueError(f"{source} must declare plugins")
+    plugins: list[str] = []
+    for plugin in value:
+        if not isinstance(plugin, str) or not plugin.strip():
+            raise ValueError(f"{source} plugins must be non-empty strings")
+        plugins.append(plugin.strip())
+    return plugins
+
+
 def load_workers_file(path: Path) -> list[WorkerCapability]:
     data = load_data_file(path)
     raw_workers = data.get("workers") if isinstance(data, dict) else data
@@ -54,12 +65,16 @@ def load_workers_file(path: Path) -> list[WorkerCapability]:
         if not isinstance(raw_worker, dict):
             raise ValueError(f"{path} worker {index} must be an object")
         worker_id = raw_worker.get("worker_id") or raw_worker.get("id")
-        plugins = raw_worker.get("plugins")
         if not worker_id:
             raise ValueError(f"{path} worker {index} is missing worker_id")
-        if not isinstance(plugins, list) or not plugins:
-            raise ValueError(f"{path} worker {index} must declare plugins")
-        workers.append(WorkerCapability(worker_id=str(worker_id), plugins=[str(plugin) for plugin in plugins], status=str(raw_worker.get("status", "available"))))
+        worker_source = f"{path} worker {index}"
+        workers.append(
+            WorkerCapability(
+                worker_id=str(worker_id),
+                plugins=normalize_plugins(raw_worker.get("plugins"), worker_source),
+                status=str(raw_worker.get("status", "available")),
+            )
+        )
     return workers
 
 
