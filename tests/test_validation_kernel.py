@@ -3,7 +3,18 @@ from pathlib import Path
 import pytest
 import yaml
 
-from constraintos.validation import ValidationEvidence, ValidationGate, ValidationKernel
+from constraintos.validation import ValidationEvidence, ValidationGate, ValidationIssueCode, ValidationKernel
+
+
+def test_validation_issue_code_serializes() -> None:
+    code = ValidationIssueCode("VAL-0001", "Missing validation evidence", "blocker", "Supply evidence.")
+
+    assert code.to_dict() == {
+        "code": "VAL-0001",
+        "title": "Missing validation evidence",
+        "severity": "blocker",
+        "remediation": "Supply evidence.",
+    }
 
 
 def test_validation_kernel_passes_when_required_gates_have_passing_evidence() -> None:
@@ -16,6 +27,7 @@ def test_validation_kernel_passes_when_required_gates_have_passing_evidence() ->
     assert report.passed() is True
     assert report.status == "passed"
     assert report.results[0].status == "passed"
+    assert report.results[0].issue_code is None
     assert report.to_dict()["validation_report"]["subject_id"] == "LF4-ENGINE"
 
 
@@ -26,10 +38,28 @@ def test_validation_kernel_fails_required_gate_when_evidence_is_missing() -> Non
         subject_id="LF4-ENGINE",
     )
 
+    result = report.results[0]
     assert report.passed() is False
     assert report.status == "failed"
-    assert report.results[0].status == "missing_evidence"
-    assert report.results[0].reason == "No evidence was supplied for this gate."
+    assert result.status == "missing_evidence"
+    assert result.reason == "No evidence was supplied for this gate."
+    assert result.issue_code is not None
+    assert result.issue_code.code == "VAL-0001"
+    assert result.to_dict()["issue_code"]["remediation"] == "Supply evidence for the required validation gate."
+
+
+def test_validation_kernel_attaches_issue_code_when_evidence_fails() -> None:
+    report = ValidationKernel().evaluate(
+        gates=[{"id": "GATE-0001", "name": "LF4 Specificity Gate", "required_pass": True}],
+        evidence=[{"gate_id": "GATE-0001", "status": "failed", "message": "Geometry mismatch."}],
+    )
+
+    result = report.results[0]
+    assert report.status == "failed"
+    assert result.status == "failed"
+    assert result.issue_code is not None
+    assert result.issue_code.code == "VAL-0002"
+    assert result.to_dict()["issue_code"]["title"] == "Validation evidence did not pass"
 
 
 def test_validation_kernel_does_not_fail_report_for_optional_gate_failure() -> None:
