@@ -21,6 +21,7 @@ SCHEMA_REGISTRY: tuple[SchemaRegistration, ...] = (
     SchemaRegistration("review_checklist", "schemas/review-checklist.schema.json", "review_checklist"),
     SchemaRegistration("build_plan", "schemas/build-plan.schema.json", "build_plan"),
     SchemaRegistration("render_job", "schemas/render-job.schema.json", "render_job"),
+    SchemaRegistration("render_specification", "schemas/render-specification.schema.json", "render_specification"),
     SchemaRegistration("output_reference", "schemas/output-reference.schema.json", "output_reference"),
     SchemaRegistration("renderer_registry", "schemas/renderer-registry.schema.json", "renderer_registry"),
     SchemaRegistration("stored_object", "schemas/stored-object.schema.json", "stored_object"),
