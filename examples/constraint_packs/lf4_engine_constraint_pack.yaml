@@ -1,0 +1,38 @@
+constraint_pack:
+  id: CPACK-0001
+  title: LF4 Engineering Atlas Constraint Pack
+  status: draft
+  version: "0.1"
+  description: Reusable LF4-specific constraints for render specifications.
+requirements:
+  - id: REQ-0001
+    statement: Image must be recognizably specific to the Cadillac ATS-V LF4 twin-turbo V6, not a generic GM V6.
+    severity: blocker
+    validation_method: human_review
+  - id: REQ-0002
+    statement: Twin-turbo routing, intake layout, and subsystem relationships must be mechanically plausible.
+    severity: blocker
+    validation_method: human_review
+  - id: REQ-0003
+    statement: Any subsystem continuation beyond the visible engine must be presented as schematic continuation, not a falsely attached physical part.
+    severity: major
+    validation_method: human_review
+negative_constraints:
+  - id: NEG-0001
+    statement: Do not substitute a generic V6, generic turbo engine, or generic GM engine.
+  - id: NEG-0002
+    statement: Do not omit LF4-specific subsystem relationships when the scene depends on them.
+validation:
+  gates:
+    - id: GATE-0001
+      name: LF4 Specificity Gate
+      required_pass: true
+      description: Confirms the artifact is LF4-specific rather than generic.
+    - id: GATE-0002
+      name: Mechanical Plausibility Gate
+      required_pass: true
+      description: Confirms major routing and subsystem relationships are plausible.
+    - id: GATE-0003
+      name: Schematic Continuation Gate
+      required_pass: true
+      description: Confirms off-engine continuations are schematic when necessary.
