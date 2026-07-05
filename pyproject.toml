@@ -12,6 +12,7 @@ dependencies = [
 [project.scripts]
 constraintos = "constraintos.cli:main"
 cos = "constraintos.cli:main"
+cos-runtime = "constraintos.runtime_cli:main"
 
 [tool.setuptools.packages.find]
 where = ["src"]
