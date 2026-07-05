@@ -3,7 +3,7 @@ from __future__ import annotations
 from typing import Any
 
 from constraintos.approval.models import ApprovalDecision
-from constraintos.validation import ValidationReport
+from constraintos.validation.models import ValidationReport
 
 
 class ApprovalEngine:
