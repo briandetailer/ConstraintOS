@@ -23,6 +23,7 @@ def test_plugin_executor_dispatches_echo_assignment() -> None:
 
     assert result.status == "complete"
     assert result.node_results[0].node_id == "NODE-0001"
+    assert result.node_results[0].worker_id == "WORKER-0001"
     assert result.node_results[0].plugin == "echo"
     assert result.node_results[0].status == "complete"
     assert result.node_results[0].outputs == ["echo://NODE-0001"]
@@ -33,12 +34,13 @@ def test_plugin_executor_dispatches_dry_run_assignment() -> None:
     request = ExecutionRequest(
         id="EXEC-REQ-0001",
         schedule_id="SCHEDULE-0001",
-        assignments=[{"node_id": "NODE-0002", "worker_id": "WORKER-0001", "plugin": "dry_run", "action": "render"}],
+        assignments=[{"node_id": "NODE-0002", "worker_id": "WORKER-0002", "plugin": "dry_run", "action": "render"}],
     )
 
     result = _executor_with_plugins().execute(request)
 
     assert result.status == "complete"
+    assert result.node_results[0].worker_id == "WORKER-0002"
     assert result.node_results[0].plugin == "dry_run"
     assert result.node_results[0].status == "dry_run_complete"
     assert result.node_results[0].outputs == ["dry-run://NODE-0002"]
