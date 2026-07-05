@@ -19,13 +19,16 @@ from runtime.scheduler import RuntimeScheduler, WorkerCapability
 DEFAULT_WORKERS = ["WORKER-0001:generic,echo,dry_run"]
 
 
-def load_specification(path: Path) -> dict[str, Any]:
+def load_data_file(path: Path) -> Any:
     if path.suffix.lower() == ".json":
-        data = json.loads(path.read_text(encoding="utf-8"))
-    else:
-        if yaml is None:
-            raise RuntimeError("PyYAML is required")
-        data = yaml.safe_load(path.read_text(encoding="utf-8")) or {}
+        return json.loads(path.read_text(encoding="utf-8"))
+    if yaml is None:
+        raise RuntimeError("PyYAML is required")
+    return yaml.safe_load(path.read_text(encoding="utf-8")) or {}
+
+
+def load_specification(path: Path) -> dict[str, Any]:
+    data = load_data_file(path)
     if not isinstance(data, dict):
         raise ValueError(f"{path} must contain an object")
     return data
@@ -41,8 +44,32 @@ def parse_worker(value: str) -> WorkerCapability:
     return WorkerCapability(worker_id=worker_id, plugins=plugin_list)
 
 
-def workers_from_args(raw_workers: list[str] | None) -> list[WorkerCapability]:
-    return [parse_worker(worker) for worker in (raw_workers or DEFAULT_WORKERS)]
+def load_workers_file(path: Path) -> list[WorkerCapability]:
+    data = load_data_file(path)
+    raw_workers = data.get("workers") if isinstance(data, dict) else data
+    if not isinstance(raw_workers, list) or not raw_workers:
+        raise ValueError(f"{path} must contain a non-empty workers list")
+    workers: list[WorkerCapability] = []
+    for index, raw_worker in enumerate(raw_workers, start=1):
+        if not isinstance(raw_worker, dict):
+            raise ValueError(f"{path} worker {index} must be an object")
+        worker_id = raw_worker.get("worker_id") or raw_worker.get("id")
+        plugins = raw_worker.get("plugins")
+        if not worker_id:
+            raise ValueError(f"{path} worker {index} is missing worker_id")
+        if not isinstance(plugins, list) or not plugins:
+            raise ValueError(f"{path} worker {index} must declare plugins")
+        workers.append(WorkerCapability(worker_id=str(worker_id), plugins=[str(plugin) for plugin in plugins], status=str(raw_worker.get("status", "available"))))
+    return workers
+
+
+def workers_from_args(raw_workers: list[str] | None, workers_file: str | None = None) -> list[WorkerCapability]:
+    workers: list[WorkerCapability] = []
+    if workers_file:
+        workers.extend(load_workers_file(Path(workers_file)))
+    if raw_workers:
+        workers.extend(parse_worker(worker) for worker in raw_workers)
+    return workers or [parse_worker(worker) for worker in DEFAULT_WORKERS]
 
 
 def plan_runtime(specification: dict[str, Any], workers: list[WorkerCapability]) -> dict[str, Any]:
@@ -52,10 +79,7 @@ def plan_runtime(specification: dict[str, Any], workers: list[WorkerCapability])
     plan = planner.build(specification)
     resolver.validate(plan)
     schedule = scheduler.schedule(plan, workers)
-    return {
-        "plan": plan.to_dict(),
-        "schedule": schedule.to_dict(),
-    }
+    return {"plan": plan.to_dict(), "schedule": schedule.to_dict()}
 
 
 def summarize_payload(payload: dict[str, Any]) -> str:
@@ -67,24 +91,15 @@ def summarize_payload(payload: dict[str, Any]) -> str:
     if isinstance(plan, dict):
         plan_header = plan.get("execution_plan", {})
         required_plugins = ",".join(plan.get("required_plugins", [])) or "none"
-        lines.append(
-            f"Plan {plan_header.get('id', 'unknown')}: {plan_header.get('status', 'unknown')} | "
-            f"nodes={len(plan.get('nodes', []))} | stages={len(plan.get('stages', []))} | plugins={required_plugins}"
-        )
+        lines.append(f"Plan {plan_header.get('id', 'unknown')}: {plan_header.get('status', 'unknown')} | nodes={len(plan.get('nodes', []))} | stages={len(plan.get('stages', []))} | plugins={required_plugins}")
     schedule = payload.get("schedule")
     if isinstance(schedule, dict):
         schedule_header = schedule.get("schedule_result", {})
-        lines.append(
-            f"Schedule {schedule_header.get('id', 'unknown')}: {schedule_header.get('status', 'unknown')} | "
-            f"assignments={len(schedule.get('assignments', []))} | unscheduled={len(schedule.get('unscheduled_nodes', []))}"
-        )
+        lines.append(f"Schedule {schedule_header.get('id', 'unknown')}: {schedule_header.get('status', 'unknown')} | assignments={len(schedule.get('assignments', []))} | unscheduled={len(schedule.get('unscheduled_nodes', []))}")
     execution = payload.get("execution")
     if isinstance(execution, dict):
         execution_header = execution.get("execution_result", {})
-        lines.append(
-            f"Execution {execution_header.get('id', 'unknown')}: {execution_header.get('status', 'unknown')} | "
-            f"nodes={len(execution.get('node_results', []))}"
-        )
+        lines.append(f"Execution {execution_header.get('id', 'unknown')}: {execution_header.get('status', 'unknown')} | nodes={len(execution.get('node_results', []))}")
     artifacts = payload.get("artifacts")
     if isinstance(artifacts, dict):
         artifact_store = artifacts.get("artifact_store", {})
@@ -110,22 +125,16 @@ def write_output(payload: dict[str, Any], output_path: str | None, label: str, o
 
 
 def run_runtime(args: argparse.Namespace) -> int:
-    workers = workers_from_args(args.worker)
+    workers = workers_from_args(args.worker, args.workers_file)
     specification = load_specification(Path(args.specification))
     if args.plan_only:
         payload = plan_runtime(specification, workers)
         write_output(payload, args.output, "runtime plan", args.format)
         return 0 if not payload["schedule"].get("unscheduled_nodes") else 1
-
     artifact_store = ArtifactStore(Path(args.artifact_root))
     executor = create_default_plugin_executor() if args.plugin_executor else None
     engine = RuntimeEngine(executor=executor, artifact_store=artifact_store)
-    result = engine.run(
-        specification,
-        workers,
-        RuntimeContext(workspace=Path(args.workspace), variables={"specification": args.specification}),
-        runtime_id=args.runtime_id,
-    )
+    result = engine.run(specification, workers, RuntimeContext(workspace=Path(args.workspace), variables={"specification": args.specification}), runtime_id=args.runtime_id)
     payload = result.to_dict()
     if args.report:
         RuntimeReportWriter(artifact_store).write_report(result)
@@ -138,6 +147,7 @@ def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(prog="cos-runtime")
     parser.add_argument("specification")
     parser.add_argument("--worker", action="append")
+    parser.add_argument("--workers-file")
     parser.add_argument("--runtime-id", default="RUNTIME-0001")
     parser.add_argument("--workspace", default=".")
     parser.add_argument("--artifact-root", default=".constraintos/runtime/artifacts")
