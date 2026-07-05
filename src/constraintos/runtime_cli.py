@@ -70,8 +70,8 @@ def write_json_output(payload: dict[str, Any], output_path: str | None, label: s
 
 
 def run_runtime(args: argparse.Namespace) -> int:
-    specification = load_specification(Path(args.specification))
     workers = workers_from_args(args.worker)
+    specification = load_specification(Path(args.specification))
     if args.plan_only:
         payload = plan_runtime(specification, workers)
         write_json_output(payload, args.output, "runtime plan")
