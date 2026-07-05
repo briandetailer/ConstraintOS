@@ -1,4 +1,5 @@
 worker_heartbeat:
+  id: WORKER-HEARTBEAT-0001
   worker_id: WORKER-0001
   status: busy
   active_job_id: JOB-0001
