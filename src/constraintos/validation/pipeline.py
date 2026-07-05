@@ -8,6 +8,7 @@ from constraintos.validation.failure_report import ValidationFailureReport, Vali
 from constraintos.validation.kernel import ValidationKernel
 from constraintos.validation.models import ValidationEvidence, ValidationReport
 from constraintos.validation.remediation import ValidationRemediationPlan, ValidationRemediationPlanner
+from constraintos.validation.revision import ValidationRevisionPlanner, ValidationRevisionRequest
 
 
 @dataclass(frozen=True)
@@ -16,6 +17,7 @@ class ValidationApprovalResult:
     approval_decision: ApprovalDecision
     failure_report: ValidationFailureReport
     remediation_plan: ValidationRemediationPlan
+    revision_request: ValidationRevisionRequest
 
     def approved(self) -> bool:
         return self.approval_decision.approved()
@@ -25,6 +27,7 @@ class ValidationApprovalResult:
             "validation": self.validation_report.to_dict(),
             "failure_report": self.failure_report.to_dict(),
             "remediation_plan": self.remediation_plan.to_dict(),
+            "revision_request": self.revision_request.to_dict(),
             "approval": self.approval_decision.to_dict(),
         }
 
@@ -36,11 +39,13 @@ class ValidationApprovalPipeline:
         approval_engine: ApprovalEngine | None = None,
         failure_reporter: ValidationFailureReporter | None = None,
         remediation_planner: ValidationRemediationPlanner | None = None,
+        revision_planner: ValidationRevisionPlanner | None = None,
     ) -> None:
         self.kernel = kernel or ValidationKernel()
         self.approval_engine = approval_engine or ApprovalEngine()
         self.failure_reporter = failure_reporter or ValidationFailureReporter()
         self.remediation_planner = remediation_planner or ValidationRemediationPlanner()
+        self.revision_planner = revision_planner or ValidationRevisionPlanner()
 
     def evaluate_render_specification(
         self,
@@ -51,6 +56,7 @@ class ValidationApprovalPipeline:
         approval_decision_id: str = "APPROVAL-0001",
         failure_report_id: str = "FAILURE-REPORT-0001",
         remediation_plan_id: str = "REMEDIATION-PLAN-0001",
+        revision_request_id: str = "REVISION-REQUEST-0001",
     ) -> ValidationApprovalResult:
         validation_report = self.kernel.evaluate_render_specification(
             render_specification,
@@ -59,6 +65,11 @@ class ValidationApprovalPipeline:
         )
         failure_report = self.failure_reporter.build(validation_report, failure_report_id=failure_report_id)
         remediation_plan = self.remediation_planner.build(failure_report, remediation_plan_id=remediation_plan_id)
+        revision_request = self.revision_planner.build(
+            remediation_plan,
+            artifact_id=artifact_id,
+            revision_request_id=revision_request_id,
+        )
         approval_decision = self.approval_engine.decide(
             validation_report,
             artifact_id=artifact_id,
@@ -69,4 +80,5 @@ class ValidationApprovalPipeline:
             approval_decision=approval_decision,
             failure_report=failure_report,
             remediation_plan=remediation_plan,
+            revision_request=revision_request,
         )
