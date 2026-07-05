@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from runtime.execution.plugin_executor import PluginExecutor
-from runtime.plugins import DryRunPlugin, EchoPlugin, PluginDispatcher, PluginRegistry
+from runtime.plugins import DryRunPlugin, EchoPlugin, PluginDispatcher, PluginRegistry, RenderContractPlugin
 
 
 def create_default_plugin_registry() -> PluginRegistry:
@@ -9,6 +9,7 @@ def create_default_plugin_registry() -> PluginRegistry:
     registry = PluginRegistry()
     registry.register(EchoPlugin())
     registry.register(DryRunPlugin())
+    registry.register(RenderContractPlugin())
     return registry
 
 
