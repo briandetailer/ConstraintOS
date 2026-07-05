@@ -1,0 +1,21 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://constraintos.local/schemas/ci-readiness-report.schema.json",
+  "title": "ConstraintOS CI Readiness Report",
+  "type": "object",
+  "required": ["ci_readiness_report", "schema_audit_status", "example_audit_status", "recommendation"],
+  "properties": {
+    "ci_readiness_report": {
+      "type": "object",
+      "required": ["id", "status", "created"],
+      "properties": {
+        "id": {"type": "string", "pattern": "^CI-READY-[0-9]{4}$"},
+        "status": {"enum": ["ready", "blocked"]},
+        "created": {"type": "string"}
+      }
+    },
+    "schema_audit_status": {"type": "string"},
+    "example_audit_status": {"type": "string"},
+    "recommendation": {"enum": ["run_ci", "resolve_audit_failures"]}
+  }
+}
