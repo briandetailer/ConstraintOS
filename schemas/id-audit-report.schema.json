@@ -1,0 +1,21 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://constraintos.local/schemas/id-audit-report.schema.json",
+  "title": "ConstraintOS ID Audit Report",
+  "type": "object",
+  "required": ["id_audit_report", "findings"],
+  "properties": {
+    "id_audit_report": {
+      "type": "object",
+      "required": ["id", "status", "created", "checked", "findings"],
+      "properties": {
+        "id": {"type": "string"},
+        "status": {"enum": ["pass", "fail"]},
+        "created": {"type": "string"},
+        "checked": {"type": "integer"},
+        "findings": {"type": "integer"}
+      }
+    },
+    "findings": {"type": "array", "items": {"type": "object"}}
+  }
+}
