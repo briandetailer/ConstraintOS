@@ -6,6 +6,24 @@ from typing import Any
 
 
 @dataclass(frozen=True)
+class ValidationIssueCode:
+    """Machine-readable validation issue reason."""
+
+    code: str
+    title: str
+    severity: str
+    remediation: str = ""
+
+    def to_dict(self) -> dict[str, Any]:
+        return {
+            "code": self.code,
+            "title": self.title,
+            "severity": self.severity,
+            "remediation": self.remediation,
+        }
+
+
+@dataclass(frozen=True)
 class ValidationGate:
     """A single validation gate that must be evaluated before approval."""
 
@@ -54,6 +72,7 @@ class ValidationResult:
     required_pass: bool
     reason: str = ""
     evidence: dict[str, Any] | None = None
+    issue_code: ValidationIssueCode | None = None
 
     def passed(self) -> bool:
         return self.status == "passed"
@@ -66,6 +85,7 @@ class ValidationResult:
             "required_pass": self.required_pass,
             "reason": self.reason,
             "evidence": self.evidence,
+            "issue_code": self.issue_code.to_dict() if self.issue_code else None,
         }
 
 
