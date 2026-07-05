@@ -1,0 +1,40 @@
+render_specification:
+  id: RSPEC-0001
+  title: LF4 Engineering Atlas Render Specification
+  status: draft
+  version: "0.1"
+subject:
+  id: LF4-ENGINE
+  name: Cadillac ATS-V LF4 Twin-Turbo V6
+  type: engine
+  reference_notes:
+    - Must represent the Cadillac ATS-V LF4 twin-turbo engine rather than a generic GM V6.
+requirements:
+  - id: REQ-0001
+    statement: The image must be recognizably LF4-specific in geometry, subsystem placement, and visible engine architecture.
+    severity: blocker
+    validation_method: human_review
+  - id: REQ-0002
+    statement: Twin-turbo routing, intake layout, and visible subsystem relationships must remain mechanically plausible.
+    severity: blocker
+    validation_method: human_review
+  - id: REQ-0003
+    statement: Any continuation beyond the visible engine must be shown as schematic continuation, not as a falsely attached physical subsystem.
+    severity: major
+    validation_method: human_review
+negative_constraints:
+  - id: NEG-0001
+    statement: Do not substitute a generic V6, generic turbo engine, or generic GM engine for the LF4.
+  - id: NEG-0002
+    statement: Do not omit LF4-specific subsystem relationships when the scene depends on them.
+validation:
+  gates:
+    - id: GATE-0001
+      name: LF4 Specificity Gate
+      required_pass: true
+    - id: GATE-0002
+      name: Mechanical Plausibility Gate
+      required_pass: true
+    - id: GATE-0003
+      name: Schematic Continuation Gate
+      required_pass: true
