@@ -28,6 +28,52 @@ def test_workers_from_args_uses_default_only_when_none_are_supplied() -> None:
     assert explicit_workers[0].plugins == ["echo"]
 
 
+def test_runtime_cli_plan_only_prints_plan_and_schedule(tmp_path, capsys) -> None:
+    spec = tmp_path / "runtime.yaml"
+    spec.write_text(
+        """
+artifact:
+  id: SPEC-0001
+execution_steps:
+  - id: NODE-0001
+    plugin: echo
+    action: prepare
+""".strip(),
+        encoding="utf-8",
+    )
+
+    exit_code = main([str(spec), "--plan-only", "--worker", "WORKER-0001:echo"])
+
+    payload = json.loads(capsys.readouterr().out)
+    assert exit_code == 0
+    assert payload["plan"]["execution_plan"]["status"] == "planned"
+    assert payload["schedule"]["schedule_result"]["status"] == "scheduled"
+    assert payload["schedule"]["assignments"][0]["node_id"] == "NODE-0001"
+    assert "execution" not in payload
+
+
+def test_runtime_cli_plan_only_returns_failure_when_unscheduled(tmp_path, capsys) -> None:
+    spec = tmp_path / "runtime.yaml"
+    spec.write_text(
+        """
+artifact:
+  id: SPEC-0001
+execution_steps:
+  - id: NODE-0001
+    plugin: missing
+    action: prepare
+""".strip(),
+        encoding="utf-8",
+    )
+
+    exit_code = main([str(spec), "--plan-only", "--worker", "WORKER-0001:echo"])
+
+    payload = json.loads(capsys.readouterr().out)
+    assert exit_code == 1
+    assert payload["schedule"]["schedule_result"]["status"] == "partial"
+    assert payload["schedule"]["unscheduled_nodes"] == ["NODE-0001"]
+
+
 def test_runtime_cli_runs_dry_run_specification(tmp_path, capsys) -> None:
     spec = tmp_path / "runtime.yaml"
     spec.write_text(
