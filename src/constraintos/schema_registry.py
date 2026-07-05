@@ -59,6 +59,11 @@ SCHEMA_REGISTRY: tuple[SchemaRegistration, ...] = (
     SchemaRegistration("local_deployment_checklist", "schemas/local-deployment-checklist.schema.json", "local_deployment_checklist"),
     SchemaRegistration("integration_audit", "schemas/integration-audit.schema.json", "integration_audit"),
     SchemaRegistration("ci_readiness_report", "schemas/ci-readiness-report.schema.json", "ci_readiness_report"),
+    SchemaRegistration("schema_registry_report", "schemas/schema-registry-report.schema.json", "schema_registry_report"),
+    SchemaRegistration("id_audit_report", "schemas/id-audit-report.schema.json", "id_audit_report"),
+    SchemaRegistration("repository_health_summary", "schemas/repository-health-summary.schema.json", "repository_health_summary"),
+    SchemaRegistration("repository_inventory", "schemas/repository-inventory.schema.json", "repository_inventory"),
+    SchemaRegistration("repository_audit", "schemas/repository-audit.schema.json", "repository_audit"),
 )
 
 SPECIAL_SCHEMA_RULES: tuple[tuple[tuple[str, ...], str, str], ...] = (
