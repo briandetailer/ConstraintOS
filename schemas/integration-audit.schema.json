@@ -1,0 +1,21 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://constraintos.local/schemas/integration-audit.schema.json",
+  "title": "ConstraintOS Integration Audit",
+  "type": "object",
+  "required": ["integration_audit", "missing", "notes"],
+  "properties": {
+    "integration_audit": {
+      "type": "object",
+      "required": ["id", "status", "checked", "created"],
+      "properties": {
+        "id": {"type": "string", "pattern": "^AUDIT-[0-9]{4}$"},
+        "status": {"enum": ["pass", "fail"]},
+        "checked": {"type": "integer", "minimum": 0},
+        "created": {"type": "string"}
+      }
+    },
+    "missing": {"type": "array", "items": {"type": "string"}},
+    "notes": {"type": "array", "items": {"type": "string"}}
+  }
+}
