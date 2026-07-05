@@ -1,0 +1,14 @@
+artifact:
+  id: SPEC-0001
+  title: Echo Plugin Runtime Pipeline
+  type: runtime_specification
+  status: example
+execution_steps:
+  - id: NODE-0001
+    plugin: echo
+    action: prepare
+  - id: NODE-0002
+    plugin: echo
+    action: package
+    depends_on:
+      - NODE-0001
