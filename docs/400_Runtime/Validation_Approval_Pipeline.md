@@ -1,6 +1,6 @@
 # Validation Approval Pipeline
 
-The Validation Approval Pipeline runs validation, builds a focused failure report, and then applies approval policy.
+The Validation Approval Pipeline runs validation, builds a focused failure report, builds a remediation plan, and then applies approval policy.
 
 It is the first combined workflow for the post-render side of ConstraintOS.
 
@@ -15,6 +15,8 @@ Validation Report
   ↓
 Failure Report
   ↓
+Remediation Plan
+  ↓
 Approval Engine
   ↓
 Approval Decision
@@ -22,12 +24,12 @@ Approval Decision
 
 ## Purpose
 
-The pipeline exists so callers do not need to manually wire the Validation Kernel, Failure Reporter, and Approval Engine together.
+The pipeline exists so callers do not need to manually wire the Validation Kernel, Failure Reporter, Remediation Planner, and Approval Engine together.
 
 It keeps the concerns separated while still providing one deterministic operation:
 
 ```text
-Evaluate this artifact candidate against this render specification and decide whether it is approved.
+Evaluate this artifact candidate against this render specification, describe any needed remediation, and decide whether it is approved.
 ```
 
 ## Current behavior
@@ -38,6 +40,7 @@ The pipeline currently supports render specifications directly:
 - Evaluates supplied evidence against those gates.
 - Produces a validation report.
 - Produces a focused failure report from any non-passing validation results.
+- Produces a remediation plan from the failure report.
 - Applies approval policy.
 - Returns all outputs together.
 
@@ -61,6 +64,14 @@ The pipeline currently supports render specifications directly:
     },
     "failures": []
   },
+  "remediation_plan": {
+    "remediation_plan": {
+      "id": "REMEDIATION-PLAN-0001",
+      "status": "required",
+      "action_count": 1
+    },
+    "actions": []
+  },
   "approval": {
     "approval": {
       "id": "APPROVAL-0001",
@@ -76,4 +87,4 @@ The pipeline currently supports render specifications directly:
 
 ## Design note
 
-This pipeline still does not perform image inspection. It is the orchestration layer that future validators will use once visual, geometry, reference-image, or renderer-specific evidence is available.
+This pipeline still does not perform image inspection or artifact revision. It is the orchestration layer that future validators and revision loops will use once visual, geometry, reference-image, or renderer-specific evidence is available.
