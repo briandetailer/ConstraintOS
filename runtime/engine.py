@@ -4,7 +4,7 @@ from typing import Any
 
 from runtime.context import RuntimeContext
 from runtime.events import RuntimeEvent, RuntimeEventType
-from runtime.execution import DryRunExecutor, ExecutionRequest
+from runtime.execution import DryRunExecutor, ExecutionRequest, RuntimeExecutor
 from runtime.planner import DependencyResolver, RuntimePlanner
 from runtime.result import RuntimeResult
 from runtime.scheduler import RuntimeScheduler, WorkerCapability
@@ -18,7 +18,7 @@ class RuntimeEngine:
         self,
         planner: RuntimePlanner | None = None,
         scheduler: RuntimeScheduler | None = None,
-        executor: DryRunExecutor | None = None,
+        executor: RuntimeExecutor | None = None,
         resolver: DependencyResolver | None = None,
     ) -> None:
         self.planner = planner or RuntimePlanner()
@@ -79,7 +79,7 @@ class RuntimeEngine:
                 assignments=schedule_data["assignments"],
                 dry_run=True,
             )
-            execution = self.executor.execute(request)
+            execution = self.executor.execute(request, context=context)
             execution_data = execution.to_dict()
 
             status = RuntimeState.COMPLETED if execution.status == "complete" else RuntimeState.PARTIAL
