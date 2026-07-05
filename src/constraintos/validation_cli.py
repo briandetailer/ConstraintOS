@@ -39,10 +39,14 @@ def summarize_payload(payload: dict[str, Any]) -> str:
     validation = payload.get("validation", {}).get("validation_report", {})
     approval = payload.get("approval", {}).get("approval", {})
     results = payload.get("validation", {}).get("results", [])
+    failure_report = payload.get("failure_report", {}).get("failure_report", {})
+    remediation_plan = payload.get("remediation_plan", {}).get("remediation_plan", {})
     decision = payload.get("approval", {}).get("decision", {})
     return "\n".join(
         [
             f"Validation {validation.get('id', 'unknown')}: {validation.get('status', 'unknown')} | results={len(results)}",
+            f"Failure report {failure_report.get('id', 'unknown')}: {failure_report.get('status', 'unknown')} | failures={failure_report.get('failure_count', 0)}",
+            f"Remediation plan {remediation_plan.get('id', 'unknown')}: {remediation_plan.get('status', 'unknown')} | actions={remediation_plan.get('action_count', 0)}",
             f"Approval {approval.get('id', 'unknown')}: {approval.get('status', 'unknown')}",
             f"Decision: {decision.get('summary', '')}",
         ]
@@ -76,6 +80,8 @@ def run_validation(args: argparse.Namespace) -> int:
         evidence=evidence,
         artifact_id=args.artifact_id,
         validation_report_id=args.validation_report_id,
+        failure_report_id=args.failure_report_id,
+        remediation_plan_id=args.remediation_plan_id,
         approval_decision_id=args.approval_id,
     )
     payload = result.to_dict()
@@ -89,6 +95,8 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--evidence")
     parser.add_argument("--artifact-id", default="UNKNOWN-ARTIFACT")
     parser.add_argument("--validation-report-id", default="VALIDATION-REPORT-0001")
+    parser.add_argument("--failure-report-id", default="FAILURE-REPORT-0001")
+    parser.add_argument("--remediation-plan-id", default="REMEDIATION-PLAN-0001")
     parser.add_argument("--approval-id", default="APPROVAL-0001")
     parser.add_argument("--format", choices=["json", "text"], default="json")
     parser.add_argument("--output")
