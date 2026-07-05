@@ -11,6 +11,11 @@ def test_detect_registry_schema_for_phase_23_artifact() -> None:
     assert detect_record_type({"integration_audit": {}}) == "integration_audit"
 
 
+def test_detect_render_specification_schema() -> None:
+    assert detect_schema({"render_specification": {}}) == "schemas/render-specification.schema.json"
+    assert detect_record_type({"render_specification": {}}) == "render_specification"
+
+
 def test_detect_special_schema_rule() -> None:
     data = {"status": "ok", "service": "constraintos-api", "version": "1.0"}
     assert detect_schema(data) == "schemas/api-health.schema.json"
