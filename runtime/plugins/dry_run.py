@@ -15,6 +15,7 @@ class DryRunPlugin(RuntimePlugin):
     def execute(self, assignment: dict[str, Any], context: RuntimeContext | None = None) -> PluginResult:
         node_id = str(assignment.get("node_id", "UNKNOWN-NODE"))
         action = str(assignment.get("action", "unknown"))
+        worker_id = str(assignment.get("worker_id", "PLUGIN-DISPATCHER"))
         return PluginResult(
             plugin=self.name,
             node_id=node_id,
@@ -22,5 +23,5 @@ class DryRunPlugin(RuntimePlugin):
             status="dry_run_complete",
             outputs=[f"dry-run://{node_id}"],
             logs=["Assignment simulated successfully."],
-            metrics={"side_effects": 0},
+            metrics={"side_effects": 0, "worker_id": worker_id},
         )
