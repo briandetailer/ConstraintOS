@@ -1,4 +1,5 @@
 lease_decision:
+  id: LEASE-DECISION-0001
   lease_id: LEASE-0001
   job_id: JOB-0001
   worker_id: WORKER-0001
