@@ -2,7 +2,7 @@
 
 `cos-validate` runs the validation approval pipeline from the command line.
 
-It evaluates a render specification against supplied validation evidence, then produces the complete post-validation result: validation report, failure report, remediation plan, and approval decision.
+It evaluates a render specification against supplied validation evidence, then produces the complete post-validation result: validation report, failure report, remediation plan, revision request, and approval decision.
 
 ## Basic usage
 
@@ -19,7 +19,7 @@ Evidence File
   ↓
 Validation Approval Pipeline
   ↓
-Validation Report + Failure Report + Remediation Plan + Approval Decision
+Validation Report + Failure Report + Remediation Plan + Revision Request + Approval Decision
 ```
 
 ## Evidence file format
@@ -41,6 +41,7 @@ cos-validate examples/render/lf4_engine_render_specification.yaml `
   --validation-report-id VALIDATION-REPORT-0007 `
   --failure-report-id FAILURE-REPORT-0007 `
   --remediation-plan-id REMEDIATION-PLAN-0007 `
+  --revision-request-id REVISION-REQUEST-0007 `
   --approval-id APPROVAL-0007
 ```
 
