@@ -1,0 +1,78 @@
+import json
+
+from constraintos.runtime_cli import main, parse_worker
+
+
+def test_parse_worker_declares_capabilities() -> None:
+    worker = parse_worker("WORKER-0001:generic,echo")
+
+    assert worker.worker_id == "WORKER-0001"
+    assert worker.plugins == ["generic", "echo"]
+
+
+def test_runtime_cli_runs_dry_run_specification(tmp_path, capsys) -> None:
+    spec = tmp_path / "runtime.yaml"
+    spec.write_text(
+        """
+artifact:
+  id: SPEC-0001
+execution_steps:
+  - id: NODE-0001
+    plugin: generic
+    action: prepare
+""".strip(),
+        encoding="utf-8",
+    )
+
+    exit_code = main([str(spec), "--worker", "WORKER-0001:generic", "--artifact-root", str(tmp_path / "artifacts")])
+
+    payload = json.loads(capsys.readouterr().out)
+    assert exit_code == 0
+    assert payload["runtime_result"]["status"] == "completed"
+    assert payload["execution"]["node_results"][0]["outputs"] == ["dry-run://NODE-0001"]
+
+
+def test_runtime_cli_writes_output_file(tmp_path, capsys) -> None:
+    spec = tmp_path / "runtime.json"
+    output = tmp_path / "result.json"
+    spec.write_text(
+        json.dumps({"artifact": {"id": "SPEC-0001"}, "execution_steps": [{"id": "NODE-0001", "plugin": "generic", "action": "prepare"}]}),
+        encoding="utf-8",
+    )
+
+    exit_code = main([str(spec), "--worker", "WORKER-0001:generic", "--artifact-root", str(tmp_path / "artifacts"), "--output", str(output)])
+
+    assert exit_code == 0
+    assert "Wrote runtime result" in capsys.readouterr().out
+    assert json.loads(output.read_text(encoding="utf-8"))["runtime_result"]["success"] is True
+
+
+def test_runtime_cli_runs_plugin_executor_and_report(tmp_path) -> None:
+    spec = tmp_path / "runtime.yaml"
+    artifact_root = tmp_path / "artifacts"
+    spec.write_text(
+        """
+artifact:
+  id: SPEC-0001
+execution_steps:
+  - id: NODE-0001
+    plugin: echo
+    action: package
+""".strip(),
+        encoding="utf-8",
+    )
+
+    exit_code = main([
+        str(spec),
+        "--plugin-executor",
+        "--worker",
+        "WORKER-0001:echo",
+        "--artifact-root",
+        str(artifact_root),
+        "--report",
+    ])
+
+    report = artifact_root / "reports" / "RUNTIME-0001.json"
+    assert exit_code == 0
+    assert report.exists()
+    assert json.loads(report.read_text(encoding="utf-8"))["runtime_result"]["status"] == "completed"
