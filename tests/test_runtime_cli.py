@@ -3,7 +3,7 @@ import json
 
 import pytest
 
-from constraintos.runtime_cli import main, parse_worker, workers_from_args
+from constraintos.runtime_cli import main, parse_worker, summarize_payload, workers_from_args
 
 
 def test_parse_worker_declares_capabilities() -> None:
@@ -74,6 +74,28 @@ execution_steps:
     assert payload["schedule"]["unscheduled_nodes"] == ["NODE-0001"]
 
 
+def test_runtime_cli_plan_only_can_print_text_summary(tmp_path, capsys) -> None:
+    spec = tmp_path / "runtime.yaml"
+    spec.write_text(
+        """
+artifact:
+  id: SPEC-0001
+execution_steps:
+  - id: NODE-0001
+    plugin: echo
+    action: prepare
+""".strip(),
+        encoding="utf-8",
+    )
+
+    exit_code = main([str(spec), "--plan-only", "--format", "text", "--worker", "WORKER-0001:echo"])
+
+    output = capsys.readouterr().out
+    assert exit_code == 0
+    assert "Plan PLAN-0001: planned | nodes=1 | stages=1 | plugins=echo" in output
+    assert "Schedule SCHEDULE-0001: scheduled | assignments=1 | unscheduled=0" in output
+
+
 def test_runtime_cli_runs_dry_run_specification(tmp_path, capsys) -> None:
     spec = tmp_path / "runtime.yaml"
     spec.write_text(
@@ -96,6 +118,28 @@ execution_steps:
     assert payload["execution"]["node_results"][0]["outputs"] == ["dry-run://NODE-0001"]
 
 
+def test_runtime_cli_runs_dry_run_specification_with_text_summary(tmp_path, capsys) -> None:
+    spec = tmp_path / "runtime.yaml"
+    spec.write_text(
+        """
+artifact:
+  id: SPEC-0001
+execution_steps:
+  - id: NODE-0001
+    plugin: generic
+    action: prepare
+""".strip(),
+        encoding="utf-8",
+    )
+
+    exit_code = main([str(spec), "--format", "text", "--worker", "WORKER-0001:generic", "--artifact-root", str(tmp_path / "artifacts")])
+
+    output = capsys.readouterr().out
+    assert exit_code == 0
+    assert "Runtime RUNTIME-0001: completed (success=True)" in output
+    assert "Execution EXEC-RESULT-0001: complete | nodes=1" in output
+
+
 def test_runtime_cli_writes_output_file(tmp_path, capsys) -> None:
     spec = tmp_path / "runtime.json"
     output = tmp_path / "result.json"
@@ -111,6 +155,21 @@ def test_runtime_cli_writes_output_file(tmp_path, capsys) -> None:
     assert json.loads(output.read_text(encoding="utf-8"))["runtime_result"]["success"] is True
 
 
+def test_runtime_cli_writes_text_output_file(tmp_path, capsys) -> None:
+    spec = tmp_path / "runtime.json"
+    output = tmp_path / "result.txt"
+    spec.write_text(
+        json.dumps({"artifact": {"id": "SPEC-0001"}, "execution_steps": [{"id": "NODE-0001", "plugin": "generic", "action": "prepare"}]}),
+        encoding="utf-8",
+    )
+
+    exit_code = main([str(spec), "--format", "text", "--worker", "WORKER-0001:generic", "--artifact-root", str(tmp_path / "artifacts"), "--output", str(output)])
+
+    assert exit_code == 0
+    assert "Wrote runtime result" in capsys.readouterr().out
+    assert "Runtime RUNTIME-0001: completed" in output.read_text(encoding="utf-8")
+
+
 def test_runtime_cli_writes_plan_only_output_file(tmp_path, capsys) -> None:
     spec = tmp_path / "runtime.json"
     output = tmp_path / "plan.json"
@@ -124,6 +183,12 @@ def test_runtime_cli_writes_plan_only_output_file(tmp_path, capsys) -> None:
     assert exit_code == 0
     assert "Wrote runtime plan" in capsys.readouterr().out
     assert json.loads(output.read_text(encoding="utf-8"))["plan"]["execution_plan"]["status"] == "planned"
+
+
+def test_summarize_payload_includes_artifact_count() -> None:
+    summary = summarize_payload({"artifacts": {"artifact_store": {"count": 3}}})
+
+    assert summary == "Artifacts: 3\n"
 
 
 def test_runtime_cli_returns_error_code_for_invalid_worker(capsys) -> None:
