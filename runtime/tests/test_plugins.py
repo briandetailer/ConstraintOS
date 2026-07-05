@@ -42,13 +42,14 @@ def test_plugin_dispatcher_routes_assignment_to_plugin() -> None:
     dispatcher = PluginDispatcher(registry)
 
     result = dispatcher.dispatch(
-        {"node_id": "NODE-0001", "plugin": "echo", "action": "package"},
+        {"node_id": "NODE-0001", "worker_id": "WORKER-0001", "plugin": "echo", "action": "package"},
         RuntimeContext(variables={"test": True}),
     )
 
     assert result.status == "complete"
     assert result.outputs == ["echo://NODE-0001"]
     assert result.logs == ["Executed package for NODE-0001."]
+    assert result.metrics["worker_id"] == "WORKER-0001"
 
 
 def test_plugin_dispatcher_rejects_assignment_without_plugin() -> None:
@@ -59,21 +60,22 @@ def test_plugin_dispatcher_rejects_assignment_without_plugin() -> None:
 
 
 def test_dry_run_plugin_returns_standard_result() -> None:
-    result = DryRunPlugin().execute({"node_id": "NODE-0001", "action": "render"})
+    result = DryRunPlugin().execute({"node_id": "NODE-0001", "worker_id": "WORKER-0001", "action": "render"})
     data = result.to_dict()
 
     assert data["plugin"] == "dry_run"
     assert data["node_id"] == "NODE-0001"
     assert data["status"] == "dry_run_complete"
     assert data["outputs"] == ["dry-run://NODE-0001"]
-    assert data["metrics"] == {"side_effects": 0}
+    assert data["metrics"] == {"side_effects": 0, "worker_id": "WORKER-0001"}
 
 
 def test_echo_plugin_returns_standard_result() -> None:
-    result = EchoPlugin().execute({"node_id": "NODE-0002", "action": "compile"})
+    result = EchoPlugin().execute({"node_id": "NODE-0002", "worker_id": "WORKER-0002", "action": "compile"})
 
     assert result.plugin == "echo"
     assert result.node_id == "NODE-0002"
     assert result.action == "compile"
     assert result.status == "complete"
     assert result.outputs == ["echo://NODE-0002"]
+    assert result.metrics["worker_id"] == "WORKER-0002"
