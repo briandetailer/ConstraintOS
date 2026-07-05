@@ -58,15 +58,55 @@ def plan_runtime(specification: dict[str, Any], workers: list[WorkerCapability])
     }
 
 
-def write_json_output(payload: dict[str, Any], output_path: str | None, label: str) -> None:
-    output = json.dumps(payload, indent=2, sort_keys=True)
+def summarize_payload(payload: dict[str, Any]) -> str:
+    lines: list[str] = []
+    runtime_result = payload.get("runtime_result")
+    if isinstance(runtime_result, dict):
+        lines.append(f"Runtime {runtime_result.get('id', 'unknown')}: {runtime_result.get('status', 'unknown')} (success={runtime_result.get('success', False)})")
+    plan = payload.get("plan")
+    if isinstance(plan, dict):
+        plan_header = plan.get("execution_plan", {})
+        required_plugins = ",".join(plan.get("required_plugins", [])) or "none"
+        lines.append(
+            f"Plan {plan_header.get('id', 'unknown')}: {plan_header.get('status', 'unknown')} | "
+            f"nodes={len(plan.get('nodes', []))} | stages={len(plan.get('stages', []))} | plugins={required_plugins}"
+        )
+    schedule = payload.get("schedule")
+    if isinstance(schedule, dict):
+        schedule_header = schedule.get("schedule_result", {})
+        lines.append(
+            f"Schedule {schedule_header.get('id', 'unknown')}: {schedule_header.get('status', 'unknown')} | "
+            f"assignments={len(schedule.get('assignments', []))} | unscheduled={len(schedule.get('unscheduled_nodes', []))}"
+        )
+    execution = payload.get("execution")
+    if isinstance(execution, dict):
+        execution_header = execution.get("execution_result", {})
+        lines.append(
+            f"Execution {execution_header.get('id', 'unknown')}: {execution_header.get('status', 'unknown')} | "
+            f"nodes={len(execution.get('node_results', []))}"
+        )
+    artifacts = payload.get("artifacts")
+    if isinstance(artifacts, dict):
+        artifact_store = artifacts.get("artifact_store", {})
+        lines.append(f"Artifacts: {artifact_store.get('count', 0)}")
+    return "\n".join(lines) + "\n"
+
+
+def format_payload(payload: dict[str, Any], output_format: str) -> str:
+    if output_format == "text":
+        return summarize_payload(payload)
+    return json.dumps(payload, indent=2, sort_keys=True) + "\n"
+
+
+def write_output(payload: dict[str, Any], output_path: str | None, label: str, output_format: str) -> None:
+    output = format_payload(payload, output_format)
     if output_path:
         target = Path(output_path)
         target.parent.mkdir(parents=True, exist_ok=True)
-        target.write_text(output + "\n", encoding="utf-8")
+        target.write_text(output, encoding="utf-8")
         print(f"Wrote {label}: {target}")
     else:
-        print(output)
+        print(output, end="")
 
 
 def run_runtime(args: argparse.Namespace) -> int:
@@ -74,7 +114,7 @@ def run_runtime(args: argparse.Namespace) -> int:
     specification = load_specification(Path(args.specification))
     if args.plan_only:
         payload = plan_runtime(specification, workers)
-        write_json_output(payload, args.output, "runtime plan")
+        write_output(payload, args.output, "runtime plan", args.format)
         return 0 if not payload["schedule"].get("unscheduled_nodes") else 1
 
     artifact_store = ArtifactStore(Path(args.artifact_root))
@@ -90,7 +130,7 @@ def run_runtime(args: argparse.Namespace) -> int:
     if args.report:
         RuntimeReportWriter(artifact_store).write_report(result)
         payload["artifacts"] = artifact_store.to_dict()
-    write_json_output(payload, args.output, "runtime result")
+    write_output(payload, args.output, "runtime result", args.format)
     return 0 if result.success else 1
 
 
@@ -104,6 +144,7 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--plugin-executor", action="store_true")
     parser.add_argument("--plan-only", action="store_true")
     parser.add_argument("--report", action="store_true")
+    parser.add_argument("--format", choices=["json", "text"], default="json")
     parser.add_argument("--output")
     return parser
 
