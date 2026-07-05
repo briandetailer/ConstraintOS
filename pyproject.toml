@@ -15,7 +15,9 @@ cos = "constraintos.cli:main"
 cos-runtime = "constraintos.runtime_cli:main"
 
 [tool.setuptools.packages.find]
-where = ["src"]
+where = ["src", "."]
+include = ["constraintos*", "runtime*"]
+exclude = ["tests*", "runtime.tests*"]
 
 [build-system]
 requires = ["setuptools>=68"]
