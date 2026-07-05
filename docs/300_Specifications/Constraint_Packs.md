@@ -25,6 +25,15 @@ A constraint pack contains:
 - `negative_constraints`: things the artifact must not do.
 - `validation.gates`: gates used by the validation pipeline.
 
+## Applying a pack
+
+`apply_constraint_pack` merges a pack into a render specification deterministically:
+
+- Existing requirements, negative constraints, and validation gates are preserved.
+- Pack entries are appended only when their IDs are not already present.
+- A `constraint_packs` reference is added to the resulting render specification.
+- The source render specification and constraint pack are not mutated.
+
 ## LF4 example
 
 The LF4 Engineering Atlas constraint pack captures the standing LF4 production standards:
@@ -36,4 +45,4 @@ The LF4 Engineering Atlas constraint pack captures the standing LF4 production s
 
 ## Design note
 
-Constraint Packs are not automatically merged into render specifications yet. This step establishes the validated, reusable pack format first. A later compiler step will apply packs to render specifications deterministically.
+Constraint Packs now have a validated schema and deterministic applicator. A later compiler step can make pack application available through the CLI and runtime paths.
