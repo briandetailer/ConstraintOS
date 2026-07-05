@@ -3,6 +3,7 @@ from __future__ import annotations
 from typing import Any
 
 from runtime.context import RuntimeContext
+from runtime.execution.executor import ExecutionError
 from runtime.execution.models import ExecutionRequest, ExecutionResult, NodeExecutionResult
 from runtime.plugins import PluginDispatcher, PluginResult
 
@@ -24,7 +25,7 @@ class PluginExecutor:
         request_id = str(request_meta.get("id", "UNKNOWN-REQUEST"))
         assignments = request_data.get("assignments", [])
         if not isinstance(assignments, list):
-            raise ValueError("assignments must be a list")
+            raise ExecutionError("assignments must be a list")
 
         plugin_results = [self.dispatcher.dispatch(assignment, context) for assignment in assignments if isinstance(assignment, dict)]
         node_results = [self._node_result_from_plugin_result(result) for result in plugin_results]
