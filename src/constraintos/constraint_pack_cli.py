@@ -45,10 +45,17 @@ def write_output(payload: dict[str, Any], output_path: str | None, output_format
         print(output, end="")
 
 
+def apply_constraint_packs(render_specification: dict[str, Any], constraint_packs: list[dict[str, Any]]) -> dict[str, Any]:
+    applied = render_specification
+    for constraint_pack in constraint_packs:
+        applied = apply_constraint_pack(applied, constraint_pack)
+    return applied
+
+
 def run_apply(args: argparse.Namespace) -> int:
     render_specification = load_data_file(Path(args.render_specification))
-    constraint_pack = load_data_file(Path(args.constraint_pack))
-    applied = apply_constraint_pack(render_specification, constraint_pack)
+    constraint_packs = [load_data_file(Path(path)) for path in args.constraint_packs]
+    applied = apply_constraint_packs(render_specification, constraint_packs)
     write_output(applied, args.output, args.format)
     return 0
 
@@ -56,7 +63,7 @@ def run_apply(args: argparse.Namespace) -> int:
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(prog="cos-apply-constraints")
     parser.add_argument("render_specification")
-    parser.add_argument("constraint_pack")
+    parser.add_argument("constraint_packs", nargs="+")
     parser.add_argument("--format", choices=["yaml", "json"], default="yaml")
     parser.add_argument("--output")
     return parser
