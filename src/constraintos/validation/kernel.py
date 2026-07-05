@@ -2,7 +2,27 @@ from __future__ import annotations
 
 from typing import Any
 
-from constraintos.validation.models import ValidationEvidence, ValidationGate, ValidationReport, ValidationResult
+from constraintos.validation.models import (
+    ValidationEvidence,
+    ValidationGate,
+    ValidationIssueCode,
+    ValidationReport,
+    ValidationResult,
+)
+
+MISSING_EVIDENCE = ValidationIssueCode(
+    code="VAL-0001",
+    title="Missing validation evidence",
+    severity="blocker",
+    remediation="Supply evidence for the required validation gate.",
+)
+
+GATE_EVIDENCE_FAILED = ValidationIssueCode(
+    code="VAL-0002",
+    title="Validation evidence did not pass",
+    severity="blocker",
+    remediation="Revise the artifact or provide corrected validation evidence.",
+)
 
 
 class ValidationKernel:
@@ -18,8 +38,8 @@ class ValidationKernel:
         normalized_gates = [self._gate_from_input(gate) for gate in gates]
         evidence_by_gate = {item.gate_id: item for item in [self._evidence_from_input(entry) for entry in (evidence or [])]}
         results = [self._evaluate_gate(gate, evidence_by_gate.get(gate.id)) for gate in normalized_gates]
-        required_failures = [result for result in results if result.required_pass and not result.passed()]
-        status = "passed" if not required_failures else "failed"
+        required_issues = [result for result in results if result.required_pass and not result.passed()]
+        status = "passed" if not required_issues else "failed"
         return ValidationReport(
             id=report_id,
             subject_id=subject_id,
@@ -57,6 +77,7 @@ class ValidationKernel:
                 required_pass=gate.required_pass,
                 reason="No evidence was supplied for this gate.",
                 evidence=None,
+                issue_code=MISSING_EVIDENCE,
             )
         if evidence.passed():
             return ValidationResult(
@@ -74,6 +95,7 @@ class ValidationKernel:
             required_pass=gate.required_pass,
             reason=evidence.message or "Gate evidence failed.",
             evidence=evidence.to_dict(),
+            issue_code=GATE_EVIDENCE_FAILED,
         )
 
     def _gate_from_input(self, gate: ValidationGate | dict[str, Any]) -> ValidationGate:
