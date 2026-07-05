@@ -1,0 +1,7 @@
+id_audit_report:
+  id: ID-AUDIT-0001
+  status: pass
+  created: '2026-07-04'
+  checked: 0
+  findings: 0
+findings: []
