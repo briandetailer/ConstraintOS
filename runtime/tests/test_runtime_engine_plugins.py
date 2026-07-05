@@ -6,7 +6,7 @@ from runtime.scheduler import WorkerCapability
 def test_default_plugin_registry_contains_builtin_plugins() -> None:
     registry = create_default_plugin_registry()
 
-    assert registry.names() == ["dry_run", "echo"]
+    assert registry.names() == ["dry_run", "echo", "render_contract"]
 
 
 def test_runtime_engine_can_execute_registered_plugin_pipeline() -> None:
