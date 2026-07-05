@@ -11,6 +11,7 @@ try:
 except ImportError:  # pragma: no cover
     yaml = None
 
+from constraintos.constraint_pack import apply_constraint_pack
 from constraintos.render_contract import compile_render_contract_to_runtime
 from runtime import ArtifactStore, RuntimeContext, RuntimeEngine, RuntimeReportWriter
 from runtime.execution import create_default_plugin_executor
@@ -36,9 +37,24 @@ def load_specification(path: Path) -> dict[str, Any]:
     return data
 
 
-def load_runtime_specification(path: Path, render_contract: bool = False) -> dict[str, Any]:
+def apply_constraint_pack_files(specification: dict[str, Any], constraint_pack_paths: list[str] | None) -> dict[str, Any]:
+    applied = specification
+    for constraint_pack_path in constraint_pack_paths or []:
+        constraint_pack = load_specification(Path(constraint_pack_path))
+        applied = apply_constraint_pack(applied, constraint_pack)
+    return applied
+
+
+def load_runtime_specification(
+    path: Path,
+    render_contract: bool = False,
+    constraint_pack_paths: list[str] | None = None,
+) -> dict[str, Any]:
     specification = load_specification(path)
+    if constraint_pack_paths and not render_contract:
+        raise ValueError("--constraint-pack requires --render-contract")
     if render_contract:
+        specification = apply_constraint_pack_files(specification, constraint_pack_paths)
         return compile_render_contract_to_runtime(specification)
     return specification
 
@@ -154,7 +170,11 @@ def default_workers_for_mode(render_contract: bool) -> list[str]:
 
 def run_runtime(args: argparse.Namespace) -> int:
     workers = workers_from_args(args.worker, args.workers_file, default_workers_for_mode(args.render_contract))
-    specification = load_runtime_specification(Path(args.specification), render_contract=args.render_contract)
+    specification = load_runtime_specification(
+        Path(args.specification),
+        render_contract=args.render_contract,
+        constraint_pack_paths=args.constraint_pack,
+    )
     if args.plan_only:
         payload = plan_runtime(specification, workers)
         write_output(payload, args.output, "runtime plan", args.format)
@@ -182,6 +202,7 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--plugin-executor", action="store_true")
     parser.add_argument("--plan-only", action="store_true")
     parser.add_argument("--render-contract", action="store_true")
+    parser.add_argument("--constraint-pack", action="append")
     parser.add_argument("--report", action="store_true")
     parser.add_argument("--format", choices=["json", "text"], default="json")
     parser.add_argument("--output")
