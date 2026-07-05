@@ -1,0 +1,12 @@
+schema_registry_report:
+  id: SCHEMA-REGISTRY-0001
+  created: '2026-07-04'
+  registered: 45
+  special_rules: 9
+schemas:
+  - key: local_runtime_profile
+    schema_path: local-runtime-profile
+    record_type: local_runtime_profile
+  - key: ci_readiness_report
+    schema_path: ci-readiness-report
+    record_type: ci_readiness_report
