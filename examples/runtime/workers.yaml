@@ -1,0 +1,6 @@
+workers:
+  - worker_id: WORKER-0001
+    plugins:
+      - echo
+      - dry_run
+    status: available
