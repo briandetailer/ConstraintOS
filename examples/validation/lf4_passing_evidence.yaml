@@ -1,0 +1,10 @@
+evidence:
+  - gate_id: GATE-0001
+    status: passed
+    message: LF4 specificity passed.
+  - gate_id: GATE-0002
+    status: passed
+    message: Mechanical plausibility passed.
+  - gate_id: GATE-0003
+    status: passed
+    message: Schematic continuation passed.
