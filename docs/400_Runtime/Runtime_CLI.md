@@ -32,7 +32,15 @@ Example:
 WORKER-0001:generic,echo,dry_run
 ```
 
+When no `--worker` is supplied, the CLI uses `WORKER-0001:generic,echo,dry_run`. When one or more workers are supplied, only the supplied workers are used.
+
 ## Useful local commands
+
+Preview the plan and schedule without execution:
+
+```powershell
+cos-runtime examples/runtime/echo_pipeline.yaml --plan-only --worker WORKER-0001:echo
+```
 
 Run with the dry-run executor:
 
