@@ -111,6 +111,38 @@ def test_runtime_cli_writes_output_file(tmp_path, capsys) -> None:
     assert json.loads(output.read_text(encoding="utf-8"))["runtime_result"]["success"] is True
 
 
+def test_runtime_cli_writes_plan_only_output_file(tmp_path, capsys) -> None:
+    spec = tmp_path / "runtime.json"
+    output = tmp_path / "plan.json"
+    spec.write_text(
+        json.dumps({"artifact": {"id": "SPEC-0001"}, "execution_steps": [{"id": "NODE-0001", "plugin": "echo", "action": "prepare"}]}),
+        encoding="utf-8",
+    )
+
+    exit_code = main([str(spec), "--plan-only", "--worker", "WORKER-0001:echo", "--output", str(output)])
+
+    assert exit_code == 0
+    assert "Wrote runtime plan" in capsys.readouterr().out
+    assert json.loads(output.read_text(encoding="utf-8"))["plan"]["execution_plan"]["status"] == "planned"
+
+
+def test_runtime_cli_returns_error_code_for_invalid_worker(capsys) -> None:
+    exit_code = main(["missing.yaml", "--worker", "WORKER-0001:"])
+
+    captured = capsys.readouterr()
+    assert exit_code == 2
+    assert "ERROR: workers must declare at least one plugin" in captured.err
+
+
+def test_runtime_cli_returns_error_code_for_missing_specification(capsys) -> None:
+    exit_code = main(["missing.yaml"])
+
+    captured = capsys.readouterr()
+    assert exit_code == 2
+    assert "ERROR:" in captured.err
+    assert "missing.yaml" in captured.err
+
+
 def test_runtime_cli_runs_plugin_executor_and_report(tmp_path) -> None:
     spec = tmp_path / "runtime.yaml"
     artifact_root = tmp_path / "artifacts"
