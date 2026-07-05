@@ -42,6 +42,12 @@ Apply a pack and write the merged render specification to a file:
 cos-apply-constraints examples/render/lf4_engine_render_specification.yaml examples/constraint_packs/lf4_engine_constraint_pack.yaml --output .constraintos/render/lf4-applied.yaml
 ```
 
+Apply multiple packs in order:
+
+```powershell
+cos-apply-constraints examples/render/lf4_engine_render_specification.yaml examples/constraint_packs/lf4_engine_constraint_pack.yaml examples/constraint_packs/another_pack.yaml --output .constraintos/render/applied.yaml
+```
+
 Print JSON output instead of YAML:
 
 ```powershell
@@ -59,4 +65,4 @@ The LF4 Engineering Atlas constraint pack captures the standing LF4 production s
 
 ## Design note
 
-Constraint Packs now have a validated schema, deterministic applicator, and CLI entry point. Runtime integration can later consume already-applied render specifications without changing validation behavior.
+Constraint Packs now have a validated schema, deterministic applicator, and CLI entry point. Multiple packs can be applied in a stable order before runtime or validation consumes the resulting render specification.
