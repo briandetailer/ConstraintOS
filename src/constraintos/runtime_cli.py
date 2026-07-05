@@ -18,6 +18,7 @@ from runtime.planner import DependencyResolver, RuntimePlanner
 from runtime.scheduler import RuntimeScheduler, WorkerCapability
 
 DEFAULT_WORKERS = ["WORKER-0001:generic,echo,dry_run"]
+DEFAULT_RENDER_CONTRACT_WORKERS = ["WORKER-0001:render_contract"]
 
 
 def load_data_file(path: Path) -> Any:
@@ -86,13 +87,13 @@ def load_workers_file(path: Path) -> list[WorkerCapability]:
     return workers
 
 
-def workers_from_args(raw_workers: list[str] | None, workers_file: str | None = None) -> list[WorkerCapability]:
+def workers_from_args(raw_workers: list[str] | None, workers_file: str | None = None, default_workers: list[str] | None = None) -> list[WorkerCapability]:
     workers: list[WorkerCapability] = []
     if workers_file:
         workers.extend(load_workers_file(Path(workers_file)))
     if raw_workers:
         workers.extend(parse_worker(worker) for worker in raw_workers)
-    return workers or [parse_worker(worker) for worker in DEFAULT_WORKERS]
+    return workers or [parse_worker(worker) for worker in (default_workers or DEFAULT_WORKERS)]
 
 
 def plan_runtime(specification: dict[str, Any], workers: list[WorkerCapability]) -> dict[str, Any]:
@@ -147,8 +148,12 @@ def write_output(payload: dict[str, Any], output_path: str | None, label: str, o
         print(output, end="")
 
 
+def default_workers_for_mode(render_contract: bool) -> list[str]:
+    return DEFAULT_RENDER_CONTRACT_WORKERS if render_contract else DEFAULT_WORKERS
+
+
 def run_runtime(args: argparse.Namespace) -> int:
-    workers = workers_from_args(args.worker, args.workers_file)
+    workers = workers_from_args(args.worker, args.workers_file, default_workers_for_mode(args.render_contract))
     specification = load_runtime_specification(Path(args.specification), render_contract=args.render_contract)
     if args.plan_only:
         payload = plan_runtime(specification, workers)
