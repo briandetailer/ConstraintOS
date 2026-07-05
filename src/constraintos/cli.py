@@ -22,6 +22,7 @@ except ImportError:  # pragma: no cover
 from constraintos.compiler import compile_to_text
 from constraintos.id_audit import audit_ids
 from constraintos.patching import create_patch_package, create_regression_baseline
+from constraintos.repository_auditor import audit_to_markdown, run_repository_audit
 from constraintos.repository_introspection import create_repository_health_summary, create_repository_inventory
 from constraintos.schema_registry import SCHEMA_REGISTRY, SPECIAL_SCHEMA_RULES, detect_record_type, detect_schema as registry_detect_schema, registry_report
 
@@ -160,7 +161,7 @@ def new_compliance(args: argparse.Namespace) -> int:
         print(f"Invalid compliance report id: {report_id}. Expected format like VAL-0001.", file=sys.stderr)
         return 2
     target = Path(args.output or f"reports/compliance/{report_id}.yaml")
-    data = {"report": {"id": report_id, "version": "0.1", "created": date.today().isoformat(), "validator_version": "constraintos-1.0.0-alpha.25"}, "artifact": {"id": args.artifact_id, "version": args.artifact_version, "specification_id": args.specification_id}, "summary": {"blocker_failures": 0, "major_failures": 0, "minor_failures": 0, "uncertain_results": 0}, "constraint_results": [], "recommendation": "escalate"}
+    data = {"report": {"id": report_id, "version": "0.1", "created": date.today().isoformat(), "validator_version": "constraintos-1.0.0-alpha.26"}, "artifact": {"id": args.artifact_id, "version": args.artifact_version, "specification_id": args.specification_id}, "summary": {"blocker_failures": 0, "major_failures": 0, "minor_failures": 0, "uncertain_results": 0}, "constraint_results": [], "recommendation": "escalate"}
     write_yaml(target, data)
     print(f"Created compliance report: {target}")
     return 0
@@ -333,6 +334,36 @@ def repo_health_cmd(args: argparse.Namespace) -> int:
     return 0 if summary["repository_health_summary"]["status"] == "pass" else 1
 
 
+def repo_audit_cmd(args: argparse.Namespace) -> int:
+    audit = run_repository_audit(args.repo_root)
+    if args.format == "markdown":
+        output = audit_to_markdown(audit)
+        if args.output:
+            target = Path(args.output)
+            target.parent.mkdir(parents=True, exist_ok=True)
+            target.write_text(output, encoding="utf-8")
+            print(f"Wrote repository audit markdown: {args.output}")
+        else:
+            print(output)
+    elif args.format == "json":
+        output = json.dumps(audit.to_dict(), indent=2)
+        if args.output:
+            target = Path(args.output)
+            target.parent.mkdir(parents=True, exist_ok=True)
+            target.write_text(output, encoding="utf-8")
+            print(f"Wrote repository audit JSON: {args.output}")
+        else:
+            print(output)
+    else:
+        report = audit.to_dict()
+        if args.output:
+            write_yaml(Path(args.output), report)
+            print(f"Wrote repository audit YAML: {args.output}")
+        else:
+            print(yaml.safe_dump(report, sort_keys=False))
+    return 0 if audit.beta_readiness["beta_readiness_report"]["status"] == "ready" else 1
+
+
 def export_markdown(args: argparse.Namespace) -> int:
     source = Path(args.source)
     data = load_yaml(source)
@@ -382,6 +413,7 @@ def build_parser() -> argparse.ArgumentParser:
     id_audit_parser = sub.add_parser("id-audit"); id_audit_parser.add_argument("--repo-root", default="."); id_audit_parser.add_argument("--output"); id_audit_parser.set_defaults(func=id_audit_cmd)
     repo_inventory = sub.add_parser("repo-inventory"); repo_inventory.add_argument("--repo-root", default="."); repo_inventory.add_argument("--output"); repo_inventory.set_defaults(func=repo_inventory_cmd)
     repo_health = sub.add_parser("repo-health"); repo_health.add_argument("--repo-root", default="."); repo_health.add_argument("--output"); repo_health.set_defaults(func=repo_health_cmd)
+    repo_audit = sub.add_parser("repo-audit"); repo_audit.add_argument("--repo-root", default="."); repo_audit.add_argument("--output"); repo_audit.add_argument("--format", choices=["yaml", "json", "markdown"], default="yaml"); repo_audit.set_defaults(func=repo_audit_cmd)
     md = sub.add_parser("export-md"); md.add_argument("source"); md.add_argument("--output"); md.set_defaults(func=export_markdown)
     comp = sub.add_parser("compile"); comp.add_argument("source"); comp.add_argument("--renderer", default="generic"); comp.add_argument("--format", choices=["text", "json"], default="text"); comp.add_argument("--output"); comp.add_argument("--fail-on-unsupported", action="store_true"); comp.set_defaults(func=compile_spec)
     return parser
