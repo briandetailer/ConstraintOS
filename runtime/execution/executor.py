@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from typing import Any
 
+from runtime.context import RuntimeContext
 from runtime.execution.models import ExecutionRequest, ExecutionResult, NodeExecutionResult
 
 
@@ -10,7 +11,12 @@ class ExecutionError(ValueError):
 
 
 class DryRunExecutor:
-    def execute(self, request: ExecutionRequest | dict[str, Any], result_id: str = "EXEC-RESULT-0001") -> ExecutionResult:
+    def execute(
+        self,
+        request: ExecutionRequest | dict[str, Any],
+        result_id: str = "EXEC-RESULT-0001",
+        context: RuntimeContext | None = None,
+    ) -> ExecutionResult:
         request_data = request.to_dict() if isinstance(request, ExecutionRequest) else request
         request_meta = request_data.get("execution_request", {})
         request_id = str(request_meta.get("id", "UNKNOWN-REQUEST"))
