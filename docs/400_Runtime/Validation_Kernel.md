@@ -28,6 +28,7 @@ The first implementation supports deterministic gate evaluation:
 - A required gate fails when evidence is missing or failing.
 - An optional gate can fail without failing the whole report.
 - Render specifications can be evaluated directly by reading their `validation.gates` section.
+- Missing or failing evidence receives a machine-readable issue code.
 
 ## Passing evidence statuses
 
@@ -40,6 +41,17 @@ complete
 approved
 ```
 
+## Issue codes
+
+Issue codes make validation results usable by automation. A human-readable reason explains the result, while the issue code gives downstream tools a stable remediation target.
+
+Current built-in issue codes:
+
+| Code | Title | Severity | Remediation |
+| --- | --- | --- | --- |
+| `VAL-0001` | Missing validation evidence | blocker | Supply evidence for the required validation gate. |
+| `VAL-0002` | Validation evidence did not pass | blocker | Revise the artifact or provide corrected validation evidence. |
+
 ## Example result
 
 ```json
@@ -47,15 +59,21 @@ approved
   "validation_report": {
     "id": "VALIDATION-REPORT-0001",
     "subject_id": "LF4-ENGINE",
-    "status": "passed"
+    "status": "failed"
   },
   "results": [
     {
       "gate_id": "GATE-0001",
       "name": "LF4 Specificity Gate",
-      "status": "passed",
+      "status": "missing_evidence",
       "required_pass": true,
-      "reason": "LF4 specificity passed."
+      "reason": "No evidence was supplied for this gate.",
+      "issue_code": {
+        "code": "VAL-0001",
+        "title": "Missing validation evidence",
+        "severity": "blocker",
+        "remediation": "Supply evidence for the required validation gate."
+      }
     }
   ]
 }
@@ -63,4 +81,4 @@ approved
 
 ## Design note
 
-This does not yet inspect images or generated files. It defines the reporting structure and pass/fail semantics that future validators will use.
+This does not yet inspect images or generated files. It defines the reporting structure, pass/fail semantics, and machine-readable issue codes that future validators will use.
