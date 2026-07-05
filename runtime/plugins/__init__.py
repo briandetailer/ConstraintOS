@@ -9,6 +9,7 @@ from runtime.plugins.exceptions import (
     PluginRuntimeError,
 )
 from runtime.plugins.registry import PluginRegistry
+from runtime.plugins.render_contract import RenderContractPlugin
 
 __all__ = [
     "DryRunPlugin",
@@ -20,5 +21,6 @@ __all__ = [
     "PluginRegistry",
     "PluginResult",
     "PluginRuntimeError",
+    "RenderContractPlugin",
     "RuntimePlugin",
 ]
