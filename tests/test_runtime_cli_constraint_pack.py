@@ -1,4 +1,5 @@
 import json
+from pathlib import Path
 
 from constraintos.runtime_cli import load_runtime_specification, main
 
@@ -36,7 +37,7 @@ def test_runtime_cli_rejects_constraint_pack_without_render_contract(capsys) -> 
 
 def test_load_runtime_specification_applies_constraint_pack_before_compiling() -> None:
     runtime_specification = load_runtime_specification(
-        path=__import__("pathlib").Path(RENDER_SPECIFICATION),
+        path=Path(RENDER_SPECIFICATION),
         render_contract=True,
         constraint_pack_paths=[CONSTRAINT_PACK],
     )
