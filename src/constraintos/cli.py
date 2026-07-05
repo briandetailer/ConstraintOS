@@ -21,9 +21,11 @@ except ImportError:  # pragma: no cover
 
 from constraintos.compiler import compile_to_text
 from constraintos.patching import create_patch_package, create_regression_baseline
+from constraintos.schema_registry import SCHEMA_REGISTRY, SPECIAL_SCHEMA_RULES, detect_record_type, detect_schema as registry_detect_schema, registry_report
 
 ID_PATTERN = re.compile(r"^[A-Z]+-[0-9]{4}$")
 FR_PATTERN = re.compile(r"^FR-[0-9]{4}$")
+SCHEMA_EXEMPT_KEYS = {registration.key for registration in SCHEMA_REGISTRY} | {"status", "name", "renderer", "gate", "iteration", "artifact"}
 
 
 @dataclass
@@ -60,48 +62,7 @@ def load_json(path: Path) -> dict[str, Any]:
 
 
 def detect_schema(data: dict[str, Any]) -> str | None:
-    schema_map = [
-        ("failure", "schemas/failure.schema.json"), ("registry", "schemas/id-registry.schema.json"),
-        ("patch", "schemas/patch-package.schema.json"), ("baseline", "schemas/regression-baseline.schema.json"),
-        ("approval", "schemas/approval-record.schema.json"), ("review_checklist", "schemas/review-checklist.schema.json"),
-        ("build_plan", "schemas/build-plan.schema.json"), ("render_job", "schemas/render-job.schema.json"),
-        ("output_reference", "schemas/output-reference.schema.json"), ("renderer_registry", "schemas/renderer-registry.schema.json"),
-        ("stored_object", "schemas/stored-object.schema.json"), ("storage_backend", "schemas/storage-backend.schema.json"),
-        ("volume_plan", "schemas/volume-plan.schema.json"), ("volume_build", "schemas/volume-build.schema.json"),
-        ("volume_completion_report", "schemas/volume-completion-report.schema.json"),
-        ("runtime_config", "schemas/runtime-config.schema.json"), ("runtime_job", "schemas/runtime-job.schema.json"),
-        ("worker_profile", "schemas/worker-profile.schema.json"), ("worker_result", "schemas/worker-result.schema.json"),
-        ("worker_job_types", "schemas/worker-job-type.schema.json"), ("worker_heartbeat", "schemas/worker-heartbeat.schema.json"),
-        ("job_lease", "schemas/job-lease.schema.json"), ("lease_decision", "schemas/lease-decision.schema.json"),
-        ("metric_event", "schemas/metric-event.schema.json"), ("api_catalog", "schemas/api-catalog.schema.json"),
-        ("api_error", "schemas/api-error.schema.json"), ("service_boundary", "schemas/service-boundary.schema.json"),
-        ("validation_request", "schemas/kernel-validation-request.schema.json"),
-        ("queue_record", "schemas/queue-record.schema.json"), ("queue_status", "schemas/queue-status.schema.json"),
-        ("retry_policy", "schemas/retry-policy.schema.json"), ("retry_decision", "schemas/retry-decision.schema.json"),
-        ("failed_job", "schemas/failed-job.schema.json"),
-    ]
-    for key, schema in schema_map:
-        if key in data:
-            return schema
-    if "status" in data and "service" in data and "version" in data:
-        return "schemas/api-health.schema.json"
-    if "status" in data and "message" in data and "request" in data and "repo_root" in data:
-        return "schemas/api-validation-stub-response.schema.json"
-    if "report" in data and "constraint_results" in data:
-        return "schemas/compliance-report.schema.json"
-    if "manifest" in data and "history" in data:
-        return "schemas/artifact-manifest.schema.json"
-    if "gate" in data and "blocked_items" in data:
-        return "schemas/review-gate.schema.json"
-    if "iteration" in data and "stage" in data and "artifact_id" in data:
-        return "schemas/iteration-record.schema.json"
-    if "name" in data and "supported_constraint_types" in data:
-        return "schemas/renderer-profile.schema.json"
-    if "renderer" in data and "instruction" in data and "unsupported_constraints" in data:
-        return "schemas/compiler-result.schema.json"
-    if "artifact" in data and "constraints" in data and "validation" in data:
-        return "schemas/csl.schema.json"
-    return None
+    return registry_detect_schema(data)
 
 
 def validate_against_schema(path: Path, data: dict[str, Any], repo_root: Path) -> list[str]:
@@ -115,7 +76,46 @@ def validate_against_schema(path: Path, data: dict[str, Any], repo_root: Path) -
         return [f"Schema not found: {schema_path}"]
     schema = load_json(full_schema_path)
     validator = Draft202012Validator(schema)
-    return [f"schema:{schema_path}:{'.'.join(str(p) for p in error.path) or '<root>'}: {error.message}" for error in sorted(validator.iter_errors(data), key=lambda item: list(item.path))]
+    return [
+        f"schema:{schema_path}:{'.'.join(str(p) for p in error.path) or '<root>'}: {error.message}"
+        for error in sorted(validator.iter_errors(data), key=lambda item: list(item.path))
+    ]
+
+
+def _record_from_registered_key(path: Path, data: dict[str, Any]) -> dict[str, Any] | None:
+    for registration in SCHEMA_REGISTRY:
+        if registration.key not in data:
+            continue
+        obj = data[registration.key]
+        if isinstance(obj, dict):
+            object_id = obj.get("id") or obj.get("name") or obj.get("worker_id") or path.stem
+            title = obj.get("title") or obj.get("name") or object_id
+            status = obj.get("status", "unknown")
+        else:
+            object_id = path.stem
+            title = path.stem
+            status = "active"
+        if registration.key == "baseline" and isinstance(obj, dict):
+            object_id = object_id or f"BASELINE-{obj.get('artifact_id', path.stem)}-{obj.get('artifact_version', 'unknown')}"
+        return {"id": object_id, "title": title, "type": registration.record_type, "status": status, "traceability": data.get("traceability", {})}
+    return None
+
+
+def _record_from_special_rule(path: Path, data: dict[str, Any]) -> dict[str, Any] | None:
+    record_type = detect_record_type(data)
+    if record_type is None:
+        return None
+    if record_type == "csl_artifact" and "artifact" in data:
+        obj = data["artifact"]
+        return {"id": obj.get("id"), "title": obj.get("title", obj.get("id")), "type": obj.get("type", "csl_artifact"), "status": obj.get("status", "unknown"), "traceability": data.get("traceability", {})}
+    if record_type == "artifact_manifest" and "manifest" in data:
+        obj = data["manifest"]
+        artifact = data.get("artifact", {})
+        return {"id": obj.get("id", path.stem), "title": artifact.get("title", obj.get("id", path.stem)), "type": record_type, "status": data.get("state", "unknown"), "traceability": {}}
+    if record_type == "compliance_report" and "report" in data:
+        obj = data["report"]
+        return {"id": obj.get("id", path.stem), "title": obj.get("id", path.stem), "type": record_type, "status": obj.get("status", "unknown"), "traceability": {}}
+    return {"id": path.stem, "title": path.stem, "type": record_type, "status": data.get("status", data.get("gate", "unknown")), "traceability": data.get("traceability", {})}
 
 
 def record_from_data(path: Path, data: dict[str, Any]) -> dict[str, Any] | None:
@@ -125,52 +125,7 @@ def record_from_data(path: Path, data: dict[str, Any]) -> dict[str, Any] | None:
     if "artifact" in data and "traceability" in data:
         obj = data["artifact"]
         return {"id": obj.get("id"), "title": obj.get("title", obj.get("id")), "type": obj.get("type", "artifact"), "status": obj.get("status", "unknown"), "traceability": data.get("traceability", {})}
-    simple_objects = [
-        ("failure", "failure"), ("report", "compliance_report"), ("patch", "patch_package"), ("approval", "approval_record"),
-        ("review_checklist", "review_checklist"), ("build_plan", "build_plan"), ("render_job", "render_job"),
-        ("output_reference", "output_reference"), ("stored_object", "stored_object"), ("storage_backend", "storage_backend"),
-        ("volume_plan", "volume_plan"), ("volume_build", "volume_build"), ("volume_completion_report", "volume_completion_report"),
-        ("runtime_config", "runtime_config"), ("runtime_job", "runtime_job"), ("worker_profile", "worker_profile"),
-        ("worker_result", "worker_result"), ("worker_job_types", "worker_job_type_registry"),
-        ("worker_heartbeat", "worker_heartbeat"), ("job_lease", "job_lease"), ("lease_decision", "lease_decision"),
-        ("metric_event", "metric_event"), ("api_catalog", "api_catalog"), ("api_error", "api_error"),
-        ("service_boundary", "service_boundary"), ("validation_request", "validation_request"),
-        ("queue_record", "queue_record"), ("queue_status", "queue_status"),
-        ("retry_policy", "retry_policy"), ("retry_decision", "retry_decision"), ("failed_job", "failed_job"),
-    ]
-    for key, record_type in simple_objects:
-        if key in data:
-            obj = data[key]
-            object_id = obj.get("id") if isinstance(obj, dict) else None
-            object_id = object_id or (obj.get("name") if isinstance(obj, dict) else None) or (obj.get("worker_id") if isinstance(obj, dict) else None) or path.stem
-            status = obj.get("status", "unknown") if isinstance(obj, dict) else "active"
-            title = obj.get("title", object_id) if isinstance(obj, dict) else object_id
-            return {"id": object_id, "title": title, "type": record_type, "status": status, "traceability": {}}
-    if "status" in data and "service" in data and "version" in data:
-        return {"id": path.stem, "title": path.stem, "type": "api_health_response", "status": data.get("status", "unknown"), "traceability": {}}
-    if "status" in data and "message" in data and "request" in data and "repo_root" in data:
-        return {"id": path.stem, "title": path.stem, "type": "api_validation_stub_response", "status": data.get("status", "unknown"), "traceability": {}}
-    if "baseline" in data:
-        obj = data["baseline"]
-        baseline_id = f"BASELINE-{obj.get('artifact_id', path.stem)}-{obj.get('artifact_version', 'unknown')}"
-        return {"id": baseline_id, "title": baseline_id, "type": "regression_baseline", "status": obj.get("status", "unknown"), "traceability": {}}
-    if "manifest" in data:
-        obj = data["manifest"]
-        artifact = data.get("artifact", {})
-        return {"id": obj.get("id"), "title": artifact.get("title", obj.get("id")), "type": "artifact_manifest", "status": data.get("state", "unknown"), "traceability": {}}
-    if "gate" in data and "blocked_items" in data:
-        return {"id": path.stem, "title": path.stem, "type": "review_gate", "status": data.get("gate", "unknown"), "traceability": {}}
-    if "iteration" in data and "stage" in data and "artifact_id" in data:
-        return {"id": path.stem, "title": path.stem, "type": "iteration_record", "status": data.get("status", "unknown"), "traceability": {}}
-    if "renderer_registry" in data:
-        return {"id": "RENDERER-REGISTRY", "title": "Renderer Registry", "type": "renderer_registry", "status": "active", "traceability": {}}
-    if "name" in data and "supported_constraint_types" in data:
-        renderer_id = f"RENDERER-{data.get('name', path.stem)}"
-        return {"id": renderer_id, "title": data.get("name", renderer_id), "type": "renderer_profile", "status": "active", "traceability": {}}
-    if "renderer" in data and "instruction" in data:
-        compiler_id = f"COMPILER-RESULT-{data.get('artifact_id', path.stem)}"
-        return {"id": compiler_id, "title": compiler_id, "type": "compiler_result", "status": "generated", "traceability": {}}
-    return None
+    return _record_from_registered_key(path, data) or _record_from_special_rule(path, data)
 
 
 def new_artifact(args: argparse.Namespace) -> int:
@@ -203,7 +158,7 @@ def new_compliance(args: argparse.Namespace) -> int:
         print(f"Invalid compliance report id: {report_id}. Expected format like VAL-0001.", file=sys.stderr)
         return 2
     target = Path(args.output or f"reports/compliance/{report_id}.yaml")
-    data = {"report": {"id": report_id, "version": "0.1", "created": date.today().isoformat(), "validator_version": "constraintos-1.0.0-alpha.19"}, "artifact": {"id": args.artifact_id, "version": args.artifact_version, "specification_id": args.specification_id}, "summary": {"blocker_failures": 0, "major_failures": 0, "minor_failures": 0, "uncertain_results": 0}, "constraint_results": [], "recommendation": "escalate"}
+    data = {"report": {"id": report_id, "version": "0.1", "created": date.today().isoformat(), "validator_version": "constraintos-1.0.0-alpha.25"}, "artifact": {"id": args.artifact_id, "version": args.artifact_version, "specification_id": args.specification_id}, "summary": {"blocker_failures": 0, "major_failures": 0, "minor_failures": 0, "uncertain_results": 0}, "constraint_results": [], "recommendation": "escalate"}
     write_yaml(target, data)
     print(f"Created compliance report: {target}")
     return 0
@@ -243,8 +198,7 @@ def validate_artifact(path: Path, repo_root: Path) -> ValidationResult:
         for field in ["title", "status", "version"]:
             if field not in data["artifact"]:
                 messages.append(f"Missing artifact.{field}.")
-    schema_exempt = ["report", "patch", "baseline", "manifest", "approval", "review_checklist", "gate", "build_plan", "iteration", "render_job", "output_reference", "renderer_registry", "stored_object", "storage_backend", "volume_plan", "volume_build", "volume_completion_report", "runtime_config", "runtime_job", "worker_profile", "worker_result", "worker_job_types", "worker_heartbeat", "job_lease", "lease_decision", "metric_event", "api_catalog", "api_error", "service_boundary", "validation_request", "queue_record", "queue_status", "retry_policy", "retry_decision", "failed_job", "status", "name", "renderer"]
-    if "traceability" not in data and not any(key in data for key in schema_exempt):
+    if "traceability" not in data and not any(key in data for key in SCHEMA_EXEMPT_KEYS):
         messages.append("Missing traceability section.")
     messages.extend(validate_against_schema(path, data, repo_root))
     return ValidationResult(path, "pass" if not messages else "fail", messages)
@@ -321,6 +275,31 @@ def registry(args: argparse.Namespace) -> int:
     return 0
 
 
+def registry_report_cmd(args: argparse.Namespace) -> int:
+    report = registry_report()
+    if args.output:
+        write_yaml(Path(args.output), report)
+        print(f"Wrote schema registry report: {args.output}")
+    else:
+        print(yaml.safe_dump(report, sort_keys=False))
+    return 0
+
+
+def registry_check(args: argparse.Namespace) -> int:
+    repo_root = Path(args.repo_root).resolve()
+    missing = [registration.schema_path for registration in SCHEMA_REGISTRY if not (repo_root / registration.schema_path).exists()]
+    for required_keys, schema_path, _record_type in SPECIAL_SCHEMA_RULES:
+        if not (repo_root / schema_path).exists():
+            missing.append(schema_path)
+    if missing:
+        print("FAIL: missing registered schemas")
+        for schema in sorted(set(missing)):
+            print(f"  - {schema}")
+        return 1
+    print(f"PASS: {len(SCHEMA_REGISTRY)} registered schemas and {len(SPECIAL_SCHEMA_RULES)} special rules are available")
+    return 0
+
+
 def export_markdown(args: argparse.Namespace) -> int:
     source = Path(args.source)
     data = load_yaml(source)
@@ -330,7 +309,8 @@ def export_markdown(args: argparse.Namespace) -> int:
         if key != "traceability":
             lines.append(f"- **{key}:** {value}")
     lines.append("")
-    for section in ["description", "content", "traceability", "failed_constraints", "instruction", "approved_constraints", "regression_policy", "items", "summary", "history", "outputs", "approvals", "stages", "stop_conditions", "metadata", "plates", "build_policy", "results", "recommendation", "endpoints", "owns", "does_not_own", "request", "payload", "output", "messages", "worker_job_types"]:
+    sections = ["description", "content", "traceability", "failed_constraints", "instruction", "approved_constraints", "regression_policy", "items", "summary", "history", "outputs", "approvals", "stages", "stop_conditions", "metadata", "plates", "build_policy", "results", "recommendation", "endpoints", "owns", "does_not_own", "request", "payload", "output", "messages", "worker_job_types", "queue_status", "worker_status", "failure_status", "schemas", "registrations"]
+    for section in sections:
         if section in data:
             lines.extend([f"## {section.replace('_', ' ').title()}", "", "```yaml", yaml.safe_dump(data[section], sort_keys=False).strip(), "```", ""])
     target = Path(args.output or source.with_suffix(".md"))
@@ -364,6 +344,8 @@ def build_parser() -> argparse.ArgumentParser:
     val = sub.add_parser("validate"); val.add_argument("paths", nargs="*", default=["docs", "examples", "reports", "patches", "baselines"]); val.add_argument("--repo-root", default="."); val.set_defaults(func=validate)
     tr = sub.add_parser("trace"); tr.add_argument("paths", nargs="*", default=["docs", "examples", "reports", "patches", "baselines"]); tr.set_defaults(func=trace)
     reg = sub.add_parser("registry"); reg.add_argument("paths", nargs="*", default=["docs", "examples", "reports", "patches", "baselines"]); reg.add_argument("--output"); reg.set_defaults(func=registry)
+    reg_report = sub.add_parser("registry-report"); reg_report.add_argument("--output"); reg_report.set_defaults(func=registry_report_cmd)
+    reg_check = sub.add_parser("registry-check"); reg_check.add_argument("--repo-root", default="."); reg_check.set_defaults(func=registry_check)
     md = sub.add_parser("export-md"); md.add_argument("source"); md.add_argument("--output"); md.set_defaults(func=export_markdown)
     comp = sub.add_parser("compile"); comp.add_argument("source"); comp.add_argument("--renderer", default="generic"); comp.add_argument("--format", choices=["text", "json"], default="text"); comp.add_argument("--output"); comp.add_argument("--fail-on-unsupported", action="store_true"); comp.set_defaults(func=compile_spec)
     return parser
