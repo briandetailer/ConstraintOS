@@ -31,6 +31,20 @@ class RuntimeEngine:
         self.artifact_store = artifact_store or ArtifactStore()
         self.artifact_collector = artifact_collector or ArtifactCollector(self.artifact_store)
 
+    def _execution_assignments(self, plan_data: dict[str, Any], schedule_data: dict[str, Any]) -> list[dict[str, Any]]:
+        nodes = {node.get("id"): node for node in plan_data.get("nodes", []) if isinstance(node, dict)}
+        assignments: list[dict[str, Any]] = []
+        for assignment in schedule_data.get("assignments", []):
+            if not isinstance(assignment, dict):
+                continue
+            node = nodes.get(assignment.get("node_id"), {})
+            enriched = dict(assignment)
+            if isinstance(node, dict):
+                enriched["inputs"] = node.get("inputs", {})
+                enriched["outputs"] = node.get("outputs", [])
+            assignments.append(enriched)
+        return assignments
+
     def run(
         self,
         specification: dict[str, Any],
@@ -83,7 +97,7 @@ class RuntimeEngine:
             request = ExecutionRequest(
                 id="EXEC-REQ-0001",
                 schedule_id=schedule.id,
-                assignments=schedule_data["assignments"],
+                assignments=self._execution_assignments(plan_data, schedule_data),
                 dry_run=True,
             )
             execution = self.executor.execute(request, context=context)
