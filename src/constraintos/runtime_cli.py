@@ -12,7 +12,8 @@ except ImportError:  # pragma: no cover
 
 from runtime import ArtifactStore, RuntimeContext, RuntimeEngine, RuntimeReportWriter
 from runtime.execution import create_default_plugin_executor
-from runtime.scheduler import WorkerCapability
+from runtime.planner import DependencyResolver, RuntimePlanner
+from runtime.scheduler import RuntimeScheduler, WorkerCapability
 
 DEFAULT_WORKERS = ["WORKER-0001:generic,echo,dry_run"]
 
@@ -43,9 +44,34 @@ def workers_from_args(raw_workers: list[str] | None) -> list[WorkerCapability]:
     return [parse_worker(worker) for worker in (raw_workers or DEFAULT_WORKERS)]
 
 
+def plan_runtime(specification: dict[str, Any], workers: list[WorkerCapability]) -> dict[str, Any]:
+    planner = RuntimePlanner()
+    resolver = DependencyResolver()
+    scheduler = RuntimeScheduler()
+    plan = planner.build(specification)
+    resolver.validate(plan)
+    schedule = scheduler.schedule(plan, workers)
+    return {
+        "plan": plan.to_dict(),
+        "schedule": schedule.to_dict(),
+    }
+
+
 def run_runtime(args: argparse.Namespace) -> int:
     specification = load_specification(Path(args.specification))
     workers = workers_from_args(args.worker)
+    if args.plan_only:
+        payload = plan_runtime(specification, workers)
+        output = json.dumps(payload, indent=2, sort_keys=True)
+        if args.output:
+            target = Path(args.output)
+            target.parent.mkdir(parents=True, exist_ok=True)
+            target.write_text(output + "\n", encoding="utf-8")
+            print(f"Wrote runtime plan: {target}")
+        else:
+            print(output)
+        return 0 if not payload["schedule"].get("unscheduled_nodes") else 1
+
     artifact_store = ArtifactStore(Path(args.artifact_root))
     executor = create_default_plugin_executor() if args.plugin_executor else None
     engine = RuntimeEngine(executor=executor, artifact_store=artifact_store)
@@ -78,6 +104,7 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--workspace", default=".")
     parser.add_argument("--artifact-root", default=".constraintos/runtime/artifacts")
     parser.add_argument("--plugin-executor", action="store_true")
+    parser.add_argument("--plan-only", action="store_true")
     parser.add_argument("--report", action="store_true")
     parser.add_argument("--output")
     return parser
