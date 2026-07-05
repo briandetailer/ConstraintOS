@@ -11,6 +11,7 @@ try:
 except ImportError:  # pragma: no cover
     yaml = None
 
+from constraintos.render_contract import compile_render_contract_to_runtime
 from runtime import ArtifactStore, RuntimeContext, RuntimeEngine, RuntimeReportWriter
 from runtime.execution import create_default_plugin_executor
 from runtime.planner import DependencyResolver, RuntimePlanner
@@ -32,6 +33,13 @@ def load_specification(path: Path) -> dict[str, Any]:
     if not isinstance(data, dict):
         raise ValueError(f"{path} must contain an object")
     return data
+
+
+def load_runtime_specification(path: Path, render_contract: bool = False) -> dict[str, Any]:
+    specification = load_specification(path)
+    if render_contract:
+        return compile_render_contract_to_runtime(specification)
+    return specification
 
 
 def parse_worker(value: str) -> WorkerCapability:
@@ -141,7 +149,7 @@ def write_output(payload: dict[str, Any], output_path: str | None, label: str, o
 
 def run_runtime(args: argparse.Namespace) -> int:
     workers = workers_from_args(args.worker, args.workers_file)
-    specification = load_specification(Path(args.specification))
+    specification = load_runtime_specification(Path(args.specification), render_contract=args.render_contract)
     if args.plan_only:
         payload = plan_runtime(specification, workers)
         write_output(payload, args.output, "runtime plan", args.format)
@@ -168,6 +176,7 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--artifact-root", default=".constraintos/runtime/artifacts")
     parser.add_argument("--plugin-executor", action="store_true")
     parser.add_argument("--plan-only", action="store_true")
+    parser.add_argument("--render-contract", action="store_true")
     parser.add_argument("--report", action="store_true")
     parser.add_argument("--format", choices=["json", "text"], default="json")
     parser.add_argument("--output")
