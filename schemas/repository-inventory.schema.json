@@ -1,0 +1,27 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://constraintos.local/schemas/repository-inventory.schema.json",
+  "title": "ConstraintOS Repository Inventory",
+  "type": "object",
+  "required": ["repository_inventory", "schemas", "examples", "tests", "docs", "source_files"],
+  "properties": {
+    "repository_inventory": {
+      "type": "object",
+      "required": ["root", "created", "schema_count", "example_count", "test_count", "doc_count", "source_count"],
+      "properties": {
+        "root": {"type": "string"},
+        "created": {"type": "string"},
+        "schema_count": {"type": "integer", "minimum": 0},
+        "example_count": {"type": "integer", "minimum": 0},
+        "test_count": {"type": "integer", "minimum": 0},
+        "doc_count": {"type": "integer", "minimum": 0},
+        "source_count": {"type": "integer", "minimum": 0}
+      }
+    },
+    "schemas": {"type": "array", "items": {"type": "string"}},
+    "examples": {"type": "array", "items": {"type": "string"}},
+    "tests": {"type": "array", "items": {"type": "string"}},
+    "docs": {"type": "array", "items": {"type": "string"}},
+    "source_files": {"type": "array", "items": {"type": "string"}}
+  }
+}
