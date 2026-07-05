@@ -22,6 +22,7 @@ except ImportError:  # pragma: no cover
 from constraintos.compiler import compile_to_text
 from constraintos.id_audit import audit_ids
 from constraintos.patching import create_patch_package, create_regression_baseline
+from constraintos.repository_introspection import create_repository_health_summary, create_repository_inventory
 from constraintos.schema_registry import SCHEMA_REGISTRY, SPECIAL_SCHEMA_RULES, detect_record_type, detect_schema as registry_detect_schema, registry_report
 
 ID_PATTERN = re.compile(r"^[A-Z]+-[0-9]{4}$")
@@ -311,6 +312,27 @@ def id_audit_cmd(args: argparse.Namespace) -> int:
     return 0 if report["id_audit_report"]["status"] == "pass" else 1
 
 
+def repo_inventory_cmd(args: argparse.Namespace) -> int:
+    inventory = create_repository_inventory(args.repo_root).to_dict()
+    if args.output:
+        write_yaml(Path(args.output), inventory)
+        print(f"Wrote repository inventory: {args.output}")
+    else:
+        print(yaml.safe_dump(inventory, sort_keys=False))
+    return 0
+
+
+def repo_health_cmd(args: argparse.Namespace) -> int:
+    inventory = create_repository_inventory(args.repo_root)
+    summary = create_repository_health_summary(inventory)
+    if args.output:
+        write_yaml(Path(args.output), summary)
+        print(f"Wrote repository health summary: {args.output}")
+    else:
+        print(yaml.safe_dump(summary, sort_keys=False))
+    return 0 if summary["repository_health_summary"]["status"] == "pass" else 1
+
+
 def export_markdown(args: argparse.Namespace) -> int:
     source = Path(args.source)
     data = load_yaml(source)
@@ -358,6 +380,8 @@ def build_parser() -> argparse.ArgumentParser:
     reg_report = sub.add_parser("registry-report"); reg_report.add_argument("--output"); reg_report.set_defaults(func=registry_report_cmd)
     reg_check = sub.add_parser("registry-check"); reg_check.add_argument("--repo-root", default="."); reg_check.set_defaults(func=registry_check)
     id_audit_parser = sub.add_parser("id-audit"); id_audit_parser.add_argument("--repo-root", default="."); id_audit_parser.add_argument("--output"); id_audit_parser.set_defaults(func=id_audit_cmd)
+    repo_inventory = sub.add_parser("repo-inventory"); repo_inventory.add_argument("--repo-root", default="."); repo_inventory.add_argument("--output"); repo_inventory.set_defaults(func=repo_inventory_cmd)
+    repo_health = sub.add_parser("repo-health"); repo_health.add_argument("--repo-root", default="."); repo_health.add_argument("--output"); repo_health.set_defaults(func=repo_health_cmd)
     md = sub.add_parser("export-md"); md.add_argument("source"); md.add_argument("--output"); md.set_defaults(func=export_markdown)
     comp = sub.add_parser("compile"); comp.add_argument("source"); comp.add_argument("--renderer", default="generic"); comp.add_argument("--format", choices=["text", "json"], default="text"); comp.add_argument("--output"); comp.add_argument("--fail-on-unsupported", action="store_true"); comp.set_defaults(func=compile_spec)
     return parser
