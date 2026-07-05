@@ -2,7 +2,7 @@ import json
 
 import yaml
 
-from constraintos.constraint_pack_cli import main
+from constraintos.constraint_pack_cli import apply_constraint_packs, main
 
 RENDER_SPECIFICATION = "examples/render/lf4_engine_render_specification.yaml"
 CONSTRAINT_PACK = "examples/constraint_packs/lf4_engine_constraint_pack.yaml"
@@ -26,6 +26,37 @@ def test_constraint_pack_cli_prints_json_output(capsys) -> None:
     assert exit_code == 0
     assert payload["constraint_packs"][0]["id"] == "CPACK-0001"
     assert [item["id"] for item in payload["validation"]["gates"]] == ["GATE-0001", "GATE-0002", "GATE-0003"]
+
+
+def test_constraint_pack_cli_accepts_multiple_constraint_packs(capsys) -> None:
+    exit_code = main([RENDER_SPECIFICATION, CONSTRAINT_PACK, CONSTRAINT_PACK, "--format", "json"])
+
+    payload = json.loads(capsys.readouterr().out)
+    assert exit_code == 0
+    assert payload["constraint_packs"] == [
+        {"id": "CPACK-0001", "version": "0.1", "title": "LF4 Engineering Atlas Constraint Pack"}
+    ]
+
+
+def test_apply_constraint_packs_applies_packs_in_order() -> None:
+    render_specification = {"render_specification": {"id": "RSPEC-9999"}}
+    first_pack = {
+        "constraint_pack": {"id": "CPACK-0001", "version": "0.1", "title": "First"},
+        "requirements": [{"id": "REQ-0001"}],
+        "negative_constraints": [],
+        "validation": {"gates": []},
+    }
+    second_pack = {
+        "constraint_pack": {"id": "CPACK-0002", "version": "0.1", "title": "Second"},
+        "requirements": [{"id": "REQ-0002"}],
+        "negative_constraints": [],
+        "validation": {"gates": []},
+    }
+
+    applied = apply_constraint_packs(render_specification, [first_pack, second_pack])
+
+    assert [item["id"] for item in applied["constraint_packs"]] == ["CPACK-0001", "CPACK-0002"]
+    assert [item["id"] for item in applied["requirements"]] == ["REQ-0001", "REQ-0002"]
 
 
 def test_constraint_pack_cli_returns_error_for_missing_file(capsys) -> None:
