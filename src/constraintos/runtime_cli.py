@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import sys
 from pathlib import Path
 from typing import Any
 
@@ -57,19 +58,23 @@ def plan_runtime(specification: dict[str, Any], workers: list[WorkerCapability])
     }
 
 
+def write_json_output(payload: dict[str, Any], output_path: str | None, label: str) -> None:
+    output = json.dumps(payload, indent=2, sort_keys=True)
+    if output_path:
+        target = Path(output_path)
+        target.parent.mkdir(parents=True, exist_ok=True)
+        target.write_text(output + "\n", encoding="utf-8")
+        print(f"Wrote {label}: {target}")
+    else:
+        print(output)
+
+
 def run_runtime(args: argparse.Namespace) -> int:
     specification = load_specification(Path(args.specification))
     workers = workers_from_args(args.worker)
     if args.plan_only:
         payload = plan_runtime(specification, workers)
-        output = json.dumps(payload, indent=2, sort_keys=True)
-        if args.output:
-            target = Path(args.output)
-            target.parent.mkdir(parents=True, exist_ok=True)
-            target.write_text(output + "\n", encoding="utf-8")
-            print(f"Wrote runtime plan: {target}")
-        else:
-            print(output)
+        write_json_output(payload, args.output, "runtime plan")
         return 0 if not payload["schedule"].get("unscheduled_nodes") else 1
 
     artifact_store = ArtifactStore(Path(args.artifact_root))
@@ -85,14 +90,7 @@ def run_runtime(args: argparse.Namespace) -> int:
     if args.report:
         RuntimeReportWriter(artifact_store).write_report(result)
         payload["artifacts"] = artifact_store.to_dict()
-    output = json.dumps(payload, indent=2, sort_keys=True)
-    if args.output:
-        target = Path(args.output)
-        target.parent.mkdir(parents=True, exist_ok=True)
-        target.write_text(output + "\n", encoding="utf-8")
-        print(f"Wrote runtime result: {target}")
-    else:
-        print(output)
+    write_json_output(payload, args.output, "runtime result")
     return 0 if result.success else 1
 
 
@@ -112,8 +110,14 @@ def build_parser() -> argparse.ArgumentParser:
 
 def main(argv: list[str] | None = None) -> int:
     parser = build_parser()
-    args = parser.parse_args(argv)
-    return run_runtime(args)
+    try:
+        args = parser.parse_args(argv)
+        return run_runtime(args)
+    except SystemExit:
+        raise
+    except Exception as error:
+        print(f"ERROR: {error}", file=sys.stderr)
+        return 2
 
 
 if __name__ == "__main__":
