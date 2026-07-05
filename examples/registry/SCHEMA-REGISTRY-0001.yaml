@@ -1,0 +1,15 @@
+schema_registry_report:
+  id: SCHEMA-REGISTRY-0001
+  created: '2026-07-04'
+  registered: 48
+  special_rules: 9
+schemas:
+  - key: failure
+    schema_path: schemas/failure.schema.json
+    record_type: failure
+  - key: local_runtime_profile
+    schema_path: schemas/local-runtime-profile.schema.json
+    record_type: local_runtime_profile
+  - key: ci_readiness_report
+    schema_path: schemas/ci-readiness-report.schema.json
+    record_type: ci_readiness_report
