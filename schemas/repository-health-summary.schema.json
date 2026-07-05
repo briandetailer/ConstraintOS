@@ -1,0 +1,23 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://constraintos.local/schemas/repository-health-summary.schema.json",
+  "title": "ConstraintOS Repository Health Summary",
+  "type": "object",
+  "required": ["repository_health_summary", "warnings"],
+  "properties": {
+    "repository_health_summary": {
+      "type": "object",
+      "required": ["status", "created", "schema_count", "example_count", "test_count", "doc_count", "source_count"],
+      "properties": {
+        "status": {"enum": ["pass", "review"]},
+        "created": {"type": "string"},
+        "schema_count": {"type": "integer", "minimum": 0},
+        "example_count": {"type": "integer", "minimum": 0},
+        "test_count": {"type": "integer", "minimum": 0},
+        "doc_count": {"type": "integer", "minimum": 0},
+        "source_count": {"type": "integer", "minimum": 0}
+      }
+    },
+    "warnings": {"type": "array", "items": {"type": "string"}}
+  }
+}
