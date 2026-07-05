@@ -5,7 +5,7 @@ from typing import Any
 from runtime.context import RuntimeContext
 from runtime.events import RuntimeEvent, RuntimeEventType
 from runtime.execution import DryRunExecutor, ExecutionRequest
-from runtime.planner import RuntimePlanner
+from runtime.planner import DependencyResolver, RuntimePlanner
 from runtime.result import RuntimeResult
 from runtime.scheduler import RuntimeScheduler, WorkerCapability
 from runtime.state import RuntimeState
@@ -19,10 +19,12 @@ class RuntimeEngine:
         planner: RuntimePlanner | None = None,
         scheduler: RuntimeScheduler | None = None,
         executor: DryRunExecutor | None = None,
+        resolver: DependencyResolver | None = None,
     ) -> None:
         self.planner = planner or RuntimePlanner()
         self.scheduler = scheduler or RuntimeScheduler()
         self.executor = executor or DryRunExecutor()
+        self.resolver = resolver or DependencyResolver()
 
     def run(
         self,
@@ -44,6 +46,7 @@ class RuntimeEngine:
 
         try:
             plan = self.planner.build(specification)
+            self.resolver.validate(plan)
             plan_data = plan.to_dict()
             events.append(RuntimeEvent(RuntimeEventType.PLANNED, {"plan_id": plan.id}))
 
