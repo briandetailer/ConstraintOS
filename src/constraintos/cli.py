@@ -20,6 +20,7 @@ except ImportError:  # pragma: no cover
     Draft202012Validator = None
 
 from constraintos.compiler import compile_to_text
+from constraintos.id_audit import audit_ids
 from constraintos.patching import create_patch_package, create_regression_baseline
 from constraintos.schema_registry import SCHEMA_REGISTRY, SPECIAL_SCHEMA_RULES, detect_record_type, detect_schema as registry_detect_schema, registry_report
 
@@ -300,6 +301,16 @@ def registry_check(args: argparse.Namespace) -> int:
     return 0
 
 
+def id_audit_cmd(args: argparse.Namespace) -> int:
+    report = audit_ids(args.repo_root)
+    if args.output:
+        write_yaml(Path(args.output), report)
+        print(f"Wrote ID audit report: {args.output}")
+    else:
+        print(yaml.safe_dump(report, sort_keys=False))
+    return 0 if report["id_audit_report"]["status"] == "pass" else 1
+
+
 def export_markdown(args: argparse.Namespace) -> int:
     source = Path(args.source)
     data = load_yaml(source)
@@ -346,6 +357,7 @@ def build_parser() -> argparse.ArgumentParser:
     reg = sub.add_parser("registry"); reg.add_argument("paths", nargs="*", default=["docs", "examples", "reports", "patches", "baselines"]); reg.add_argument("--output"); reg.set_defaults(func=registry)
     reg_report = sub.add_parser("registry-report"); reg_report.add_argument("--output"); reg_report.set_defaults(func=registry_report_cmd)
     reg_check = sub.add_parser("registry-check"); reg_check.add_argument("--repo-root", default="."); reg_check.set_defaults(func=registry_check)
+    id_audit_parser = sub.add_parser("id-audit"); id_audit_parser.add_argument("--repo-root", default="."); id_audit_parser.add_argument("--output"); id_audit_parser.set_defaults(func=id_audit_cmd)
     md = sub.add_parser("export-md"); md.add_argument("source"); md.add_argument("--output"); md.set_defaults(func=export_markdown)
     comp = sub.add_parser("compile"); comp.add_argument("source"); comp.add_argument("--renderer", default="generic"); comp.add_argument("--format", choices=["text", "json"], default="text"); comp.add_argument("--output"); comp.add_argument("--fail-on-unsupported", action="store_true"); comp.set_defaults(func=compile_spec)
     return parser
