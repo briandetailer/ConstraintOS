@@ -46,6 +46,8 @@ Render specification schema validation now checks that these references use `CPA
 - Pack entries are appended only when their IDs are not already present.
 - A `constraint_packs` reference is added to the resulting render specification.
 - The source render specification and constraint pack are not mutated.
+- Duplicate IDs with identical content are skipped.
+- Duplicate IDs with different content are rejected instead of silently overwritten.
 
 ## CLI usage
 
@@ -78,4 +80,4 @@ The LF4 Engineering Atlas constraint pack captures the standing LF4 production s
 
 ## Design note
 
-Constraint Packs now have a validated schema, deterministic applicator, CLI entry point, and validated render-specification reference format. Multiple packs can be applied in a stable order before runtime or validation consumes the resulting render specification.
+Constraint Packs now have a validated schema, deterministic applicator, CLI entry point, validated render-specification reference format, and duplicate-ID conflict detection. Multiple packs can be applied in a stable order before runtime or validation consumes the resulting render specification.
