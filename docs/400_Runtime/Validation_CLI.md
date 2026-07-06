@@ -15,6 +15,8 @@ cos-validate examples/render/lf4_engine_render_specification.yaml --evidence exa
 ```text
 Render Specification
   ↓
+Optional Constraint Packs
+  ↓
 Evidence File
   ↓
 Validation Approval Pipeline
@@ -30,6 +32,18 @@ evidence:
     status: passed
     message: LF4 specificity passed.
 ```
+
+## Constraint packs
+
+Constraint packs can be applied before validation:
+
+```powershell
+cos-validate examples/render/lf4_engine_render_specification.yaml `
+  --constraint-pack examples/constraint_packs/lf4_engine_constraint_pack.yaml `
+  --evidence examples/validation/lf4_passing_evidence.yaml
+```
+
+Use `--constraint-pack` more than once to apply multiple packs in order.
 
 ## IDs
 
