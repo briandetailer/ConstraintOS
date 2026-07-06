@@ -20,6 +20,12 @@ def test_require_registered_schema_accepts_expected_render_specification() -> No
     require_registered_schema(RENDER_SPECIFICATION, payload, expected_record_type="render_specification")
 
 
+def test_require_registered_schema_accepts_expected_constraint_pack() -> None:
+    payload = load_yaml(CONSTRAINT_PACK)
+
+    require_registered_schema(CONSTRAINT_PACK, payload, expected_record_type="constraint_pack")
+
+
 def test_validate_against_registered_schema_reports_schema_errors() -> None:
     payload = load_yaml(CONSTRAINT_PACK)
     payload["validation"]["gates"] = []
