@@ -60,5 +60,5 @@ def test_runtime_engine_returns_failed_result_for_invalid_specification() -> Non
     assert result.success is False
     assert result.plan is None
     assert result.messages == ["Missing action for step 1"]
-    assert failed_events[0]["payload"]["error_type"] == "PlannerError"
+    assert failed_events[0]["payload"]["error_type"] == "PlanningError"
     assert failed_events[0]["payload"]["error"] == "Missing action for step 1"
