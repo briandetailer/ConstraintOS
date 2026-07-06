@@ -23,6 +23,25 @@ Optional fields include:
 - `message`: human-readable context.
 - `details`: structured machine-readable context.
 
+## Status vocabulary
+
+Evidence status must use one of the registered vocabulary values:
+
+Passing statuses:
+
+- `pass`
+- `passed`
+- `complete`
+- `approved`
+
+Failing statuses:
+
+- `fail`
+- `failed`
+- `rejected`
+
+The schema rejects unknown status values before the validation pipeline runs.
+
 ## Gate alignment
 
 Evidence is checked against the evaluated render specification gates after schema validation.
