@@ -1,6 +1,6 @@
 """ConstraintOS Runtime package."""
 
-from runtime.artifacts import ArtifactCollector, ArtifactStore, ArtifactStoreError, RuntimeArtifact, RuntimeEvidenceBundleWriter, RuntimeReportWriter, RuntimeTraceReportWriter
+from runtime.artifacts import ArtifactCollector, ArtifactStore, ArtifactStoreError, RuntimeArtifact, RuntimeEvidenceBundleWriter, RuntimeEvidenceVerification, RuntimeReportWriter, RuntimeTraceReportWriter, verify_runtime_evidence_manifest
 from runtime.context import RuntimeContext
 from runtime.engine import RuntimeEngine
 from runtime.events import RuntimeEvent, RuntimeEventType
@@ -22,6 +22,7 @@ __all__ = [
     "ArtifactStoreError",
     "RuntimeArtifact",
     "RuntimeEvidenceBundleWriter",
+    "RuntimeEvidenceVerification",
     "RuntimeReportWriter",
     "RuntimeTraceReportWriter",
     "RuntimeContext",
@@ -38,6 +39,7 @@ __all__ = [
     "verify_completed_runtime_traceability",
     "verify_exception_boundary_runtime_events",
     "verify_partial_schedule_runtime_events",
+    "verify_runtime_evidence_manifest",
     "verify_runtime_result_summary",
     "verify_runtime_trace",
     "verify_successful_runtime_events",
