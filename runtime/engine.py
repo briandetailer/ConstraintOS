@@ -94,7 +94,7 @@ class RuntimeEngine:
                 events.append(
                     RuntimeEvent(
                         RuntimeEventType.FAILED,
-                        {"unscheduled_nodes": schedule.unscheduled_nodes},
+                        {"unscheduled_nodes": schedule.unscheduled_nodes, "unscheduled_count": len(schedule.unscheduled_nodes)},
                     )
                 )
                 return RuntimeResult(
