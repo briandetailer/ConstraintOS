@@ -1,6 +1,7 @@
 from __future__ import annotations
 
-from dataclasses import dataclass
+from copy import deepcopy
+from dataclasses import dataclass, field
 from typing import Any
 
 from constraintos.approval import ApprovalDecision, ApprovalEngine
@@ -18,12 +19,14 @@ class ValidationApprovalResult:
     failure_report: ValidationFailureReport
     remediation_plan: ValidationRemediationPlan
     revision_request: ValidationRevisionRequest
+    constraint_packs: list[dict[str, Any]] = field(default_factory=list)
 
     def approved(self) -> bool:
         return self.approval_decision.approved()
 
     def to_dict(self) -> dict[str, Any]:
         return {
+            "constraint_packs": deepcopy(self.constraint_packs),
             "validation": self.validation_report.to_dict(),
             "failure_report": self.failure_report.to_dict(),
             "remediation_plan": self.remediation_plan.to_dict(),
@@ -81,4 +84,5 @@ class ValidationApprovalPipeline:
             failure_report=failure_report,
             remediation_plan=remediation_plan,
             revision_request=revision_request,
+            constraint_packs=deepcopy(validation_report.constraint_packs),
         )
