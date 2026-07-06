@@ -126,8 +126,14 @@ Generation must not self-certify. Runtime validation should remain independent o
 
 ## Current baseline
 
-Current validated baseline: 394 passing tests.
+Last user-reported full-suite baseline before Runtime Milestone 3 closeout documentation: 398 passing tests.
+
+The later CSL validation-result contract work is adjacent groundwork and should be validated separately before treating the whole branch as a newer baseline.
 
 ## Closeout posture
 
-The Runtime layer is complete enough to close Milestone 2. Current Runtime work is Milestone 3 contract hardening: replayability, public contracts, plugin interface hardening, traceability, evidence bundles, and validation-first enterprise integration.
+Runtime Milestone 3 is now in closeout and external-consumer packaging mode. See `Runtime_Milestone_3_Closeout.md` for the closeout record.
+
+The next Runtime work should focus on examples, documentation, and integration boundaries for the public evidence package rather than additional core orchestration implementation.
+
+CSL design and early verifier work is parked as future-facing schema/compiler/validator groundwork and should resume as a dedicated track after Runtime Milestone 3 is closed.
