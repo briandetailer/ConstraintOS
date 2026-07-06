@@ -25,6 +25,19 @@ A constraint pack contains:
 - `negative_constraints`: things the artifact must not do.
 - `validation.gates`: gates used by the validation pipeline.
 
+## Render specification references
+
+When a pack is applied, the resulting render specification records the pack under `constraint_packs`.
+
+```yaml
+constraint_packs:
+  - id: CPACK-0001
+    version: "0.1"
+    title: LF4 Engineering Atlas Constraint Pack
+```
+
+Render specification schema validation now checks that these references use `CPACK-0000` style IDs.
+
 ## Applying a pack
 
 `apply_constraint_pack` merges a pack into a render specification deterministically:
@@ -65,4 +78,4 @@ The LF4 Engineering Atlas constraint pack captures the standing LF4 production s
 
 ## Design note
 
-Constraint Packs now have a validated schema, deterministic applicator, and CLI entry point. Multiple packs can be applied in a stable order before runtime or validation consumes the resulting render specification.
+Constraint Packs now have a validated schema, deterministic applicator, CLI entry point, and validated render-specification reference format. Multiple packs can be applied in a stable order before runtime or validation consumes the resulting render specification.
