@@ -33,6 +33,8 @@ evidence:
     message: LF4 specificity passed.
 ```
 
+Evidence files are validated against the registered Validation Evidence schema before the validation pipeline runs.
+
 ## Constraint packs
 
 Constraint packs can be applied before validation:
@@ -51,9 +53,9 @@ Text summary output includes the applied constraint pack count.
 
 ## Schema validation
 
-`cos-validate` validates the render specification and every supplied constraint pack against their registered schemas before validation begins.
+`cos-validate` validates the render specification, every supplied constraint pack, and the evidence file against their registered schemas before validation begins.
 
-Malformed render specifications or constraint packs return exit code `2` with a schema error that names the schema path and failing field.
+Malformed render specifications, constraint packs, or evidence files return exit code `2` with a schema error that names the schema path and failing field.
 
 ## IDs
 
