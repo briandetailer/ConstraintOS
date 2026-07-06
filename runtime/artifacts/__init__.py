@@ -1,5 +1,5 @@
 from runtime.artifacts.collector import ArtifactCollector
-from runtime.artifacts.contract_reporter import RuntimeContractRegistryReportWriter
+from runtime.artifacts.contract_reporter import RuntimeContractRegistryReportWriter, verify_runtime_contract_registry_report
 from runtime.artifacts.evidence import RuntimeEvidenceBundleWriter, RuntimeEvidenceVerification, verify_runtime_evidence_manifest
 from runtime.artifacts.models import RuntimeArtifact
 from runtime.artifacts.reporter import RuntimeReportWriter
@@ -16,5 +16,6 @@ __all__ = [
     "RuntimeEvidenceVerification",
     "RuntimeReportWriter",
     "RuntimeTraceReportWriter",
+    "verify_runtime_contract_registry_report",
     "verify_runtime_evidence_manifest",
 ]
