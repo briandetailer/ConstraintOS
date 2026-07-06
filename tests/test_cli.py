@@ -4,6 +4,9 @@ import yaml
 
 from constraintos.cli import main
 
+RENDER_SPECIFICATION = "examples/render/lf4_engine_render_specification.yaml"
+CONSTRAINT_PACK = "examples/constraint_packs/lf4_engine_constraint_pack.yaml"
+
 
 def test_new_artifact(tmp_path: Path) -> None:
     output = tmp_path / "artifact.yaml"
@@ -53,3 +56,34 @@ def test_invalid_id(tmp_path: Path) -> None:
     rc = main(["new-artifact", "BAD", "Bad Artifact", "--output", str(output)])
     assert rc == 2
     assert not output.exists()
+
+
+def test_validate_accepts_registered_render_specification(capsys) -> None:
+    rc = main(["validate", RENDER_SPECIFICATION, "--repo-root", "."])
+
+    assert rc == 0
+    assert "PASS:" in capsys.readouterr().out
+
+
+def test_validate_rejects_schema_invalid_render_specification(tmp_path: Path, capsys) -> None:
+    invalid_render_specification = tmp_path / "invalid-render-specification.yaml"
+    payload = yaml.safe_load(Path(RENDER_SPECIFICATION).read_text(encoding="utf-8"))
+    payload["validation"]["gates"] = []
+    invalid_render_specification.write_text(yaml.safe_dump(payload), encoding="utf-8")
+
+    rc = main(["validate", str(invalid_render_specification), "--repo-root", "."])
+
+    assert rc == 1
+    assert "schema:schemas/render-specification.schema.json:validation.gates" in capsys.readouterr().out
+
+
+def test_validate_rejects_schema_invalid_constraint_pack(tmp_path: Path, capsys) -> None:
+    invalid_constraint_pack = tmp_path / "invalid-constraint-pack.yaml"
+    payload = yaml.safe_load(Path(CONSTRAINT_PACK).read_text(encoding="utf-8"))
+    payload["validation"]["gates"] = []
+    invalid_constraint_pack.write_text(yaml.safe_dump(payload), encoding="utf-8")
+
+    rc = main(["validate", str(invalid_constraint_pack), "--repo-root", "."])
+
+    assert rc == 1
+    assert "schema:schemas/constraint-pack.schema.json:validation.gates" in capsys.readouterr().out
