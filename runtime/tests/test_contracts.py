@@ -1,4 +1,9 @@
-from runtime import get_runtime_contract, runtime_contract_registry, verify_runtime_contract_registry
+from runtime import (
+    get_runtime_contract,
+    runtime_contract_registry,
+    verify_artifact_writer_contract_coverage,
+    verify_runtime_contract_registry,
+)
 
 
 def test_runtime_contract_registry_declares_enterprise_boundary_contracts() -> None:
@@ -30,13 +35,32 @@ def test_runtime_contract_registry_declares_enterprise_boundary_contracts() -> N
 
 
 def test_runtime_contract_registry_covers_artifact_writers() -> None:
-    registry = runtime_contract_registry()
-    contracts_by_producer = {contract["produced_by"]: contract for contract in registry["contracts"]}
+    verification = verify_artifact_writer_contract_coverage(runtime_contract_registry())
 
-    assert contracts_by_producer["RuntimeReportWriter"]["name"] == "runtime_report"
-    assert contracts_by_producer["RuntimeTraceReportWriter"]["name"] == "runtime_trace_report"
-    assert contracts_by_producer["RuntimeEvidenceBundleWriter"]["name"] == "runtime_evidence_manifest"
-    assert contracts_by_producer["RuntimeContractRegistryReportWriter"]["name"] == "runtime_contract_registry"
+    assert verification.successful() is True
+    assert verification.to_dict() == {
+        "runtime_contract_verification": {"successful": True, "issue_count": 0},
+        "issues": [],
+    }
+
+
+def test_artifact_writer_contract_coverage_reports_missing_contracts() -> None:
+    registry = runtime_contract_registry()
+    registry["contracts"] = [
+        contract for contract in registry["contracts"] if contract["produced_by"] != "RuntimeTraceReportWriter"
+    ]
+    registry["contracts"][1]["name"] = "wrong_runtime_report"
+    registry["contracts"][1]["contract_type"] = "json_document"
+    registry["runtime_contract_registry"]["contract_count"] = len(registry["contracts"])
+
+    verification = verify_artifact_writer_contract_coverage(registry)
+
+    assert verification.successful() is False
+    assert verification.issues == [
+        "Runtime artifact writer RuntimeReportWriter must produce contract runtime_report.",
+        "Runtime artifact writer RuntimeReportWriter contract_type must be artifact_json.",
+        "Runtime artifact writer RuntimeTraceReportWriter requires a public contract.",
+    ]
 
 
 def test_get_runtime_contract_returns_named_contract() -> None:
