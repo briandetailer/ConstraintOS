@@ -1,5 +1,5 @@
 from runtime.artifacts.collector import ArtifactCollector
-from runtime.artifacts.evidence import RuntimeEvidenceBundleWriter
+from runtime.artifacts.evidence import RuntimeEvidenceBundleWriter, RuntimeEvidenceVerification, verify_runtime_evidence_manifest
 from runtime.artifacts.models import RuntimeArtifact
 from runtime.artifacts.reporter import RuntimeReportWriter
 from runtime.artifacts.store import ArtifactStore, ArtifactStoreError
@@ -11,6 +11,8 @@ __all__ = [
     "ArtifactStoreError",
     "RuntimeArtifact",
     "RuntimeEvidenceBundleWriter",
+    "RuntimeEvidenceVerification",
     "RuntimeReportWriter",
     "RuntimeTraceReportWriter",
+    "verify_runtime_evidence_manifest",
 ]
