@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from copy import deepcopy
 from typing import Any
 
 
@@ -24,6 +25,13 @@ def _required_mapping(specification: dict[str, Any], key: str) -> dict[str, Any]
     return value
 
 
+def _constraint_pack_references(specification: dict[str, Any]) -> list[dict[str, Any]]:
+    value = specification.get("constraint_packs", [])
+    if not isinstance(value, list):
+        raise ValueError("render specification contract constraint_packs must be a list")
+    return [deepcopy(item) for item in value if isinstance(item, dict)]
+
+
 def compile_render_contract_to_runtime(specification: dict[str, Any]) -> dict[str, Any]:
     render_specification = _render_specification(specification)
     subject = _required_mapping(specification, "subject")
@@ -34,6 +42,7 @@ def compile_render_contract_to_runtime(specification: dict[str, Any]) -> dict[st
     if not isinstance(gates, list) or not gates:
         raise ValueError("render specification contract must include validation gates")
 
+    constraint_packs = _constraint_pack_references(specification)
     render_specification_id = str(render_specification.get("id", "RSPEC-UNKNOWN"))
     return {
         "artifact": {
@@ -41,6 +50,11 @@ def compile_render_contract_to_runtime(specification: dict[str, Any]) -> dict[st
             "title": str(render_specification.get("title", render_specification_id)),
             "type": "render_contract_runtime",
             "status": "planned",
+            "constraint_packs": constraint_packs,
+        },
+        "render_contract": {
+            "render_specification_id": render_specification_id,
+            "constraint_packs": constraint_packs,
         },
         "execution_steps": [
             {
