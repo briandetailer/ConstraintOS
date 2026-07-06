@@ -26,15 +26,17 @@ class RuntimeScheduler:
         unscheduled: list[str] = []
         for stage in stages:
             stage_id = stage.get("id", "UNKNOWN-STAGE")
+            reserved_workers: set[str] = set()
             for node_id in stage.get("node_ids", []):
                 node = nodes.get(node_id)
                 if not node:
                     unscheduled.append(str(node_id))
                     continue
-                worker = self._select_worker(str(node.get("plugin")), worker_pool)
+                worker = self._select_worker(str(node.get("plugin")), worker_pool, reserved_workers)
                 if worker is None:
                     unscheduled.append(str(node_id))
                     continue
+                reserved_workers.add(worker.worker_id)
                 assignments.append(
                     ScheduledAssignment(
                         node_id=str(node_id),
@@ -63,8 +65,9 @@ class RuntimeScheduler:
             status=str(worker.get("status", "available")),
         )
 
-    def _select_worker(self, plugin: str, workers: list[WorkerCapability]) -> WorkerCapability | None:
-        candidates = [worker for worker in workers if worker.supports(plugin)]
+    def _select_worker(self, plugin: str, workers: list[WorkerCapability], reserved_workers: set[str] | None = None) -> WorkerCapability | None:
+        reserved = reserved_workers or set()
+        candidates = [worker for worker in workers if worker.worker_id not in reserved and worker.supports(plugin)]
         if not candidates:
             return None
         return sorted(candidates, key=lambda worker: worker.worker_id)[0]
