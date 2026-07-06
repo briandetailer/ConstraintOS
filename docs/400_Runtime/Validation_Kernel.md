@@ -29,6 +29,7 @@ The first implementation supports deterministic gate evaluation:
 - An optional gate can fail without failing the whole report.
 - Render specifications can be evaluated directly by reading their `validation.gates` section.
 - Missing or failing evidence receives a machine-readable issue code.
+- Applied constraint pack references are preserved in the validation report.
 
 ## Passing evidence statuses
 
@@ -40,6 +41,12 @@ passed
 complete
 approved
 ```
+
+## Constraint pack traceability
+
+When a render specification contains `constraint_packs`, the validation report records those references under `validation_report.constraint_packs`.
+
+This keeps the validation result tied to the reusable standards that were applied before validation.
 
 ## Issue codes
 
@@ -59,7 +66,14 @@ Current built-in issue codes:
   "validation_report": {
     "id": "VALIDATION-REPORT-0001",
     "subject_id": "LF4-ENGINE",
-    "status": "failed"
+    "status": "failed",
+    "constraint_packs": [
+      {
+        "id": "CPACK-0001",
+        "version": "0.1",
+        "title": "LF4 Engineering Atlas Constraint Pack"
+      }
+    ]
   },
   "results": [
     {
@@ -81,4 +95,4 @@ Current built-in issue codes:
 
 ## Design note
 
-This does not yet inspect images or generated files. It defines the reporting structure, pass/fail semantics, and machine-readable issue codes that future validators will use.
+This does not yet inspect images or generated files. It defines the reporting structure, pass/fail semantics, traceability metadata, and machine-readable issue codes that future validators will use.
