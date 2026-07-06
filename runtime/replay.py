@@ -18,6 +18,21 @@ PARTIAL_SCHEDULE_RUNTIME_EVENT_ORDER = (
     "runtime_failed",
 )
 
+EXCEPTION_BOUNDARY_RUNTIME_EVENT_ORDER = (
+    "runtime_started",
+    "runtime_failed",
+)
+
+SUMMARY_KEYS = (
+    "plan_nodes",
+    "plan_stages",
+    "scheduled_assignments",
+    "unscheduled_nodes",
+    "node_results",
+    "artifacts",
+    "events",
+)
+
 
 @dataclass(frozen=True)
 class RuntimeReplayVerification:
@@ -101,6 +116,36 @@ def verify_partial_schedule_runtime_events(result: Any) -> RuntimeReplayVerifica
     )
 
 
+def verify_exception_boundary_runtime_events(result: Any) -> RuntimeReplayVerification:
+    """Verify runtime_failed event behavior for exception-boundary failures."""
+
+    data = _runtime_data(result)
+    expected_event_types = list(EXCEPTION_BOUNDARY_RUNTIME_EVENT_ORDER)
+    input_issue = _input_issue(data)
+    if input_issue:
+        return RuntimeReplayVerification(event_types=[], expected_event_types=expected_event_types, issues=[input_issue])
+
+    events = data.get("events", [])
+    events_issue = _events_issue(events)
+    if events_issue:
+        return RuntimeReplayVerification(event_types=[], expected_event_types=expected_event_types, issues=[events_issue])
+
+    event_types = _event_types(events)
+    issues = _event_order_issues(
+        label="Exception-boundary runtime",
+        event_types=event_types,
+        expected_event_types=expected_event_types,
+        raw_events=events,
+    )
+    issues.extend(_exception_boundary_payload_issues(data, events))
+
+    return RuntimeReplayVerification(
+        event_types=event_types,
+        expected_event_types=expected_event_types,
+        issues=issues,
+    )
+
+
 def verify_completed_runtime_traceability(result: Any) -> RuntimeReplayVerification:
     """Verify completed runtime identifiers and cross-payload event references."""
 
@@ -127,6 +172,29 @@ def verify_completed_runtime_traceability(result: Any) -> RuntimeReplayVerificat
     return RuntimeReplayVerification(
         event_types=event_types,
         expected_event_types=expected_event_types,
+        issues=issues,
+    )
+
+
+def verify_runtime_result_summary(result: Any) -> RuntimeReplayVerification:
+    """Verify runtime summary counts against the serialized runtime payload."""
+
+    data = _runtime_data(result)
+    input_issue = _input_issue(data)
+    if input_issue:
+        return RuntimeReplayVerification(event_types=[], expected_event_types=[], issues=[input_issue])
+
+    events = data.get("events", [])
+    events_issue = _events_issue(events)
+    if events_issue:
+        return RuntimeReplayVerification(event_types=[], expected_event_types=[], issues=[events_issue])
+
+    event_types = _event_types(events)
+    issues = _summary_consistency_issues(data, events)
+
+    return RuntimeReplayVerification(
+        event_types=event_types,
+        expected_event_types=event_types,
         issues=issues,
     )
 
@@ -192,6 +260,29 @@ def _partial_schedule_payload_issues(data: dict[str, Any], events: list[Any]) ->
     return issues
 
 
+def _exception_boundary_payload_issues(data: dict[str, Any], events: list[Any]) -> list[str]:
+    issues: list[str] = []
+    runtime_result = _dict_value(data, "runtime_result")
+    if runtime_result.get("status") != "failed":
+        issues.append("Exception-boundary runtime replay requires runtime_result status to be failed.")
+
+    failed_payload = _final_failed_event_payload(events)
+    if failed_payload is None:
+        issues.append("Exception-boundary runtime replay requires a runtime_failed event payload.")
+        return issues
+
+    if not failed_payload.get("error"):
+        issues.append("Exception-boundary runtime_failed payload requires error text.")
+    if not failed_payload.get("error_type"):
+        issues.append("Exception-boundary runtime_failed payload requires error_type.")
+
+    messages = data.get("messages", [])
+    if isinstance(messages, list) and failed_payload.get("error") and failed_payload.get("error") not in messages:
+        issues.append("Exception-boundary runtime_failed error must be preserved in runtime messages.")
+
+    return issues
+
+
 def _completed_traceability_issues(data: dict[str, Any], events: list[Any]) -> list[str]:
     issues: list[str] = []
     runtime_result = _dict_value(data, "runtime_result")
@@ -252,6 +343,25 @@ def _completed_traceability_issues(data: dict[str, Any], events: list[Any]) -> l
     return issues
 
 
+def _summary_consistency_issues(data: dict[str, Any], events: list[Any]) -> list[str]:
+    summary = _dict_value(data, "summary")
+    expected_summary = {
+        "plan_nodes": len(_list_value(_dict_value(data, "plan"), "nodes")),
+        "plan_stages": len(_list_value(_dict_value(data, "plan"), "stages")),
+        "scheduled_assignments": len(_list_value(_dict_value(data, "schedule"), "assignments")),
+        "unscheduled_nodes": len(_list_value(_dict_value(data, "schedule"), "unscheduled_nodes")),
+        "node_results": len(_list_value(_dict_value(data, "execution"), "node_results")),
+        "artifacts": len(_list_value(_dict_value(data, "artifacts"), "artifacts")),
+        "events": len(events),
+    }
+
+    issues: list[str] = []
+    for key in SUMMARY_KEYS:
+        if summary.get(key) != expected_summary[key]:
+            issues.append(f"Runtime summary {key} must be {expected_summary[key]}.")
+    return issues
+
+
 def _dict_value(value: dict[str, Any], key: str) -> dict[str, Any]:
     payload = value.get(key, {}) if isinstance(value, dict) else {}
     return payload if isinstance(payload, dict) else {}
@@ -261,10 +371,13 @@ def _nested_dict_value(value: dict[str, Any], key: str, nested_key: str) -> dict
     return _dict_value(_dict_value(value, key), nested_key)
 
 
+def _list_value(value: dict[str, Any], key: str) -> list[Any]:
+    payload = value.get(key, []) if isinstance(value, dict) else []
+    return payload if isinstance(payload, list) else []
+
+
 def _node_result_count(data: dict[str, Any]) -> int:
-    execution = _dict_value(data, "execution")
-    node_results = execution.get("node_results", [])
-    return len(node_results) if isinstance(node_results, list) else 0
+    return len(_list_value(_dict_value(data, "execution"), "node_results"))
 
 
 def _event_payload(events: list[Any], event_type: str) -> dict[str, Any]:
