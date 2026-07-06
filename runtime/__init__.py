@@ -1,6 +1,6 @@
 """ConstraintOS Runtime package."""
 
-from runtime.artifacts import ArtifactCollector, ArtifactStore, ArtifactStoreError, RuntimeArtifact, RuntimeReportWriter
+from runtime.artifacts import ArtifactCollector, ArtifactStore, ArtifactStoreError, RuntimeArtifact, RuntimeReportWriter, RuntimeTraceReportWriter
 from runtime.context import RuntimeContext
 from runtime.engine import RuntimeEngine
 from runtime.events import RuntimeEvent, RuntimeEventType
@@ -22,6 +22,7 @@ __all__ = [
     "ArtifactStoreError",
     "RuntimeArtifact",
     "RuntimeReportWriter",
+    "RuntimeTraceReportWriter",
     "RuntimeContext",
     "RuntimeEngine",
     "RuntimeEvent",
