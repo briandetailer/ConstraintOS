@@ -3,6 +3,7 @@ from __future__ import annotations
 import argparse
 import json
 import sys
+from copy import deepcopy
 from pathlib import Path
 from typing import Any
 
@@ -103,13 +104,47 @@ def load_workers_file(path: Path) -> list[WorkerCapability]:
     return workers
 
 
-def workers_from_args(raw_workers: list[str] | None, workers_file: str | None = None, default_workers: list[str] | None = None) -> list[WorkerCapability]:
+def workers_from_args(
+    raw_workers: list[str] | None,
+    workers_file: str | None = None,
+    default_workers: list[str] | None = None,
+) -> list[WorkerCapability]:
     workers: list[WorkerCapability] = []
     if workers_file:
         workers.extend(load_workers_file(Path(workers_file)))
     if raw_workers:
         workers.extend(parse_worker(worker) for worker in raw_workers)
     return workers or [parse_worker(worker) for worker in (default_workers or DEFAULT_WORKERS)]
+
+
+def constraint_pack_references(specification: dict[str, Any]) -> list[dict[str, Any]]:
+    render_contract = specification.get("render_contract", {})
+    if isinstance(render_contract, dict) and isinstance(render_contract.get("constraint_packs"), list):
+        return [deepcopy(item) for item in render_contract["constraint_packs"] if isinstance(item, dict)]
+    artifact = specification.get("artifact", {})
+    if isinstance(artifact, dict) and isinstance(artifact.get("constraint_packs"), list):
+        return [deepcopy(item) for item in artifact["constraint_packs"] if isinstance(item, dict)]
+    return []
+
+
+def traceability_payload(specification: dict[str, Any]) -> dict[str, Any]:
+    references = constraint_pack_references(specification)
+    payload: dict[str, Any] = {}
+    artifact = specification.get("artifact", {})
+    if isinstance(artifact, dict) and references:
+        payload["artifact"] = {"id": artifact.get("id"), "constraint_packs": references}
+    render_contract = specification.get("render_contract", {})
+    if isinstance(render_contract, dict) and references:
+        payload["render_contract"] = {
+            "render_specification_id": render_contract.get("render_specification_id"),
+            "constraint_packs": references,
+        }
+    return payload
+
+
+def attach_traceability(payload: dict[str, Any], specification: dict[str, Any]) -> dict[str, Any]:
+    payload.update(traceability_payload(specification))
+    return payload
 
 
 def plan_runtime(specification: dict[str, Any], workers: list[WorkerCapability]) -> dict[str, Any]:
@@ -119,23 +154,45 @@ def plan_runtime(specification: dict[str, Any], workers: list[WorkerCapability])
     plan = planner.build(specification)
     resolver.validate(plan)
     schedule = scheduler.schedule(plan, workers)
-    return {"plan": plan.to_dict(), "schedule": schedule.to_dict()}
+    return attach_traceability({"plan": plan.to_dict(), "schedule": schedule.to_dict()}, specification)
+
+
+def constraint_pack_count(payload: dict[str, Any]) -> int:
+    render_contract = payload.get("render_contract", {})
+    if isinstance(render_contract, dict) and isinstance(render_contract.get("constraint_packs"), list):
+        return len(render_contract["constraint_packs"])
+    artifact = payload.get("artifact", {})
+    if isinstance(artifact, dict) and isinstance(artifact.get("constraint_packs"), list):
+        return len(artifact["constraint_packs"])
+    return 0
 
 
 def summarize_payload(payload: dict[str, Any]) -> str:
     lines: list[str] = []
     runtime_result = payload.get("runtime_result")
     if isinstance(runtime_result, dict):
-        lines.append(f"Runtime {runtime_result.get('id', 'unknown')}: {runtime_result.get('status', 'unknown')} (success={runtime_result.get('success', False)})")
+        lines.append(
+            f"Runtime {runtime_result.get('id', 'unknown')}: "
+            f"{runtime_result.get('status', 'unknown')} (success={runtime_result.get('success', False)})"
+        )
     plan = payload.get("plan")
     if isinstance(plan, dict):
         plan_header = plan.get("execution_plan", {})
         required_plugins = ",".join(plan.get("required_plugins", [])) or "none"
-        lines.append(f"Plan {plan_header.get('id', 'unknown')}: {plan_header.get('status', 'unknown')} | nodes={len(plan.get('nodes', []))} | stages={len(plan.get('stages', []))} | plugins={required_plugins}")
+        lines.append(
+            f"Plan {plan_header.get('id', 'unknown')}: {plan_header.get('status', 'unknown')} | "
+            f"nodes={len(plan.get('nodes', []))} | stages={len(plan.get('stages', []))} | plugins={required_plugins}"
+        )
+    count = constraint_pack_count(payload)
+    if count:
+        lines.append(f"Constraint packs: {count}")
     schedule = payload.get("schedule")
     if isinstance(schedule, dict):
         schedule_header = schedule.get("schedule_result", {})
-        lines.append(f"Schedule {schedule_header.get('id', 'unknown')}: {schedule_header.get('status', 'unknown')} | assignments={len(schedule.get('assignments', []))} | unscheduled={len(schedule.get('unscheduled_nodes', []))}")
+        lines.append(
+            f"Schedule {schedule_header.get('id', 'unknown')}: {schedule_header.get('status', 'unknown')} | "
+            f"assignments={len(schedule.get('assignments', []))} | unscheduled={len(schedule.get('unscheduled_nodes', []))}"
+        )
     execution = payload.get("execution")
     if isinstance(execution, dict):
         execution_header = execution.get("execution_result", {})
@@ -182,8 +239,13 @@ def run_runtime(args: argparse.Namespace) -> int:
     artifact_store = ArtifactStore(Path(args.artifact_root))
     executor = create_default_plugin_executor() if args.plugin_executor else None
     engine = RuntimeEngine(executor=executor, artifact_store=artifact_store)
-    result = engine.run(specification, workers, RuntimeContext(workspace=Path(args.workspace), variables={"specification": args.specification}), runtime_id=args.runtime_id)
-    payload = result.to_dict()
+    result = engine.run(
+        specification,
+        workers,
+        RuntimeContext(workspace=Path(args.workspace), variables={"specification": args.specification}),
+        runtime_id=args.runtime_id,
+    )
+    payload = attach_traceability(result.to_dict(), specification)
     if args.report:
         RuntimeReportWriter(artifact_store).write_report(result)
         payload["artifacts"] = artifact_store.to_dict()
