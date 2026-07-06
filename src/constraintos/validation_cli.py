@@ -34,8 +34,13 @@ def load_required_object(path: Path) -> dict[str, Any]:
 def load_evidence(path: str | None) -> list[dict[str, Any]]:
     if path is None:
         return []
-    data = load_data_file(Path(path))
-    raw_evidence = data.get("evidence") if isinstance(data, dict) else data
+    evidence_path = Path(path)
+    data = load_data_file(evidence_path)
+    if isinstance(data, dict):
+        require_registered_schema(evidence_path, data, expected_record_type="validation_evidence")
+        raw_evidence = data.get("evidence")
+    else:
+        raw_evidence = data
     if not isinstance(raw_evidence, list):
         raise ValueError(f"{path} must contain an evidence list")
     for index, entry in enumerate(raw_evidence, start=1):
