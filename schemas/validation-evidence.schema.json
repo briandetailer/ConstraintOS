@@ -13,7 +13,10 @@
         "required": ["gate_id", "status"],
         "properties": {
           "gate_id": {"type": "string", "pattern": "^GATE-[0-9]{4}$"},
-          "status": {"type": "string", "minLength": 1},
+          "status": {
+            "type": "string",
+            "enum": ["pass", "passed", "complete", "approved", "fail", "failed", "rejected"]
+          },
           "message": {"type": "string"},
           "details": {"type": "object"}
         },
