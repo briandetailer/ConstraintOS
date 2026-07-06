@@ -1,0 +1,57 @@
+{
+  "csl_validation_result": {
+    "spec_id": "CSL-SPEC-0001",
+    "csl_version": "csl/v1",
+    "status": "passed",
+    "successful": true,
+    "root_group_id": "GROUP-ROOT"
+  },
+  "tree": {
+    "id": "GROUP-ROOT",
+    "record_type": "group",
+    "operator": "AND",
+    "status": "passed",
+    "children": [
+      {
+        "id": "CONSTRAINT-WIDTH",
+        "record_type": "constraint",
+        "constraint_type": "dimensional",
+        "status": "passed",
+        "expected": {
+          "min": 49.8,
+          "max": 50.2,
+          "unit": "mm"
+        },
+        "actual": {
+          "value": 50.0,
+          "unit": "mm"
+        },
+        "issues": []
+      },
+      {
+        "id": "GROUP-NOT-IN-KEEP-OUT",
+        "record_type": "group",
+        "operator": "NOT",
+        "status": "passed",
+        "children": [
+          {
+            "id": "CONSTRAINT-BODY-OVERLAPS-KEEP-OUT",
+            "record_type": "constraint",
+            "constraint_type": "geometric_relation",
+            "status": "failed",
+            "expected": {
+              "value": true
+            },
+            "actual": {
+              "value": false
+            },
+            "issues": []
+          }
+        ],
+        "issues": []
+      }
+    ],
+    "issues": []
+  },
+  "issues": []
+}
