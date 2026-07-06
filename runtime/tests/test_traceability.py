@@ -28,7 +28,7 @@ def test_runtime_traceability_maps_completed_runtime_result() -> None:
             "artifact_store": {"count": 1},
             "artifacts": [{"id": "ARTIFACT-0001", "uri": "echo://NODE-0001", "kind": "file", "producer": "NODE-0001"}],
         },
-        events=[RuntimeEvent(RuntimeEventType.RUNTIME_STARTED, {"runtime_id": "RUNTIME-0001"})],
+        events=[RuntimeEvent(RuntimeEventType.STARTED, {"runtime_id": "RUNTIME-0001"})],
     )
 
     trace = runtime_result_to_trace(result)
