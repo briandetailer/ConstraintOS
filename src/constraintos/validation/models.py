@@ -98,6 +98,7 @@ class ValidationReport:
     status: str
     results: list[ValidationResult]
     messages: list[str] = field(default_factory=list)
+    constraint_packs: list[dict[str, Any]] = field(default_factory=list)
 
     def passed(self) -> bool:
         return self.status == "passed"
@@ -109,6 +110,7 @@ class ValidationReport:
                 "subject_id": self.subject_id,
                 "status": self.status,
                 "created": date.today().isoformat(),
+                "constraint_packs": self.constraint_packs,
             },
             "results": [result.to_dict() for result in self.results],
             "messages": self.messages,
