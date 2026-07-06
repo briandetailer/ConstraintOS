@@ -66,6 +66,16 @@ def test_validation_approval_pipeline_serializes_combined_result() -> None:
     assert payload["approval"]["artifact"]["id"] == "ARTIFACT-0001"
 
 
+def test_validation_approval_pipeline_serializes_empty_root_constraint_packs() -> None:
+    payload = ValidationApprovalPipeline().evaluate_render_specification(
+        load_lf4_specification(),
+        evidence=passing_evidence(),
+        artifact_id="ARTIFACT-0001",
+    ).to_dict()
+
+    assert payload["constraint_packs"] == []
+
+
 def test_validation_approval_pipeline_preserves_constraint_pack_traceability() -> None:
     render_specification = apply_constraint_pack(load_lf4_specification(), load_lf4_constraint_pack())
 
@@ -75,6 +85,7 @@ def test_validation_approval_pipeline_preserves_constraint_pack_traceability() -
         artifact_id="ARTIFACT-0001",
     ).to_dict()
 
+    assert payload["constraint_packs"] == [CONSTRAINT_PACK_REFERENCE]
     assert payload["validation"]["validation_report"]["constraint_packs"] == [CONSTRAINT_PACK_REFERENCE]
     assert payload["failure_report"]["failure_report"]["constraint_packs"] == [CONSTRAINT_PACK_REFERENCE]
     assert payload["remediation_plan"]["remediation_plan"]["constraint_packs"] == [CONSTRAINT_PACK_REFERENCE]
@@ -91,6 +102,7 @@ def test_validation_approval_pipeline_preserves_constraint_pack_traceability_whe
         artifact_id="ARTIFACT-0001",
     ).to_dict()
 
+    assert payload["constraint_packs"] == [CONSTRAINT_PACK_REFERENCE]
     assert payload["validation"]["validation_report"]["status"] == "failed"
     assert payload["approval"]["approval"]["status"] == "rejected"
     assert payload["failure_report"]["failure_report"]["constraint_packs"] == [CONSTRAINT_PACK_REFERENCE]
