@@ -1,4 +1,5 @@
 import json
+from pathlib import Path
 
 import yaml
 
@@ -7,6 +8,14 @@ from constraintos.constraint_pack_cli import apply_constraint_packs, main
 RENDER_SPECIFICATION = "examples/render/lf4_engine_render_specification.yaml"
 CONSTRAINT_PACK = "examples/constraint_packs/lf4_engine_constraint_pack.yaml"
 CONSTRAINT_PACK_REFERENCE = {"id": "CPACK-0001", "version": "0.1", "title": "LF4 Engineering Atlas Constraint Pack"}
+
+
+def load_yaml(path: str) -> dict:
+    return yaml.safe_load(Path(path).read_text(encoding="utf-8"))
+
+
+def write_yaml(path: Path, payload: dict) -> None:
+    path.write_text(yaml.safe_dump(payload), encoding="utf-8")
 
 
 def test_constraint_pack_cli_writes_yaml_output(tmp_path, capsys) -> None:
@@ -54,6 +63,30 @@ def test_constraint_pack_cli_accepts_multiple_constraint_packs(capsys) -> None:
     payload = json.loads(capsys.readouterr().out)
     assert exit_code == 0
     assert payload["constraint_packs"] == [CONSTRAINT_PACK_REFERENCE]
+
+
+def test_constraint_pack_cli_rejects_schema_invalid_render_specification(tmp_path, capsys) -> None:
+    invalid_render_specification = tmp_path / "invalid-render-specification.yaml"
+    payload = load_yaml(RENDER_SPECIFICATION)
+    payload["validation"]["gates"] = []
+    write_yaml(invalid_render_specification, payload)
+
+    exit_code = main([str(invalid_render_specification), CONSTRAINT_PACK])
+
+    assert exit_code == 2
+    assert "schema:schemas/render-specification.schema.json:validation.gates" in capsys.readouterr().err
+
+
+def test_constraint_pack_cli_rejects_schema_invalid_constraint_pack(tmp_path, capsys) -> None:
+    invalid_pack = tmp_path / "invalid-constraint-pack.yaml"
+    payload = load_yaml(CONSTRAINT_PACK)
+    payload["validation"]["gates"] = []
+    write_yaml(invalid_pack, payload)
+
+    exit_code = main([RENDER_SPECIFICATION, str(invalid_pack)])
+
+    assert exit_code == 2
+    assert "schema:schemas/constraint-pack.schema.json:validation.gates" in capsys.readouterr().err
 
 
 def test_apply_constraint_packs_applies_packs_in_order() -> None:
