@@ -19,6 +19,8 @@ def test_runtime_result_summary_counts_completed_run() -> None:
     assert result.summary()["unscheduled_nodes"] == 0
     assert result.summary()["node_results"] == 2
     assert result.summary()["events"] == 5
+    assert result.terminal() is True
+    assert result.successful() is True
     assert result.to_dict()["summary"] == result.summary()
 
 
@@ -34,4 +36,6 @@ def test_runtime_result_summary_counts_partial_schedule() -> None:
     assert result.summary()["scheduled_assignments"] == 0
     assert result.summary()["unscheduled_nodes"] == 1
     assert result.summary()["node_results"] == 0
+    assert result.terminal() is True
+    assert result.successful() is False
     assert result.to_dict()["summary"] == result.summary()
