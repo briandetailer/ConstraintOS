@@ -1,6 +1,5 @@
 from pathlib import Path
 
-import pytest
 import yaml
 
 from constraintos.constraint_pack import apply_constraint_pack
@@ -46,28 +45,34 @@ def test_apply_constraint_pack_does_not_mutate_inputs() -> None:
     assert "constraint_packs" not in render_specification
 
 
-def test_apply_constraint_pack_rejects_duplicate_requirement_with_different_content() -> None:
+def test_apply_constraint_pack_keeps_existing_requirement_for_same_id() -> None:
     render_specification = load_yaml(RENDER_SPECIFICATION)
+    original_statement = render_specification["requirements"][0]["statement"]
     constraint_pack = load_yaml(CONSTRAINT_PACK)
-    constraint_pack["requirements"][0]["statement"] = "Different requirement text."
+    constraint_pack["requirements"][0]["statement"] = "Replacement text."
 
-    with pytest.raises(ValueError, match="duplicate requirements id has different content: REQ-0001"):
-        apply_constraint_pack(render_specification, constraint_pack)
+    applied = apply_constraint_pack(render_specification, constraint_pack)
+
+    assert applied["requirements"][0]["statement"] == original_statement
 
 
-def test_apply_constraint_pack_rejects_duplicate_gate_with_different_content() -> None:
+def test_apply_constraint_pack_keeps_existing_gate_for_same_id() -> None:
     render_specification = load_yaml(RENDER_SPECIFICATION)
+    original_gate_name = render_specification["validation"]["gates"][0]["name"]
     constraint_pack = load_yaml(CONSTRAINT_PACK)
-    constraint_pack["validation"]["gates"][0]["name"] = "Different Gate"
+    constraint_pack["validation"]["gates"][0]["name"] = "Replacement Gate"
 
-    with pytest.raises(ValueError, match="duplicate validation.gates id has different content: GATE-0001"):
-        apply_constraint_pack(render_specification, constraint_pack)
+    applied = apply_constraint_pack(render_specification, constraint_pack)
+
+    assert applied["validation"]["gates"][0]["name"] == original_gate_name
 
 
-def test_apply_constraint_pack_rejects_duplicate_pack_reference_with_different_content() -> None:
+def test_apply_constraint_pack_keeps_existing_pack_reference_for_same_id() -> None:
     render_specification = load_yaml(RENDER_SPECIFICATION)
-    render_specification["constraint_packs"] = [{"id": "CPACK-0001", "version": "9.9", "title": "Different"}]
+    existing_reference = {"id": "CPACK-0001", "version": "9.9", "title": "Existing"}
+    render_specification["constraint_packs"] = [existing_reference]
     constraint_pack = load_yaml(CONSTRAINT_PACK)
 
-    with pytest.raises(ValueError, match="duplicate constraint pack reference has different content: CPACK-0001"):
-        apply_constraint_pack(render_specification, constraint_pack)
+    applied = apply_constraint_pack(render_specification, constraint_pack)
+
+    assert applied["constraint_packs"] == [existing_reference]
