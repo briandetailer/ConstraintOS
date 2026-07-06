@@ -1,4 +1,7 @@
 import json
+from pathlib import Path
+
+import yaml
 
 from constraintos.validation_cli import apply_constraint_pack_files, main
 
@@ -6,6 +9,14 @@ RENDER_SPECIFICATION = "examples/render/lf4_engine_render_specification.yaml"
 CONSTRAINT_PACK = "examples/constraint_packs/lf4_engine_constraint_pack.yaml"
 PASSING_EVIDENCE = "examples/validation/lf4_passing_evidence.yaml"
 CONSTRAINT_PACK_REFERENCE = {"id": "CPACK-0001", "version": "0.1", "title": "LF4 Engineering Atlas Constraint Pack"}
+
+
+def load_yaml(path: str) -> dict:
+    return yaml.safe_load(Path(path).read_text(encoding="utf-8"))
+
+
+def write_yaml(path: Path, payload: dict) -> None:
+    path.write_text(yaml.safe_dump(payload), encoding="utf-8")
 
 
 def test_validation_cli_accepts_constraint_pack(capsys) -> None:
@@ -56,6 +67,30 @@ def test_validation_cli_text_reports_constraint_pack_count(capsys) -> None:
     assert exit_code == 1
     assert "Validation VALIDATION-REPORT-0001: failed | results=3" in output
     assert "Constraint packs: 1" in output
+
+
+def test_validation_cli_rejects_schema_invalid_render_specification(tmp_path, capsys) -> None:
+    invalid_render_specification = tmp_path / "invalid-render-specification.yaml"
+    payload = load_yaml(RENDER_SPECIFICATION)
+    payload["validation"]["gates"] = []
+    write_yaml(invalid_render_specification, payload)
+
+    exit_code = main([str(invalid_render_specification), "--evidence", PASSING_EVIDENCE])
+
+    assert exit_code == 2
+    assert "schema:schemas/render-specification.schema.json:validation.gates" in capsys.readouterr().err
+
+
+def test_validation_cli_rejects_schema_invalid_constraint_pack(tmp_path, capsys) -> None:
+    invalid_pack = tmp_path / "invalid-constraint-pack.yaml"
+    payload = load_yaml(CONSTRAINT_PACK)
+    payload["validation"]["gates"] = []
+    write_yaml(invalid_pack, payload)
+
+    exit_code = main([RENDER_SPECIFICATION, "--constraint-pack", str(invalid_pack)])
+
+    assert exit_code == 2
+    assert "schema:schemas/constraint-pack.schema.json:validation.gates" in capsys.readouterr().err
 
 
 def test_validation_cli_accepts_multiple_constraint_packs_without_duplicates(capsys) -> None:
