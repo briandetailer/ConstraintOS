@@ -22,6 +22,12 @@ class RuntimeResult:
     events: list[RuntimeEvent] = field(default_factory=list)
     messages: list[str] = field(default_factory=list)
 
+    def terminal(self) -> bool:
+        return self.status.terminal()
+
+    def successful(self) -> bool:
+        return self.status.successful() and self.success
+
     def summary(self) -> dict[str, int]:
         return {
             "plan_nodes": self._count(self.plan, "nodes"),
