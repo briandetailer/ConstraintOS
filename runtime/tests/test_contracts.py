@@ -6,13 +6,15 @@ def test_runtime_contract_registry_declares_enterprise_boundary_contracts() -> N
 
     assert registry["runtime_contract_registry"] == {
         "version": "runtime-contracts/v1",
-        "contract_count": 4,
+        "contract_count": 6,
     }
     assert [contract["name"] for contract in registry["contracts"]] == [
         "runtime_result",
+        "runtime_report",
         "runtime_traceability",
         "runtime_trace_report",
         "runtime_evidence_manifest",
+        "runtime_contract_registry",
     ]
     assert registry["contracts"][0]["required_sections"] == [
         "runtime_result",
@@ -20,11 +22,21 @@ def test_runtime_contract_registry_declares_enterprise_boundary_contracts() -> N
         "events",
         "messages",
     ]
-    assert registry["contracts"][3]["consumed_by"] == [
+    assert registry["contracts"][4]["consumed_by"] == [
         "external_audit_clients",
         "ci_cd",
         "enterprise_integrations",
     ]
+
+
+def test_runtime_contract_registry_covers_artifact_writers() -> None:
+    registry = runtime_contract_registry()
+    contracts_by_producer = {contract["produced_by"]: contract for contract in registry["contracts"]}
+
+    assert contracts_by_producer["RuntimeReportWriter"]["name"] == "runtime_report"
+    assert contracts_by_producer["RuntimeTraceReportWriter"]["name"] == "runtime_trace_report"
+    assert contracts_by_producer["RuntimeEvidenceBundleWriter"]["name"] == "runtime_evidence_manifest"
+    assert contracts_by_producer["RuntimeContractRegistryReportWriter"]["name"] == "runtime_contract_registry"
 
 
 def test_get_runtime_contract_returns_named_contract() -> None:
