@@ -137,7 +137,7 @@ execution_steps:
     output = capsys.readouterr().out
     assert exit_code == 0
     assert "Runtime RUNTIME-0001: completed (success=True)" in output
-    assert "Execution EXEC-RESULT-0001: complete | nodes=1" in output
+    assert "Execution RUNTIME-0001-EXEC-RESULT-0001: complete | nodes=1" in output
 
 
 def test_runtime_cli_writes_output_file(tmp_path, capsys) -> None:
