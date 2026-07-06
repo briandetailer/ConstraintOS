@@ -80,6 +80,8 @@ def summarize_payload(payload: dict[str, Any]) -> str:
     validation = payload.get("validation", {}).get("validation_report", {})
     approval = payload.get("approval", {}).get("approval", {})
     results = payload.get("validation", {}).get("results", [])
+    provenance = payload.get("provenance_manifest", {}).get("provenance_manifest", {})
+    provenance_gates = payload.get("provenance_manifest", {}).get("traceability", {}).get("gates", [])
     failure_report = payload.get("failure_report", {}).get("failure_report", {})
     remediation_plan = payload.get("remediation_plan", {}).get("remediation_plan", {})
     revision_request = payload.get("revision_request", {}).get("revision_request", {})
@@ -88,6 +90,7 @@ def summarize_payload(payload: dict[str, Any]) -> str:
         [
             f"Validation {validation.get('id', 'unknown')}: {validation.get('status', 'unknown')} | results={len(results)}",
             f"Constraint packs: {constraint_pack_count(payload)}",
+            f"Provenance manifest {provenance.get('id', 'unknown')}: {provenance.get('status', 'unknown')} | gates={len(provenance_gates) if isinstance(provenance_gates, list) else 0}",
             f"Failure report {failure_report.get('id', 'unknown')}: {failure_report.get('status', 'unknown')} | failures={failure_report.get('failure_count', 0)}",
             f"Remediation plan {remediation_plan.get('id', 'unknown')}: {remediation_plan.get('status', 'unknown')} | actions={remediation_plan.get('action_count', 0)}",
             f"Revision request {revision_request.get('id', 'unknown')}: {revision_request.get('status', 'unknown')} | steps={revision_request.get('step_count', 0)}",
@@ -129,6 +132,7 @@ def run_validation(args: argparse.Namespace) -> int:
         remediation_plan_id=args.remediation_plan_id,
         revision_request_id=args.revision_request_id,
         approval_decision_id=args.approval_id,
+        provenance_manifest_id=args.provenance_manifest_id,
     )
     payload = result.to_dict()
     write_output(payload, args.output, args.format)
@@ -146,6 +150,7 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--remediation-plan-id", default="REMEDIATION-PLAN-0001")
     parser.add_argument("--revision-request-id", default="REVISION-REQUEST-0001")
     parser.add_argument("--approval-id", default="APPROVAL-0001")
+    parser.add_argument("--provenance-manifest-id", default="PROVENANCE-0001")
     parser.add_argument("--format", choices=["json", "text"], default="json")
     parser.add_argument("--output")
     return parser
