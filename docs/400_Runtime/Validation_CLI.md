@@ -45,6 +45,10 @@ cos-validate examples/render/lf4_engine_render_specification.yaml `
 
 Use `--constraint-pack` more than once to apply multiple packs in order.
 
+Applied pack references are preserved in the JSON output under each generated report/decision header, including validation, failure report, remediation plan, revision request, and approval decision.
+
+Text summary output includes the applied constraint pack count.
+
 ## IDs
 
 The CLI assigns default IDs, but callers can override them:
