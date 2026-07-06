@@ -54,8 +54,15 @@ class ValidationEvidence:
     message: str = ""
     details: dict[str, Any] = field(default_factory=dict)
 
+    def __post_init__(self) -> None:
+        normalized = self.status.lower().strip()
+        if normalized not in ALLOWED_EVIDENCE_STATUSES:
+            allowed = ", ".join(sorted(ALLOWED_EVIDENCE_STATUSES))
+            raise ValueError(f"validation evidence status is not registered: {self.status}. Expected one of: {allowed}")
+        object.__setattr__(self, "status", normalized)
+
     def passed(self) -> bool:
-        return self.status.lower().strip() in PASSING_EVIDENCE_STATUSES
+        return self.status in PASSING_EVIDENCE_STATUSES
 
     def to_dict(self) -> dict[str, Any]:
         return {
