@@ -90,6 +90,8 @@ Implications for this model:
 
 ## CSL design decisions
 
+Detailed object contract: `CSL_Minimum_Viable_Object_Shape.md` defines the current minimum viable CSL v1 document, entity, constraint, group, and validation result shapes.
+
 ### Format
 
 CSL should be JSON/YAML-based, not a custom DSL for v1.
