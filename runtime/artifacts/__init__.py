@@ -1,4 +1,5 @@
 from runtime.artifacts.collector import ArtifactCollector
+from runtime.artifacts.evidence import RuntimeEvidenceBundleWriter
 from runtime.artifacts.models import RuntimeArtifact
 from runtime.artifacts.reporter import RuntimeReportWriter
 from runtime.artifacts.store import ArtifactStore, ArtifactStoreError
@@ -9,6 +10,7 @@ __all__ = [
     "ArtifactStore",
     "ArtifactStoreError",
     "RuntimeArtifact",
+    "RuntimeEvidenceBundleWriter",
     "RuntimeReportWriter",
     "RuntimeTraceReportWriter",
 ]
