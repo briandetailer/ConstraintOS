@@ -19,6 +19,7 @@ def test_validation_cli_approves_passing_evidence(capsys) -> None:
     assert exit_code == 0
     assert payload["validation"]["validation_report"]["status"] == "passed"
     assert payload["approval"]["approval"]["status"] == "approved"
+    assert payload["provenance_manifest"]["provenance_manifest"]["status"] == "approved"
 
 
 def test_validation_cli_rejects_missing_evidence(capsys) -> None:
@@ -28,6 +29,7 @@ def test_validation_cli_rejects_missing_evidence(capsys) -> None:
     assert exit_code == 1
     assert payload["validation"]["validation_report"]["status"] == "failed"
     assert payload["approval"]["approval"]["status"] == "rejected"
+    assert payload["provenance_manifest"]["provenance_manifest"]["status"] == "rejected"
 
 
 def test_validation_cli_writes_text_output(tmp_path, capsys) -> None:
@@ -44,4 +46,6 @@ def test_validation_cli_writes_text_output(tmp_path, capsys) -> None:
 
     assert exit_code == 0
     assert "Wrote validation approval result" in capsys.readouterr().out
-    assert "Validation VALIDATION-REPORT-0001: passed" in output.read_text(encoding="utf-8")
+    text = output.read_text(encoding="utf-8")
+    assert "Validation VALIDATION-REPORT-0001: passed" in text
+    assert "Provenance manifest PROVENANCE-0001: approved" in text
