@@ -20,6 +20,10 @@ class ApprovalEngine:
         results = report.get("results", [])
         if not isinstance(results, list):
             results = []
+        constraint_packs = report_header.get("constraint_packs", []) if isinstance(report_header, dict) else []
+        if not isinstance(constraint_packs, list):
+            constraint_packs = []
+        clean_constraint_packs = [item for item in constraint_packs if isinstance(item, dict)]
         required_issues = [result for result in results if self._is_required_issue(result)]
         optional_issues = [result for result in results if self._is_optional_issue(result)]
         if required_issues:
@@ -30,6 +34,7 @@ class ApprovalEngine:
                 summary="Rejected because required validation gates did not pass.",
                 reasons=[self._reason_for(result) for result in required_issues],
                 validation_report_id=report_header.get("id"),
+                constraint_packs=clean_constraint_packs,
             )
         if optional_issues:
             return ApprovalDecision(
@@ -39,6 +44,7 @@ class ApprovalEngine:
                 summary="Approved with warnings because only optional validation gates failed.",
                 reasons=[self._reason_for(result) for result in optional_issues],
                 validation_report_id=report_header.get("id"),
+                constraint_packs=clean_constraint_packs,
             )
         return ApprovalDecision(
             id=decision_id,
@@ -46,6 +52,7 @@ class ApprovalEngine:
             status="approved",
             summary="Approved because all validation gates passed.",
             validation_report_id=report_header.get("id"),
+            constraint_packs=clean_constraint_packs,
         )
 
     def _is_required_issue(self, result: Any) -> bool:
