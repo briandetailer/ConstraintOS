@@ -1,5 +1,14 @@
-from runtime import RuntimeContext, RuntimeEngine, RuntimeState
+from runtime import RuntimeContext, RuntimeEngine, RuntimeState, verify_successful_runtime_events
 from runtime.scheduler import WorkerCapability
+
+
+SUCCESSFUL_RUNTIME_EVENT_ORDER = [
+    "runtime_started",
+    "runtime_planned",
+    "runtime_scheduled",
+    "runtime_execution_started",
+    "runtime_completed",
+]
 
 
 def test_runtime_engine_runs_plan_schedule_execute_pipeline() -> None:
@@ -17,18 +26,36 @@ def test_runtime_engine_runs_plan_schedule_execute_pipeline() -> None:
     )
 
     data = result.to_dict()
+    replay_verification = verify_successful_runtime_events(result)
+
     assert result.status == RuntimeState.COMPLETED
     assert result.success is True
     assert data["runtime_result"]["status"] == "completed"
     assert data["plan"]["execution_plan"]["status"] == "planned"
     assert data["schedule"]["schedule_result"]["status"] == "scheduled"
     assert data["execution"]["execution_result"]["status"] == "complete"
-    assert [event["event_type"] for event in data["events"]] == [
-        "runtime_started",
-        "runtime_planned",
-        "runtime_scheduled",
-        "runtime_execution_started",
-        "runtime_completed",
+    assert replay_verification.successful() is True
+    assert replay_verification.event_types == SUCCESSFUL_RUNTIME_EVENT_ORDER
+
+
+def test_runtime_replay_verifier_reports_success_event_order_mismatch() -> None:
+    replay_verification = verify_successful_runtime_events(
+        {
+            "events": [
+                {"event_type": "runtime_started"},
+                {"event_type": "runtime_planned"},
+                {"event_type": "runtime_completed"},
+            ]
+        }
+    )
+
+    assert replay_verification.successful() is False
+    assert replay_verification.expected_event_types == SUCCESSFUL_RUNTIME_EVENT_ORDER
+    assert replay_verification.issues == [
+        "Successful runtime event order mismatch: "
+        "expected ['runtime_started', 'runtime_planned', 'runtime_scheduled', "
+        "'runtime_execution_started', 'runtime_completed'], "
+        "received ['runtime_started', 'runtime_planned', 'runtime_completed']."
     ]
 
 
