@@ -7,6 +7,7 @@ from constraintos.cli import main
 RENDER_SPECIFICATION = "examples/render/lf4_engine_render_specification.yaml"
 CONSTRAINT_PACK = "examples/constraint_packs/lf4_engine_constraint_pack.yaml"
 PASSING_EVIDENCE = "examples/validation/lf4_passing_evidence.yaml"
+PROVENANCE_MANIFEST = "examples/traceability/PROVENANCE-0001.yaml"
 
 
 def test_new_artifact(tmp_path: Path) -> None:
@@ -68,6 +69,13 @@ def test_validate_accepts_registered_render_specification(capsys) -> None:
 
 def test_validate_accepts_registered_validation_evidence(capsys) -> None:
     rc = main(["validate", PASSING_EVIDENCE, "--repo-root", "."])
+
+    assert rc == 0
+    assert "PASS:" in capsys.readouterr().out
+
+
+def test_validate_accepts_registered_provenance_manifest(capsys) -> None:
+    rc = main(["validate", PROVENANCE_MANIFEST, "--repo-root", "."])
 
     assert rc == 0
     assert "PASS:" in capsys.readouterr().out
