@@ -24,6 +24,7 @@ SCHEMA_REGISTRY: tuple[SchemaRegistration, ...] = (
     SchemaRegistration("render_specification", "schemas/render-specification.schema.json", "render_specification"),
     SchemaRegistration("constraint_pack", "schemas/constraint-pack.schema.json", "constraint_pack"),
     SchemaRegistration("evidence", "schemas/validation-evidence.schema.json", "validation_evidence"),
+    SchemaRegistration("provenance_manifest", "schemas/provenance-manifest.schema.json", "provenance_manifest"),
     SchemaRegistration("output_reference", "schemas/output-reference.schema.json", "output_reference"),
     SchemaRegistration("renderer_registry", "schemas/renderer-registry.schema.json", "renderer_registry"),
     SchemaRegistration("stored_object", "schemas/stored-object.schema.json", "stored_object"),
