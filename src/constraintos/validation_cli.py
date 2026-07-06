@@ -11,6 +11,7 @@ try:
 except ImportError:  # pragma: no cover
     yaml = None
 
+from constraintos.constraint_pack import apply_constraint_pack
 from constraintos.validation.pipeline import ValidationApprovalPipeline
 
 
@@ -33,6 +34,16 @@ def load_evidence(path: str | None) -> list[dict[str, Any]]:
         if not isinstance(entry, dict):
             raise ValueError(f"{path} evidence {index} must be an object")
     return raw_evidence
+
+
+def apply_constraint_pack_files(render_specification: dict[str, Any], constraint_pack_paths: list[str] | None) -> dict[str, Any]:
+    applied = render_specification
+    for constraint_pack_path in constraint_pack_paths or []:
+        constraint_pack = load_data_file(Path(constraint_pack_path))
+        if not isinstance(constraint_pack, dict):
+            raise ValueError(f"{constraint_pack_path} must contain an object")
+        applied = apply_constraint_pack(applied, constraint_pack)
+    return applied
 
 
 def summarize_payload(payload: dict[str, Any]) -> str:
@@ -76,6 +87,7 @@ def run_validation(args: argparse.Namespace) -> int:
     render_specification = load_data_file(Path(args.render_specification))
     if not isinstance(render_specification, dict):
         raise ValueError(f"{args.render_specification} must contain an object")
+    render_specification = apply_constraint_pack_files(render_specification, args.constraint_pack)
     evidence = load_evidence(args.evidence)
     result = ValidationApprovalPipeline().evaluate_render_specification(
         render_specification,
@@ -96,6 +108,7 @@ def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(prog="cos-validate")
     parser.add_argument("render_specification")
     parser.add_argument("--evidence")
+    parser.add_argument("--constraint-pack", action="append")
     parser.add_argument("--artifact-id", default="UNKNOWN-ARTIFACT")
     parser.add_argument("--validation-report-id", default="VALIDATION-REPORT-0001")
     parser.add_argument("--failure-report-id", default="FAILURE-REPORT-0001")
