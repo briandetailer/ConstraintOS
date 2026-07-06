@@ -109,11 +109,16 @@ class RuntimeEngine:
                     messages=["Runtime schedule contains unscheduled nodes; execution was not started."],
                 )
 
-            events.append(RuntimeEvent(RuntimeEventType.EXECUTION_STARTED, {"schedule_id": schedule.id}))
             request = self._execution_request_from_schedule(
                 plan_data,
                 schedule_data,
                 request_id=self._runtime_execution_request_id(runtime_id),
+            )
+            events.append(
+                RuntimeEvent(
+                    RuntimeEventType.EXECUTION_STARTED,
+                    {"schedule_id": schedule.id, "execution_request_id": request.id},
+                )
             )
             execution = self.executor.execute(
                 request,
