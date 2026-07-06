@@ -2,22 +2,33 @@
 
 ## Purpose
 
-The Runtime layer turns a runtime specification into an auditable execution result. It is intentionally deterministic at the orchestration boundary so that planner output, scheduler output, execution IDs, events, artifacts, and final reports can be inspected and tested.
+The Runtime layer turns a runtime specification into an auditable execution result. It is intentionally deterministic at the orchestration boundary so that planner output, scheduler output, execution IDs, events, artifacts, final reports, contract registries, and evidence manifests can be inspected and tested.
+
+The Runtime layer should be understood as part of a broader generation-validation architecture rather than as a better prompting layer. The long-term boundary is:
+
+```text
+specification -> planning -> execution -> independent validation -> evidence -> approval
+```
+
+Execution may be nondeterministic. Validation and evidence must remain independently inspectable.
 
 ## Runtime package map
 
 ```text
 runtime/
-  artifacts/     artifact store, collector, and report writer
+  artifacts/     artifact store, collector, report writers, and evidence writers
   execution/     execution request/result models and executors
   planner/       runtime planning and dependency validation
   scheduler/     worker capabilities and stage scheduling
   tests/         runtime unit and integration tests
   context.py     runtime execution context
+  contracts.py   public runtime contract registry and contract verifiers
   engine.py      orchestration entry point
   events.py      runtime event model
+  replay.py      runtime event replay and consistency verification
   result.py      top-level runtime result model
   state.py       runtime lifecycle state model
+  traceability.py runtime trace adapter and trace verification
 ```
 
 ## Orchestration sequence
@@ -93,10 +104,30 @@ For partial schedules, includes unscheduled nodes and unscheduled count.
 
 For defensive exception-boundary failures, includes error text and error type.
 
+## Public contract and evidence posture
+
+Milestone 3 has expanded the runtime beyond core orchestration into public evidence boundaries:
+
+- runtime result reports
+- runtime trace reports
+- runtime evidence manifests
+- runtime contract registry reports
+- replay verifiers
+- trace verifiers
+- contract registry verifiers
+- artifact writer contract coverage verification
+- self-contained evidence bundles
+
+The Python runtime may remain the implementation core, but adoption should be based on portable JSON artifacts and versioned contracts so non-Python consumers can integrate through Node.js, .NET, Terraform, CI/CD, or audit tooling.
+
+## Validation principles
+
+Generation must not self-certify. Runtime validation should remain independent of execution, and approval should remain a distinct downstream boundary. See `Runtime_Generation_Validation_Principles.md` for the active design principles governing future runtime, CSL, validator, and enterprise-boundary work.
+
 ## Current baseline
 
-Current validated baseline: 355 passing tests.
+Current validated baseline: 394 passing tests.
 
 ## Closeout posture
 
-The Runtime layer is complete enough to close Milestone 2. Future Runtime work should be framed as contract hardening, replayability, plugin interface work, or integration with traceability/provenance rather than as core Milestone 2 implementation.
+The Runtime layer is complete enough to close Milestone 2. Current Runtime work is Milestone 3 contract hardening: replayability, public contracts, plugin interface hardening, traceability, evidence bundles, and validation-first enterprise integration.
