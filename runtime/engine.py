@@ -131,7 +131,18 @@ class RuntimeEngine:
 
             status = RuntimeState.COMPLETED if execution.status == "complete" else RuntimeState.PARTIAL
             success = status == RuntimeState.COMPLETED
-            events.append(RuntimeEvent(RuntimeEventType.COMPLETED, {"execution_result_id": execution.id, "status": execution.status}))
+            artifact_count = artifact_data.get("artifact_store", {}).get("count", 0) if isinstance(artifact_data, dict) else 0
+            events.append(
+                RuntimeEvent(
+                    RuntimeEventType.COMPLETED,
+                    {
+                        "execution_result_id": execution.id,
+                        "status": execution.status,
+                        "node_results": len(execution.node_results),
+                        "artifacts": artifact_count,
+                    },
+                )
+            )
             return RuntimeResult(
                 id=runtime_id,
                 status=status,
