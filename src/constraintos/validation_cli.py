@@ -46,6 +46,11 @@ def apply_constraint_pack_files(render_specification: dict[str, Any], constraint
     return applied
 
 
+def constraint_pack_count(payload: dict[str, Any]) -> int:
+    constraint_packs = payload.get("validation", {}).get("validation_report", {}).get("constraint_packs", [])
+    return len(constraint_packs) if isinstance(constraint_packs, list) else 0
+
+
 def summarize_payload(payload: dict[str, Any]) -> str:
     validation = payload.get("validation", {}).get("validation_report", {})
     approval = payload.get("approval", {}).get("approval", {})
@@ -57,6 +62,7 @@ def summarize_payload(payload: dict[str, Any]) -> str:
     return "\n".join(
         [
             f"Validation {validation.get('id', 'unknown')}: {validation.get('status', 'unknown')} | results={len(results)}",
+            f"Constraint packs: {constraint_pack_count(payload)}",
             f"Failure report {failure_report.get('id', 'unknown')}: {failure_report.get('status', 'unknown')} | failures={failure_report.get('failure_count', 0)}",
             f"Remediation plan {remediation_plan.get('id', 'unknown')}: {remediation_plan.get('status', 'unknown')} | actions={remediation_plan.get('action_count', 0)}",
             f"Revision request {revision_request.get('id', 'unknown')}: {revision_request.get('status', 'unknown')} | steps={revision_request.get('step_count', 0)}",
