@@ -1,0 +1,25 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://constraintos.local/schemas/validation-evidence.schema.json",
+  "title": "Validation Evidence",
+  "type": "object",
+  "required": ["evidence"],
+  "properties": {
+    "evidence": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["gate_id", "status"],
+        "properties": {
+          "gate_id": {"type": "string", "pattern": "^GATE-[0-9]{4}$"},
+          "status": {"type": "string", "minLength": 1},
+          "message": {"type": "string"},
+          "details": {"type": "object"}
+        },
+        "additionalProperties": true
+      }
+    }
+  },
+  "additionalProperties": true
+}
