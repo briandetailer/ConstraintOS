@@ -122,13 +122,20 @@ def _record_from_special_rule(path: Path, data: dict[str, Any]) -> dict[str, Any
 
 
 def record_from_data(path: Path, data: dict[str, Any]) -> dict[str, Any] | None:
+    registered = _record_from_registered_key(path, data)
+    if registered is not None:
+        return registered
     if "artifact" in data and "constraints" in data:
         obj = data["artifact"]
         return {"id": obj.get("id"), "title": obj.get("title", obj.get("id")), "type": obj.get("type", "csl_artifact"), "status": obj.get("status", "unknown"), "traceability": data.get("traceability", {})}
     if "artifact" in data and "traceability" in data:
         obj = data["artifact"]
         return {"id": obj.get("id"), "title": obj.get("title", obj.get("id")), "type": obj.get("type", "artifact"), "status": obj.get("status", "unknown"), "traceability": data.get("traceability", {})}
-    return _record_from_registered_key(path, data) or _record_from_special_rule(path, data)
+    return _record_from_special_rule(path, data)
+
+
+def _requires_standalone_artifact_fields(data: dict[str, Any]) -> bool:
+    return data.get("artifact") is not None and data.get("constraints") is None and detect_record_type(data) is None
 
 
 def new_artifact(args: argparse.Namespace) -> int:
@@ -197,7 +204,7 @@ def validate_artifact(path: Path, repo_root: Path) -> ValidationResult:
         messages.append("Unrecognized YAML artifact type.")
     elif not record.get("id"):
         messages.append("Missing record id.")
-    if data.get("artifact") is not None and data.get("constraints") is None:
+    if _requires_standalone_artifact_fields(data):
         for field in ["title", "status", "version"]:
             if field not in data["artifact"]:
                 messages.append(f"Missing artifact.{field}.")
