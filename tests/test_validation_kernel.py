@@ -76,6 +76,25 @@ def test_validation_kernel_does_not_fail_report_for_optional_gate_failure() -> N
     assert report.results[0].status == "failed"
 
 
+def test_validation_kernel_rejects_unknown_evidence_gate() -> None:
+    with pytest.raises(ValueError, match="unknown gate: GATE-9999"):
+        ValidationKernel().evaluate(
+            gates=[{"id": "GATE-0001", "name": "Gate", "required_pass": True}],
+            evidence=[{"gate_id": "GATE-9999", "status": "passed"}],
+        )
+
+
+def test_validation_kernel_rejects_duplicate_evidence_gate() -> None:
+    with pytest.raises(ValueError, match="duplicate validation evidence for gate: GATE-0001"):
+        ValidationKernel().evaluate(
+            gates=[{"id": "GATE-0001", "name": "Gate", "required_pass": True}],
+            evidence=[
+                {"gate_id": "GATE-0001", "status": "passed"},
+                {"gate_id": "GATE-0001", "status": "passed"},
+            ],
+        )
+
+
 def test_validation_kernel_evaluates_render_specification_gates() -> None:
     source = Path("examples/render/lf4_engine_render_specification.yaml")
     render_specification = yaml.safe_load(source.read_text(encoding="utf-8"))
@@ -90,6 +109,17 @@ def test_validation_kernel_evaluates_render_specification_gates() -> None:
     assert report.passed() is True
     assert report.subject_id == "LF4-ENGINE"
     assert [result.gate_id for result in report.results] == ["GATE-0001", "GATE-0002", "GATE-0003"]
+
+
+def test_validation_kernel_rejects_unknown_evidence_gate_for_render_specification() -> None:
+    source = Path("examples/render/lf4_engine_render_specification.yaml")
+    render_specification = yaml.safe_load(source.read_text(encoding="utf-8"))
+
+    with pytest.raises(ValueError, match="unknown gate: GATE-9999"):
+        ValidationKernel().evaluate_render_specification(
+            render_specification,
+            [{"gate_id": "GATE-9999", "status": "passed"}],
+        )
 
 
 def test_validation_kernel_includes_constraint_pack_references() -> None:
