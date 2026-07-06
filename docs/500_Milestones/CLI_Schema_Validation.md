@@ -11,6 +11,10 @@ This prevents invalid records from being merged, compiled, validated, or reporte
 ## Covered commands
 
 ```powershell
+constraintos validate <path...>
+```
+
+```powershell
 cos-apply-constraints <render-specification> <constraint-pack...>
 ```
 
@@ -26,7 +30,9 @@ cos-runtime <render-specification> --render-contract --constraint-pack <constrai
 
 - Render specifications are checked against the registered render specification schema before use.
 - Constraint Packs are checked against the registered Constraint Pack schema before use.
-- CLI callers get exit code `2` when schema validation fails.
+- `constraintos validate` reports registered schema failures during repository/file validation.
+- CLI callers get exit code `2` when schema validation fails at execution boundaries.
+- `constraintos validate` returns exit code `1` when repository/file validation finds schema failures.
 - Error output includes the schema path and failing field.
 - Wrong record types are rejected before pack application or render-contract compilation.
 - Reusable schema validation lives in `constraintos.schema_validation`.
