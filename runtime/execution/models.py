@@ -5,12 +5,40 @@ from datetime import date
 from typing import Any
 
 
+class ExecutionRequestBuildError(ValueError):
+    """Raised when an execution request cannot be built from a schedule."""
+
+
 @dataclass(frozen=True)
 class ExecutionRequest:
     id: str
     schedule_id: str
     assignments: list[dict[str, Any]]
     dry_run: bool = True
+
+    @classmethod
+    def from_schedule(
+        cls,
+        schedule: dict[str, Any],
+        request_id: str = "EXEC-REQ-0001",
+        dry_run: bool = True,
+        allow_partial: bool = False,
+    ) -> "ExecutionRequest":
+        schedule_meta = schedule.get("schedule_result", {}) if isinstance(schedule, dict) else {}
+        if not isinstance(schedule_meta, dict):
+            schedule_meta = {}
+        status = str(schedule_meta.get("status", "unknown"))
+        if status != "scheduled" and not allow_partial:
+            raise ExecutionRequestBuildError("Cannot build execution request from partial schedule")
+        assignments = schedule.get("assignments", []) if isinstance(schedule, dict) else []
+        if not isinstance(assignments, list):
+            raise ExecutionRequestBuildError("schedule assignments must be a list")
+        return cls(
+            id=request_id,
+            schedule_id=str(schedule_meta.get("id", "UNKNOWN-SCHEDULE")),
+            assignments=[assignment for assignment in assignments if isinstance(assignment, dict)],
+            dry_run=dry_run,
+        )
 
     def to_dict(self) -> dict[str, Any]:
         return {
