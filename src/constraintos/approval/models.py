@@ -15,6 +15,7 @@ class ApprovalDecision:
     summary: str
     reasons: list[str] = field(default_factory=list)
     validation_report_id: str | None = None
+    constraint_packs: list[dict[str, Any]] = field(default_factory=list)
 
     def approved(self) -> bool:
         return self.status in {"approved", "approved_with_warnings"}
@@ -25,6 +26,7 @@ class ApprovalDecision:
                 "id": self.id,
                 "created": date.today().isoformat(),
                 "status": self.status,
+                "constraint_packs": self.constraint_packs,
             },
             "artifact": {
                 "id": self.artifact_id,
