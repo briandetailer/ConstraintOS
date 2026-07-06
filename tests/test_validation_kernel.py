@@ -116,6 +116,28 @@ def test_validation_kernel_rejects_invalid_constraint_pack_references() -> None:
         ValidationKernel().evaluate_render_specification(render_specification, [])
 
 
+def test_validation_kernel_rejects_non_object_constraint_pack_reference() -> None:
+    render_specification = {
+        "subject": {"id": "LF4-ENGINE"},
+        "validation": {"gates": [{"id": "GATE-0001", "name": "Gate", "required_pass": True}]},
+        "constraint_packs": ["CPACK-0001"],
+    }
+
+    with pytest.raises(ValueError, match="constraint_packs 1 must be an object"):
+        ValidationKernel().evaluate_render_specification(render_specification, [])
+
+
+def test_validation_kernel_rejects_constraint_pack_reference_without_id() -> None:
+    render_specification = {
+        "subject": {"id": "LF4-ENGINE"},
+        "validation": {"gates": [{"id": "GATE-0001", "name": "Gate", "required_pass": True}]},
+        "constraint_packs": [{"title": "Missing ID"}],
+    }
+
+    with pytest.raises(ValueError, match="constraint_packs 1 must include an id"):
+        ValidationKernel().evaluate_render_specification(render_specification, [])
+
+
 def test_validation_kernel_rejects_render_specification_without_gates() -> None:
     with pytest.raises(ValueError, match="validation gates"):
         ValidationKernel().evaluate_render_specification({"subject": {"id": "LF4-ENGINE"}, "validation": {"gates": []}})
