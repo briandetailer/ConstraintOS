@@ -1,0 +1,65 @@
+provenance_manifest:
+  id: PROVENANCE-0001
+  created: "2026-07-06"
+  status: approved
+  source: validation_approval_pipeline
+  constraint_packs:
+    - id: CPACK-0001
+      version: "0.1"
+      title: LF4 Engineering Atlas Constraint Pack
+subject:
+  id: LF4-ENGINE
+artifact:
+  id: ARTIFACT-0001
+validation:
+  report_id: VALIDATION-REPORT-0001
+  status: passed
+  result_count: 3
+traceability:
+  nodes:
+    - type: validation_report
+      id: VALIDATION-REPORT-0001
+      status: passed
+      references:
+        subject_id: LF4-ENGINE
+    - type: failure_report
+      id: FAILURE-REPORT-0001
+      status: passed
+      references:
+        validation_report_id: VALIDATION-REPORT-0001
+    - type: remediation_plan
+      id: REMEDIATION-PLAN-0001
+      status: not_required
+      references:
+        failure_report_id: FAILURE-REPORT-0001
+    - type: revision_request
+      id: REVISION-REQUEST-0001
+      status: not_required
+      references:
+        artifact_id: ARTIFACT-0001
+        remediation_plan_id: REMEDIATION-PLAN-0001
+    - type: approval_decision
+      id: APPROVAL-0001
+      status: approved
+      references:
+        artifact_id: ARTIFACT-0001
+        validation_report_id: VALIDATION-REPORT-0001
+  gates:
+    - gate_id: GATE-0001
+      gate_name: LF4 Specificity Gate
+      status: passed
+      required_pass: true
+      evidence_status: passed
+      issue_code: null
+    - gate_id: GATE-0002
+      gate_name: Mechanical Plausibility Gate
+      status: passed
+      required_pass: true
+      evidence_status: passed
+      issue_code: null
+    - gate_id: GATE-0003
+      gate_name: Schematic Continuation Gate
+      status: passed
+      required_pass: true
+      evidence_status: passed
+      issue_code: null
