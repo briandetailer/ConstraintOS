@@ -30,6 +30,7 @@ The first implementation supports deterministic gate evaluation:
 - Render specifications can be evaluated directly by reading their `validation.gates` section.
 - Missing or failing evidence receives a machine-readable issue code.
 - Applied constraint pack references are preserved in the validation report.
+- Malformed constraint pack references are rejected instead of silently dropped.
 
 ## Passing evidence statuses
 
@@ -45,6 +46,8 @@ approved
 ## Constraint pack traceability
 
 When a render specification contains `constraint_packs`, the validation report records those references under `validation_report.constraint_packs`.
+
+Each reference must be an object with an `id`; malformed references are rejected before a validation report is produced.
 
 This keeps the validation result tied to the reusable standards that were applied before validation.
 
