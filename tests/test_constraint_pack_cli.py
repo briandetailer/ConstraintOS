@@ -6,6 +6,7 @@ from constraintos.constraint_pack_cli import apply_constraint_packs, main
 
 RENDER_SPECIFICATION = "examples/render/lf4_engine_render_specification.yaml"
 CONSTRAINT_PACK = "examples/constraint_packs/lf4_engine_constraint_pack.yaml"
+CONSTRAINT_PACK_REFERENCE = {"id": "CPACK-0001", "version": "0.1", "title": "LF4 Engineering Atlas Constraint Pack"}
 
 
 def test_constraint_pack_cli_writes_yaml_output(tmp_path, capsys) -> None:
@@ -19,6 +20,17 @@ def test_constraint_pack_cli_writes_yaml_output(tmp_path, capsys) -> None:
     assert payload["constraint_packs"][0]["id"] == "CPACK-0001"
 
 
+def test_constraint_pack_cli_yaml_output_preserves_traceability_and_gate_ids(tmp_path) -> None:
+    output = tmp_path / "applied-render-specification.yaml"
+
+    exit_code = main([RENDER_SPECIFICATION, CONSTRAINT_PACK, "--output", str(output)])
+
+    payload = yaml.safe_load(output.read_text(encoding="utf-8"))
+    assert exit_code == 0
+    assert payload["constraint_packs"] == [CONSTRAINT_PACK_REFERENCE]
+    assert [item["id"] for item in payload["validation"]["gates"]] == ["GATE-0001", "GATE-0002", "GATE-0003"]
+
+
 def test_constraint_pack_cli_prints_json_output(capsys) -> None:
     exit_code = main([RENDER_SPECIFICATION, CONSTRAINT_PACK, "--format", "json"])
 
@@ -28,14 +40,20 @@ def test_constraint_pack_cli_prints_json_output(capsys) -> None:
     assert [item["id"] for item in payload["validation"]["gates"]] == ["GATE-0001", "GATE-0002", "GATE-0003"]
 
 
+def test_constraint_pack_cli_json_output_preserves_full_pack_reference(capsys) -> None:
+    exit_code = main([RENDER_SPECIFICATION, CONSTRAINT_PACK, "--format", "json"])
+
+    payload = json.loads(capsys.readouterr().out)
+    assert exit_code == 0
+    assert payload["constraint_packs"] == [CONSTRAINT_PACK_REFERENCE]
+
+
 def test_constraint_pack_cli_accepts_multiple_constraint_packs(capsys) -> None:
     exit_code = main([RENDER_SPECIFICATION, CONSTRAINT_PACK, CONSTRAINT_PACK, "--format", "json"])
 
     payload = json.loads(capsys.readouterr().out)
     assert exit_code == 0
-    assert payload["constraint_packs"] == [
-        {"id": "CPACK-0001", "version": "0.1", "title": "LF4 Engineering Atlas Constraint Pack"}
-    ]
+    assert payload["constraint_packs"] == [CONSTRAINT_PACK_REFERENCE]
 
 
 def test_apply_constraint_packs_applies_packs_in_order() -> None:
