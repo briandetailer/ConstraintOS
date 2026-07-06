@@ -1,0 +1,121 @@
+{
+  "csl_version": "csl/v1",
+  "id": "CSL-SPEC-0001",
+  "name": "Example bracket validation spec",
+  "description": "Validates critical dimensions and relationships for a generated bracket.",
+  "entities": [
+    {
+      "id": "ENTITY-BRACKET-BODY",
+      "type": "feature",
+      "label": "bracket body",
+      "selector": {
+        "kind": "feature_id",
+        "value": "bracket_body"
+      }
+    },
+    {
+      "id": "ENTITY-HOLE-A",
+      "type": "circle",
+      "label": "left mounting hole",
+      "selector": {
+        "kind": "feature_id",
+        "value": "hole_a"
+      }
+    },
+    {
+      "id": "ENTITY-HOLE-B",
+      "type": "circle",
+      "label": "right mounting hole",
+      "selector": {
+        "kind": "feature_id",
+        "value": "hole_b"
+      }
+    },
+    {
+      "id": "ENTITY-KEEP-OUT-ZONE",
+      "type": "region",
+      "label": "reserved clearance region",
+      "selector": {
+        "kind": "region_id",
+        "value": "clearance_zone_a"
+      }
+    }
+  ],
+  "constraints": [
+    {
+      "id": "CONSTRAINT-WIDTH",
+      "type": "dimensional",
+      "entity_id": "ENTITY-BRACKET-BODY",
+      "measurement": "width_mm",
+      "operator": "between",
+      "expected": {
+        "min": 49.8,
+        "max": 50.2,
+        "unit": "mm"
+      },
+      "severity": "error"
+    },
+    {
+      "id": "CONSTRAINT-HOLE-DISTANCE",
+      "type": "geometric_relation",
+      "entity_ids": ["ENTITY-HOLE-A", "ENTITY-HOLE-B"],
+      "relation": "distance_between",
+      "operator": "within_tolerance",
+      "expected": {
+        "value": 30.0,
+        "tolerance": 0.1,
+        "unit": "mm"
+      },
+      "severity": "error"
+    },
+    {
+      "id": "CONSTRAINT-HOLES-PARALLEL",
+      "type": "geometric_relation",
+      "entity_ids": ["ENTITY-HOLE-A", "ENTITY-HOLE-B"],
+      "relation": "parallel",
+      "operator": "within_tolerance",
+      "expected": {
+        "tolerance_degrees": 0.25
+      },
+      "severity": "error"
+    },
+    {
+      "id": "CONSTRAINT-BODY-OVERLAPS-KEEP-OUT",
+      "type": "geometric_relation",
+      "entity_ids": ["ENTITY-BRACKET-BODY", "ENTITY-KEEP-OUT-ZONE"],
+      "relation": "inside_region",
+      "operator": "equals",
+      "expected": {
+        "value": true
+      },
+      "severity": "error"
+    }
+  ],
+  "groups": [
+    {
+      "id": "GROUP-HOLE-PATTERN",
+      "operator": "AND",
+      "children": [
+        {"type": "constraint", "id": "CONSTRAINT-HOLE-DISTANCE"},
+        {"type": "constraint", "id": "CONSTRAINT-HOLES-PARALLEL"}
+      ]
+    },
+    {
+      "id": "GROUP-NOT-IN-KEEP-OUT",
+      "operator": "NOT",
+      "children": [
+        {"type": "constraint", "id": "CONSTRAINT-BODY-OVERLAPS-KEEP-OUT"}
+      ]
+    },
+    {
+      "id": "GROUP-ROOT",
+      "operator": "AND",
+      "children": [
+        {"type": "constraint", "id": "CONSTRAINT-WIDTH"},
+        {"type": "group", "id": "GROUP-HOLE-PATTERN"},
+        {"type": "group", "id": "GROUP-NOT-IN-KEEP-OUT"}
+      ]
+    }
+  ],
+  "root_group_id": "GROUP-ROOT"
+}
