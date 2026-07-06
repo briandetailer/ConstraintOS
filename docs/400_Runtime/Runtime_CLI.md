@@ -35,6 +35,24 @@ workers:
 
 When no worker input is supplied, the CLI uses `WORKER-0001:generic,echo,dry_run`.
 
+In render-contract mode, when no worker input is supplied, the CLI uses `WORKER-0001:render_contract`.
+
+## Render contract mode
+
+Render contract mode compiles a render specification into a runtime specification before planning or execution:
+
+```powershell
+cos-runtime examples/render/lf4_engine_render_specification.yaml --render-contract --plan-only
+```
+
+Constraint packs can be applied before the render contract is compiled:
+
+```powershell
+cos-runtime examples/render/lf4_engine_render_specification.yaml --render-contract --constraint-pack examples/constraint_packs/lf4_engine_constraint_pack.yaml --plan-only
+```
+
+`--constraint-pack` requires `--render-contract` because packs apply to render specifications, not already-compiled runtime specifications.
+
 ## Output formats
 
 The default output format is JSON. Use text format when you only need a quick summary:
