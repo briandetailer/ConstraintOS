@@ -5,7 +5,7 @@ from typing import Any
 from runtime.context import RuntimeContext
 from runtime.execution.executor import ExecutionError
 from runtime.execution.models import ExecutionRequest, ExecutionResult, NodeExecutionResult
-from runtime.plugins import PluginDispatcher, PluginResult
+from runtime.plugins import PluginDispatchError, PluginDispatcher, PluginNotFoundError, PluginResult
 
 
 class PluginExecutor:
@@ -40,8 +40,14 @@ class PluginExecutor:
     def _execute_assignment(self, assignment: dict[str, Any], context: RuntimeContext | None = None) -> NodeExecutionResult:
         try:
             plugin_result = self.dispatcher.dispatch(assignment, context)
-            return self._node_result_from_plugin_result(plugin_result)
+        except (PluginDispatchError, PluginNotFoundError):
+            raise
         except Exception as error:
+            return self._failed_node_result(assignment, error)
+
+        try:
+            return self._node_result_from_plugin_result(plugin_result)
+        except ExecutionError as error:
             return self._failed_node_result(assignment, error)
 
     def _node_result_from_plugin_result(self, result: PluginResult) -> NodeExecutionResult:
