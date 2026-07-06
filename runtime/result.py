@@ -22,6 +22,17 @@ class RuntimeResult:
     events: list[RuntimeEvent] = field(default_factory=list)
     messages: list[str] = field(default_factory=list)
 
+    def summary(self) -> dict[str, int]:
+        return {
+            "plan_nodes": self._count(self.plan, "nodes"),
+            "plan_stages": self._count(self.plan, "stages"),
+            "scheduled_assignments": self._count(self.schedule, "assignments"),
+            "unscheduled_nodes": self._count(self.schedule, "unscheduled_nodes"),
+            "node_results": self._count(self.execution, "node_results"),
+            "artifacts": self._count(self.artifacts, "artifacts"),
+            "events": len(self.events),
+        }
+
     def to_dict(self) -> dict[str, Any]:
         data = {
             "runtime_result": {
@@ -30,6 +41,7 @@ class RuntimeResult:
                 "success": self.success,
                 "created": date.today().isoformat(),
             },
+            "summary": self.summary(),
             "plan": self.plan,
             "schedule": self.schedule,
             "execution": self.execution,
@@ -39,3 +51,9 @@ class RuntimeResult:
         if self.artifacts is not None:
             data["artifacts"] = self.artifacts
         return data
+
+    def _count(self, payload: dict[str, Any] | None, key: str) -> int:
+        if not isinstance(payload, dict):
+            return 0
+        value = payload.get(key, [])
+        return len(value) if isinstance(value, list) else 0
