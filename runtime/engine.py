@@ -55,6 +55,12 @@ class RuntimeEngine:
         enriched_schedule["assignments"] = self._execution_assignments(plan_data, schedule_data)
         return ExecutionRequest.from_schedule(enriched_schedule, request_id=request_id)
 
+    def _runtime_execution_request_id(self, runtime_id: str) -> str:
+        return f"{runtime_id}-EXEC-REQ-0001"
+
+    def _runtime_execution_result_id(self, runtime_id: str) -> str:
+        return f"{runtime_id}-EXEC-RESULT-0001"
+
     def run(
         self,
         specification: dict[str, Any],
@@ -104,8 +110,16 @@ class RuntimeEngine:
                 )
 
             events.append(RuntimeEvent(RuntimeEventType.EXECUTION_STARTED, {"schedule_id": schedule.id}))
-            request = self._execution_request_from_schedule(plan_data, schedule_data)
-            execution = self.executor.execute(request, context=context)
+            request = self._execution_request_from_schedule(
+                plan_data,
+                schedule_data,
+                request_id=self._runtime_execution_request_id(runtime_id),
+            )
+            execution = self.executor.execute(
+                request,
+                context=context,
+                result_id=self._runtime_execution_result_id(runtime_id),
+            )
             execution_data = execution.to_dict()
             self.artifact_collector.collect_from_execution(execution)
             artifact_data = self.artifact_store.to_dict()
