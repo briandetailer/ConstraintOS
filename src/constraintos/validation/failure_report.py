@@ -15,6 +15,7 @@ class ValidationFailureReport:
     validation_report_id: str | None
     status: str
     failures: list[dict[str, Any]] = field(default_factory=list)
+    constraint_packs: list[dict[str, Any]] = field(default_factory=list)
 
     def has_failures(self) -> bool:
         return bool(self.failures)
@@ -27,6 +28,7 @@ class ValidationFailureReport:
                 "status": self.status,
                 "created": date.today().isoformat(),
                 "failure_count": len(self.failures),
+                "constraint_packs": self.constraint_packs,
             },
             "failures": self.failures,
         }
@@ -45,12 +47,16 @@ class ValidationFailureReporter:
         results = report.get("results", []) if isinstance(report, dict) else []
         if not isinstance(results, list):
             results = []
+        constraint_packs = header.get("constraint_packs", []) if isinstance(header, dict) else []
+        if not isinstance(constraint_packs, list):
+            constraint_packs = []
         failures = [self._failure_from_result(result) for result in results if self._is_failure(result)]
         return ValidationFailureReport(
             id=failure_report_id,
             validation_report_id=header.get("id") if isinstance(header, dict) else None,
             status="failed" if failures else "passed",
             failures=failures,
+            constraint_packs=[item for item in constraint_packs if isinstance(item, dict)],
         )
 
     def _is_failure(self, result: Any) -> bool:
