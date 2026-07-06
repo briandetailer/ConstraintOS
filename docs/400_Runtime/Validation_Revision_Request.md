@@ -24,6 +24,7 @@ The planner currently:
 - Produces `not_required` when there are no remediation actions.
 - Produces `revision_required` when one or more revision steps exist.
 - Preserves remediation action ID, gate ID, issue code, severity, instruction, and source reason.
+- Preserves applied constraint pack references from the remediation plan.
 - Does not perform the revision itself.
 
 ## Example
@@ -35,7 +36,14 @@ The planner currently:
     "artifact_id": "ARTIFACT-0001",
     "remediation_plan_id": "REMEDIATION-PLAN-0001",
     "status": "revision_required",
-    "step_count": 1
+    "step_count": 1,
+    "constraint_packs": [
+      {
+        "id": "CPACK-0001",
+        "version": "0.1",
+        "title": "LF4 Engineering Atlas Constraint Pack"
+      }
+    ]
   },
   "steps": [
     {
@@ -53,4 +61,4 @@ The planner currently:
 
 ## Design note
 
-This does not regenerate images, edit prompts, or change files. It defines the deterministic request shape that future revision loops will consume.
+This does not regenerate images, edit prompts, or change files. It defines the deterministic request shape that future revision loops will consume while preserving the standards context that produced the revision work.
