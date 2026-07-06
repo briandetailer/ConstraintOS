@@ -1,4 +1,4 @@
-from runtime import RuntimeState, runtime_result_to_trace
+from runtime import RuntimeState, runtime_result_to_trace, verify_runtime_trace
 from runtime.result import RuntimeResult
 from runtime.events import RuntimeEvent, RuntimeEventType
 
@@ -86,3 +86,41 @@ def test_runtime_traceability_maps_failed_runtime_without_optional_payloads() ->
         },
         "records": [],
     }
+
+
+def test_runtime_trace_verifier_accepts_generated_trace() -> None:
+    trace = runtime_result_to_trace(
+        {
+            "runtime_result": {"id": "RUNTIME-0004", "status": "partial", "success": False},
+            "schedule": {"schedule_result": {"id": "SCHEDULE-0004"}, "unscheduled_nodes": ["NODE-0004"]},
+            "events": [{"event_type": "runtime_failed"}],
+        }
+    )
+
+    verification = verify_runtime_trace(trace)
+
+    assert verification.successful() is True
+    assert verification.to_dict() == {
+        "runtime_trace_verification": {"successful": True, "issue_count": 0},
+        "issues": [],
+    }
+
+
+def test_runtime_trace_verifier_reports_contract_mismatches() -> None:
+    verification = verify_runtime_trace(
+        {
+            "runtime_traceability": {"runtime_id": "RUNTIME-0005", "record_count": 1},
+            "records": [
+                {"id": "TRACE-0001", "type": "runtime_event", "source_id": "runtime_started", "runtime_id": "RUNTIME-0005", "status": "runtime_started"},
+                {"id": "TRACE-0001", "type": "runtime_event", "source_id": "runtime_failed", "runtime_id": "RUNTIME-OTHER", "status": "runtime_failed", "metadata": []},
+            ],
+        }
+    )
+
+    assert verification.successful() is False
+    assert verification.issues == [
+        "Runtime traceability record_count must match records length.",
+        "Runtime trace record 2 runtime_id must match trace runtime_id.",
+        "Runtime trace record 2 metadata must be a dictionary.",
+        "Runtime trace record ids must be unique.",
+    ]
