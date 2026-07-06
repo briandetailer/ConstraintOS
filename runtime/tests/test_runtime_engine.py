@@ -3,7 +3,9 @@ from runtime import (
     RuntimeEngine,
     RuntimeState,
     verify_completed_runtime_traceability,
+    verify_exception_boundary_runtime_events,
     verify_partial_schedule_runtime_events,
+    verify_runtime_result_summary,
     verify_successful_runtime_events,
 )
 from runtime.scheduler import WorkerCapability
@@ -21,6 +23,11 @@ PARTIAL_SCHEDULE_RUNTIME_EVENT_ORDER = [
     "runtime_started",
     "runtime_planned",
     "runtime_scheduled",
+    "runtime_failed",
+]
+
+EXCEPTION_BOUNDARY_RUNTIME_EVENT_ORDER = [
+    "runtime_started",
     "runtime_failed",
 ]
 
@@ -42,6 +49,7 @@ def test_runtime_engine_runs_plan_schedule_execute_pipeline() -> None:
     data = result.to_dict()
     replay_verification = verify_successful_runtime_events(result)
     traceability_verification = verify_completed_runtime_traceability(result)
+    summary_verification = verify_runtime_result_summary(result)
 
     assert result.status == RuntimeState.COMPLETED
     assert result.success is True
@@ -53,6 +61,7 @@ def test_runtime_engine_runs_plan_schedule_execute_pipeline() -> None:
     assert replay_verification.event_types == SUCCESSFUL_RUNTIME_EVENT_ORDER
     assert traceability_verification.successful() is True
     assert traceability_verification.event_types == SUCCESSFUL_RUNTIME_EVENT_ORDER
+    assert summary_verification.successful() is True
 
 
 def test_runtime_replay_verifier_reports_success_event_order_mismatch() -> None:
@@ -133,6 +142,7 @@ def test_runtime_engine_stops_before_execution_when_schedule_is_partial() -> Non
     }
     result = RuntimeEngine().run(specification, [WorkerCapability("WORKER-0001", ["generic"])])
     replay_verification = verify_partial_schedule_runtime_events(result)
+    summary_verification = verify_runtime_result_summary(result)
 
     assert result.status == RuntimeState.PARTIAL
     assert result.success is False
@@ -142,6 +152,7 @@ def test_runtime_engine_stops_before_execution_when_schedule_is_partial() -> Non
     assert result.messages == ["Runtime schedule contains unscheduled nodes; execution was not started."]
     assert replay_verification.successful() is True
     assert replay_verification.event_types == PARTIAL_SCHEDULE_RUNTIME_EVENT_ORDER
+    assert summary_verification.successful() is True
 
 
 def test_runtime_replay_verifier_reports_partial_schedule_payload_mismatch() -> None:
@@ -178,6 +189,8 @@ def test_runtime_engine_returns_failed_result_for_invalid_specification() -> Non
 
     data = result.to_dict()
     failed_events = [event for event in data["events"] if event["event_type"] == "runtime_failed"]
+    replay_verification = verify_exception_boundary_runtime_events(result)
+    summary_verification = verify_runtime_result_summary(result)
 
     assert result.status == RuntimeState.FAILED
     assert result.success is False
@@ -185,3 +198,53 @@ def test_runtime_engine_returns_failed_result_for_invalid_specification() -> Non
     assert result.messages == ["Missing action for step 1"]
     assert failed_events[0]["payload"]["error_type"] == "PlanningError"
     assert failed_events[0]["payload"]["error"] == "Missing action for step 1"
+    assert replay_verification.successful() is True
+    assert replay_verification.event_types == EXCEPTION_BOUNDARY_RUNTIME_EVENT_ORDER
+    assert summary_verification.successful() is True
+
+
+def test_runtime_replay_verifier_reports_exception_boundary_payload_mismatch() -> None:
+    replay_verification = verify_exception_boundary_runtime_events(
+        {
+            "runtime_result": {"status": "failed"},
+            "messages": [],
+            "events": [
+                {"event_type": "runtime_started", "payload": {"runtime_id": "RUNTIME-0001"}},
+                {"event_type": "runtime_failed", "payload": {"error": "boom"}},
+            ],
+        }
+    )
+
+    assert replay_verification.successful() is False
+    assert replay_verification.expected_event_types == EXCEPTION_BOUNDARY_RUNTIME_EVENT_ORDER
+    assert replay_verification.issues == [
+        "Exception-boundary runtime_failed payload requires error_type.",
+        "Exception-boundary runtime_failed error must be preserved in runtime messages.",
+    ]
+
+
+def test_runtime_replay_verifier_reports_summary_mismatch() -> None:
+    summary_verification = verify_runtime_result_summary(
+        {
+            "summary": {
+                "plan_nodes": 2,
+                "plan_stages": 0,
+                "scheduled_assignments": 0,
+                "unscheduled_nodes": 0,
+                "node_results": 0,
+                "artifacts": 0,
+                "events": 0,
+            },
+            "plan": {"nodes": [{"id": "NODE-0001"}], "stages": []},
+            "schedule": {"assignments": [], "unscheduled_nodes": []},
+            "execution": {"node_results": []},
+            "artifacts": {"artifacts": []},
+            "events": [{"event_type": "runtime_started"}],
+        }
+    )
+
+    assert summary_verification.successful() is False
+    assert summary_verification.issues == [
+        "Runtime summary plan_nodes must be 1.",
+        "Runtime summary events must be 1.",
+    ]
