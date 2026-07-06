@@ -28,6 +28,8 @@ The first implementation supports deterministic gate evaluation:
 - A required gate fails when evidence is missing or failing.
 - An optional gate can fail without failing the whole report.
 - Render specifications can be evaluated directly by reading their `validation.gates` section.
+- Evidence must reference known gates from the evaluated specification.
+- Evidence may only be supplied once per gate.
 - Missing or failing evidence receives a machine-readable issue code.
 - Applied constraint pack references are preserved in the validation report.
 - Malformed constraint pack references are rejected instead of silently dropped.
@@ -42,6 +44,17 @@ passed
 complete
 approved
 ```
+
+## Evidence alignment
+
+Evidence is validated against the gate set before any report is produced.
+
+The kernel rejects:
+
+- evidence for a gate that is not present in the evaluated gate list
+- duplicate evidence entries for the same gate
+
+This prevents silent overwrites and prevents unrelated evidence from being ignored.
 
 ## Constraint pack traceability
 
@@ -98,4 +111,4 @@ Current built-in issue codes:
 
 ## Design note
 
-This does not yet inspect images or generated files. It defines the reporting structure, pass/fail semantics, traceability metadata, and machine-readable issue codes that future validators will use.
+This does not yet inspect images or generated files. It defines the reporting structure, pass/fail semantics, traceability metadata, evidence alignment rules, and machine-readable issue codes that future validators will use.
