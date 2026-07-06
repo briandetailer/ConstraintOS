@@ -1,5 +1,6 @@
 from constraintos.validation.kernel import GATE_EVIDENCE_FAILED, MISSING_EVIDENCE, ValidationKernel
 from constraintos.validation.models import ValidationEvidence, ValidationGate, ValidationIssueCode, ValidationReport, ValidationResult
+from constraintos.validation.provenance import ValidationProvenanceManifest, ValidationProvenanceManifestBuilder
 
 __all__ = [
     "GATE_EVIDENCE_FAILED",
@@ -10,6 +11,8 @@ __all__ = [
     "ValidationGate",
     "ValidationIssueCode",
     "ValidationKernel",
+    "ValidationProvenanceManifest",
+    "ValidationProvenanceManifestBuilder",
     "ValidationReport",
     "ValidationResult",
 ]
