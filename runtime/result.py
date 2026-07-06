@@ -45,6 +45,8 @@ class RuntimeResult:
                 "id": self.id,
                 "status": self.status.value,
                 "success": self.success,
+                "terminal": self.terminal(),
+                "successful": self.successful(),
                 "created": date.today().isoformat(),
             },
             "summary": self.summary(),
