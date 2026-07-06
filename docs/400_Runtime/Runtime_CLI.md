@@ -53,6 +53,13 @@ cos-runtime examples/render/lf4_engine_render_specification.yaml --render-contra
 
 `--constraint-pack` requires `--render-contract` because packs apply to render specifications, not already-compiled runtime specifications.
 
+Applied constraint pack references are preserved in render-contract runtime output under:
+
+- `artifact.constraint_packs`
+- `render_contract.constraint_packs`
+
+Text summary output includes `Constraint packs: N` when pack references are present.
+
 ## Output formats
 
 The default output format is JSON. Use text format when you only need a quick summary:
