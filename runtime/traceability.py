@@ -6,6 +6,9 @@ from typing import Any
 from runtime.result import RuntimeResult
 
 
+REQUIRED_TRACE_RECORD_FIELDS = ("id", "type", "source_id", "runtime_id", "status")
+
+
 @dataclass(frozen=True)
 class RuntimeTraceRecord:
     record_id: str
@@ -47,6 +50,23 @@ class RuntimeTrace:
         }
 
 
+@dataclass(frozen=True)
+class RuntimeTraceVerification:
+    issues: list[str] = field(default_factory=list)
+
+    def successful(self) -> bool:
+        return not self.issues
+
+    def to_dict(self) -> dict[str, Any]:
+        return {
+            "runtime_trace_verification": {
+                "successful": self.successful(),
+                "issue_count": len(self.issues),
+            },
+            "issues": self.issues,
+        }
+
+
 def runtime_result_to_trace(result: RuntimeResult | dict[str, Any]) -> RuntimeTrace:
     data = result.to_dict() if isinstance(result, RuntimeResult) else result
     if not isinstance(data, dict):
@@ -64,6 +84,48 @@ def runtime_result_to_trace(result: RuntimeResult | dict[str, Any]) -> RuntimeTr
     records.extend(_event_records(runtime_id, data))
 
     return RuntimeTrace(runtime_id=runtime_id, status=status, success=success, records=records)
+
+
+def verify_runtime_trace(trace: RuntimeTrace | dict[str, Any]) -> RuntimeTraceVerification:
+    trace_data = trace.to_dict() if isinstance(trace, RuntimeTrace) else trace
+    if not isinstance(trace_data, dict):
+        return RuntimeTraceVerification(["Runtime trace must be a dictionary or RuntimeTrace."])
+
+    header = _dict_value(trace_data, "runtime_traceability")
+    runtime_id = str(header.get("runtime_id", ""))
+    records = trace_data.get("records", [])
+    issues: list[str] = []
+
+    if not runtime_id:
+        issues.append("Runtime traceability runtime_id is required.")
+    if not isinstance(header.get("record_count"), int):
+        issues.append("Runtime traceability record_count must be an integer.")
+    elif isinstance(records, list) and header.get("record_count") != len(records):
+        issues.append("Runtime traceability record_count must match records length.")
+    if not isinstance(records, list):
+        issues.append("Runtime traceability records must be a list.")
+        return RuntimeTraceVerification(issues)
+
+    record_ids: list[str] = []
+    for index, record in enumerate(records, start=1):
+        if not isinstance(record, dict):
+            issues.append(f"Runtime trace record {index} must be a dictionary.")
+            continue
+        for field_name in REQUIRED_TRACE_RECORD_FIELDS:
+            if not record.get(field_name):
+                issues.append(f"Runtime trace record {index} requires {field_name}.")
+        record_id = str(record.get("id", ""))
+        if record_id:
+            record_ids.append(record_id)
+        if runtime_id and record.get("runtime_id") != runtime_id:
+            issues.append(f"Runtime trace record {index} runtime_id must match trace runtime_id.")
+        if "metadata" in record and not isinstance(record.get("metadata"), dict):
+            issues.append(f"Runtime trace record {index} metadata must be a dictionary.")
+
+    if len(record_ids) != len(set(record_ids)):
+        issues.append("Runtime trace record ids must be unique.")
+
+    return RuntimeTraceVerification(issues)
 
 
 def _plan_records(runtime_id: str, data: dict[str, Any]) -> list[RuntimeTraceRecord]:
