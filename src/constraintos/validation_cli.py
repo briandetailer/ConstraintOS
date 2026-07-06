@@ -69,6 +69,9 @@ def apply_validated_constraint_pack_files(render_specification: dict[str, Any], 
 
 
 def constraint_pack_count(payload: dict[str, Any]) -> int:
+    constraint_packs = payload.get("constraint_packs")
+    if isinstance(constraint_packs, list):
+        return len(constraint_packs)
     constraint_packs = payload.get("validation", {}).get("validation_report", {}).get("constraint_packs", [])
     return len(constraint_packs) if isinstance(constraint_packs, list) else 0
 
