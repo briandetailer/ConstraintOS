@@ -23,11 +23,24 @@ Optional fields include:
 - `message`: human-readable context.
 - `details`: structured machine-readable context.
 
+## Gate alignment
+
+Evidence is checked against the evaluated render specification gates after schema validation.
+
+The validation pipeline rejects:
+
+- evidence for a gate that does not exist in the render specification
+- duplicate evidence for the same gate
+
+This keeps evidence deterministic: every evidence entry is consumed by exactly one gate, and no gate can be overwritten by a later duplicate entry.
+
 ## CLI validation
 
 `cos-validate` validates evidence files against the registered Validation Evidence schema before running the validation pipeline.
 
 Invalid evidence files return exit code `2` and include the schema path and failing field in stderr.
+
+Evidence alignment failures also return exit code `2` because the inputs cannot be evaluated safely.
 
 ## Design note
 
