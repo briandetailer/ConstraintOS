@@ -16,6 +16,11 @@ def test_detect_render_specification_schema() -> None:
     assert detect_record_type({"render_specification": {}}) == "render_specification"
 
 
+def test_detect_provenance_manifest_schema() -> None:
+    assert detect_schema({"provenance_manifest": {}}) == "schemas/provenance-manifest.schema.json"
+    assert detect_record_type({"provenance_manifest": {}}) == "provenance_manifest"
+
+
 def test_detect_special_schema_rule() -> None:
     data = {"status": "ok", "service": "constraintos-api", "version": "1.0"}
     assert detect_schema(data) == "schemas/api-health.schema.json"
