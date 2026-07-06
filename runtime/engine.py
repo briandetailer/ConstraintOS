@@ -45,6 +45,16 @@ class RuntimeEngine:
             assignments.append(enriched)
         return assignments
 
+    def _execution_request_from_schedule(
+        self,
+        plan_data: dict[str, Any],
+        schedule_data: dict[str, Any],
+        request_id: str = "EXEC-REQ-0001",
+    ) -> ExecutionRequest:
+        enriched_schedule = dict(schedule_data)
+        enriched_schedule["assignments"] = self._execution_assignments(plan_data, schedule_data)
+        return ExecutionRequest.from_schedule(enriched_schedule, request_id=request_id)
+
     def run(
         self,
         specification: dict[str, Any],
@@ -94,12 +104,7 @@ class RuntimeEngine:
                 )
 
             events.append(RuntimeEvent(RuntimeEventType.EXECUTION_STARTED, {"schedule_id": schedule.id}))
-            request = ExecutionRequest(
-                id="EXEC-REQ-0001",
-                schedule_id=schedule.id,
-                assignments=self._execution_assignments(plan_data, schedule_data),
-                dry_run=True,
-            )
+            request = self._execution_request_from_schedule(plan_data, schedule_data)
             execution = self.executor.execute(request, context=context)
             execution_data = execution.to_dict()
             self.artifact_collector.collect_from_execution(execution)
