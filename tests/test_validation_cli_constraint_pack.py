@@ -93,6 +93,16 @@ def test_validation_cli_rejects_schema_invalid_constraint_pack(tmp_path, capsys)
     assert "schema:schemas/constraint-pack.schema.json:validation.gates" in capsys.readouterr().err
 
 
+def test_validation_cli_rejects_schema_invalid_evidence(tmp_path, capsys) -> None:
+    invalid_evidence = tmp_path / "invalid-evidence.yaml"
+    write_yaml(invalid_evidence, {"evidence": [{"status": "passed"}]})
+
+    exit_code = main([RENDER_SPECIFICATION, "--evidence", str(invalid_evidence)])
+
+    assert exit_code == 2
+    assert "schema:schemas/validation-evidence.schema.json:evidence.0" in capsys.readouterr().err
+
+
 def test_validation_cli_accepts_multiple_constraint_packs_without_duplicates(capsys) -> None:
     exit_code = main([
         RENDER_SPECIFICATION,
