@@ -16,6 +16,7 @@ class ValidationRevisionRequest:
     remediation_plan_id: str | None
     status: str
     steps: list[dict[str, Any]] = field(default_factory=list)
+    constraint_packs: list[dict[str, Any]] = field(default_factory=list)
 
     def required(self) -> bool:
         return self.status == "revision_required"
@@ -29,6 +30,7 @@ class ValidationRevisionRequest:
                 "status": self.status,
                 "created": date.today().isoformat(),
                 "step_count": len(self.steps),
+                "constraint_packs": self.constraint_packs,
             },
             "steps": self.steps,
         }
@@ -48,6 +50,9 @@ class ValidationRevisionPlanner:
         actions = payload.get("actions", []) if isinstance(payload, dict) else []
         if not isinstance(actions, list):
             actions = []
+        constraint_packs = header.get("constraint_packs", []) if isinstance(header, dict) else []
+        if not isinstance(constraint_packs, list):
+            constraint_packs = []
         steps = [self._step_from_action(index, action) for index, action in enumerate(actions, start=1) if isinstance(action, dict)]
         return ValidationRevisionRequest(
             id=revision_request_id,
@@ -55,6 +60,7 @@ class ValidationRevisionPlanner:
             remediation_plan_id=header.get("id") if isinstance(header, dict) else None,
             status="revision_required" if steps else "not_required",
             steps=steps,
+            constraint_packs=[item for item in constraint_packs if isinstance(item, dict)],
         )
 
     def _step_from_action(self, index: int, action: dict[str, Any]) -> dict[str, Any]:
