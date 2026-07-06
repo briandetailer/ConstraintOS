@@ -46,12 +46,14 @@ The pipeline currently supports render specifications directly:
 - Produces a revision request from the remediation plan.
 - Applies approval policy.
 - Preserves applied constraint pack references through every output layer.
+- Returns a root-level `constraint_packs` audit header.
 - Returns all outputs together.
 
 ## Constraint pack traceability
 
-When a render specification contains `constraint_packs`, the pipeline keeps those references in every generated object:
+When a render specification contains `constraint_packs`, the pipeline keeps those references in the root result and every generated object:
 
+- `constraint_packs`
 - `validation.validation_report.constraint_packs`
 - `failure_report.failure_report.constraint_packs`
 - `remediation_plan.remediation_plan.constraint_packs`
@@ -64,6 +66,13 @@ This makes the full approval/rejection result auditable against the standards th
 
 ```json
 {
+  "constraint_packs": [
+    {
+      "id": "CPACK-0001",
+      "version": "0.1",
+      "title": "LF4 Engineering Atlas Constraint Pack"
+    }
+  ],
   "validation": {
     "validation_report": {
       "id": "VALIDATION-REPORT-0001",
@@ -84,7 +93,13 @@ This makes the full approval/rejection result auditable against the standards th
       "id": "FAILURE-REPORT-0001",
       "status": "failed",
       "failure_count": 1,
-      "constraint_packs": []
+      "constraint_packs": [
+        {
+          "id": "CPACK-0001",
+          "version": "0.1",
+          "title": "LF4 Engineering Atlas Constraint Pack"
+        }
+      ]
     },
     "failures": []
   },
@@ -93,7 +108,13 @@ This makes the full approval/rejection result auditable against the standards th
       "id": "REMEDIATION-PLAN-0001",
       "status": "required",
       "action_count": 1,
-      "constraint_packs": []
+      "constraint_packs": [
+        {
+          "id": "CPACK-0001",
+          "version": "0.1",
+          "title": "LF4 Engineering Atlas Constraint Pack"
+        }
+      ]
     },
     "actions": []
   },
@@ -102,7 +123,13 @@ This makes the full approval/rejection result auditable against the standards th
       "id": "REVISION-REQUEST-0001",
       "status": "revision_required",
       "step_count": 1,
-      "constraint_packs": []
+      "constraint_packs": [
+        {
+          "id": "CPACK-0001",
+          "version": "0.1",
+          "title": "LF4 Engineering Atlas Constraint Pack"
+        }
+      ]
     },
     "steps": []
   },
@@ -110,7 +137,13 @@ This makes the full approval/rejection result auditable against the standards th
     "approval": {
       "id": "APPROVAL-0001",
       "status": "rejected",
-      "constraint_packs": []
+      "constraint_packs": [
+        {
+          "id": "CPACK-0001",
+          "version": "0.1",
+          "title": "LF4 Engineering Atlas Constraint Pack"
+        }
+      ]
     },
     "decision": {
       "summary": "Rejected because required validation gates did not pass.",
@@ -119,7 +152,3 @@ This makes the full approval/rejection result auditable against the standards th
   }
 }
 ```
-
-## Design note
-
-This pipeline still does not perform image inspection or artifact revision. It is the orchestration layer that future validators and revision loops will use once visual, geometry, reference-image, or renderer-specific evidence is available.
