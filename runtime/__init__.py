@@ -4,7 +4,12 @@ from runtime.artifacts import ArtifactCollector, ArtifactStore, ArtifactStoreErr
 from runtime.context import RuntimeContext
 from runtime.engine import RuntimeEngine
 from runtime.events import RuntimeEvent, RuntimeEventType
-from runtime.replay import RuntimeReplayVerification, verify_partial_schedule_runtime_events, verify_successful_runtime_events
+from runtime.replay import (
+    RuntimeReplayVerification,
+    verify_completed_runtime_traceability,
+    verify_partial_schedule_runtime_events,
+    verify_successful_runtime_events,
+)
 from runtime.result import RuntimeResult
 from runtime.state import RuntimeState
 
@@ -21,6 +26,7 @@ __all__ = [
     "RuntimeReplayVerification",
     "RuntimeResult",
     "RuntimeState",
+    "verify_completed_runtime_traceability",
     "verify_partial_schedule_runtime_events",
     "verify_successful_runtime_events",
 ]
