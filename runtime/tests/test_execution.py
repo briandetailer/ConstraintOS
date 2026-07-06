@@ -2,7 +2,7 @@ import pytest
 
 from runtime.execution import DryRunExecutor, ExecutionError, ExecutionRequest, PluginExecutor
 from runtime.planner import RuntimePlanner
-from runtime.plugins import PluginResult
+from runtime.plugins import PluginDispatchError, PluginResult
 from runtime.scheduler import RuntimeScheduler, WorkerCapability
 
 
@@ -17,6 +17,11 @@ class _StaticDispatcher:
 class _RaisingDispatcher:
     def dispatch(self, assignment: dict[str, object], context: object | None = None) -> object:
         raise RuntimeError("plugin exploded")
+
+
+class _DispatchErrorDispatcher:
+    def dispatch(self, assignment: dict[str, object], context: object | None = None) -> object:
+        raise PluginDispatchError("assignment must include a plugin")
 
 
 def test_execute_request_from_assignment() -> None:
@@ -118,6 +123,17 @@ def test_plugin_executor_converts_plugin_exception_to_failed_node_result() -> No
     assert result.status == "partial"
     assert result.node_results[0].status == "plugin_execution_failed"
     assert result.node_results[0].message == "plugin exploded"
+
+
+def test_plugin_executor_preserves_dispatch_errors() -> None:
+    request = ExecutionRequest(
+        id="EXEC-REQ-0001",
+        schedule_id="SCHEDULE-0001",
+        assignments=[{"node_id": "NODE-0001", "worker_id": "WORKER-0001", "action": "package"}],
+    )
+
+    with pytest.raises(PluginDispatchError, match="assignment must include a plugin"):
+        PluginExecutor(_DispatchErrorDispatcher()).execute(request)
 
 
 def test_plugin_executor_rejects_invalid_assignments_shape() -> None:
