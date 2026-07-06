@@ -12,6 +12,8 @@ specification -> planning -> execution -> independent validation -> evidence -> 
 
 This applies whether execution is performed by a model, a deterministic tool, a CAD system, a renderer, a compiler, or an external service.
 
+Companion design notes: `ConstraintOS_Vision_and_CSL_Design_Notes.md` captures the current product vision, CSL design decisions, and open CSL questions that should guide future validator and schema work.
+
 ## Core principles
 
 ### 1. Nondeterministic generation must not self-certify
@@ -80,3 +82,4 @@ Runtime contract work should continue to prioritize:
 3. Add evidence bundle examples under docs or examples for external consumers.
 4. Add Node.js/.NET/Terraform-facing consumption examples for contract registry and evidence manifests.
 5. Define an approval-gate contract distinct from runtime validation.
+6. Define the minimum viable CSL object shape, including `csl_version`, entity references, groups, and full-tree validation reporting.
