@@ -9,6 +9,7 @@ from runtime.artifacts.models import RuntimeArtifact
 from runtime.artifacts.reporter import RuntimeReportWriter
 from runtime.artifacts.store import ArtifactStore
 from runtime.artifacts.trace_reporter import RuntimeTraceReportWriter
+from runtime.contracts import CONTRACT_REGISTRY_VERSION
 from runtime.result import RuntimeResult
 
 
@@ -51,6 +52,7 @@ class RuntimeEvidenceBundleWriter:
         manifest = {
             "runtime_evidence": {
                 "runtime_id": runtime_id,
+                "contract_registry_version": CONTRACT_REGISTRY_VERSION,
                 "runtime_report_artifact_id": runtime_report.id,
                 "trace_report_artifact_id": trace_report.id,
                 "artifact_count": 2,
@@ -67,6 +69,7 @@ class RuntimeEvidenceBundleWriter:
                 "artifact_role": "runtime_evidence_manifest",
                 "content_type": "application/json",
                 "runtime_id": runtime_id,
+                "contract_registry_version": CONTRACT_REGISTRY_VERSION,
                 "runtime_report_uri": runtime_report.uri,
                 "trace_report_uri": trace_report.uri,
             },
@@ -102,6 +105,8 @@ def verify_runtime_evidence_manifest(manifest: RuntimeArtifact | dict[str, Any])
 
     if not runtime_id:
         issues.append("Runtime evidence runtime_id is required.")
+    if evidence.get("contract_registry_version") != CONTRACT_REGISTRY_VERSION:
+        issues.append(f"Runtime evidence contract_registry_version must be {CONTRACT_REGISTRY_VERSION}.")
     if not isinstance(evidence.get("artifact_count"), int):
         issues.append("Runtime evidence artifact_count must be an integer.")
     elif isinstance(artifacts, list) and evidence.get("artifact_count") != len(artifacts):
