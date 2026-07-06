@@ -14,6 +14,7 @@ Evidence should be a deterministic input to validation, not an informal note tha
 - `cos-validate` checks evidence files before running the validation approval pipeline.
 - Each evidence entry must include a `gate_id` and `status`.
 - Gate IDs must use `GATE-0000` format.
+- Evidence status must use the registered status vocabulary.
 - Evidence referencing an unknown gate is rejected.
 - Duplicate evidence for the same gate is rejected.
 
@@ -23,6 +24,8 @@ Evidence should be a deterministic input to validation, not an informal note tha
 Render Specification Gates
   ↓
 Validation Evidence Schema
+  ↓
+Evidence Status Vocabulary
   ↓
 Evidence-to-Gate Alignment
   ↓
