@@ -12,6 +12,7 @@ except ImportError:  # pragma: no cover
     yaml = None
 
 from constraintos.constraint_pack import apply_constraint_pack
+from constraintos.schema_validation import require_registered_schema
 from constraintos.validation.pipeline import ValidationApprovalPipeline
 
 
@@ -21,6 +22,13 @@ def load_data_file(path: Path) -> Any:
     if yaml is None:
         raise RuntimeError("PyYAML is required")
     return yaml.safe_load(path.read_text(encoding="utf-8")) or {}
+
+
+def load_required_object(path: Path) -> dict[str, Any]:
+    data = load_data_file(path)
+    if not isinstance(data, dict):
+        raise ValueError(f"{path} must contain an object")
+    return data
 
 
 def load_evidence(path: str | None) -> list[dict[str, Any]]:
@@ -39,9 +47,18 @@ def load_evidence(path: str | None) -> list[dict[str, Any]]:
 def apply_constraint_pack_files(render_specification: dict[str, Any], constraint_pack_paths: list[str] | None) -> dict[str, Any]:
     applied = render_specification
     for constraint_pack_path in constraint_pack_paths or []:
-        constraint_pack = load_data_file(Path(constraint_pack_path))
-        if not isinstance(constraint_pack, dict):
-            raise ValueError(f"{constraint_pack_path} must contain an object")
+        constraint_pack = load_required_object(Path(constraint_pack_path))
+        applied = apply_constraint_pack(applied, constraint_pack)
+    return applied
+
+
+def apply_validated_constraint_pack_files(render_specification: dict[str, Any], constraint_pack_paths: list[str] | None) -> dict[str, Any]:
+    require_registered_schema(Path("<render_specification>"), render_specification, expected_record_type="render_specification")
+    applied = render_specification
+    for constraint_pack_path in constraint_pack_paths or []:
+        path = Path(constraint_pack_path)
+        constraint_pack = load_required_object(path)
+        require_registered_schema(path, constraint_pack, expected_record_type="constraint_pack")
         applied = apply_constraint_pack(applied, constraint_pack)
     return applied
 
@@ -90,10 +107,10 @@ def write_output(payload: dict[str, Any], output_path: str | None, output_format
 
 
 def run_validation(args: argparse.Namespace) -> int:
-    render_specification = load_data_file(Path(args.render_specification))
-    if not isinstance(render_specification, dict):
-        raise ValueError(f"{args.render_specification} must contain an object")
-    render_specification = apply_constraint_pack_files(render_specification, args.constraint_pack)
+    render_specification_path = Path(args.render_specification)
+    render_specification = load_required_object(render_specification_path)
+    require_registered_schema(render_specification_path, render_specification, expected_record_type="render_specification")
+    render_specification = apply_validated_constraint_pack_files(render_specification, args.constraint_pack)
     evidence = load_evidence(args.evidence)
     result = ValidationApprovalPipeline().evaluate_render_specification(
         render_specification,
