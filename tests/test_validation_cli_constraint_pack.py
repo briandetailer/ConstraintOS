@@ -103,6 +103,34 @@ def test_validation_cli_rejects_schema_invalid_evidence(tmp_path, capsys) -> Non
     assert "schema:schemas/validation-evidence.schema.json:evidence.0" in capsys.readouterr().err
 
 
+def test_validation_cli_rejects_evidence_for_unknown_gate(tmp_path, capsys) -> None:
+    evidence = tmp_path / "unknown-gate-evidence.yaml"
+    write_yaml(evidence, {"evidence": [{"gate_id": "GATE-9999", "status": "passed"}]})
+
+    exit_code = main([RENDER_SPECIFICATION, "--evidence", str(evidence)])
+
+    assert exit_code == 2
+    assert "unknown gate: GATE-9999" in capsys.readouterr().err
+
+
+def test_validation_cli_rejects_duplicate_gate_evidence(tmp_path, capsys) -> None:
+    evidence = tmp_path / "duplicate-gate-evidence.yaml"
+    write_yaml(
+        evidence,
+        {
+            "evidence": [
+                {"gate_id": "GATE-0001", "status": "passed"},
+                {"gate_id": "GATE-0001", "status": "passed"},
+            ]
+        },
+    )
+
+    exit_code = main([RENDER_SPECIFICATION, "--evidence", str(evidence)])
+
+    assert exit_code == 2
+    assert "duplicate validation evidence for gate: GATE-0001" in capsys.readouterr().err
+
+
 def test_validation_cli_accepts_multiple_constraint_packs_without_duplicates(capsys) -> None:
     exit_code = main([
         RENDER_SPECIFICATION,
