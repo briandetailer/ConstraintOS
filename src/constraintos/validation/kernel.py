@@ -60,20 +60,31 @@ class ValidationKernel:
         subject = render_specification.get("subject", {})
         validation = render_specification.get("validation", {})
         gates = validation.get("gates", []) if isinstance(validation, dict) else []
-        constraint_packs = render_specification.get("constraint_packs", [])
         if not isinstance(subject, dict):
             subject = {}
         if not isinstance(gates, list) or not gates:
             raise ValueError("render specification must contain validation gates")
-        if not isinstance(constraint_packs, list):
-            raise ValueError("render specification constraint_packs must be a list")
         return self.evaluate(
             gates=gates,
             evidence=evidence,
             subject_id=str(subject.get("id", "UNKNOWN-SUBJECT")),
             report_id=report_id,
-            constraint_packs=[item for item in constraint_packs if isinstance(item, dict)],
+            constraint_packs=self._constraint_pack_references(render_specification),
         )
+
+    def _constraint_pack_references(self, render_specification: dict[str, Any]) -> list[dict[str, Any]]:
+        constraint_packs = render_specification.get("constraint_packs", [])
+        if not isinstance(constraint_packs, list):
+            raise ValueError("render specification constraint_packs must be a list")
+        references: list[dict[str, Any]] = []
+        for index, item in enumerate(constraint_packs, start=1):
+            if not isinstance(item, dict):
+                raise ValueError(f"render specification constraint_packs {index} must be an object")
+            pack_id = item.get("id")
+            if not isinstance(pack_id, str) or not pack_id:
+                raise ValueError(f"render specification constraint_packs {index} must include an id")
+            references.append(deepcopy(item))
+        return references
 
     def _evaluate_gate(self, gate: ValidationGate, evidence: ValidationEvidence | None) -> ValidationResult:
         if evidence is None:
