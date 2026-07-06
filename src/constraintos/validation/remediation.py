@@ -15,6 +15,7 @@ class ValidationRemediationPlan:
     failure_report_id: str | None
     status: str
     actions: list[dict[str, Any]] = field(default_factory=list)
+    constraint_packs: list[dict[str, Any]] = field(default_factory=list)
 
     def required(self) -> bool:
         return self.status == "required"
@@ -27,6 +28,7 @@ class ValidationRemediationPlan:
                 "status": self.status,
                 "created": date.today().isoformat(),
                 "action_count": len(self.actions),
+                "constraint_packs": self.constraint_packs,
             },
             "actions": self.actions,
         }
@@ -45,12 +47,16 @@ class ValidationRemediationPlanner:
         failures = payload.get("failures", []) if isinstance(payload, dict) else []
         if not isinstance(failures, list):
             failures = []
+        constraint_packs = header.get("constraint_packs", []) if isinstance(header, dict) else []
+        if not isinstance(constraint_packs, list):
+            constraint_packs = []
         actions = [self._action_from_failure(index, failure) for index, failure in enumerate(failures, start=1) if isinstance(failure, dict)]
         return ValidationRemediationPlan(
             id=remediation_plan_id,
             failure_report_id=header.get("id") if isinstance(header, dict) else None,
             status="required" if actions else "not_required",
             actions=actions,
+            constraint_packs=[item for item in constraint_packs if isinstance(item, dict)],
         )
 
     def _action_from_failure(self, index: int, failure: dict[str, Any]) -> dict[str, Any]:
