@@ -38,7 +38,7 @@ class ValidationKernel:
         constraint_packs: list[dict[str, Any]] | None = None,
     ) -> ValidationReport:
         normalized_gates = [self._gate_from_input(gate) for gate in gates]
-        evidence_by_gate = {item.gate_id: item for item in [self._evidence_from_input(entry) for entry in (evidence or [])]}
+        evidence_by_gate = self._evidence_by_gate(normalized_gates, evidence or [])
         results = [self._evaluate_gate(gate, evidence_by_gate.get(gate.id)) for gate in normalized_gates]
         required_issues = [result for result in results if result.required_pass and not result.passed()]
         status = "passed" if not required_issues else "failed"
@@ -85,6 +85,22 @@ class ValidationKernel:
                 raise ValueError(f"render specification constraint_packs {index} must include an id")
             references.append(deepcopy(item))
         return references
+
+    def _evidence_by_gate(
+        self,
+        gates: list[ValidationGate],
+        evidence: list[ValidationEvidence | dict[str, Any]],
+    ) -> dict[str, ValidationEvidence]:
+        gate_ids = {gate.id for gate in gates}
+        evidence_by_gate: dict[str, ValidationEvidence] = {}
+        for entry in evidence:
+            item = self._evidence_from_input(entry)
+            if item.gate_id not in gate_ids:
+                raise ValueError(f"validation evidence references unknown gate: {item.gate_id}")
+            if item.gate_id in evidence_by_gate:
+                raise ValueError(f"duplicate validation evidence for gate: {item.gate_id}")
+            evidence_by_gate[item.gate_id] = item
+        return evidence_by_gate
 
     def _evaluate_gate(self, gate: ValidationGate, evidence: ValidationEvidence | None) -> ValidationResult:
         if evidence is None:
