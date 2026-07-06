@@ -12,6 +12,18 @@ from constraintos.validation.remediation import ValidationRemediationPlan
 from constraintos.validation.revision import ValidationRevisionRequest
 
 
+def derive_provenance_manifest_id(validation_report_id: str | None) -> str:
+    """Derive a deterministic provenance manifest id from a validation report id."""
+
+    if not validation_report_id:
+        return "PROVENANCE-0001"
+    if validation_report_id.startswith("VALIDATION-REPORT-"):
+        return f"PROVENANCE-{validation_report_id.removeprefix('VALIDATION-REPORT-')}"
+    if validation_report_id.startswith("VALIDATION-"):
+        return f"PROVENANCE-{validation_report_id.removeprefix('VALIDATION-')}"
+    return f"PROVENANCE-{validation_report_id}"
+
+
 @dataclass(frozen=True)
 class ValidationProvenanceManifest:
     """Traceability manifest for one validation approval pipeline execution."""
@@ -104,7 +116,7 @@ class ValidationProvenanceManifestBuilder:
         revision_request: ValidationRevisionRequest | dict[str, Any],
         approval_decision: ApprovalDecision | dict[str, Any],
         artifact_id: str = "UNKNOWN-ARTIFACT",
-        provenance_manifest_id: str = "PROVENANCE-0001",
+        provenance_manifest_id: str | None = None,
     ) -> ValidationProvenanceManifest:
         validation_payload = validation_report.to_dict() if isinstance(validation_report, ValidationReport) else validation_report
         failure_payload = failure_report.to_dict() if isinstance(failure_report, ValidationFailureReport) else failure_report
@@ -129,12 +141,13 @@ class ValidationProvenanceManifestBuilder:
         constraint_packs = validation_header.get("constraint_packs", [])
         if not isinstance(constraint_packs, list):
             constraint_packs = []
+        validation_report_id = validation_header.get("id")
 
         return ValidationProvenanceManifest(
-            id=provenance_manifest_id,
+            id=provenance_manifest_id or derive_provenance_manifest_id(validation_report_id),
             subject_id=str(validation_header.get("subject_id", "UNKNOWN-SUBJECT")),
             artifact_id=artifact_id,
-            validation_report_id=validation_header.get("id"),
+            validation_report_id=validation_report_id,
             validation_status=str(validation_header.get("status", "unknown")),
             failure_report_id=failure_header.get("id"),
             failure_status=str(failure_header.get("status", "unknown")),
