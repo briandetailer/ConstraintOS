@@ -5,7 +5,7 @@ from dataclasses import dataclass, field
 from datetime import date
 from typing import Any
 
-from constraintos.approval import ApprovalDecision
+from constraintos.approval.models import ApprovalDecision
 from constraintos.validation.failure_report import ValidationFailureReport
 from constraintos.validation.models import ValidationReport
 from constraintos.validation.remediation import ValidationRemediationPlan
