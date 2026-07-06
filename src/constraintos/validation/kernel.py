@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from copy import deepcopy
 from typing import Any
 
 from constraintos.validation.models import (
@@ -34,6 +35,7 @@ class ValidationKernel:
         evidence: list[ValidationEvidence | dict[str, Any]] | None = None,
         subject_id: str = "UNKNOWN-SUBJECT",
         report_id: str = "VALIDATION-REPORT-0001",
+        constraint_packs: list[dict[str, Any]] | None = None,
     ) -> ValidationReport:
         normalized_gates = [self._gate_from_input(gate) for gate in gates]
         evidence_by_gate = {item.gate_id: item for item in [self._evidence_from_input(entry) for entry in (evidence or [])]}
@@ -46,6 +48,7 @@ class ValidationKernel:
             status=status,
             results=results,
             messages=["Validation passed." if status == "passed" else "Validation failed required gates."],
+            constraint_packs=deepcopy(constraint_packs or []),
         )
 
     def evaluate_render_specification(
@@ -57,15 +60,19 @@ class ValidationKernel:
         subject = render_specification.get("subject", {})
         validation = render_specification.get("validation", {})
         gates = validation.get("gates", []) if isinstance(validation, dict) else []
+        constraint_packs = render_specification.get("constraint_packs", [])
         if not isinstance(subject, dict):
             subject = {}
         if not isinstance(gates, list) or not gates:
             raise ValueError("render specification must contain validation gates")
+        if not isinstance(constraint_packs, list):
+            raise ValueError("render specification constraint_packs must be a list")
         return self.evaluate(
             gates=gates,
             evidence=evidence,
             subject_id=str(subject.get("id", "UNKNOWN-SUBJECT")),
             report_id=report_id,
+            constraint_packs=[item for item in constraint_packs if isinstance(item, dict)],
         )
 
     def _evaluate_gate(self, gate: ValidationGate, evidence: ValidationEvidence | None) -> ValidationResult:
