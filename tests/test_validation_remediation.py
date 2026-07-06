@@ -4,6 +4,9 @@ from constraintos.validation.models import ValidationGate
 from constraintos.validation.remediation import ValidationRemediationPlanner
 
 
+CONSTRAINT_PACK_REFERENCE = {"id": "CPACK-0001", "version": "0.1", "title": "LF4 Engineering Atlas Constraint Pack"}
+
+
 def test_remediation_plan_is_not_required_when_failure_report_is_clear() -> None:
     report = ValidationKernel().evaluate(
         gates=[ValidationGate("GATE-0001", "LF4 Specificity Gate")],
@@ -57,3 +60,33 @@ def test_remediation_plan_accepts_failure_report_dictionary() -> None:
     assert payload["remediation_plan"]["id"] == "REMEDIATION-PLAN-0007"
     assert payload["remediation_plan"]["failure_report_id"] == "FAILURE-REPORT-0007"
     assert payload["actions"][0]["instruction"] == "Revise artifact."
+
+
+def test_remediation_plan_preserves_constraint_pack_references() -> None:
+    report = ValidationKernel().evaluate(
+        gates=[ValidationGate("GATE-0001", "LF4 Specificity Gate")],
+        evidence=[],
+        constraint_packs=[CONSTRAINT_PACK_REFERENCE],
+    )
+    failure_report = ValidationFailureReporter().build(report)
+
+    plan = ValidationRemediationPlanner().build(failure_report)
+
+    assert plan.constraint_packs == [CONSTRAINT_PACK_REFERENCE]
+    assert plan.to_dict()["remediation_plan"]["constraint_packs"] == [CONSTRAINT_PACK_REFERENCE]
+
+
+def test_remediation_plan_accepts_constraint_pack_references_from_dictionary() -> None:
+    plan = ValidationRemediationPlanner().build(
+        {
+            "failure_report": {
+                "id": "FAILURE-REPORT-0007",
+                "status": "failed",
+                "constraint_packs": [CONSTRAINT_PACK_REFERENCE],
+            },
+            "failures": [],
+        },
+        remediation_plan_id="REMEDIATION-PLAN-0007",
+    )
+
+    assert plan.to_dict()["remediation_plan"]["constraint_packs"] == [CONSTRAINT_PACK_REFERENCE]
