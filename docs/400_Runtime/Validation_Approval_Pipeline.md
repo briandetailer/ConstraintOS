@@ -45,7 +45,20 @@ The pipeline currently supports render specifications directly:
 - Produces a remediation plan from the failure report.
 - Produces a revision request from the remediation plan.
 - Applies approval policy.
+- Preserves applied constraint pack references through every output layer.
 - Returns all outputs together.
+
+## Constraint pack traceability
+
+When a render specification contains `constraint_packs`, the pipeline keeps those references in every generated object:
+
+- `validation.validation_report.constraint_packs`
+- `failure_report.failure_report.constraint_packs`
+- `remediation_plan.remediation_plan.constraint_packs`
+- `revision_request.revision_request.constraint_packs`
+- `approval.approval.constraint_packs`
+
+This makes the full approval/rejection result auditable against the standards that were applied before validation.
 
 ## Result shape
 
@@ -55,7 +68,14 @@ The pipeline currently supports render specifications directly:
     "validation_report": {
       "id": "VALIDATION-REPORT-0001",
       "subject_id": "LF4-ENGINE",
-      "status": "failed"
+      "status": "failed",
+      "constraint_packs": [
+        {
+          "id": "CPACK-0001",
+          "version": "0.1",
+          "title": "LF4 Engineering Atlas Constraint Pack"
+        }
+      ]
     },
     "results": []
   },
@@ -63,7 +83,8 @@ The pipeline currently supports render specifications directly:
     "failure_report": {
       "id": "FAILURE-REPORT-0001",
       "status": "failed",
-      "failure_count": 1
+      "failure_count": 1,
+      "constraint_packs": []
     },
     "failures": []
   },
@@ -71,7 +92,8 @@ The pipeline currently supports render specifications directly:
     "remediation_plan": {
       "id": "REMEDIATION-PLAN-0001",
       "status": "required",
-      "action_count": 1
+      "action_count": 1,
+      "constraint_packs": []
     },
     "actions": []
   },
@@ -79,14 +101,16 @@ The pipeline currently supports render specifications directly:
     "revision_request": {
       "id": "REVISION-REQUEST-0001",
       "status": "revision_required",
-      "step_count": 1
+      "step_count": 1,
+      "constraint_packs": []
     },
     "steps": []
   },
   "approval": {
     "approval": {
       "id": "APPROVAL-0001",
-      "status": "rejected"
+      "status": "rejected",
+      "constraint_packs": []
     },
     "decision": {
       "summary": "Rejected because required validation gates did not pass.",
