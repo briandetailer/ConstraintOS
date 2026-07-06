@@ -89,6 +89,20 @@ def test_constraint_pack_cli_rejects_schema_invalid_constraint_pack(tmp_path, ca
     assert "schema:schemas/constraint-pack.schema.json:validation.gates" in capsys.readouterr().err
 
 
+def test_constraint_pack_cli_rejects_constraint_pack_as_render_specification(capsys) -> None:
+    exit_code = main([CONSTRAINT_PACK, CONSTRAINT_PACK])
+
+    assert exit_code == 2
+    assert "expected render_specification, got constraint_pack" in capsys.readouterr().err
+
+
+def test_constraint_pack_cli_rejects_render_specification_as_constraint_pack(capsys) -> None:
+    exit_code = main([RENDER_SPECIFICATION, RENDER_SPECIFICATION])
+
+    assert exit_code == 2
+    assert "expected constraint_pack, got render_specification" in capsys.readouterr().err
+
+
 def test_apply_constraint_packs_applies_packs_in_order() -> None:
     render_specification = {"render_specification": {"id": "RSPEC-9999"}}
     first_pack = {
