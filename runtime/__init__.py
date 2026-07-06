@@ -7,7 +7,9 @@ from runtime.events import RuntimeEvent, RuntimeEventType
 from runtime.replay import (
     RuntimeReplayVerification,
     verify_completed_runtime_traceability,
+    verify_exception_boundary_runtime_events,
     verify_partial_schedule_runtime_events,
+    verify_runtime_result_summary,
     verify_successful_runtime_events,
 )
 from runtime.result import RuntimeResult
@@ -27,6 +29,8 @@ __all__ = [
     "RuntimeResult",
     "RuntimeState",
     "verify_completed_runtime_traceability",
+    "verify_exception_boundary_runtime_events",
     "verify_partial_schedule_runtime_events",
+    "verify_runtime_result_summary",
     "verify_successful_runtime_events",
 ]
