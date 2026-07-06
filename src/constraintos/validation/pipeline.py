@@ -65,7 +65,7 @@ class ValidationApprovalPipeline:
         failure_report_id: str = "FAILURE-REPORT-0001",
         remediation_plan_id: str = "REMEDIATION-PLAN-0001",
         revision_request_id: str = "REVISION-REQUEST-0001",
-        provenance_manifest_id: str = "PROVENANCE-0001",
+        provenance_manifest_id: str | None = None,
     ) -> ValidationApprovalResult:
         validation_report = self.kernel.evaluate_render_specification(
             render_specification,
