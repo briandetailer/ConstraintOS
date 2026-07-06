@@ -155,7 +155,7 @@ class RuntimeEngine:
                 messages=["Runtime completed successfully." if success else "Runtime completed with partial execution."],
             )
         except Exception as error:  # pragma: no cover - defensive orchestration boundary
-            events.append(RuntimeEvent(RuntimeEventType.FAILED, {"error": str(error)}))
+            events.append(RuntimeEvent(RuntimeEventType.FAILED, {"error": str(error), "error_type": type(error).__name__}))
             return RuntimeResult(
                 id=runtime_id,
                 status=RuntimeState.FAILED,
