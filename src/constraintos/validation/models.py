@@ -4,6 +4,10 @@ from dataclasses import dataclass, field
 from datetime import date
 from typing import Any
 
+PASSING_EVIDENCE_STATUSES = frozenset({"pass", "passed", "complete", "approved"})
+FAILING_EVIDENCE_STATUSES = frozenset({"fail", "failed", "rejected"})
+ALLOWED_EVIDENCE_STATUSES = PASSING_EVIDENCE_STATUSES | FAILING_EVIDENCE_STATUSES
+
 
 @dataclass(frozen=True)
 class ValidationIssueCode:
@@ -51,7 +55,7 @@ class ValidationEvidence:
     details: dict[str, Any] = field(default_factory=dict)
 
     def passed(self) -> bool:
-        return self.status.lower() in {"pass", "passed", "complete", "approved"}
+        return self.status.lower().strip() in PASSING_EVIDENCE_STATUSES
 
     def to_dict(self) -> dict[str, Any]:
         return {
