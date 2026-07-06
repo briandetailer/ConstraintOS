@@ -23,6 +23,7 @@ The planner currently:
 - Accepts a `ValidationFailureReport` object or failure report dictionary.
 - Creates one remediation action per failure.
 - Preserves gate ID, gate name, issue code, severity, source reason, and remediation instruction.
+- Preserves applied constraint pack references from the failure report.
 - Produces `not_required` when there are no failures.
 - Produces `required` when at least one remediation action exists.
 
@@ -34,7 +35,14 @@ The planner currently:
     "id": "REMEDIATION-PLAN-0001",
     "failure_report_id": "FAILURE-REPORT-0001",
     "status": "required",
-    "action_count": 1
+    "action_count": 1,
+    "constraint_packs": [
+      {
+        "id": "CPACK-0001",
+        "version": "0.1",
+        "title": "LF4 Engineering Atlas Constraint Pack"
+      }
+    ]
   },
   "actions": [
     {
@@ -52,4 +60,4 @@ The planner currently:
 
 ## Design note
 
-This still does not modify artifacts or regenerate outputs. It defines the handoff object that future revision loops will consume.
+This still does not modify artifacts or regenerate outputs. It defines the handoff object that future revision loops will consume while preserving the standards context that produced the remediation work.
