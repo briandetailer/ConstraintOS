@@ -3,7 +3,11 @@ from pathlib import Path
 import pytest
 import yaml
 
+from constraintos.constraint_pack import apply_constraint_pack
 from constraintos.validation import ValidationEvidence, ValidationGate, ValidationIssueCode, ValidationKernel
+
+
+CONSTRAINT_PACK_REFERENCE = {"id": "CPACK-0001", "version": "0.1", "title": "LF4 Engineering Atlas Constraint Pack"}
 
 
 def test_validation_issue_code_serializes() -> None:
@@ -86,6 +90,30 @@ def test_validation_kernel_evaluates_render_specification_gates() -> None:
     assert report.passed() is True
     assert report.subject_id == "LF4-ENGINE"
     assert [result.gate_id for result in report.results] == ["GATE-0001", "GATE-0002", "GATE-0003"]
+
+
+def test_validation_kernel_includes_constraint_pack_references() -> None:
+    render_source = Path("examples/render/lf4_engine_render_specification.yaml")
+    pack_source = Path("examples/constraint_packs/lf4_engine_constraint_pack.yaml")
+    render_specification = yaml.safe_load(render_source.read_text(encoding="utf-8"))
+    constraint_pack = yaml.safe_load(pack_source.read_text(encoding="utf-8"))
+    applied = apply_constraint_pack(render_specification, constraint_pack)
+
+    report = ValidationKernel().evaluate_render_specification(applied, [])
+
+    assert report.constraint_packs == [CONSTRAINT_PACK_REFERENCE]
+    assert report.to_dict()["validation_report"]["constraint_packs"] == [CONSTRAINT_PACK_REFERENCE]
+
+
+def test_validation_kernel_rejects_invalid_constraint_pack_references() -> None:
+    render_specification = {
+        "subject": {"id": "LF4-ENGINE"},
+        "validation": {"gates": [{"id": "GATE-0001", "name": "Gate", "required_pass": True}]},
+        "constraint_packs": {"id": "CPACK-0001"},
+    }
+
+    with pytest.raises(ValueError, match="constraint_packs must be a list"):
+        ValidationKernel().evaluate_render_specification(render_specification, [])
 
 
 def test_validation_kernel_rejects_render_specification_without_gates() -> None:
