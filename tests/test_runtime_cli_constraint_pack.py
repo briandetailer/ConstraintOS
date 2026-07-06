@@ -114,6 +114,26 @@ def test_runtime_cli_rejects_schema_invalid_constraint_pack(tmp_path, capsys) ->
     assert "schema:schemas/constraint-pack.schema.json:validation.gates" in capsys.readouterr().err
 
 
+def test_runtime_cli_rejects_pack_file_as_render_contract_input(capsys) -> None:
+    exit_code = main([CONSTRAINT_PACK, "--render-contract", "--plan-only"])
+
+    assert exit_code == 2
+    assert "expected render_specification" in capsys.readouterr().err
+
+
+def test_runtime_cli_rejects_render_file_as_pack_input(capsys) -> None:
+    exit_code = main([
+        RENDER_SPECIFICATION,
+        "--render-contract",
+        "--constraint-pack",
+        RENDER_SPECIFICATION,
+        "--plan-only",
+    ])
+
+    assert exit_code == 2
+    assert "expected constraint_pack" in capsys.readouterr().err
+
+
 def test_runtime_cli_rejects_constraint_pack_without_render_contract(capsys) -> None:
     exit_code = main([
         RUNTIME_SPECIFICATION,
