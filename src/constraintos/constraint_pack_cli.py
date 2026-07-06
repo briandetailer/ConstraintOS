@@ -12,6 +12,7 @@ except ImportError:  # pragma: no cover
     yaml = None
 
 from constraintos.constraint_pack import apply_constraint_pack
+from constraintos.schema_validation import require_registered_schema
 
 
 def load_data_file(path: Path) -> dict[str, Any]:
@@ -23,6 +24,12 @@ def load_data_file(path: Path) -> dict[str, Any]:
         data = yaml.safe_load(path.read_text(encoding="utf-8")) or {}
     if not isinstance(data, dict):
         raise ValueError(f"{path} must contain an object")
+    return data
+
+
+def load_validated_data_file(path: Path, expected_record_type: str) -> dict[str, Any]:
+    data = load_data_file(path)
+    require_registered_schema(path, data, expected_record_type=expected_record_type)
     return data
 
 
@@ -53,8 +60,8 @@ def apply_constraint_packs(render_specification: dict[str, Any], constraint_pack
 
 
 def run_apply(args: argparse.Namespace) -> int:
-    render_specification = load_data_file(Path(args.render_specification))
-    constraint_packs = [load_data_file(Path(path)) for path in args.constraint_packs]
+    render_specification = load_validated_data_file(Path(args.render_specification), "render_specification")
+    constraint_packs = [load_validated_data_file(Path(path), "constraint_pack") for path in args.constraint_packs]
     applied = apply_constraint_packs(render_specification, constraint_packs)
     write_output(applied, args.output, args.format)
     return 0
