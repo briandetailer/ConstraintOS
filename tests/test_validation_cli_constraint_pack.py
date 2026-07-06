@@ -3,7 +3,7 @@ from pathlib import Path
 
 import yaml
 
-from constraintos.validation_cli import apply_constraint_pack_files, main
+from constraintos.validation_cli import apply_constraint_pack_files, constraint_pack_count, main
 
 RENDER_SPECIFICATION = "examples/render/lf4_engine_render_specification.yaml"
 CONSTRAINT_PACK = "examples/constraint_packs/lf4_engine_constraint_pack.yaml"
@@ -45,11 +45,21 @@ def test_validation_cli_json_preserves_constraint_pack_traceability(capsys) -> N
 
     payload = json.loads(capsys.readouterr().out)
     assert exit_code == 0
+    assert payload["constraint_packs"] == [CONSTRAINT_PACK_REFERENCE]
     assert payload["validation"]["validation_report"]["constraint_packs"] == [CONSTRAINT_PACK_REFERENCE]
     assert payload["failure_report"]["failure_report"]["constraint_packs"] == [CONSTRAINT_PACK_REFERENCE]
     assert payload["remediation_plan"]["remediation_plan"]["constraint_packs"] == [CONSTRAINT_PACK_REFERENCE]
     assert payload["revision_request"]["revision_request"]["constraint_packs"] == [CONSTRAINT_PACK_REFERENCE]
     assert payload["approval"]["approval"]["constraint_packs"] == [CONSTRAINT_PACK_REFERENCE]
+
+
+def test_validation_cli_constraint_pack_count_prefers_root_traceability() -> None:
+    payload = {
+        "constraint_packs": [CONSTRAINT_PACK_REFERENCE],
+        "validation": {"validation_report": {"constraint_packs": []}},
+    }
+
+    assert constraint_pack_count(payload) == 1
 
 
 def test_validation_cli_text_reports_constraint_pack_count(capsys) -> None:
