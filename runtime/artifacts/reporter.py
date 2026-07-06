@@ -21,6 +21,8 @@ class RuntimeReportWriter:
         relative_path: str | Path | None = None,
     ) -> RuntimeArtifact:
         result_data = result.to_dict() if isinstance(result, RuntimeResult) else result
+        runtime_result = result_data.get("runtime_result", {}) if isinstance(result_data, dict) else {}
+        summary = result_data.get("summary", {}) if isinstance(result_data, dict) else {}
         runtime_id = self._runtime_id(result_data)
         report_path = relative_path or f"reports/{runtime_id}.json"
         content = json.dumps(result_data, indent=2, sort_keys=True) + "\n"
@@ -31,6 +33,9 @@ class RuntimeReportWriter:
             metadata={
                 "content_type": "application/json",
                 "runtime_id": runtime_id,
+                "runtime_status": runtime_result.get("status", "unknown") if isinstance(runtime_result, dict) else "unknown",
+                "runtime_success": runtime_result.get("success", False) if isinstance(runtime_result, dict) else False,
+                "summary": summary if isinstance(summary, dict) else {},
                 "artifact_role": "runtime_report",
             },
         )

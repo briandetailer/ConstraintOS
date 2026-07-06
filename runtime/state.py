@@ -15,3 +15,9 @@ class RuntimeState(str, Enum):
     FAILED = "failed"
     CANCELLED = "cancelled"
     SKIPPED = "skipped"
+
+    def terminal(self) -> bool:
+        return self in {self.COMPLETED, self.PARTIAL, self.FAILED, self.CANCELLED, self.SKIPPED}
+
+    def successful(self) -> bool:
+        return self == self.COMPLETED
