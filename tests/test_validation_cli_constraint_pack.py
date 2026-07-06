@@ -103,6 +103,16 @@ def test_validation_cli_rejects_schema_invalid_evidence(tmp_path, capsys) -> Non
     assert "schema:schemas/validation-evidence.schema.json:evidence.0" in capsys.readouterr().err
 
 
+def test_validation_cli_rejects_unknown_evidence_status(tmp_path, capsys) -> None:
+    invalid_evidence = tmp_path / "invalid-evidence-status.yaml"
+    write_yaml(invalid_evidence, {"evidence": [{"gate_id": "GATE-0001", "status": "maybe"}]})
+
+    exit_code = main([RENDER_SPECIFICATION, "--evidence", str(invalid_evidence)])
+
+    assert exit_code == 2
+    assert "schema:schemas/validation-evidence.schema.json:evidence.0.status" in capsys.readouterr().err
+
+
 def test_validation_cli_rejects_evidence_for_unknown_gate(tmp_path, capsys) -> None:
     evidence = tmp_path / "unknown-gate-evidence.yaml"
     write_yaml(evidence, {"evidence": [{"gate_id": "GATE-9999", "status": "passed"}]})
