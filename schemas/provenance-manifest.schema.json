@@ -1,0 +1,177 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://constraintos.local/schemas/provenance-manifest.schema.json",
+  "title": "ConstraintOS Provenance Manifest",
+  "type": "object",
+  "required": [
+    "provenance_manifest",
+    "subject",
+    "artifact",
+    "validation",
+    "traceability"
+  ],
+  "properties": {
+    "provenance_manifest": {
+      "type": "object",
+      "required": [
+        "id",
+        "created",
+        "status",
+        "source",
+        "constraint_packs"
+      ],
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "created": {
+          "type": "string"
+        },
+        "status": {
+          "type": "string"
+        },
+        "source": {
+          "type": "string"
+        },
+        "constraint_packs": {
+          "type": "array",
+          "items": {
+            "type": "object"
+          }
+        }
+      }
+    },
+    "subject": {
+      "type": "object",
+      "required": [
+        "id"
+      ],
+      "properties": {
+        "id": {
+          "type": "string"
+        }
+      }
+    },
+    "artifact": {
+      "type": "object",
+      "required": [
+        "id"
+      ],
+      "properties": {
+        "id": {
+          "type": "string"
+        }
+      }
+    },
+    "validation": {
+      "type": "object",
+      "required": [
+        "report_id",
+        "status",
+        "result_count"
+      ],
+      "properties": {
+        "report_id": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "status": {
+          "type": "string"
+        },
+        "result_count": {
+          "type": "integer",
+          "minimum": 0
+        }
+      }
+    },
+    "traceability": {
+      "type": "object",
+      "required": [
+        "nodes",
+        "gates"
+      ],
+      "properties": {
+        "nodes": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "type",
+              "id",
+              "status",
+              "references"
+            ],
+            "properties": {
+              "type": {
+                "type": "string"
+              },
+              "id": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "status": {
+                "type": "string"
+              },
+              "references": {
+                "type": "object"
+              }
+            }
+          }
+        },
+        "gates": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "gate_id",
+              "gate_name",
+              "status",
+              "required_pass",
+              "evidence_status",
+              "issue_code"
+            ],
+            "properties": {
+              "gate_id": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "gate_name": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "status": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "required_pass": {
+                "type": "boolean"
+              },
+              "evidence_status": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "issue_code": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
