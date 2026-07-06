@@ -1,6 +1,11 @@
 import json
 
-from runtime import RuntimeContractRegistryReportWriter, runtime_contract_registry, verify_runtime_contract_registry
+from runtime import (
+    RuntimeContractRegistryReportWriter,
+    runtime_contract_registry,
+    verify_runtime_contract_registry,
+    verify_runtime_contract_registry_report,
+)
 from runtime.artifacts import ArtifactStore
 
 
@@ -35,4 +40,35 @@ def test_runtime_contract_registry_report_writer_uses_custom_path(tmp_path) -> N
         "runtime_traceability",
         "runtime_trace_report",
         "runtime_evidence_manifest",
+    ]
+
+
+def test_runtime_contract_registry_report_verifier_accepts_written_artifact(tmp_path) -> None:
+    artifact = RuntimeContractRegistryReportWriter(ArtifactStore(tmp_path)).write_registry()
+
+    verification = verify_runtime_contract_registry_report(artifact)
+
+    assert verification.successful() is True
+    assert verification.to_dict() == {
+        "runtime_contract_verification": {"successful": True, "issue_count": 0},
+        "issues": [],
+    }
+
+
+def test_runtime_contract_registry_report_verifier_reports_metadata_mismatches(tmp_path) -> None:
+    artifact = RuntimeContractRegistryReportWriter(ArtifactStore(tmp_path)).write_registry()
+    artifact_data = artifact.to_dict()
+    artifact_data["metadata"]["artifact_role"] = "wrong_role"
+    artifact_data["metadata"]["content_type"] = "text/plain"
+    artifact_data["metadata"]["registry_version"] = "wrong-version"
+    artifact_data["metadata"]["contract_count"] = 99
+
+    verification = verify_runtime_contract_registry_report(artifact_data)
+
+    assert verification.successful() is False
+    assert verification.issues == [
+        "Runtime contract registry report artifact_role must be runtime_contract_registry.",
+        "Runtime contract registry report content_type must be application/json.",
+        "Runtime contract registry report registry_version must match registry version.",
+        "Runtime contract registry report contract_count must match registry contract_count.",
     ]
