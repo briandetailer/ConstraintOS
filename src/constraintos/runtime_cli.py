@@ -14,6 +14,7 @@ except ImportError:  # pragma: no cover
 
 from constraintos.constraint_pack import apply_constraint_pack
 from constraintos.render_contract import compile_render_contract_to_runtime
+from constraintos.schema_validation import require_registered_schema
 from runtime import ArtifactStore, RuntimeContext, RuntimeEngine, RuntimeReportWriter
 from runtime.execution import create_default_plugin_executor
 from runtime.planner import DependencyResolver, RuntimePlanner
@@ -38,10 +39,17 @@ def load_specification(path: Path) -> dict[str, Any]:
     return data
 
 
-def apply_constraint_pack_files(specification: dict[str, Any], constraint_pack_paths: list[str] | None) -> dict[str, Any]:
+def apply_constraint_pack_files(
+    specification: dict[str, Any],
+    constraint_pack_paths: list[str] | None,
+    validate_schema: bool = False,
+) -> dict[str, Any]:
     applied = specification
     for constraint_pack_path in constraint_pack_paths or []:
-        constraint_pack = load_specification(Path(constraint_pack_path))
+        path = Path(constraint_pack_path)
+        constraint_pack = load_specification(path)
+        if validate_schema:
+            require_registered_schema(path, constraint_pack, expected_record_type="constraint_pack")
         applied = apply_constraint_pack(applied, constraint_pack)
     return applied
 
@@ -55,7 +63,8 @@ def load_runtime_specification(
     if constraint_pack_paths and not render_contract:
         raise ValueError("--constraint-pack requires --render-contract")
     if render_contract:
-        specification = apply_constraint_pack_files(specification, constraint_pack_paths)
+        require_registered_schema(path, specification, expected_record_type="render_specification")
+        specification = apply_constraint_pack_files(specification, constraint_pack_paths, validate_schema=True)
         return compile_render_contract_to_runtime(specification)
     return specification
 
