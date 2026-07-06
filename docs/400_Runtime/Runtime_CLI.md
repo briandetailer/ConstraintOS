@@ -53,6 +53,8 @@ cos-runtime examples/render/lf4_engine_render_specification.yaml --render-contra
 
 `--constraint-pack` requires `--render-contract` because packs apply to render specifications, not already-compiled runtime specifications.
 
+Render-contract mode validates the render specification and every supplied constraint pack against their registered schemas before runtime compilation.
+
 Applied constraint pack references are preserved in render-contract runtime output under:
 
 - `artifact.constraint_packs`
