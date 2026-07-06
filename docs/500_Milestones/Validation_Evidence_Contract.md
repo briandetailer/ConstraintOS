@@ -2,6 +2,8 @@
 
 Validation Evidence Contract defines how externally supplied evidence is shaped, validated, and aligned to render specification gates.
 
+Status: closed.
+
 ## Goal
 
 Evidence should be a deterministic input to validation, not an informal note that can be silently ignored, duplicated, or applied to the wrong gate.
@@ -15,6 +17,8 @@ Evidence should be a deterministic input to validation, not an informal note tha
 - Each evidence entry must include a `gate_id` and `status`.
 - Gate IDs must use `GATE-0000` format.
 - Evidence status must use the registered status vocabulary.
+- Evidence status is normalized before evaluation.
+- Direct model/kernel callers receive the same status vocabulary enforcement as CLI callers.
 - Evidence referencing an unknown gate is rejected.
 - Duplicate evidence for the same gate is rejected.
 
