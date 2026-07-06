@@ -13,6 +13,12 @@ REQUIRED_CONTRACT_FIELDS = (
     "produced_by",
     "consumed_by",
 )
+REQUIRED_ARTIFACT_WRITER_CONTRACTS = {
+    "RuntimeReportWriter": "runtime_report",
+    "RuntimeTraceReportWriter": "runtime_trace_report",
+    "RuntimeEvidenceBundleWriter": "runtime_evidence_manifest",
+    "RuntimeContractRegistryReportWriter": "runtime_contract_registry",
+}
 
 
 @dataclass(frozen=True)
@@ -166,6 +172,29 @@ def verify_runtime_contract_registry(registry: dict[str, Any]) -> RuntimeContrac
 
     if len(names) != len(set(names)):
         issues.append("Runtime contract names must be unique.")
+
+    return RuntimeContractVerification(issues)
+
+
+def verify_artifact_writer_contract_coverage(registry: dict[str, Any]) -> RuntimeContractVerification:
+    registry_verification = verify_runtime_contract_registry(registry)
+    issues = list(registry_verification.issues)
+    contracts = registry.get("contracts", []) if isinstance(registry, dict) else []
+    if not isinstance(contracts, list):
+        return RuntimeContractVerification(issues)
+
+    contracts_by_producer = {
+        str(contract.get("produced_by", "")): contract for contract in contracts if isinstance(contract, dict)
+    }
+    for writer_name, contract_name in REQUIRED_ARTIFACT_WRITER_CONTRACTS.items():
+        contract = contracts_by_producer.get(writer_name)
+        if contract is None:
+            issues.append(f"Runtime artifact writer {writer_name} requires a public contract.")
+            continue
+        if contract.get("name") != contract_name:
+            issues.append(f"Runtime artifact writer {writer_name} must produce contract {contract_name}.")
+        if contract.get("contract_type") != "artifact_json":
+            issues.append(f"Runtime artifact writer {writer_name} contract_type must be artifact_json.")
 
     return RuntimeContractVerification(issues)
 
