@@ -53,7 +53,12 @@ def test_runtime_engine_returns_failed_result_for_invalid_specification() -> Non
         [WorkerCapability("WORKER-0001", ["generic"])],
     )
 
+    data = result.to_dict()
+    failed_events = [event for event in data["events"] if event["event_type"] == "runtime_failed"]
+
     assert result.status == RuntimeState.FAILED
     assert result.success is False
     assert result.plan is None
     assert result.messages == ["Missing action for step 1"]
+    assert failed_events[0]["payload"]["error_type"] == "PlannerError"
+    assert failed_events[0]["payload"]["error"] == "Missing action for step 1"
