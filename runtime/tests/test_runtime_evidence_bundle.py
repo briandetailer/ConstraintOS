@@ -23,9 +23,11 @@ def test_runtime_evidence_bundle_writer_links_runtime_and_trace_reports(tmp_path
     assert manifest_artifact.metadata["artifact_role"] == "runtime_evidence_manifest"
     assert manifest_artifact.metadata["content_type"] == "application/json"
     assert manifest_artifact.metadata["runtime_id"] == "RUNTIME-0001"
+    assert manifest_artifact.metadata["contract_registry_version"] == "runtime-contracts/v1"
     assert manifest_artifact.metadata["path"] == str(manifest_path.resolve())
     assert manifest["runtime_evidence"] == {
         "runtime_id": "RUNTIME-0001",
+        "contract_registry_version": "runtime-contracts/v1",
         "runtime_report_artifact_id": "ARTIFACT-0001",
         "trace_report_artifact_id": "ARTIFACT-0002",
         "artifact_count": 2,
@@ -54,6 +56,7 @@ def test_runtime_evidence_bundle_writer_accepts_serialized_result_and_custom_man
     assert manifest_artifact.metadata["runtime_report_uri"].endswith("/reports/RUNTIME-0001.json")
     assert manifest_artifact.metadata["trace_report_uri"].endswith("/traces/RUNTIME-0001.json")
     assert manifest["runtime_evidence"]["runtime_id"] == "RUNTIME-0001"
+    assert manifest["runtime_evidence"]["contract_registry_version"] == "runtime-contracts/v1"
     assert manifest["artifacts"][0]["metadata"]["runtime_status"] == "partial"
     assert manifest["artifacts"][1]["metadata"]["trace_status"] == "partial"
 
@@ -80,6 +83,7 @@ def test_runtime_evidence_manifest_verifier_reports_manifest_mismatches() -> Non
         {
             "runtime_evidence": {
                 "runtime_id": "RUNTIME-0001",
+                "contract_registry_version": "wrong-version",
                 "runtime_report_artifact_id": "ARTIFACT-OTHER",
                 "trace_report_artifact_id": "ARTIFACT-0002",
                 "artifact_count": 1,
@@ -100,6 +104,7 @@ def test_runtime_evidence_manifest_verifier_reports_manifest_mismatches() -> Non
 
     assert verification.successful() is False
     assert verification.issues == [
+        "Runtime evidence contract_registry_version must be runtime-contracts/v1.",
         "Runtime evidence artifact_count must match artifacts length.",
         "Runtime evidence artifacts must include runtime_report then runtime_trace_report.",
         "Runtime evidence runtime_report_artifact_id must match runtime report artifact id.",
