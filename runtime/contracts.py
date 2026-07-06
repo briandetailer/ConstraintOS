@@ -66,6 +66,15 @@ def runtime_contracts() -> tuple[RuntimeContract, ...]:
             description="Canonical serialized runtime orchestration result.",
         ),
         RuntimeContract(
+            name="runtime_report",
+            version="v1",
+            contract_type="artifact_json",
+            required_sections=("runtime_result", "summary", "events", "messages"),
+            produced_by="RuntimeReportWriter",
+            consumed_by=("evidence_bundle", "external_audit_clients"),
+            description="Persisted runtime result artifact.",
+        ),
+        RuntimeContract(
             name="runtime_traceability",
             version="v1",
             contract_type="json_document",
@@ -91,6 +100,15 @@ def runtime_contracts() -> tuple[RuntimeContract, ...]:
             produced_by="RuntimeEvidenceBundleWriter",
             consumed_by=("external_audit_clients", "ci_cd", "enterprise_integrations"),
             description="Manifest linking runtime report and trace report artifacts.",
+        ),
+        RuntimeContract(
+            name="runtime_contract_registry",
+            version="v1",
+            contract_type="artifact_json",
+            required_sections=("runtime_contract_registry", "contracts"),
+            produced_by="RuntimeContractRegistryReportWriter",
+            consumed_by=("external_audit_clients", "ci_cd", "enterprise_integrations"),
+            description="Persisted registry of public runtime contracts.",
         ),
     )
 
