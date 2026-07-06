@@ -68,6 +68,8 @@ Print JSON output instead of YAML:
 cos-apply-constraints examples/render/lf4_engine_render_specification.yaml examples/constraint_packs/lf4_engine_constraint_pack.yaml --format json
 ```
 
+The CLI validates the render specification and each constraint pack against their registered schemas before applying packs. Invalid inputs return exit code `2` and report the schema path and failing field.
+
 ## LF4 example
 
 The LF4 Engineering Atlas constraint pack captures the standing LF4 production standards:
@@ -79,4 +81,4 @@ The LF4 Engineering Atlas constraint pack captures the standing LF4 production s
 
 ## Design note
 
-Constraint Packs now have a validated schema, deterministic applicator, CLI entry point, and validated render-specification reference format. Multiple packs can be applied in a stable order before runtime or validation consumes the resulting render specification.
+Constraint Packs now have a validated schema, deterministic applicator, CLI entry point, schema-validated CLI boundary, and validated render-specification reference format. Multiple packs can be applied in a stable order before runtime or validation consumes the resulting render specification.
