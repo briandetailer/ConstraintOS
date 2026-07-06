@@ -42,6 +42,10 @@ Failing statuses:
 
 The schema rejects unknown status values before the validation pipeline runs.
 
+The Validation Evidence model also enforces this vocabulary directly, so direct kernel callers receive the same protection even when they bypass CLI/schema validation.
+
+Evidence statuses are normalized before evaluation.
+
 ## Gate alignment
 
 Evidence is checked against the evaluated render specification gates after schema validation.
