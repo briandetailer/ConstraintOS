@@ -2,6 +2,7 @@ from runtime import (
     RuntimeContext,
     RuntimeEngine,
     RuntimeState,
+    verify_completed_runtime_traceability,
     verify_partial_schedule_runtime_events,
     verify_successful_runtime_events,
 )
@@ -40,6 +41,7 @@ def test_runtime_engine_runs_plan_schedule_execute_pipeline() -> None:
 
     data = result.to_dict()
     replay_verification = verify_successful_runtime_events(result)
+    traceability_verification = verify_completed_runtime_traceability(result)
 
     assert result.status == RuntimeState.COMPLETED
     assert result.success is True
@@ -49,6 +51,8 @@ def test_runtime_engine_runs_plan_schedule_execute_pipeline() -> None:
     assert data["execution"]["execution_result"]["status"] == "complete"
     assert replay_verification.successful() is True
     assert replay_verification.event_types == SUCCESSFUL_RUNTIME_EVENT_ORDER
+    assert traceability_verification.successful() is True
+    assert traceability_verification.event_types == SUCCESSFUL_RUNTIME_EVENT_ORDER
 
 
 def test_runtime_replay_verifier_reports_success_event_order_mismatch() -> None:
@@ -69,6 +73,56 @@ def test_runtime_replay_verifier_reports_success_event_order_mismatch() -> None:
         "expected ['runtime_started', 'runtime_planned', 'runtime_scheduled', "
         "'runtime_execution_started', 'runtime_completed'], "
         "received ['runtime_started', 'runtime_planned', 'runtime_completed']."
+    ]
+
+
+def test_runtime_replay_verifier_reports_completed_traceability_mismatch() -> None:
+    traceability_verification = verify_completed_runtime_traceability(
+        {
+            "runtime_result": {"id": "RUNTIME-0001", "status": "completed"},
+            "plan": {"execution_plan": {"id": "PLAN-0001"}},
+            "schedule": {"schedule_result": {"id": "SCHEDULE-0001", "status": "scheduled"}},
+            "execution": {
+                "execution_result": {
+                    "id": "RUNTIME-0001-EXEC-RESULT-0001",
+                    "request_id": "BROKEN-REQUEST",
+                    "status": "complete",
+                },
+                "node_results": [{"node_id": "NODE-0001"}],
+            },
+            "artifacts": {"artifact_store": {"count": 0}, "artifacts": []},
+            "events": [
+                {"event_type": "runtime_started", "payload": {"runtime_id": "RUNTIME-0001"}},
+                {"event_type": "runtime_planned", "payload": {"plan_id": "PLAN-0001"}},
+                {
+                    "event_type": "runtime_scheduled",
+                    "payload": {"schedule_id": "SCHEDULE-0001", "status": "scheduled"},
+                },
+                {
+                    "event_type": "runtime_execution_started",
+                    "payload": {
+                        "schedule_id": "SCHEDULE-0001",
+                        "execution_request_id": "RUNTIME-0001-EXEC-REQ-0001",
+                    },
+                },
+                {
+                    "event_type": "runtime_completed",
+                    "payload": {
+                        "execution_result_id": "RUNTIME-0001-EXEC-RESULT-0001",
+                        "status": "complete",
+                        "node_results": 1,
+                        "artifacts": 0,
+                    },
+                },
+            ],
+        }
+    )
+
+    assert traceability_verification.successful() is False
+    assert traceability_verification.expected_event_types == SUCCESSFUL_RUNTIME_EVENT_ORDER
+    assert traceability_verification.issues == [
+        "Completed runtime execution request id must match RUNTIME-0001-EXEC-REQ-0001.",
+        "runtime_execution_started execution_request_id must match execution result request_id.",
     ]
 
 
