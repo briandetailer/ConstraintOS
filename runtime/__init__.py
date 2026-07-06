@@ -14,7 +14,7 @@ from runtime.replay import (
 )
 from runtime.result import RuntimeResult
 from runtime.state import RuntimeState
-from runtime.traceability import RuntimeTrace, RuntimeTraceRecord, runtime_result_to_trace
+from runtime.traceability import RuntimeTrace, RuntimeTraceRecord, RuntimeTraceVerification, runtime_result_to_trace, verify_runtime_trace
 
 __all__ = [
     "ArtifactCollector",
@@ -31,10 +31,12 @@ __all__ = [
     "RuntimeState",
     "RuntimeTrace",
     "RuntimeTraceRecord",
+    "RuntimeTraceVerification",
     "runtime_result_to_trace",
     "verify_completed_runtime_traceability",
     "verify_exception_boundary_runtime_events",
     "verify_partial_schedule_runtime_events",
     "verify_runtime_result_summary",
+    "verify_runtime_trace",
     "verify_successful_runtime_events",
 ]
