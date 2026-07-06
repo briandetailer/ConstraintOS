@@ -35,6 +35,26 @@ def test_validation_kernel_passes_when_required_gates_have_passing_evidence() ->
     assert report.to_dict()["validation_report"]["subject_id"] == "LF4-ENGINE"
 
 
+def test_validation_evidence_normalizes_status_vocabulary() -> None:
+    evidence = ValidationEvidence("GATE-0001", " PASSED ")
+
+    assert evidence.status == "passed"
+    assert evidence.passed() is True
+
+
+def test_validation_evidence_rejects_unknown_status() -> None:
+    with pytest.raises(ValueError, match="status is not registered"):
+        ValidationEvidence("GATE-0001", "maybe")
+
+
+def test_validation_kernel_rejects_unknown_evidence_status() -> None:
+    with pytest.raises(ValueError, match="status is not registered"):
+        ValidationKernel().evaluate(
+            gates=[{"id": "GATE-0001", "name": "Gate", "required_pass": True}],
+            evidence=[{"gate_id": "GATE-0001", "status": "maybe"}],
+        )
+
+
 def test_validation_kernel_fails_required_gate_when_evidence_is_missing() -> None:
     report = ValidationKernel().evaluate(
         gates=[{"id": "GATE-0001", "name": "LF4 Specificity Gate", "required_pass": True}],
