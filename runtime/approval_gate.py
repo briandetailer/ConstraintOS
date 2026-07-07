@@ -4,7 +4,11 @@ import json
 from pathlib import Path
 from typing import Any
 
-from runtime.approval import verify_runtime_approval_decision, verify_runtime_approval_policy
+from runtime.approval import (
+    verify_runtime_approval_decision,
+    verify_runtime_approval_decision_against_policy,
+    verify_runtime_approval_policy,
+)
 from runtime.artifacts.evidence import verify_runtime_evidence_manifest
 
 
@@ -70,6 +74,22 @@ def create_runtime_approval_decision(
         "checks": checks,
         "notes": issues,
     }
+    policy_enforcement = verify_runtime_approval_decision_against_policy(decision, policy)
+    if not policy_enforcement.successful():
+        enforcement_issues = [issue for issue in policy_enforcement.issues if issue not in issues]
+        decision["runtime_approval"]["decision"] = "rejected"
+        decision["checks"].append(
+            {
+                "id": "APPROVAL-CHECK-0003",
+                "name": "runtime approval decision satisfied policy",
+                "status": "failed",
+                "source": "verify_runtime_approval_decision_against_policy",
+                "message": "Approval decision policy enforcement failed.",
+                "metadata": {"issue_count": len(enforcement_issues)},
+            }
+        )
+        decision["notes"] = [*issues, *enforcement_issues]
+
     approval_verification = verify_runtime_approval_decision(decision)
     if not approval_verification.successful():
         raise ValueError("Generated runtime approval decision is invalid.")
