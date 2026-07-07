@@ -11,7 +11,7 @@ Runtime Milestone 3 is closed. Approval gates are now a separate follow-up track
 Current status:
 
 ```text
-approval decision verifier, policy verifier, schemas, report writer, and evidence-linked helper implemented
+approval decision verifier, policy verifier, schemas, report writer, evidence-linked helper, and contract registry promotion implemented
 ```
 
 Implemented modules:
@@ -42,6 +42,14 @@ Implemented schemas:
 schemas/runtime/v1/runtime-approval-decision.schema.json
 schemas/runtime/v1/runtime-approval-policy.schema.json
 schemas/runtime/v1/runtime-approval-report.schema.json
+```
+
+Promoted runtime contracts:
+
+```text
+runtime_approval_decision
+runtime_approval_policy
+runtime_approval_report
 ```
 
 ## Approval decision payload
@@ -226,16 +234,26 @@ The approval report JSON Schema currently checks:
 9. Approval policy, decider, and decision timestamp are present.
 10. Unknown artifact or metadata fields are rejected.
 
+## Implemented contract registry behavior
+
+The runtime contract registry now includes public approval contracts for:
+
+1. `runtime_approval_decision`
+2. `runtime_approval_policy`
+3. `runtime_approval_report`
+
+The artifact-writer coverage verifier now also requires `RuntimeApprovalReportWriter -> runtime_approval_report`.
+
 ## Test files
 
 ```text
 runtime/tests/test_runtime_approval.py
 runtime/tests/test_runtime_approval_gate.py
+runtime/tests/test_runtime_approval_contracts.py
 ```
 
 ## Remaining approval-gate work
 
-Recommended next slices:
+Recommended next slice:
 
-1. Decide when approval contracts should be added to the runtime contract registry.
-2. Add approval-gate closeout/status documentation.
+1. Add approval-gate closeout/status documentation.
