@@ -1,0 +1,64 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://constraintos.dev/schemas/runtime/v1/runtime-report.schema.json",
+  "title": "ConstraintOS Runtime Report Artifact",
+  "type": "object",
+  "required": ["id", "uri", "kind", "producer", "metadata"],
+  "additionalProperties": false,
+  "properties": {
+    "id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "uri": {
+      "type": "string",
+      "minLength": 1
+    },
+    "kind": {
+      "const": "file"
+    },
+    "producer": {
+      "type": "string",
+      "minLength": 1
+    },
+    "metadata": {
+      "type": "object",
+      "required": [
+        "path",
+        "content_type",
+        "runtime_id",
+        "runtime_status",
+        "runtime_success",
+        "summary",
+        "artifact_role"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "path": {
+          "type": "string",
+          "minLength": 1
+        },
+        "content_type": {
+          "const": "application/json"
+        },
+        "runtime_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "runtime_status": {
+          "type": "string",
+          "enum": ["completed", "failed", "partial", "unknown"]
+        },
+        "runtime_success": {
+          "type": "boolean"
+        },
+        "summary": {
+          "type": "object"
+        },
+        "artifact_role": {
+          "const": "runtime_report"
+        }
+      }
+    }
+  }
+}
