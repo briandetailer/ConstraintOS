@@ -18,6 +18,7 @@ REQUIRED_ARTIFACT_WRITER_CONTRACTS = {
     "RuntimeTraceReportWriter": "runtime_trace_report",
     "RuntimeEvidenceBundleWriter": "runtime_evidence_manifest",
     "RuntimeContractRegistryReportWriter": "runtime_contract_registry",
+    "RuntimeApprovalReportWriter": "runtime_approval_report",
 }
 
 
@@ -104,7 +105,7 @@ def runtime_contracts() -> tuple[RuntimeContract, ...]:
             contract_type="artifact_json",
             required_sections=("runtime_evidence", "artifacts"),
             produced_by="RuntimeEvidenceBundleWriter",
-            consumed_by=("external_audit_clients", "ci_cd", "enterprise_integrations"),
+            consumed_by=("external_audit_clients", "ci_cd", "enterprise_integrations", "runtime_approval_decision"),
             description="Manifest linking runtime report and trace report artifacts.",
         ),
         RuntimeContract(
@@ -113,8 +114,44 @@ def runtime_contracts() -> tuple[RuntimeContract, ...]:
             contract_type="artifact_json",
             required_sections=("runtime_contract_registry", "contracts"),
             produced_by="RuntimeContractRegistryReportWriter",
-            consumed_by=("external_audit_clients", "ci_cd", "enterprise_integrations"),
+            consumed_by=("external_audit_clients", "ci_cd", "enterprise_integrations", "runtime_approval_policy"),
             description="Persisted registry of public runtime contracts.",
+        ),
+        RuntimeContract(
+            name="runtime_approval_decision",
+            version="v1",
+            contract_type="json_document",
+            required_sections=("runtime_approval", "checks", "notes"),
+            produced_by="create_runtime_approval_decision",
+            consumed_by=("runtime_approval_report", "external_audit_clients", "ci_cd"),
+            description="Approval decision over verified Runtime evidence and approval policy.",
+        ),
+        RuntimeContract(
+            name="runtime_approval_policy",
+            version="v1",
+            contract_type="json_document",
+            required_sections=(
+                "runtime_approval_policy",
+                "required_evidence_artifacts",
+                "required_checks",
+                "allowed_decisions",
+                "allowed_check_statuses",
+                "approvers",
+                "waiver_rules",
+                "rejection_rules",
+            ),
+            produced_by="approval_policy_author",
+            consumed_by=("create_runtime_approval_decision", "external_audit_clients", "ci_cd"),
+            description="Policy contract governing Runtime approval decisions.",
+        ),
+        RuntimeContract(
+            name="runtime_approval_report",
+            version="v1",
+            contract_type="artifact_json",
+            required_sections=("runtime_approval", "checks", "notes"),
+            produced_by="RuntimeApprovalReportWriter",
+            consumed_by=("external_audit_clients", "ci_cd", "enterprise_integrations"),
+            description="Persisted runtime approval decision artifact.",
         ),
     )
 
