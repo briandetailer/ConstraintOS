@@ -4,7 +4,7 @@
 
 This note opens the Runtime Release / Packaging Readiness track without reopening Runtime Milestone 3 or the closed Runtime approval-gate tracks.
 
-The first slices verify that Runtime workflows exposed through module execution also have installable package entry points where appropriate, normalize top-level Runtime help behavior for package/source usage, add a broader release packaging checklist, add executable help coverage for dedicated Runtime evidence and approval CLIs, add executable package metadata coverage, close checklist coverage for registered Runtime console scripts, add installed-command help coverage, add installed Runtime workflow coverage, add Runtime source-tree module parity coverage, and close Runtime artifact checklist coverage.
+The first slices verify that Runtime workflows exposed through module execution also have installable package entry points where appropriate, normalize top-level Runtime help behavior for package/source usage, add a broader release packaging checklist, add executable help coverage for dedicated Runtime evidence and approval CLIs, add executable package metadata coverage, close checklist coverage for registered Runtime console scripts, add installed-command help coverage, add installed Runtime workflow coverage, add Runtime source-tree module parity coverage, close Runtime artifact checklist coverage, and close Runtime documentation checklist coverage.
 
 ## Status
 
@@ -23,6 +23,7 @@ Slice 9 implemented: Runtime installed-command help coverage added
 Slice 10 implemented: Runtime installed evidence and approval workflow coverage added
 Slice 11 implemented: Runtime source-tree module parity coverage added
 Slice 12 implemented: Runtime artifact checklist coverage closed
+Slice 13 implemented: Runtime documentation checklist coverage closed
 ```
 
 Closed tracks remain closed:
@@ -160,6 +161,16 @@ It also verifies approval outputs under:
 approvals/{runtime_id}.json
 ```
 
+## Documentation coverage
+
+Runtime approval workflow documentation is covered in:
+
+```text
+docs/600_Guides/Runtime_Approval_Workflow.md
+```
+
+The guide documents both source-tree and installed evidence commands, both source-tree and installed approval commands, output artifacts, exit codes, and recommended CI/CD usage.
+
 ## Release checklist
 
 Broader packaging validation is tracked in:
@@ -191,6 +202,7 @@ The checklist covers package metadata, console script registration, installed co
 [x] Runtime installed evidence and approval workflows have executable coverage
 [x] Runtime source-tree module parity has executable coverage
 [x] Runtime artifact checklist has executable coverage
+[x] Runtime documentation checklist has coverage
 ```
 
 ## Files updated in Slice 1
@@ -288,15 +300,22 @@ docs/600_Guides/Runtime_Release_Packaging_Checklist.md
 docs/500_Milestones/Runtime_Release_Packaging_Readiness.md
 ```
 
+## Files updated in Slice 13
+
+```text
+docs/600_Guides/Runtime_Release_Packaging_Checklist.md
+docs/500_Milestones/Runtime_Release_Packaging_Readiness.md
+```
+
 ## Validation target
 
-User-confirmed full-suite baseline after validating Slice 11:
+User-confirmed full-suite baseline after validating Slice 12:
 
 ```text
 487 passed
 ```
 
-Expected test delta from Slice 12:
+Expected test delta from Slice 13:
 
 ```text
 +0 tests
@@ -308,4 +327,4 @@ Expected full-suite baseline after validation:
 487 passed
 ```
 
-This note records the user-confirmed baseline and the Slice 12 expected baseline. It does not claim local validation was run.
+This note records the user-confirmed baseline and the Slice 13 expected baseline. It does not claim local validation was run.
