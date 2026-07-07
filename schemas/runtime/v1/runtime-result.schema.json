@@ -1,0 +1,115 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://constraintos.dev/schemas/runtime/v1/runtime-result.schema.json",
+  "title": "ConstraintOS Runtime Result",
+  "type": "object",
+  "required": ["runtime_result", "summary", "plan", "schedule", "execution", "events", "messages"],
+  "additionalProperties": false,
+  "properties": {
+    "runtime_result": {
+      "type": "object",
+      "required": ["id", "status", "success", "terminal", "successful", "created"],
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "status": {
+          "type": "string",
+          "enum": ["completed", "failed", "partial"]
+        },
+        "success": {
+          "type": "boolean"
+        },
+        "terminal": {
+          "type": "boolean"
+        },
+        "successful": {
+          "type": "boolean"
+        },
+        "created": {
+          "type": "string",
+          "format": "date"
+        }
+      }
+    },
+    "summary": {
+      "type": "object",
+      "required": [
+        "plan_nodes",
+        "plan_stages",
+        "scheduled_assignments",
+        "unscheduled_nodes",
+        "node_results",
+        "artifacts",
+        "events"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "plan_nodes": {"type": "integer", "minimum": 0},
+        "plan_stages": {"type": "integer", "minimum": 0},
+        "scheduled_assignments": {"type": "integer", "minimum": 0},
+        "unscheduled_nodes": {"type": "integer", "minimum": 0},
+        "node_results": {"type": "integer", "minimum": 0},
+        "artifacts": {"type": "integer", "minimum": 0},
+        "events": {"type": "integer", "minimum": 0}
+      }
+    },
+    "plan": {
+      "oneOf": [
+        {"type": "object"},
+        {"type": "null"}
+      ]
+    },
+    "schedule": {
+      "oneOf": [
+        {"type": "object"},
+        {"type": "null"}
+      ]
+    },
+    "execution": {
+      "oneOf": [
+        {"type": "object"},
+        {"type": "null"}
+      ]
+    },
+    "artifacts": {
+      "type": "object"
+    },
+    "events": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["timestamp", "event_type", "payload"],
+        "additionalProperties": false,
+        "properties": {
+          "timestamp": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "event_type": {
+            "type": "string",
+            "enum": [
+              "runtime_started",
+              "runtime_planned",
+              "runtime_scheduled",
+              "runtime_execution_started",
+              "runtime_completed",
+              "runtime_failed"
+            ]
+          },
+          "payload": {
+            "type": "object"
+          }
+        }
+      }
+    },
+    "messages": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    }
+  }
+}
