@@ -47,6 +47,18 @@ def test_runtime_module_cli_dispatches_evidence_command(tmp_path) -> None:
     assert (output_dir / "evidence" / "RUNTIME-0001.json").exists()
 
 
+def test_runtime_module_cli_reports_help() -> None:
+    stdout = io.StringIO()
+    stderr = io.StringIO()
+
+    exit_code = run_runtime_cli(["--help"], stdout=stdout, stderr=stderr)
+
+    assert exit_code == EVIDENCE_CLI_SUCCESS
+    assert "Usage: python -m runtime evidence" in stdout.getvalue()
+    assert "python -m runtime approval" in stdout.getvalue()
+    assert stderr.getvalue() == ""
+
+
 def test_runtime_module_cli_reports_unknown_command() -> None:
     stdout = io.StringIO()
     stderr = io.StringIO()
