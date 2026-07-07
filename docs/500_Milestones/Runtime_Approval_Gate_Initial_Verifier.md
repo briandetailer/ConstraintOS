@@ -11,7 +11,13 @@ Runtime Milestone 3 is closed. Approval gates are now a separate follow-up track
 Current status:
 
 ```text
-approval decision verifier, policy verifier, schemas, report writer, evidence-linked helper, and contract registry promotion implemented
+complete
+```
+
+Closeout note:
+
+```text
+docs/500_Milestones/Runtime_Approval_Gate_Closeout.md
 ```
 
 Implemented modules:
@@ -250,10 +256,6 @@ The artifact-writer coverage verifier now also requires `RuntimeApprovalReportWr
 runtime/tests/test_runtime_approval.py
 runtime/tests/test_runtime_approval_gate.py
 runtime/tests/test_runtime_approval_contracts.py
+runtime/tests/test_contracts.py
+runtime/tests/test_contract_registry_report.py
 ```
-
-## Remaining approval-gate work
-
-Recommended next slice:
-
-1. Add approval-gate closeout/status documentation.
