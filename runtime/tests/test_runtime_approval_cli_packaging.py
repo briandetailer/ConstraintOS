@@ -25,3 +25,11 @@ def test_runtime_package_discovery_metadata_is_registered() -> None:
     assert 'where = ["src", "."]' in pyproject
     assert 'include = ["constraintos*", "runtime*"]' in pyproject
     assert 'exclude = ["tests*", "runtime.tests*"]' in pyproject
+
+
+def test_runtime_cli_package_dependencies_are_registered() -> None:
+    pyproject = _pyproject_text()
+
+    assert '"pyyaml>=6.0"' in pyproject
+    assert '"jsonschema>=4.22"' in pyproject
+    assert '"fastapi>=0.115"' in pyproject
