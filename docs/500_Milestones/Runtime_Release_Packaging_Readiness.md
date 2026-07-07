@@ -4,7 +4,7 @@
 
 This note opens the Runtime Release / Packaging Readiness track without reopening Runtime Milestone 3 or the closed Runtime approval-gate tracks.
 
-The first slices verify that Runtime workflows exposed through module execution also have installable package entry points where appropriate, normalize top-level Runtime help behavior for package/source usage, add a broader release packaging checklist, and add executable help coverage for dedicated Runtime evidence and approval CLIs.
+The first slices verify that Runtime workflows exposed through module execution also have installable package entry points where appropriate, normalize top-level Runtime help behavior for package/source usage, add a broader release packaging checklist, add executable help coverage for dedicated Runtime evidence and approval CLIs, and add executable package discovery metadata coverage.
 
 ## Status
 
@@ -15,6 +15,7 @@ Slice 1 implemented: Runtime packaged CLI entry points verified and documented
 Slice 2 implemented: Runtime module help exits successfully and writes usage to stdout
 Slice 3 implemented: Runtime release packaging checklist added
 Slice 4 implemented: Runtime evidence and approval CLI help coverage added
+Slice 5 implemented: Runtime package discovery metadata coverage added
 ```
 
 Closed tracks remain closed:
@@ -66,7 +67,7 @@ usage text on stdout
 no stderr output
 ```
 
-Dedicated Runtime evidence and approval CLI help behavior is now covered by tests:
+Dedicated Runtime evidence and approval CLI help behavior is covered by tests:
 
 ```text
 run_evidence_cli(["--help"])
@@ -76,6 +77,16 @@ run_approval_cli(["--help"])
 Both help requests are expected to return success and advertise their required inputs.
 
 Missing commands and unknown commands remain usage errors.
+
+## Package discovery metadata
+
+Runtime package discovery is covered by tests in:
+
+```text
+runtime/tests/test_runtime_approval_cli_packaging.py
+```
+
+The coverage verifies that package discovery includes Runtime packages and excludes Runtime tests from packaged distributions.
 
 ## Release checklist
 
@@ -100,6 +111,7 @@ The checklist covers package metadata, console script registration, installed co
 [x] Release checklist expanded for broader packaging validation
 [x] Runtime evidence CLI help has executable coverage
 [x] Runtime approval CLI help has executable coverage
+[x] Runtime package discovery metadata has executable coverage
 ```
 
 ## Files updated in Slice 1
@@ -135,24 +147,32 @@ docs/600_Guides/Runtime_Release_Packaging_Checklist.md
 docs/500_Milestones/Runtime_Release_Packaging_Readiness.md
 ```
 
+## Files updated in Slice 5
+
+```text
+runtime/tests/test_runtime_approval_cli_packaging.py
+docs/600_Guides/Runtime_Release_Packaging_Checklist.md
+docs/500_Milestones/Runtime_Release_Packaging_Readiness.md
+```
+
 ## Validation target
 
-User-confirmed full-suite baseline after pulling the latest release/packaging readiness changes:
-
-```text
-475 passed
-```
-
-Expected test delta from Slice 4:
-
-```text
-+2 tests
-```
-
-Expected full-suite baseline after validation:
+User-confirmed full-suite baseline after validating Slice 4:
 
 ```text
 477 passed
 ```
 
-This note records the user-confirmed baseline and the Slice 4 expected baseline. It does not claim local validation was run.
+Expected test delta from Slice 5:
+
+```text
++1 test
+```
+
+Expected full-suite baseline after validation:
+
+```text
+478 passed
+```
+
+This note records the user-confirmed baseline and the Slice 5 expected baseline. It does not claim local validation was run.
