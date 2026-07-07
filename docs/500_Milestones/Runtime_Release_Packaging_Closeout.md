@@ -27,6 +27,7 @@ Approval workflow guide
 [x] Runtime artifact checks
 [x] Documentation checks
 [x] Validation evidence checks
+[x] GitHub Actions package-install verification
 ```
 
 ## Evidence summary
@@ -45,6 +46,22 @@ Supporting readiness note:
 docs/500_Milestones/Runtime_Release_Packaging_Readiness.md
 ```
 
+## GitHub Actions package-install verification
+
+Runtime package-install verification is confirmed for the release-candidate head that added the workflow and post-runtime planning notes.
+
+```text
+workflow: runtime-package-install.yml
+run_url: https://github.com/briandetailer/ConstraintOS/actions/runs/28882053354
+status: completed
+conclusion: success
+head_sha: 861fd25386d8d1845bbf33195ca4247f64f6007a
+reported_by: gh run view
+reported_on: 2026-07-07
+```
+
+This closes the paused package-install verification gate for head SHA `861fd25386d8d1845bbf33195ca4247f64f6007a`.
+
 ## Validation baseline
 
 User-confirmed full-suite baseline after closing Runtime Release / Packaging Readiness:
@@ -53,10 +70,10 @@ User-confirmed full-suite baseline after closing Runtime Release / Packaging Rea
 487 passed
 ```
 
-No additional tests were added by this closeout note:
+No additional local tests were run by this closeout note:
 
 ```text
-+0 tests
++0 local tests
 ```
 
-This note records the user-confirmed baseline and does not claim local validation was run by the assistant.
+This note records the user-confirmed baseline and the GitHub Actions result evidence. It does not claim local validation was run by the assistant.
