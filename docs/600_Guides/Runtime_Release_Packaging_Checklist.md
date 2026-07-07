@@ -2,9 +2,9 @@
 
 ## Purpose
 
-This checklist defines the release-readiness checks for Runtime packaging without reopening Runtime Milestone 3 or the closed Runtime approval-gate tracks.
+This checklist defines release-readiness checks for Runtime packaging without reopening Runtime Milestone 3 or the closed Runtime approval-gate tracks.
 
-Use it before cutting a Runtime-capable package build or release candidate.
+Use it before preparing a Runtime-capable package build or release candidate.
 
 ## Scope
 
@@ -24,13 +24,13 @@ It does not change Runtime execution semantics, approval policy semantics, or ap
 ## Console script registration checks
 
 ```text
-[ ] Confirm cos-runtime is registered
-[ ] Confirm cos-runtime-evidence is registered
-[ ] Confirm cos-runtime-approval is registered
-[ ] Confirm registration coverage exists in runtime/tests/test_runtime_approval_cli_packaging.py
+[x] Confirm cos-runtime is registered
+[x] Confirm cos-runtime-evidence is registered
+[x] Confirm cos-runtime-approval is registered
+[x] Confirm registration coverage exists in runtime/tests/test_runtime_approval_cli_packaging.py
 ```
 
-## Installed command smoke checks
+## Installed command checks
 
 ```text
 [ ] cos-runtime --help exits successfully
@@ -90,20 +90,21 @@ Current release/packaging readiness coverage includes:
 [x] Runtime package discovery includes runtime* and excludes runtime.tests*
 [x] Runtime CLI package dependencies are registered
 [x] Package version is explicitly declared on the current alpha release track
+[x] Runtime console script registrations are covered
 ```
 
 ## Current green baseline
 
-The user-confirmed full-suite baseline after validating Slice 6 is:
+The user-confirmed full-suite baseline after validating Slice 7 is:
 
 ```text
-479 passed
+480 passed
 ```
 
-Slice 7 adds one expected package version coverage test:
+Slice 8 is documentation-only and adds no tests:
 
 ```text
-+1 test
++0 tests
 ```
 
 Expected full-suite baseline after validation:
