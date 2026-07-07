@@ -132,7 +132,8 @@ def verify_runtime_approval_policy(policy: dict[str, Any]) -> RuntimeApprovalVer
                 issues.append("Runtime approval policy allowed_check_statuses must contain only supported check statuses.")
                 break
 
-    required_artifacts = set(policy.get("required_evidence_artifacts", []))
+    required_artifacts_value = policy.get("required_evidence_artifacts", [])
+    required_artifacts = set(required_artifacts_value) if isinstance(required_artifacts_value, list) else set()
     missing_artifacts = sorted(REQUIRED_EVIDENCE_ARTIFACT_ROLES - required_artifacts)
     if missing_artifacts:
         issues.append("Runtime approval policy must require all Runtime evidence artifact roles.")
