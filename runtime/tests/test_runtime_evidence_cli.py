@@ -128,4 +128,3 @@ def test_runtime_evidence_cli_reports_usage_error_for_malformed_workers(tmp_path
     assert exit_code == EVIDENCE_CLI_USAGE_ERROR
     assert stdout.getvalue() == ""
     assert "Worker 1 requires plugins as a list of strings." in stderr.getvalue()
-}
