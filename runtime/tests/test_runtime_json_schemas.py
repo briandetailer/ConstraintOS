@@ -7,6 +7,7 @@ from jsonschema import ValidationError, validate
 from runtime import (
     ArtifactStore,
     RuntimeEngine,
+    RuntimeEvidenceBundleWriter,
     RuntimeReportWriter,
     RuntimeTraceReportWriter,
     runtime_contract_registry,
@@ -43,6 +44,11 @@ def _runtime_report_artifact(tmp_path: Path) -> dict:
 def _runtime_trace_report_artifact(tmp_path: Path) -> dict:
     artifact = RuntimeTraceReportWriter(ArtifactStore(tmp_path)).write_trace(_completed_runtime_trace())
     return artifact.to_dict()
+
+
+def _runtime_evidence_manifest(tmp_path: Path) -> dict:
+    manifest_artifact = RuntimeEvidenceBundleWriter(ArtifactStore(tmp_path)).write_evidence(_completed_runtime_result())
+    return json.loads(Path(manifest_artifact.metadata["path"]).read_text(encoding="utf-8"))
 
 
 def test_runtime_contract_registry_matches_json_schema() -> None:
@@ -163,3 +169,36 @@ def test_runtime_trace_report_artifact_schema_rejects_negative_record_count(tmp_
 
     with pytest.raises(ValidationError):
         validate(instance=artifact, schema=schema)
+
+
+def test_runtime_evidence_manifest_matches_json_schema(tmp_path) -> None:
+    schema = _schema("runtime-evidence-manifest.schema.json")
+
+    validate(instance=_runtime_evidence_manifest(tmp_path), schema=schema)
+
+
+def test_runtime_evidence_manifest_schema_rejects_wrong_artifact_order(tmp_path) -> None:
+    schema = _schema("runtime-evidence-manifest.schema.json")
+    manifest = _runtime_evidence_manifest(tmp_path)
+    manifest["artifacts"] = [manifest["artifacts"][1], manifest["artifacts"][0], manifest["artifacts"][2]]
+
+    with pytest.raises(ValidationError):
+        validate(instance=manifest, schema=schema)
+
+
+def test_runtime_evidence_manifest_schema_rejects_wrong_registry_version(tmp_path) -> None:
+    schema = _schema("runtime-evidence-manifest.schema.json")
+    manifest = _runtime_evidence_manifest(tmp_path)
+    manifest["runtime_evidence"]["contract_registry_version"] = "wrong-version"
+
+    with pytest.raises(ValidationError):
+        validate(instance=manifest, schema=schema)
+
+
+def test_runtime_evidence_manifest_schema_rejects_wrong_artifact_count(tmp_path) -> None:
+    schema = _schema("runtime-evidence-manifest.schema.json")
+    manifest = _runtime_evidence_manifest(tmp_path)
+    manifest["runtime_evidence"]["artifact_count"] = 2
+
+    with pytest.raises(ValidationError):
+        validate(instance=manifest, schema=schema)
