@@ -124,6 +124,10 @@ External consumers can inspect JSON artifacts instead of importing Python intern
 
 External-consumer handoff documentation: `Runtime_Public_Evidence_Package.md`.
 
+Language-facing consumer examples: `Runtime_Evidence_Consumer_Examples.md`.
+
+CLI implementation target: `Runtime_Evidence_CLI_Target.md`.
+
 ## Enterprise adoption posture
 
 Runtime Milestone 3 supports the enterprise-adoption stance that ConstraintOS should be consumed through portable artifacts and public contracts.
@@ -142,12 +146,10 @@ Do not let CSL implementation replace the Runtime Milestone 3 closeout path. CSL
 
 These items are valid follow-ups but should not block Milestone 3 closeout:
 
-1. Add Node.js and .NET consumer examples for contract registry and evidence manifest JSON.
-2. Locate or define the CLI entry point for evidence bundle generation.
-3. Decide whether runtime validation outputs become their own public contract family.
-4. Promote contract inventory targets into formal JSON Schema files.
-5. Resume CSL as a separate contract/schema/compiler milestone.
-6. Define approval-gate contracts separately from validation.
+1. Implement the evidence bundle CLI target documented in `Runtime_Evidence_CLI_Target.md`.
+2. Promote contract inventory targets into formal JSON Schema files.
+3. Resume CSL as a separate contract/schema/compiler milestone.
+4. Define approval-gate contracts separately from validation.
 
 ## Closeout assessment
 
