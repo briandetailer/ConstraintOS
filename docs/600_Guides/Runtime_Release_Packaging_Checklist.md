@@ -63,11 +63,11 @@ It does not change Runtime execution semantics, approval policy semantics, or ap
 ## Documentation checks
 
 ```text
-[ ] Runtime approval workflow guide documents source-tree evidence command
-[ ] Runtime approval workflow guide documents installed evidence command
-[ ] Runtime approval workflow guide documents source-tree approval command
-[ ] Runtime approval workflow guide documents installed approval command
-[ ] Runtime release/packaging readiness note records current status and baseline
+[x] Runtime approval workflow guide documents source-tree evidence command
+[x] Runtime approval workflow guide documents installed evidence command
+[x] Runtime approval workflow guide documents source-tree approval command
+[x] Runtime approval workflow guide documents installed approval command
+[x] Runtime release/packaging readiness note records current status and baseline
 ```
 
 ## Validation evidence checks
@@ -95,17 +95,18 @@ Current release/packaging readiness coverage includes:
 [x] Runtime installed evidence and approval workflows generate expected artifacts
 [x] Runtime source-tree module command parity is covered
 [x] Runtime evidence and approval artifact writes are covered
+[x] Runtime documentation checklist is covered
 ```
 
 ## Current green baseline
 
-The user-confirmed full-suite baseline after validating Slice 11 is:
+The user-confirmed full-suite baseline after validating Slice 12 is:
 
 ```text
 487 passed
 ```
 
-Slice 12 is documentation-only and adds no tests:
+Slice 13 is documentation-only and adds no tests:
 
 ```text
 +0 tests
