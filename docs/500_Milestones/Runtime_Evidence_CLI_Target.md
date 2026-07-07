@@ -4,34 +4,45 @@
 
 This document records the Runtime Milestone 3 CLI packaging target for evidence bundle generation.
 
-A repository search during Milestone 3 packaging did not locate an existing runtime CLI entry point for evidence bundle generation using the expected CLI, runtime report, or evidence bundle terms. This document defines the target contract so a future implementation can be added deliberately instead of inventing behavior ad hoc.
+A repository search during Milestone 3 packaging did not locate an existing runtime CLI entry point for evidence bundle generation using the expected CLI, runtime report, or evidence bundle terms. This document defines the target contract so implementation can be added deliberately instead of inventing behavior ad hoc.
 
 ## Status
 
 Current status:
 
 ```text
-not implemented / not located
+initial Python module entry point implemented / console command wiring pending
 ```
 
-The Runtime evidence package exists through Python APIs, but the CLI handoff for external consumers still needs to be implemented or explicitly located.
+The Runtime evidence package exists through Python APIs and can now be generated through `runtime.cli`.
 
-## CLI goal
+The next packaging step is to decide whether to wire this module into a public console command such as `constraintos runtime evidence` or `constraintos evidence`.
 
-The CLI should let a user generate the public Runtime evidence package from an input runtime specification and write the package to a deterministic output directory.
+## Implemented module entry point
 
-The CLI should produce the same public evidence boundary as direct Python API usage:
+Current module invocation target:
 
-```text
-RuntimeResult
-  -> RuntimeReportWriter
-  -> RuntimeTraceReportWriter
-  -> RuntimeContractRegistryReportWriter
-  -> RuntimeEvidenceBundleWriter
-  -> verify_runtime_evidence_manifest
+```powershell
+python -m runtime.cli \
+  --spec path/to/runtime-spec.json \
+  --workers path/to/workers.json \
+  --output-dir artifacts/runtime-evidence \
+  --format json
 ```
 
-## Proposed command shape
+Implemented behavior:
+
+- reads a runtime specification JSON file
+- reads a worker capability JSON file
+- runs `RuntimeEngine`
+- writes runtime report JSON
+- writes runtime trace report JSON
+- writes runtime contract registry JSON
+- writes runtime evidence manifest JSON
+- verifies the written evidence manifest before returning success
+- prints a JSON or text summary
+
+## Future console command shape
 
 ```powershell
 constraintos runtime evidence \
@@ -61,14 +72,14 @@ constraintos evidence \
 
 ## Required outputs
 
-The command should write:
+The command writes:
 
 - runtime report JSON
 - runtime trace report JSON
 - runtime contract registry JSON
 - runtime evidence manifest JSON
 
-The command should print a machine-readable summary when `--format json` is used.
+The command prints a machine-readable summary when `--format json` is used.
 
 Example summary:
 
@@ -77,9 +88,13 @@ Example summary:
   "runtime_evidence_cli": {
     "successful": true,
     "runtime_id": "RUNTIME-0001",
+    "runtime_status": "completed",
     "evidence_manifest_uri": "file:///.../evidence/RUNTIME-0001.json",
-    "contract_registry_version": "runtime-contracts/v1"
-  }
+    "evidence_manifest_path": "/.../evidence/RUNTIME-0001.json",
+    "contract_registry_version": "runtime-contracts/v1",
+    "issue_count": 0
+  },
+  "issues": []
 }
 ```
 
@@ -94,7 +109,7 @@ Example summary:
 
 ## Required verification before success
 
-The CLI should call the Runtime evidence manifest verifier before returning success.
+The CLI calls the Runtime evidence manifest verifier before returning success.
 
 A successful CLI run requires:
 
@@ -108,7 +123,7 @@ A successful CLI run requires:
 
 ## External-consumer contract
 
-The CLI should not expose Python object internals. Its public contract should be:
+The CLI does not expose Python object internals. Its public contract is:
 
 - input files
 - output evidence package JSON artifacts
@@ -116,19 +131,19 @@ The CLI should not expose Python object internals. Its public contract should be
 - stdout summary
 - stderr usage or failure details
 
-## Testing target
+## Implemented test coverage
 
-Future implementation should add tests that verify:
+Initial tests verify:
 
 1. CLI generates all four expected artifacts.
 2. CLI summary points to the evidence manifest.
-3. CLI exits `0` when manifest verification passes.
-4. CLI exits nonzero when manifest verification fails.
-5. CLI preserves deterministic artifact roles and manifest header ids.
-6. CLI output can be consumed by the Node.js and .NET examples documented in `Runtime_Evidence_Consumer_Examples.md`.
+3. CLI exits `0` when manifest verification passes and runtime execution succeeds.
+4. CLI exits `2` when runtime execution is not successful.
+5. CLI exits `3` for malformed worker input.
+6. CLI preserves deterministic artifact roles, manifest location, and contract registry version.
 
-## Milestone 3 disposition
+## Remaining packaging target
 
-This target does not block Runtime Milestone 3 closeout.
+Future packaging should add a public console command wrapper if the project adopts packaged CLI entry points.
 
-It should be treated as the first implementation candidate for the next packaging/integration milestone after Runtime Milestone 3 closes.
+The module-level CLI is sufficient for Milestone 3 Runtime development because it proves the public evidence package can be generated from input files without direct Python object usage by callers.
