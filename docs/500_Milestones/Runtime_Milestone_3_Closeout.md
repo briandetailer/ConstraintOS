@@ -2,7 +2,7 @@
 
 ## Purpose
 
-Milestone 3 hardened the Runtime layer from a working orchestration engine into an auditable contract boundary. The milestone focus was replayability, traceability, public runtime contracts, artifact evidence, and external-consumer readiness.
+Milestone 3 hardened the Runtime layer from a working orchestration engine into an auditable contract boundary. The milestone focus was replayability, traceability, public runtime contracts, artifact evidence, external-consumer readiness, and language-neutral schema validation.
 
 This closeout records the Runtime Milestone 3 posture and keeps adjacent CSL/validator design work separate from the active Runtime milestone lane.
 
@@ -113,6 +113,21 @@ The artifact-writer coverage verifier ensures these public artifact writers rema
 - `RuntimeEvidenceBundleWriter -> runtime_evidence_manifest`
 - `RuntimeContractRegistryReportWriter -> runtime_contract_registry`
 
+### Runtime JSON Schema promotion
+
+Milestone 3 added language-neutral JSON Schema files for the public Runtime evidence boundary.
+
+The implemented schemas are:
+
+- `runtime-result.schema.json`
+- `runtime-report.schema.json`
+- `runtime-traceability.schema.json`
+- `runtime-trace-report.schema.json`
+- `runtime-evidence-manifest.schema.json`
+- `runtime-contract-registry.schema.json`
+
+These schemas are test-backed and complement the Python verifiers rather than replacing them.
+
 ## Current public Runtime evidence boundary
 
 The Runtime evidence boundary is now:
@@ -126,6 +141,7 @@ RuntimeResult
   -> verify_runtime_evidence_manifest
   -> runtime.cli
   -> runtime.__main__
+  -> schemas/runtime/v1
 ```
 
 External consumers can inspect JSON artifacts instead of importing Python internals.
@@ -142,9 +158,9 @@ Approval gate target: `Runtime_Approval_Gate_Target.md`.
 
 ## Enterprise adoption posture
 
-Runtime Milestone 3 supports the enterprise-adoption stance that ConstraintOS should be consumed through portable artifacts and public contracts.
+Runtime Milestone 3 supports the enterprise-adoption stance that ConstraintOS should be consumed through portable artifacts, public contracts, and language-neutral schemas.
 
-The Python runtime can remain the implementation core, but the external boundary is intentionally JSON-first and suitable for future Node.js, .NET, Terraform, CI/CD, and audit-tool integrations.
+The Python runtime can remain the implementation core, but the external boundary is intentionally JSON-first and suitable for future Node.js, .NET, Terraform, CI/CD, or audit-tool integrations.
 
 ## Adjacent CSL exploration status
 
@@ -159,12 +175,11 @@ Do not let CSL implementation replace the Runtime Milestone 3 closeout path. CSL
 These items are valid follow-ups but should not block Milestone 3 closeout:
 
 1. Decide whether to wire the Runtime module CLI into a packaged console command.
-2. Implement the JSON Schema promotion target documented in `Runtime_JSON_Schema_Target.md`.
-3. Implement the approval-gate target documented in `Runtime_Approval_Gate_Target.md`.
-4. Resume CSL as a separate contract/schema/compiler milestone.
+2. Implement the approval-gate target documented in `Runtime_Approval_Gate_Target.md`.
+3. Resume CSL as a separate contract/schema/compiler milestone.
 
 ## Closeout assessment
 
 Milestone 3 Runtime is closeout-ready from a contract-hardening perspective.
 
-The next recommended Runtime action is not more core implementation. It is packaging the public evidence boundary for external consumers through examples, documentation, and eventual SDK/API surfaces.
+The next recommended Runtime action is final closeout verification: confirm the complete test suite remains green, then decide whether to close Milestone 3 or implement the approval-gate target before formal closeout.
