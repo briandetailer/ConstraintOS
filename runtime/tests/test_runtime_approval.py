@@ -1,6 +1,18 @@
+import json
 from copy import deepcopy
+from pathlib import Path
+
+import pytest
+from jsonschema import ValidationError, validate
 
 from runtime import verify_runtime_approval_decision
+
+
+SCHEMA_ROOT = Path("schemas/runtime/v1")
+
+
+def _schema(name: str) -> dict:
+    return json.loads((SCHEMA_ROOT / name).read_text(encoding="utf-8"))
 
 
 def _approval_decision() -> dict:
@@ -106,3 +118,36 @@ def test_runtime_approval_verifier_does_not_mutate_payload() -> None:
     verify_runtime_approval_decision(decision)
 
     assert decision == original
+
+
+def test_runtime_approval_decision_matches_json_schema() -> None:
+    schema = _schema("runtime-approval-decision.schema.json")
+
+    validate(instance=_approval_decision(), schema=schema)
+
+
+def test_runtime_approval_decision_schema_rejects_unknown_decision() -> None:
+    schema = _schema("runtime-approval-decision.schema.json")
+    decision = _approval_decision()
+    decision["runtime_approval"]["decision"] = "maybe"
+
+    with pytest.raises(ValidationError):
+        validate(instance=decision, schema=schema)
+
+
+def test_runtime_approval_decision_schema_rejects_unknown_check_status() -> None:
+    schema = _schema("runtime-approval-decision.schema.json")
+    decision = _approval_decision()
+    decision["checks"][0]["status"] = "unknown"
+
+    with pytest.raises(ValidationError):
+        validate(instance=decision, schema=schema)
+
+
+def test_runtime_approval_decision_schema_rejects_non_object_metadata() -> None:
+    schema = _schema("runtime-approval-decision.schema.json")
+    decision = _approval_decision()
+    decision["checks"][0]["metadata"] = []
+
+    with pytest.raises(ValidationError):
+        validate(instance=decision, schema=schema)
