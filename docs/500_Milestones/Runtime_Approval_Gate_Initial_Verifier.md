@@ -11,13 +11,14 @@ Runtime Milestone 3 is closed. Approval gates are now a separate follow-up track
 Current status:
 
 ```text
-approval decision verifier, policy verifier, schemas, and report writer implemented
+approval decision verifier, policy verifier, schemas, report writer, and evidence-linked helper implemented
 ```
 
-Implemented module:
+Implemented modules:
 
 ```text
 runtime/approval.py
+runtime/approval_gate.py
 ```
 
 Implemented artifact writer:
@@ -31,6 +32,7 @@ Public exports:
 ```python
 verify_runtime_approval_decision(payload)
 verify_runtime_approval_policy(payload)
+create_runtime_approval_decision(evidence_manifest_artifact, policy, decided_by, decided_at)
 RuntimeApprovalReportWriter
 ```
 
@@ -153,6 +155,20 @@ The policy verifier currently checks:
 10. Rejection rules require `requires_note_or_failed_check: true`.
 11. Verification does not mutate the supplied policy payload.
 
+## Implemented evidence-linked helper behavior
+
+The evidence-linked helper currently:
+
+1. Requires an evidence manifest artifact dictionary.
+2. Reads the evidence manifest payload through the artifact metadata path.
+3. Verifies the evidence manifest with `verify_runtime_evidence_manifest`.
+4. Verifies the approval policy with `verify_runtime_approval_policy`.
+5. Produces an approval decision payload.
+6. Approves only when both evidence and policy verification pass.
+7. Rejects when evidence or policy verification fails.
+8. Records approval checks for evidence verification and policy verification.
+9. Preserves evidence and policy inputs without mutation.
+
 ## Implemented decision schema behavior
 
 The approval decision JSON Schema currently checks:
@@ -210,10 +226,11 @@ The approval report JSON Schema currently checks:
 9. Approval policy, decider, and decision timestamp are present.
 10. Unknown artifact or metadata fields are rejected.
 
-## Test file
+## Test files
 
 ```text
 runtime/tests/test_runtime_approval.py
+runtime/tests/test_runtime_approval_gate.py
 ```
 
 ## Remaining approval-gate work
@@ -221,4 +238,4 @@ runtime/tests/test_runtime_approval.py
 Recommended next slices:
 
 1. Decide when approval contracts should be added to the runtime contract registry.
-2. Add evidence-linked approval helpers that consume Runtime evidence manifests without modifying evidence artifacts.
+2. Add approval-gate closeout/status documentation.
