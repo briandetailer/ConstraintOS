@@ -1,0 +1,111 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://constraintos.dev/schemas/runtime/v1/runtime-approval-policy.schema.json",
+  "title": "ConstraintOS Runtime Approval Policy",
+  "type": "object",
+  "required": [
+    "runtime_approval_policy",
+    "required_evidence_artifacts",
+    "required_checks",
+    "allowed_decisions",
+    "allowed_check_statuses",
+    "approvers",
+    "waiver_rules",
+    "rejection_rules"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "runtime_approval_policy": {
+      "type": "object",
+      "required": ["name", "version", "contract_registry_version"],
+      "additionalProperties": false,
+      "properties": {
+        "name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "version": {
+          "type": "string",
+          "minLength": 1
+        },
+        "contract_registry_version": {
+          "const": "runtime-contracts/v1"
+        }
+      }
+    },
+    "required_evidence_artifacts": {
+      "type": "array",
+      "minItems": 4,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "enum": [
+          "runtime_report",
+          "runtime_trace_report",
+          "runtime_contract_registry",
+          "runtime_evidence_manifest"
+        ]
+      },
+      "allOf": [
+        {"contains": {"const": "runtime_report"}},
+        {"contains": {"const": "runtime_trace_report"}},
+        {"contains": {"const": "runtime_contract_registry"}},
+        {"contains": {"const": "runtime_evidence_manifest"}}
+      ]
+    },
+    "required_checks": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "allowed_decisions": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "enum": ["approved", "rejected", "needs_review", "waived"]
+      }
+    },
+    "allowed_check_statuses": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "enum": ["passed", "failed", "waived", "needs_review"]
+      }
+    },
+    "approvers": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "waiver_rules": {
+      "type": "object",
+      "required": ["requires_note_or_waived_check"],
+      "additionalProperties": false,
+      "properties": {
+        "requires_note_or_waived_check": {
+          "const": true
+        }
+      }
+    },
+    "rejection_rules": {
+      "type": "object",
+      "required": ["requires_note_or_failed_check"],
+      "additionalProperties": false,
+      "properties": {
+        "requires_note_or_failed_check": {
+          "const": true
+        }
+      }
+    }
+  }
+}
