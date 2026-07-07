@@ -1,0 +1,153 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://constraintos.dev/schemas/runtime/v1/runtime-evidence-manifest.schema.json",
+  "title": "ConstraintOS Runtime Evidence Manifest",
+  "type": "object",
+  "required": ["runtime_evidence", "artifacts"],
+  "additionalProperties": false,
+  "properties": {
+    "runtime_evidence": {
+      "type": "object",
+      "required": [
+        "runtime_id",
+        "contract_registry_version",
+        "runtime_report_artifact_id",
+        "trace_report_artifact_id",
+        "contract_registry_artifact_id",
+        "artifact_count"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "runtime_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "contract_registry_version": {
+          "const": "runtime-contracts/v1"
+        },
+        "runtime_report_artifact_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "trace_report_artifact_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "contract_registry_artifact_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "artifact_count": {
+          "const": 3
+        }
+      }
+    },
+    "artifacts": {
+      "type": "array",
+      "minItems": 3,
+      "maxItems": 3,
+      "prefixItems": [
+        {"$ref": "#/$defs/runtime_report_artifact"},
+        {"$ref": "#/$defs/runtime_trace_report_artifact"},
+        {"$ref": "#/$defs/runtime_contract_registry_artifact"}
+      ]
+    }
+  },
+  "$defs": {
+    "artifact_base": {
+      "type": "object",
+      "required": ["id", "uri", "kind", "producer", "metadata"],
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "uri": {
+          "type": "string",
+          "minLength": 1
+        },
+        "kind": {
+          "const": "file"
+        },
+        "producer": {
+          "type": "string",
+          "minLength": 1
+        },
+        "metadata": {
+          "type": "object"
+        }
+      }
+    },
+    "runtime_report_artifact": {
+      "allOf": [
+        {"$ref": "#/$defs/artifact_base"},
+        {
+          "type": "object",
+          "properties": {
+            "metadata": {
+              "type": "object",
+              "required": ["path", "content_type", "runtime_id", "runtime_status", "runtime_success", "summary", "artifact_role"],
+              "additionalProperties": false,
+              "properties": {
+                "path": {"type": "string", "minLength": 1},
+                "content_type": {"const": "application/json"},
+                "runtime_id": {"type": "string", "minLength": 1},
+                "runtime_status": {"type": "string", "enum": ["completed", "failed", "partial", "unknown"]},
+                "runtime_success": {"type": "boolean"},
+                "summary": {"type": "object"},
+                "artifact_role": {"const": "runtime_report"}
+              }
+            }
+          }
+        }
+      ]
+    },
+    "runtime_trace_report_artifact": {
+      "allOf": [
+        {"$ref": "#/$defs/artifact_base"},
+        {
+          "type": "object",
+          "properties": {
+            "metadata": {
+              "type": "object",
+              "required": ["path", "artifact_role", "content_type", "runtime_id", "trace_status", "trace_success", "record_count"],
+              "additionalProperties": false,
+              "properties": {
+                "path": {"type": "string", "minLength": 1},
+                "artifact_role": {"const": "runtime_trace_report"},
+                "content_type": {"const": "application/json"},
+                "runtime_id": {"type": "string", "minLength": 1},
+                "trace_status": {"type": "string", "minLength": 1},
+                "trace_success": {"type": "boolean"},
+                "record_count": {"type": "integer", "minimum": 0}
+              }
+            }
+          }
+        }
+      ]
+    },
+    "runtime_contract_registry_artifact": {
+      "allOf": [
+        {"$ref": "#/$defs/artifact_base"},
+        {
+          "type": "object",
+          "properties": {
+            "metadata": {
+              "type": "object",
+              "required": ["path", "artifact_role", "content_type", "registry_version", "contract_count"],
+              "additionalProperties": false,
+              "properties": {
+                "path": {"type": "string", "minLength": 1},
+                "artifact_role": {"const": "runtime_contract_registry"},
+                "content_type": {"const": "application/json"},
+                "registry_version": {"const": "runtime-contracts/v1"},
+                "contract_count": {"type": "integer", "minimum": 0}
+              }
+            }
+          }
+        }
+      ]
+    }
+  }
+}
