@@ -6,21 +6,27 @@ from runtime import (
 )
 
 
+EXPECTED_RUNTIME_CONTRACT_NAMES = [
+    "runtime_result",
+    "runtime_report",
+    "runtime_traceability",
+    "runtime_trace_report",
+    "runtime_evidence_manifest",
+    "runtime_contract_registry",
+    "runtime_approval_decision",
+    "runtime_approval_policy",
+    "runtime_approval_report",
+]
+
+
 def test_runtime_contract_registry_declares_enterprise_boundary_contracts() -> None:
     registry = runtime_contract_registry()
 
     assert registry["runtime_contract_registry"] == {
         "version": "runtime-contracts/v1",
-        "contract_count": 6,
+        "contract_count": len(EXPECTED_RUNTIME_CONTRACT_NAMES),
     }
-    assert [contract["name"] for contract in registry["contracts"]] == [
-        "runtime_result",
-        "runtime_report",
-        "runtime_traceability",
-        "runtime_trace_report",
-        "runtime_evidence_manifest",
-        "runtime_contract_registry",
-    ]
+    assert [contract["name"] for contract in registry["contracts"]] == EXPECTED_RUNTIME_CONTRACT_NAMES
     assert registry["contracts"][0]["required_sections"] == [
         "runtime_result",
         "summary",
@@ -31,7 +37,9 @@ def test_runtime_contract_registry_declares_enterprise_boundary_contracts() -> N
         "external_audit_clients",
         "ci_cd",
         "enterprise_integrations",
+        "runtime_approval_decision",
     ]
+    assert registry["contracts"][8]["produced_by"] == "RuntimeApprovalReportWriter"
 
 
 def test_runtime_contract_registry_covers_artifact_writers() -> None:
