@@ -4,7 +4,7 @@
 
 This note opens the Runtime Release / Packaging Readiness track without reopening Runtime Milestone 3 or the closed Runtime approval-gate tracks.
 
-The first slices verify that Runtime workflows exposed through module execution also have installable package entry points where appropriate, normalize top-level Runtime help behavior for package/source usage, add a broader release packaging checklist, add executable help coverage for dedicated Runtime evidence and approval CLIs, add executable package discovery metadata coverage, add executable Runtime CLI dependency coverage, and add executable package version coverage.
+The first slices verify that Runtime workflows exposed through module execution also have installable package entry points where appropriate, normalize top-level Runtime help behavior for package/source usage, add a broader release packaging checklist, add executable help coverage for dedicated Runtime evidence and approval CLIs, add executable package metadata coverage, and close checklist coverage for registered Runtime console scripts.
 
 ## Status
 
@@ -18,6 +18,7 @@ Slice 4 implemented: Runtime evidence and approval CLI help coverage added
 Slice 5 implemented: Runtime package discovery metadata coverage added
 Slice 6 implemented: Runtime CLI dependency coverage added
 Slice 7 implemented: Package version metadata coverage added
+Slice 8 implemented: Runtime console script registration checklist closed
 ```
 
 Closed tracks remain closed:
@@ -90,6 +91,16 @@ runtime/tests/test_runtime_approval_cli_packaging.py
 
 The coverage verifies package discovery, Runtime CLI dependencies, and the current alpha release-track package version declaration.
 
+## Console script registration coverage
+
+Runtime console script registration is covered by tests in:
+
+```text
+runtime/tests/test_runtime_approval_cli_packaging.py
+```
+
+The checklist now records the existing coverage for the registered Runtime console scripts.
+
 ## Release checklist
 
 Broader packaging validation is tracked in:
@@ -98,7 +109,7 @@ Broader packaging validation is tracked in:
 docs/600_Guides/Runtime_Release_Packaging_Checklist.md
 ```
 
-The checklist covers package metadata, console script registration, installed command smoke checks, source-tree command parity, Runtime artifacts, documentation, and validation evidence.
+The checklist covers package metadata, console script registration, installed command checks, source-tree command parity, Runtime artifacts, documentation, and validation evidence.
 
 ## Readiness checklist
 
@@ -116,6 +127,7 @@ The checklist covers package metadata, console script registration, installed co
 [x] Runtime package discovery metadata has executable coverage
 [x] Runtime CLI dependency metadata has executable coverage
 [x] Package version metadata has executable coverage
+[x] Runtime console script registration checklist is closed
 ```
 
 ## Files updated in Slice 1
@@ -175,18 +187,25 @@ docs/600_Guides/Runtime_Release_Packaging_Checklist.md
 docs/500_Milestones/Runtime_Release_Packaging_Readiness.md
 ```
 
-## Validation target
-
-User-confirmed full-suite baseline after validating Slice 6:
+## Files updated in Slice 8
 
 ```text
-479 passed
+docs/600_Guides/Runtime_Release_Packaging_Checklist.md
+docs/500_Milestones/Runtime_Release_Packaging_Readiness.md
 ```
 
-Expected test delta from Slice 7:
+## Validation target
+
+User-confirmed full-suite baseline after validating Slice 7:
 
 ```text
-+1 test
+480 passed
+```
+
+Expected test delta from Slice 8:
+
+```text
++0 tests
 ```
 
 Expected full-suite baseline after validation:
@@ -195,4 +214,4 @@ Expected full-suite baseline after validation:
 480 passed
 ```
 
-This note records the user-confirmed baseline and the Slice 7 expected baseline. It does not claim local validation was run.
+This note records the user-confirmed baseline and the Slice 8 expected baseline. It does not claim local validation was run.
