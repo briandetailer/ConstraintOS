@@ -11,16 +11,26 @@ A repository search during Milestone 3 packaging did not locate an existing runt
 Current status:
 
 ```text
-initial Python module entry point implemented / console command wiring pending
+Python module command implemented / packaged console command wiring pending
 ```
 
-The Runtime evidence package exists through Python APIs and can now be generated through `runtime.cli`.
+The Runtime evidence package exists through Python APIs and can now be generated through `python -m runtime evidence` or `python -m runtime.cli`.
 
 The next packaging step is to decide whether to wire this module into a public console command such as `constraintos runtime evidence` or `constraintos evidence`.
 
-## Implemented module entry point
+## Implemented module command
 
-Current module invocation target:
+Current preferred module invocation target:
+
+```powershell
+python -m runtime evidence \
+  --spec path/to/runtime-spec.json \
+  --workers path/to/workers.json \
+  --output-dir artifacts/runtime-evidence \
+  --format json
+```
+
+Direct module entry point:
 
 ```powershell
 python -m runtime.cli \
@@ -141,6 +151,8 @@ Initial tests verify:
 4. CLI exits `2` when runtime execution is not successful.
 5. CLI exits `3` for malformed worker input.
 6. CLI preserves deterministic artifact roles, manifest location, and contract registry version.
+7. `python -m runtime evidence` dispatches to the evidence command.
+8. Unknown module commands return usage errors.
 
 ## Remaining packaging target
 
