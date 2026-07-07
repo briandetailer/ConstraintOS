@@ -126,9 +126,7 @@ Generation must not self-certify. Runtime validation should remain independent o
 
 ## Current baseline
 
-Last user-reported full-suite baseline before Runtime Milestone 3 closeout documentation: 398 passing tests.
-
-The later CSL validation-result contract work is adjacent groundwork and should be validated separately before treating the whole branch as a newer baseline.
+Current user-reported full-suite baseline: 401 passing tests.
 
 ## Closeout posture
 
