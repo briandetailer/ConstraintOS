@@ -13,6 +13,7 @@ dependencies = [
 constraintos = "constraintos.cli:main"
 cos = "constraintos.cli:main"
 cos-runtime = "constraintos.runtime_cli:main"
+cos-runtime-evidence = "runtime.cli:main"
 cos-runtime-approval = "runtime.approval_cli:main"
 cos-validate = "constraintos.validation_cli:main"
 cos-apply-constraints = "constraintos.constraint_pack_cli:main"
