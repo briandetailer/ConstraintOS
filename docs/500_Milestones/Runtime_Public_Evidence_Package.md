@@ -168,6 +168,12 @@ External consumers should read a package in this order:
 8. Check contract registry version before interpreting contracts.
 ```
 
+## Consumer examples
+
+Language-facing examples are documented in `Runtime_Evidence_Consumer_Examples.md`.
+
+Those examples show Node.js/TypeScript-style and C#/.NET-style consumers that verify the manifest contract without importing Python Runtime internals.
+
 ## Integration posture
 
 This evidence package is the Runtime Milestone 3 handoff boundary for:
