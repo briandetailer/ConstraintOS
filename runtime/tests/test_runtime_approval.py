@@ -5,7 +5,7 @@ from pathlib import Path
 import pytest
 from jsonschema import ValidationError, validate
 
-from runtime import verify_runtime_approval_decision
+from runtime import ArtifactStore, RuntimeApprovalReportWriter, verify_runtime_approval_decision
 
 
 SCHEMA_ROOT = Path("schemas/runtime/v1")
@@ -151,3 +151,40 @@ def test_runtime_approval_decision_schema_rejects_non_object_metadata() -> None:
 
     with pytest.raises(ValidationError):
         validate(instance=decision, schema=schema)
+
+
+def test_runtime_approval_report_writer_writes_approval_artifact(tmp_path) -> None:
+    artifact = RuntimeApprovalReportWriter(ArtifactStore(tmp_path)).write_approval(_approval_decision())
+
+    assert artifact.to_dict() == {
+        "id": "ARTIFACT-0001",
+        "uri": (tmp_path / "approvals" / "RUNTIME-0001.json").resolve().as_uri(),
+        "kind": "file",
+        "producer": "policy-owner",
+        "metadata": {
+            "path": str((tmp_path / "approvals" / "RUNTIME-0001.json").resolve()),
+            "artifact_role": "runtime_approval_report",
+            "content_type": "application/json",
+            "runtime_id": "RUNTIME-0001",
+            "evidence_manifest_artifact_id": "ARTIFACT-0004",
+            "decision": "approved",
+            "approval_policy": "default-runtime-approval/v1",
+            "decided_by": "policy-owner",
+            "decided_at": "2026-07-06T00:00:00Z",
+        },
+    }
+
+
+def test_runtime_approval_report_writer_persists_approval_payload(tmp_path) -> None:
+    decision = _approval_decision()
+    artifact = RuntimeApprovalReportWriter(ArtifactStore(tmp_path)).write_approval(decision)
+
+    assert json.loads(Path(artifact.metadata["path"]).read_text(encoding="utf-8")) == decision
+
+
+def test_runtime_approval_report_writer_rejects_invalid_decision(tmp_path) -> None:
+    decision = _approval_decision()
+    decision["runtime_approval"]["decision"] = "rejected"
+
+    with pytest.raises(ValueError, match="Runtime approval report requires a valid approval decision"):
+        RuntimeApprovalReportWriter(ArtifactStore(tmp_path)).write_approval(decision)
