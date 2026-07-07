@@ -36,8 +36,8 @@ It does not change Runtime execution semantics, approval policy semantics, or ap
 [x] cos-runtime --help exits successfully
 [x] cos-runtime-evidence --help exits successfully
 [x] cos-runtime-approval --help exits successfully
-[ ] cos-runtime-evidence can generate a Runtime evidence package from sample inputs
-[ ] cos-runtime-approval can generate an approval report from generated evidence and a sample policy
+[x] cos-runtime-evidence can generate a Runtime evidence package from sample inputs
+[x] cos-runtime-approval can generate an approval report from generated evidence and a sample policy
 ```
 
 ## Source-tree command parity checks
@@ -92,6 +92,7 @@ Current release/packaging readiness coverage includes:
 [x] Package version is explicitly declared on the current alpha release track
 [x] Runtime console script registrations are covered
 [x] Runtime installed command help exits successfully
+[x] Runtime installed evidence and approval workflows generate expected artifacts
 ```
 
 ## Current green baseline
@@ -102,14 +103,14 @@ The user-confirmed full-suite baseline after validating Slice 9 is:
 483 passed
 ```
 
-Slice 9 added three expected installed-command help test cases:
+Slice 10 adds two expected installed-command workflow test cases:
 
 ```text
-+3 tests
++2 tests
 ```
 
 Expected full-suite baseline after validation:
 
 ```text
-483 passed
+485 passed
 ```
