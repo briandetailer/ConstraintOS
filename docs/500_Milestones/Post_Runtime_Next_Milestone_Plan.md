@@ -10,6 +10,8 @@ Runtime Release / Packaging Readiness is complete with a user-confirmed baseline
 
 Runtime package-install GitHub Actions verification is confirmed successful for release-candidate head SHA `861fd25386d8d1845bbf33195ca4247f64f6007a`.
 
+Narrow package-install workflow hardening is complete and confirmed green after push.
+
 This plan starts after the Runtime release packaging closeout and does not reopen Runtime Milestone 3 or closed Runtime approval-gate tracks.
 
 ## Recommended next milestone
@@ -22,7 +24,7 @@ Milestone: CI Package Install Hardening
 
 The Runtime package is ready enough for release-candidate packaging checks, but the next risk is environment drift between source-tree tests and installed package behavior.
 
-The package-install validation workflow has been added, run successfully on GitHub Actions, and recorded in the Runtime release packaging closeout notes. CI Package Install Hardening can now continue with CI expansion, version, and distribution decisions without reopening closed Runtime feature tracks.
+The package-install validation workflow has been added, run successfully on GitHub Actions, hardened, and confirmed green after push. CI Package Install Hardening can now continue with CI expansion, version, and distribution decisions without reopening closed Runtime feature tracks.
 
 ## Milestone goals
 
@@ -32,7 +34,7 @@ The package-install validation workflow has been added, run successfully on GitH
 [x] Runtime package-install workflow added
 [x] Confirm package-install workflow passes on GitHub Actions
 [x] Add workflow result evidence to closeout notes
-[ ] Apply narrow package-install workflow hardening
+[x] Apply narrow package-install workflow hardening
 [ ] Decide whether to expand CI to full-suite plus package-install matrix
 [ ] Decide whether version advances after alpha.26
 [ ] Decide whether distribution stays internal or moves to packaged artifact handoff
@@ -50,6 +52,24 @@ reported_by: gh run view
 reported_on: 2026-07-07
 ```
 
+## Narrow hardening evidence
+
+```text
+workflow: runtime-package-install.yml
+status: green after push
+confirmed_by: user GitHub Actions check
+confirmed_on: 2026-07-07
+```
+
+Implemented hardening coverage:
+
+```text
+[x] Remove stale dist/ before package build
+[x] Run python -m pip check after wheel installation
+[x] Run installed CLI command smoke checks from a temporary directory outside the repository tree
+[x] Update workflow actions to Node 24-compatible major versions
+```
+
 ## Suggested slices
 
 ### Slice 1: CI workflow verification
@@ -58,13 +78,7 @@ Completed. Runtime package-install verification passed on GitHub Actions and res
 
 ### Slice 2: Narrow package-install workflow hardening
 
-Recommended next hardening changes:
-
-```text
-[ ] Remove stale dist/ before package build
-[ ] Run python -m pip check after wheel installation
-[ ] Run installed CLI command smoke checks from a temporary directory outside the repository tree
-```
+Completed. The package-install workflow was hardened and confirmed green after push.
 
 Rationale: these checks reduce the chance that a workflow accidentally passes because of stale build outputs or source-tree import shadowing.
 
