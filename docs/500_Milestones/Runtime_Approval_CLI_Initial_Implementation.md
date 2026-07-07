@@ -4,14 +4,14 @@
 
 This note records the first packaged CLI follow-up after Runtime approval gates were closed.
 
-The approval-gate core remains complete. This track exposes the approval workflow through direct module execution, an installable console script, and reusable policy examples.
+The approval-gate core remains complete. This track exposes the approval workflow through direct module execution, an installable console script, reusable policy examples, and policy-enforced decision creation.
 
 ## Status
 
 Current status:
 
 ```text
-initial Runtime approval CLI and policy examples implemented
+initial Runtime approval CLI, policy examples, and policy enforcement implemented
 ```
 
 Implemented module:
@@ -39,7 +39,7 @@ The approval CLI currently:
 1. Reads a Runtime evidence manifest JSON file.
 2. Accepts the evidence manifest artifact id explicitly.
 3. Reads a Runtime approval policy JSON file.
-4. Creates an approval decision with `create_runtime_approval_decision`.
+4. Creates a policy-enforced approval decision with `create_runtime_approval_decision`.
 5. Persists the decision through `RuntimeApprovalReportWriter`.
 6. Emits JSON or text summary output.
 7. Returns success when the decision is `approved`.
@@ -79,6 +79,16 @@ examples/runtime/approval-policies/manual-review-runtime-approval-v1.json
 
 The example policies are verified by both the Python policy verifier and the Runtime approval policy JSON Schema.
 
+## Policy enforcement
+
+Implemented in:
+
+```text
+docs/500_Milestones/Runtime_Approval_Policy_Enforcement.md
+```
+
+The approval decision creator now checks generated decisions against the supplied approval policy.
+
 ## Test files
 
 ```text
@@ -86,18 +96,19 @@ runtime/tests/test_runtime_approval_cli.py
 runtime/tests/test_runtime_module_approval_cli.py
 runtime/tests/test_runtime_approval_cli_packaging.py
 runtime/tests/test_runtime_approval_policy_examples.py
+runtime/tests/test_runtime_approval_policy_enforcement.py
 ```
 
 ## Validation target
 
-Expected test delta from the previous 465-pass baseline:
+Expected test delta from the previous 468-pass baseline:
 
 ```text
-+3 tests
++5 tests
 ```
 
 Expected full-suite baseline after validation:
 
 ```text
-468 passed
+473 passed
 ```
