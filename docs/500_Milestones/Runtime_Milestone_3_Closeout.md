@@ -4,7 +4,17 @@
 
 Milestone 3 hardened the Runtime layer from a working orchestration engine into an auditable contract boundary. The milestone focus was replayability, traceability, public runtime contracts, artifact evidence, external-consumer readiness, and language-neutral schema validation.
 
-This closeout records the Runtime Milestone 3 posture and keeps adjacent CSL/validator design work separate from the active Runtime milestone lane.
+This closeout records the Runtime Milestone 3 completion posture and keeps adjacent CSL/validator/approval-gate work separate from the completed Runtime milestone lane.
+
+## Final status
+
+Runtime Milestone 3 is complete.
+
+Final user-reported full-suite baseline:
+
+```text
+425 passed
+```
 
 ## Starting point
 
@@ -166,13 +176,13 @@ The Python runtime can remain the implementation core, but the external boundary
 
 CSL design notes, example payloads, and early contract-verifier work exist as future-facing groundwork.
 
-They should be treated as adjacent validation-language exploration, not the active Runtime Milestone 3 closeout lane.
+They should be treated as adjacent validation-language exploration, not the completed Runtime Milestone 3 lane.
 
 Do not let CSL implementation replace the Runtime Milestone 3 closeout path. CSL should resume later as a dedicated schema/compiler/validator milestone or subtrack.
 
-## Known open items after Milestone 3
+## Follow-up items after Milestone 3
 
-These items are valid follow-ups but should not block Milestone 3 closeout:
+These items are valid follow-ups but do not block Milestone 3 closeout:
 
 1. Decide whether to wire the Runtime module CLI into a packaged console command.
 2. Implement the approval-gate target documented in `Runtime_Approval_Gate_Target.md`.
@@ -180,6 +190,6 @@ These items are valid follow-ups but should not block Milestone 3 closeout:
 
 ## Closeout assessment
 
-Milestone 3 Runtime is closeout-ready from a contract-hardening perspective.
+Milestone 3 Runtime is complete from the contract-hardening, evidence, CLI, and JSON Schema perspective.
 
-The next recommended Runtime action is final closeout verification: confirm the complete test suite remains green, then decide whether to close Milestone 3 or implement the approval-gate target before formal closeout.
+The next recommended ConstraintOS action is to open a new milestone for approval gates, packaged CLI polish, or CSL schema/compiler work rather than continuing to expand Runtime Milestone 3.
