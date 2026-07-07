@@ -4,14 +4,14 @@
 
 This note records the first packaged CLI follow-up after Runtime approval gates were closed.
 
-The approval-gate core remains complete. This slice exposes the approval workflow through direct module execution and an installable console script.
+The approval-gate core remains complete. This track exposes the approval workflow through direct module execution, an installable console script, and reusable policy examples.
 
 ## Status
 
 Current status:
 
 ```text
-initial Runtime approval CLI implemented
+initial Runtime approval CLI and policy examples implemented
 ```
 
 Implemented module:
@@ -68,24 +68,36 @@ Registered script:
 cos-runtime-approval = "runtime.approval_cli:main"
 ```
 
+## Example policies
+
+Implemented in:
+
+```text
+examples/runtime/approval-policies/default-runtime-approval-v1.json
+examples/runtime/approval-policies/manual-review-runtime-approval-v1.json
+```
+
+The example policies are verified by both the Python policy verifier and the Runtime approval policy JSON Schema.
+
 ## Test files
 
 ```text
 runtime/tests/test_runtime_approval_cli.py
 runtime/tests/test_runtime_module_approval_cli.py
 runtime/tests/test_runtime_approval_cli_packaging.py
+runtime/tests/test_runtime_approval_policy_examples.py
 ```
 
 ## Validation target
 
-Expected test delta from the previous 460-pass baseline:
+Expected test delta from the previous 465-pass baseline:
 
 ```text
-+5 tests
++3 tests
 ```
 
 Expected full-suite baseline after validation:
 
 ```text
-465 passed
+468 passed
 ```
