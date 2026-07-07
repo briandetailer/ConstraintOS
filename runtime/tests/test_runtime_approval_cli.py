@@ -134,6 +134,24 @@ def test_runtime_approval_cli_returns_rejected_for_invalid_evidence(tmp_path) ->
     assert (output_dir / "approvals" / "RUNTIME-0001.json").exists()
 
 
+def test_runtime_approval_cli_reports_help(capsys) -> None:
+    stdout = io.StringIO()
+    stderr = io.StringIO()
+
+    exit_code = run_approval_cli(["--help"], stdout=stdout, stderr=stderr)
+
+    captured = capsys.readouterr()
+    assert exit_code == APPROVAL_CLI_SUCCESS
+    assert "Create a Runtime approval report from evidence and policy." in captured.out
+    assert "--evidence-manifest" in captured.out
+    assert "--policy" in captured.out
+    assert "--decided-by" in captured.out
+    assert "--output-dir" in captured.out
+    assert captured.err == ""
+    assert stdout.getvalue() == ""
+    assert stderr.getvalue() == ""
+
+
 def test_runtime_approval_cli_reports_usage_error_for_malformed_policy(tmp_path) -> None:
     manifest_artifact = _evidence_manifest_artifact(tmp_path)
     policy_path = _write_policy(tmp_path, [])
