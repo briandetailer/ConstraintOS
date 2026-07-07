@@ -4,7 +4,7 @@
 
 This note opens the Runtime Release / Packaging Readiness track without reopening Runtime Milestone 3 or the closed Runtime approval-gate tracks.
 
-The first slice verifies that Runtime workflows exposed through module execution also have installable package entry points where appropriate.
+The first slices verify that Runtime workflows exposed through module execution also have installable package entry points where appropriate, then normalize top-level Runtime help behavior for package/source usage.
 
 ## Status
 
@@ -12,6 +12,7 @@ Current status:
 
 ```text
 Slice 1 implemented: Runtime packaged CLI entry points verified and documented
+Slice 2 implemented: Runtime module help exits successfully and writes usage to stdout
 ```
 
 Closed tracks remain closed:
@@ -47,6 +48,24 @@ The approval script mirrors the source-tree module command:
 python -m runtime approval --evidence-manifest MANIFEST --evidence-artifact-id ID --policy POLICY --decided-by NAME --decided-at TIMESTAMP --output-dir OUTPUT_DIR [--format json|text]
 ```
 
+## CLI help behavior
+
+Top-level Runtime module help now behaves as a successful help request:
+
+```text
+python -m runtime --help
+```
+
+Expected behavior:
+
+```text
+exit code 0
+usage text on stdout
+no stderr output
+```
+
+Missing commands and unknown commands remain usage errors.
+
 ## Readiness checklist
 
 ```text
@@ -56,7 +75,7 @@ python -m runtime approval --evidence-manifest MANIFEST --evidence-artifact-id I
 [x] Runtime approval console script is registered
 [x] Packaging registration has test coverage
 [x] Approval workflow guide documents installed evidence and approval commands
-[ ] CLI help/usage consistency audited across Runtime commands
+[x] CLI help/usage consistency audited across Runtime commands
 [ ] Release checklist expanded for broader packaging validation
 ```
 
@@ -69,9 +88,23 @@ docs/600_Guides/Runtime_Approval_Workflow.md
 docs/500_Milestones/Runtime_Release_Packaging_Readiness.md
 ```
 
+## Files updated in Slice 2
+
+```text
+runtime/__main__.py
+runtime/tests/test_runtime_module_cli.py
+docs/500_Milestones/Runtime_Release_Packaging_Readiness.md
+```
+
 ## Validation target
 
-Expected test delta from the user-confirmed 473-pass baseline:
+User-confirmed full-suite baseline after Slice 1:
+
+```text
+473 passed
+```
+
+Expected test delta from Slice 2:
 
 ```text
 +1 test
