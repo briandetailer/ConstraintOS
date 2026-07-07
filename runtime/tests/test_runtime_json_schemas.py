@@ -4,7 +4,7 @@ from pathlib import Path
 import pytest
 from jsonschema import ValidationError, validate
 
-from runtime import RuntimeEngine, runtime_contract_registry, runtime_result_to_trace
+from runtime import ArtifactStore, RuntimeEngine, RuntimeReportWriter, runtime_contract_registry, runtime_result_to_trace
 from runtime.scheduler import WorkerCapability
 
 
@@ -26,6 +26,11 @@ def _completed_runtime_result() -> dict:
 
 def _completed_runtime_trace() -> dict:
     return runtime_result_to_trace(_completed_runtime_result()).to_dict()
+
+
+def _runtime_report_artifact(tmp_path: Path) -> dict:
+    artifact = RuntimeReportWriter(ArtifactStore(tmp_path)).write_report(_completed_runtime_result())
+    return artifact.to_dict()
 
 
 def test_runtime_contract_registry_matches_json_schema() -> None:
@@ -98,3 +103,27 @@ def test_runtime_traceability_schema_rejects_non_object_metadata() -> None:
 
     with pytest.raises(ValidationError):
         validate(instance=trace, schema=schema)
+
+
+def test_runtime_report_artifact_matches_json_schema(tmp_path) -> None:
+    schema = _schema("runtime-report.schema.json")
+
+    validate(instance=_runtime_report_artifact(tmp_path), schema=schema)
+
+
+def test_runtime_report_artifact_schema_rejects_wrong_role(tmp_path) -> None:
+    schema = _schema("runtime-report.schema.json")
+    artifact = _runtime_report_artifact(tmp_path)
+    artifact["metadata"]["artifact_role"] = "runtime_trace_report"
+
+    with pytest.raises(ValidationError):
+        validate(instance=artifact, schema=schema)
+
+
+def test_runtime_report_artifact_schema_rejects_missing_runtime_id(tmp_path) -> None:
+    schema = _schema("runtime-report.schema.json")
+    artifact = _runtime_report_artifact(tmp_path)
+    artifact["metadata"].pop("runtime_id")
+
+    with pytest.raises(ValidationError):
+        validate(instance=artifact, schema=schema)
