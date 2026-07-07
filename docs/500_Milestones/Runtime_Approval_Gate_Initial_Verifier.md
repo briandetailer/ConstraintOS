@@ -11,7 +11,7 @@ Runtime Milestone 3 is closed. Approval gates are now a separate follow-up track
 Current status:
 
 ```text
-approval decision verifier and JSON Schema implemented
+approval decision verifier, JSON Schema, and report writer implemented
 ```
 
 Implemented module:
@@ -20,10 +20,17 @@ Implemented module:
 runtime/approval.py
 ```
 
-Public export:
+Implemented artifact writer:
+
+```text
+runtime/artifacts/approval_reporter.py
+```
+
+Public exports:
 
 ```python
 verify_runtime_approval_decision(payload)
+RuntimeApprovalReportWriter
 ```
 
 Implemented schema:
@@ -114,6 +121,17 @@ The JSON Schema currently checks:
 
 Semantic checks that JSON Schema cannot express cleanly, such as rejected decisions requiring a failed check or note, remain in the Python verifier.
 
+## Implemented report writer behavior
+
+The approval report writer currently:
+
+1. Requires a valid approval decision before writing.
+2. Persists the approval decision JSON payload unchanged.
+3. Writes to `approvals/{runtime_id}.json` by default.
+4. Registers a `runtime_approval_report` artifact.
+5. Records runtime id, evidence manifest artifact id, decision, policy, decider, and decision timestamp as artifact metadata.
+6. Does not modify runtime reports, trace reports, evidence manifests, or contract registries.
+
 ## Test file
 
 ```text
@@ -124,7 +142,7 @@ runtime/tests/test_runtime_approval.py
 
 Recommended next slices:
 
-1. Add approval report artifact writer.
+1. Add approval report artifact JSON Schema.
 2. Add approval policy object and verifier.
 3. Decide when approval contracts should be added to the runtime contract registry.
 4. Add evidence-linked approval helpers that consume Runtime evidence manifests without modifying evidence artifacts.
