@@ -33,9 +33,9 @@ It does not change Runtime execution semantics, approval policy semantics, or ap
 ## Installed command checks
 
 ```text
-[ ] cos-runtime --help exits successfully
-[ ] cos-runtime-evidence --help exits successfully
-[ ] cos-runtime-approval --help exits successfully
+[x] cos-runtime --help exits successfully
+[x] cos-runtime-evidence --help exits successfully
+[x] cos-runtime-approval --help exits successfully
 [ ] cos-runtime-evidence can generate a Runtime evidence package from sample inputs
 [ ] cos-runtime-approval can generate an approval report from generated evidence and a sample policy
 ```
@@ -91,24 +91,25 @@ Current release/packaging readiness coverage includes:
 [x] Runtime CLI package dependencies are registered
 [x] Package version is explicitly declared on the current alpha release track
 [x] Runtime console script registrations are covered
+[x] Runtime installed command help exits successfully
 ```
 
 ## Current green baseline
 
-The user-confirmed full-suite baseline after validating Slice 7 is:
+The user-confirmed full-suite baseline after validating Slice 8 is:
 
 ```text
 480 passed
 ```
 
-Slice 8 is documentation-only and adds no tests:
+Slice 9 adds one expected installed-command help coverage test:
 
 ```text
-+0 tests
++1 test
 ```
 
 Expected full-suite baseline after validation:
 
 ```text
-480 passed
+481 passed
 ```
