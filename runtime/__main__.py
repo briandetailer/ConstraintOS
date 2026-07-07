@@ -4,7 +4,7 @@ import sys
 from typing import TextIO
 
 from runtime.approval_cli import run_approval_cli
-from runtime.cli import EVIDENCE_CLI_USAGE_ERROR, run_evidence_cli
+from runtime.cli import EVIDENCE_CLI_SUCCESS, EVIDENCE_CLI_USAGE_ERROR, run_evidence_cli
 
 
 USAGE = (
@@ -21,8 +21,12 @@ def run_runtime_cli(
 ) -> int:
     """Dispatch Runtime module commands."""
     args = list(sys.argv[1:] if argv is None else argv)
+    output = stdout or sys.stdout
     errors = stderr or sys.stderr
-    if not args or args[0] in {"-h", "--help"}:
+    if args and args[0] in {"-h", "--help"}:
+        print(USAGE, file=output)
+        return EVIDENCE_CLI_SUCCESS
+    if not args:
         print(USAGE, file=errors)
         return EVIDENCE_CLI_USAGE_ERROR
     command = args.pop(0)
