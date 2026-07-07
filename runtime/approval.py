@@ -146,9 +146,51 @@ def verify_runtime_approval_policy(policy: dict[str, Any]) -> RuntimeApprovalVer
     return RuntimeApprovalVerification(issues)
 
 
+def verify_runtime_approval_decision_against_policy(
+    decision: dict[str, Any], policy: dict[str, Any]
+) -> RuntimeApprovalVerification:
+    """Verify that an approval decision satisfies a Runtime approval policy."""
+    issues: list[str] = []
+    issues.extend(verify_runtime_approval_decision(decision).issues)
+    issues.extend(verify_runtime_approval_policy(policy).issues)
+    if issues:
+        return RuntimeApprovalVerification(issues)
+
+    approval = _dict_value(decision, "runtime_approval")
+    policy_header = _dict_value(policy, "runtime_approval_policy")
+    checks = decision.get("checks", [])
+    check_records = [check for check in checks if isinstance(check, dict)] if isinstance(checks, list) else []
+
+    if approval.get("approval_policy") != policy_header.get("name"):
+        issues.append("Runtime approval decision approval_policy must match approval policy name.")
+    if approval.get("decided_by") not in _string_set(policy, "approvers"):
+        issues.append("Runtime approval decision decided_by must be an authorized policy approver.")
+    if approval.get("decision") not in _string_set(policy, "allowed_decisions"):
+        issues.append("Runtime approval decision decision must be allowed by policy.")
+
+    check_sources = {str(check.get("source")) for check in check_records if check.get("source")}
+    missing_checks = sorted(_string_set(policy, "required_checks") - check_sources)
+    if missing_checks:
+        issues.append("Runtime approval decision must include all required policy checks.")
+
+    allowed_statuses = _string_set(policy, "allowed_check_statuses")
+    for index, check in enumerate(check_records, start=1):
+        if check.get("status") not in allowed_statuses:
+            issues.append(f"Runtime approval decision check {index} status must be allowed by policy.")
+
+    return RuntimeApprovalVerification(issues)
+
+
 def _dict_value(value: dict[str, Any], key: str) -> dict[str, Any]:
     payload = value.get(key, {}) if isinstance(value, dict) else {}
     return payload if isinstance(payload, dict) else {}
+
+
+def _string_set(value: dict[str, Any], key: str) -> set[str]:
+    items = value.get(key)
+    if not isinstance(items, list):
+        return set()
+    return {item for item in items if isinstance(item, str) and item}
 
 
 def _validate_non_empty_string_list(value: dict[str, Any], key: str, issues: list[str]) -> None:
