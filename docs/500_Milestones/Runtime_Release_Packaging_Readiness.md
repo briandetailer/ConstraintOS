@@ -224,22 +224,22 @@ docs/500_Milestones/Runtime_Release_Packaging_Readiness.md
 
 ## Validation target
 
-User-confirmed full-suite baseline after validating Slice 8:
+User-confirmed full-suite baseline after validating Slice 9:
 
 ```text
-480 passed
+483 passed
 ```
 
-Expected test delta from Slice 9:
+Actual test delta from Slice 9:
 
 ```text
-+1 test
++3 tests
 ```
 
-Expected full-suite baseline after validation:
+Current full-suite baseline:
 
 ```text
-481 passed
+483 passed
 ```
 
-This note records the user-confirmed baseline and the Slice 9 expected baseline. It does not claim local validation was run.
+This note records the user-confirmed baseline after validating Slice 9. It does not claim local validation was run.
