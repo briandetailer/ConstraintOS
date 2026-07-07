@@ -96,20 +96,20 @@ Current release/packaging readiness coverage includes:
 
 ## Current green baseline
 
-The user-confirmed full-suite baseline after validating Slice 8 is:
+The user-confirmed full-suite baseline after validating Slice 9 is:
 
 ```text
-480 passed
+483 passed
 ```
 
-Slice 9 adds one expected installed-command help coverage test:
+Slice 9 added three expected installed-command help test cases:
 
 ```text
-+1 test
++3 tests
 ```
 
 Expected full-suite baseline after validation:
 
 ```text
-481 passed
+483 passed
 ```
