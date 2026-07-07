@@ -4,7 +4,7 @@ from pathlib import Path
 import pytest
 from jsonschema import ValidationError, validate
 
-from runtime import RuntimeEngine, runtime_contract_registry
+from runtime import RuntimeEngine, runtime_contract_registry, runtime_result_to_trace
 from runtime.scheduler import WorkerCapability
 
 
@@ -22,6 +22,10 @@ def _completed_runtime_result() -> dict:
     }
     result = RuntimeEngine().run(specification, [WorkerCapability("WORKER-0001", ["generic"])])
     return result.to_dict()
+
+
+def _completed_runtime_trace() -> dict:
+    return runtime_result_to_trace(_completed_runtime_result()).to_dict()
 
 
 def test_runtime_contract_registry_matches_json_schema() -> None:
@@ -70,3 +74,27 @@ def test_runtime_result_schema_rejects_negative_summary_counts() -> None:
 
     with pytest.raises(ValidationError):
         validate(instance=result, schema=schema)
+
+
+def test_runtime_traceability_matches_json_schema() -> None:
+    schema = _schema("runtime-traceability.schema.json")
+
+    validate(instance=_completed_runtime_trace(), schema=schema)
+
+
+def test_runtime_traceability_schema_rejects_unknown_record_type() -> None:
+    schema = _schema("runtime-traceability.schema.json")
+    trace = _completed_runtime_trace()
+    trace["records"][0]["type"] = "unknown"
+
+    with pytest.raises(ValidationError):
+        validate(instance=trace, schema=schema)
+
+
+def test_runtime_traceability_schema_rejects_non_object_metadata() -> None:
+    schema = _schema("runtime-traceability.schema.json")
+    trace = _completed_runtime_trace()
+    trace["records"][0]["metadata"] = []
+
+    with pytest.raises(ValidationError):
+        validate(instance=trace, schema=schema)
