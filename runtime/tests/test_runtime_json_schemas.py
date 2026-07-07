@@ -4,7 +4,8 @@ from pathlib import Path
 import pytest
 from jsonschema import ValidationError, validate
 
-from runtime import runtime_contract_registry
+from runtime import RuntimeEngine, runtime_contract_registry
+from runtime.scheduler import WorkerCapability
 
 
 SCHEMA_ROOT = Path("schemas/runtime/v1")
@@ -12,6 +13,15 @@ SCHEMA_ROOT = Path("schemas/runtime/v1")
 
 def _schema(name: str) -> dict:
     return json.loads((SCHEMA_ROOT / name).read_text(encoding="utf-8"))
+
+
+def _completed_runtime_result() -> dict:
+    specification = {
+        "artifact": {"id": "SPEC-0001"},
+        "execution_steps": [{"id": "NODE-0001", "plugin": "generic", "action": "prepare"}],
+    }
+    result = RuntimeEngine().run(specification, [WorkerCapability("WORKER-0001", ["generic"])])
+    return result.to_dict()
 
 
 def test_runtime_contract_registry_matches_json_schema() -> None:
@@ -36,3 +46,27 @@ def test_runtime_contract_registry_schema_rejects_unknown_contract_type() -> Non
 
     with pytest.raises(ValidationError):
         validate(instance=registry, schema=schema)
+
+
+def test_runtime_result_matches_json_schema() -> None:
+    schema = _schema("runtime-result.schema.json")
+
+    validate(instance=_completed_runtime_result(), schema=schema)
+
+
+def test_runtime_result_schema_rejects_unknown_status() -> None:
+    schema = _schema("runtime-result.schema.json")
+    result = _completed_runtime_result()
+    result["runtime_result"]["status"] = "unknown"
+
+    with pytest.raises(ValidationError):
+        validate(instance=result, schema=schema)
+
+
+def test_runtime_result_schema_rejects_negative_summary_counts() -> None:
+    schema = _schema("runtime-result.schema.json")
+    result = _completed_runtime_result()
+    result["summary"]["events"] = -1
+
+    with pytest.raises(ValidationError):
+        validate(instance=result, schema=schema)
