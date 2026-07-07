@@ -11,7 +11,7 @@ Milestone 3 established public Runtime contracts, verifiers, reports, traceabili
 Current status:
 
 ```text
-in progress / runtime result, report, traceability, trace report, and contract registry schemas implemented
+implemented / current public Runtime schema set complete
 ```
 
 Runtime contracts are currently represented by:
@@ -24,11 +24,11 @@ Runtime contracts are currently represented by:
 - documentation
 - example consumer guidance
 
-The next step is to complete the evidence manifest schema for the public evidence boundary.
+The current public evidence-boundary schema set is implemented and test-backed.
 
 ## Schema goals
 
-JSON Schema should provide:
+JSON Schema provides:
 
 - language-neutral validation
 - stable external contract references
@@ -37,9 +37,9 @@ JSON Schema should provide:
 - audit-tool compatibility
 - explicit contract versioning
 
-The schema files should not replace the Python verifiers. They should complement them so external consumers can validate payloads without importing Python Runtime internals.
+The schema files do not replace the Python verifiers. They complement them so external consumers can validate payloads without importing Python Runtime internals.
 
-## Proposed schema location
+## Schema location
 
 ```text
 schemas/runtime/v1/
@@ -51,7 +51,7 @@ schemas/runtime/v1/
   runtime-contract-registry.schema.json
 ```
 
-## Initial schema set
+## Implemented schema set
 
 ### runtime-result.schema.json
 
@@ -161,25 +161,28 @@ The trace report payload itself is validated by `runtime-traceability.schema.jso
 Status:
 
 ```text
-not implemented
+implemented
 ```
 
 Validates the public evidence package manifest.
 
-Should cover:
+Covers:
 
-- `runtime_evidence`
+- `runtime_evidence` header shape
 - runtime id
 - contract registry version
 - runtime report artifact id
 - trace report artifact id
 - contract registry artifact id
 - artifact count
-- artifacts list
-- artifact role order, where possible
+- exactly three artifacts
+- artifact role order through positional artifact definitions
+- runtime report artifact wrapper shape
+- trace report artifact wrapper shape
+- contract registry artifact wrapper shape
 - URI presence
 
-Note: JSON Schema can validate structure, required fields, and enums. Some cross-field checks, such as exact id matching between header fields and artifact entries, may still require verifier logic.
+Note: JSON Schema validates structure, required fields, roles, constants, and artifact order. Cross-field checks, such as exact id matching between header fields and artifact entries, remain in the Python evidence manifest verifier.
 
 ### runtime-contract-registry.schema.json
 
@@ -222,7 +225,7 @@ This should be added carefully because it changes the public contract registry s
 
 ## Verification strategy
 
-The JSON Schema promotion should be test-backed.
+The JSON Schema promotion is test-backed.
 
 Current implemented checks:
 
@@ -241,16 +244,16 @@ Current implemented checks:
 13. Current trace report artifact passes `runtime-trace-report.schema.json`.
 14. Wrong trace report artifact role fails schema validation.
 15. Negative trace report record count fails schema validation.
+16. Current evidence manifest passes `runtime-evidence-manifest.schema.json`.
+17. Wrong evidence manifest artifact order fails schema validation.
+18. Wrong evidence manifest registry version fails schema validation.
+19. Wrong evidence manifest artifact count fails schema validation.
 
-Remaining checks should verify:
-
-1. Current evidence manifest passes `runtime-evidence-manifest.schema.json`.
-2. Known malformed manifest payloads fail the expected schema checks.
-3. Python verifiers and JSON Schema validation agree on supported evidence manifest payload classes where the checks overlap.
+Future checks may add stronger cross-field agreement tests between schema validation and Python verifiers where JSON Schema can express the same constraints.
 
 ## External-consumer value
 
-Once implemented, external consumers can validate Runtime evidence packages using standard JSON Schema tooling in:
+External consumers can validate Runtime evidence packages using standard JSON Schema tooling in:
 
 - Node.js
 - .NET
@@ -262,6 +265,6 @@ Once implemented, external consumers can validate Runtime evidence packages usin
 
 ## Milestone 3 disposition
 
-This target is now active Runtime Milestone 3 implementation work.
+This target is complete for the current Runtime Milestone 3 public evidence-boundary schema set.
 
-Five schemas are implemented and test-backed: `runtime-contract-registry.schema.json`, `runtime-result.schema.json`, `runtime-traceability.schema.json`, `runtime-report.schema.json`, and `runtime-trace-report.schema.json`. The remaining schema should continue in the next small, green slice.
+All six planned schemas are implemented and test-backed: `runtime-contract-registry.schema.json`, `runtime-result.schema.json`, `runtime-traceability.schema.json`, `runtime-report.schema.json`, `runtime-trace-report.schema.json`, and `runtime-evidence-manifest.schema.json`.
