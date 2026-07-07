@@ -4,7 +4,7 @@
 
 This note opens the Runtime Release / Packaging Readiness track without reopening Runtime Milestone 3 or the closed Runtime approval-gate tracks.
 
-The first slices verify that Runtime workflows exposed through module execution also have installable package entry points where appropriate, normalize top-level Runtime help behavior for package/source usage, add a broader release packaging checklist, add executable help coverage for dedicated Runtime evidence and approval CLIs, and add executable package discovery metadata coverage.
+The first slices verify that Runtime workflows exposed through module execution also have installable package entry points where appropriate, normalize top-level Runtime help behavior for package/source usage, add a broader release packaging checklist, add executable help coverage for dedicated Runtime evidence and approval CLIs, add executable package discovery metadata coverage, and add executable Runtime CLI dependency coverage.
 
 ## Status
 
@@ -16,6 +16,7 @@ Slice 2 implemented: Runtime module help exits successfully and writes usage to 
 Slice 3 implemented: Runtime release packaging checklist added
 Slice 4 implemented: Runtime evidence and approval CLI help coverage added
 Slice 5 implemented: Runtime package discovery metadata coverage added
+Slice 6 implemented: Runtime CLI dependency coverage added
 ```
 
 Closed tracks remain closed:
@@ -88,6 +89,16 @@ runtime/tests/test_runtime_approval_cli_packaging.py
 
 The coverage verifies that package discovery includes Runtime packages and excludes Runtime tests from packaged distributions.
 
+## Runtime CLI dependency metadata
+
+Runtime CLI dependency declarations are covered by tests in:
+
+```text
+runtime/tests/test_runtime_approval_cli_packaging.py
+```
+
+The coverage verifies that the package metadata keeps the dependency declarations needed by current Runtime CLI workflows.
+
 ## Release checklist
 
 Broader packaging validation is tracked in:
@@ -112,6 +123,7 @@ The checklist covers package metadata, console script registration, installed co
 [x] Runtime evidence CLI help has executable coverage
 [x] Runtime approval CLI help has executable coverage
 [x] Runtime package discovery metadata has executable coverage
+[x] Runtime CLI dependency metadata has executable coverage
 ```
 
 ## Files updated in Slice 1
@@ -155,15 +167,23 @@ docs/600_Guides/Runtime_Release_Packaging_Checklist.md
 docs/500_Milestones/Runtime_Release_Packaging_Readiness.md
 ```
 
-## Validation target
-
-User-confirmed full-suite baseline after validating Slice 4:
+## Files updated in Slice 6
 
 ```text
-477 passed
+runtime/tests/test_runtime_approval_cli_packaging.py
+docs/600_Guides/Runtime_Release_Packaging_Checklist.md
+docs/500_Milestones/Runtime_Release_Packaging_Readiness.md
 ```
 
-Expected test delta from Slice 5:
+## Validation target
+
+User-confirmed full-suite baseline after validating Slice 5:
+
+```text
+478 passed
+```
+
+Expected test delta from Slice 6:
 
 ```text
 +1 test
@@ -172,7 +192,7 @@ Expected test delta from Slice 5:
 Expected full-suite baseline after validation:
 
 ```text
-478 passed
+479 passed
 ```
 
-This note records the user-confirmed baseline and the Slice 5 expected baseline. It does not claim local validation was run.
+This note records the user-confirmed baseline and the Slice 6 expected baseline. It does not claim local validation was run.
