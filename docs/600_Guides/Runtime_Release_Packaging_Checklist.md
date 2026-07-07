@@ -79,10 +79,32 @@ It does not change Runtime execution semantics, approval policy semantics, or ap
 [ ] Preserve line-cited final summaries for changed files
 ```
 
+## Executable coverage added
+
+Current release/packaging readiness coverage includes:
+
+```text
+[x] Runtime module help exits successfully and advertises evidence and approval subcommands
+[x] Runtime evidence CLI help exits successfully and advertises required inputs
+[x] Runtime approval CLI help exits successfully and advertises required inputs
+```
+
 ## Current green baseline
 
 The user-confirmed full-suite baseline after pulling the latest Runtime release/packaging readiness changes is:
 
 ```text
 475 passed
+```
+
+Slice 4 adds two expected help-coverage tests:
+
+```text
++2 tests
+```
+
+Expected full-suite baseline after validation:
+
+```text
+477 passed
 ```
