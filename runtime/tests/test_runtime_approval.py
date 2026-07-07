@@ -312,3 +312,36 @@ def test_runtime_approval_policy_verifier_does_not_mutate_payload() -> None:
     verify_runtime_approval_policy(policy)
 
     assert policy == original
+
+
+def test_runtime_approval_policy_matches_json_schema() -> None:
+    schema = _schema("runtime-approval-policy.schema.json")
+
+    validate(instance=_approval_policy(), schema=schema)
+
+
+def test_runtime_approval_policy_schema_rejects_missing_evidence_artifact_role() -> None:
+    schema = _schema("runtime-approval-policy.schema.json")
+    policy = _approval_policy()
+    policy["required_evidence_artifacts"].remove("runtime_trace_report")
+
+    with pytest.raises(ValidationError):
+        validate(instance=policy, schema=schema)
+
+
+def test_runtime_approval_policy_schema_rejects_unknown_allowed_decision() -> None:
+    schema = _schema("runtime-approval-policy.schema.json")
+    policy = _approval_policy()
+    policy["allowed_decisions"].append("unknown")
+
+    with pytest.raises(ValidationError):
+        validate(instance=policy, schema=schema)
+
+
+def test_runtime_approval_policy_schema_rejects_false_waiver_rule() -> None:
+    schema = _schema("runtime-approval-policy.schema.json")
+    policy = _approval_policy()
+    policy["waiver_rules"]["requires_note_or_waived_check"] = False
+
+    with pytest.raises(ValidationError):
+        validate(instance=policy, schema=schema)
