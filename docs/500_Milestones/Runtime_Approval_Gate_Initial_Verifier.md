@@ -2,7 +2,7 @@
 
 ## Purpose
 
-This note records the first post-Milestone 3 approval-gate implementation slice.
+This note records the first post-Milestone 3 approval-gate implementation track.
 
 Runtime Milestone 3 is closed. Approval gates are now a separate follow-up track. This keeps approval decisions downstream from execution, validation, and evidence generation.
 
@@ -11,7 +11,7 @@ Runtime Milestone 3 is closed. Approval gates are now a separate follow-up track
 Current status:
 
 ```text
-initial approval decision verifier implemented
+approval decision verifier and JSON Schema implemented
 ```
 
 Implemented module:
@@ -26,9 +26,15 @@ Public export:
 verify_runtime_approval_decision(payload)
 ```
 
+Implemented schema:
+
+```text
+schemas/runtime/v1/runtime-approval-decision.schema.json
+```
+
 ## Approval decision payload
 
-The verifier expects a JSON-style payload with:
+The verifier and schema expect a JSON-style payload with:
 
 ```text
 runtime_approval
@@ -93,6 +99,21 @@ The verifier currently checks:
 12. Waived decisions require a waived check or note.
 13. Verification does not mutate the supplied approval payload.
 
+## Implemented schema behavior
+
+The JSON Schema currently checks:
+
+1. Approval payload has `runtime_approval`, `checks`, and `notes`.
+2. Approval header includes all required fields.
+3. Decision values are constrained to the allowed enum.
+4. Checks are arrays of approval check objects.
+5. Check statuses are constrained to the allowed enum.
+6. Check metadata, when present, is an object.
+7. Notes are arrays of non-empty strings.
+8. Unknown top-level, approval, or check fields are rejected.
+
+Semantic checks that JSON Schema cannot express cleanly, such as rejected decisions requiring a failed check or note, remain in the Python verifier.
+
 ## Test file
 
 ```text
@@ -103,8 +124,7 @@ runtime/tests/test_runtime_approval.py
 
 Recommended next slices:
 
-1. Add approval decision JSON Schema.
-2. Add approval report artifact writer.
-3. Add approval policy object and verifier.
-4. Decide when approval contracts should be added to the runtime contract registry.
-5. Add evidence-linked approval helpers that consume Runtime evidence manifests without modifying evidence artifacts.
+1. Add approval report artifact writer.
+2. Add approval policy object and verifier.
+3. Decide when approval contracts should be added to the runtime contract registry.
+4. Add evidence-linked approval helpers that consume Runtime evidence manifests without modifying evidence artifacts.
