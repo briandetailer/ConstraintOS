@@ -32,6 +32,7 @@ The package-install validation workflow has been added, run successfully on GitH
 [x] Runtime package-install workflow added
 [x] Confirm package-install workflow passes on GitHub Actions
 [x] Add workflow result evidence to closeout notes
+[ ] Apply narrow package-install workflow hardening
 [ ] Decide whether to expand CI to full-suite plus package-install matrix
 [ ] Decide whether version advances after alpha.26
 [ ] Decide whether distribution stays internal or moves to packaged artifact handoff
@@ -55,9 +56,17 @@ reported_on: 2026-07-07
 
 Completed. Runtime package-install verification passed on GitHub Actions and result evidence was recorded.
 
-### Slice 2: CI failure hardening, if needed
+### Slice 2: Narrow package-install workflow hardening
 
-No package-install failure was observed for the verified release-candidate head. No Runtime semantic changes are required from this verification result.
+Recommended next hardening changes:
+
+```text
+[ ] Remove stale dist/ before package build
+[ ] Run python -m pip check after wheel installation
+[ ] Run installed CLI command smoke checks from a temporary directory outside the repository tree
+```
+
+Rationale: these checks reduce the chance that a workflow accidentally passes because of stale build outputs or source-tree import shadowing.
 
 ### Slice 3: CI expansion decision
 
