@@ -53,11 +53,11 @@ It does not change Runtime execution semantics, approval policy semantics, or ap
 ## Artifact checks
 
 ```text
-[ ] Runtime evidence run writes reports/{runtime_id}.json
-[ ] Runtime evidence run writes traces/{runtime_id}.json
-[ ] Runtime evidence run writes contracts/runtime-contract-registry.json
-[ ] Runtime evidence run writes evidence/{runtime_id}.json
-[ ] Runtime approval run writes approvals/{runtime_id}.json
+[x] Runtime evidence run writes reports/{runtime_id}.json
+[x] Runtime evidence run writes traces/{runtime_id}.json
+[x] Runtime evidence run writes contracts/runtime-contract-registry.json
+[x] Runtime evidence run writes evidence/{runtime_id}.json
+[x] Runtime approval run writes approvals/{runtime_id}.json
 ```
 
 ## Documentation checks
@@ -94,20 +94,21 @@ Current release/packaging readiness coverage includes:
 [x] Runtime installed command help exits successfully
 [x] Runtime installed evidence and approval workflows generate expected artifacts
 [x] Runtime source-tree module command parity is covered
+[x] Runtime evidence and approval artifact writes are covered
 ```
 
 ## Current green baseline
 
-The user-confirmed full-suite baseline after validating Slice 10 is:
+The user-confirmed full-suite baseline after validating Slice 11 is:
 
 ```text
-485 passed
+487 passed
 ```
 
-Slice 11 adds two expected Runtime module parity test cases:
+Slice 12 is documentation-only and adds no tests:
 
 ```text
-+2 tests
++0 tests
 ```
 
 Expected full-suite baseline after validation:
