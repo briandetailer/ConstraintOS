@@ -15,8 +15,8 @@ It does not change Runtime execution semantics, approval policy semantics, or ap
 ## Package metadata checks
 
 ```text
-[ ] Confirm pyproject.toml package discovery includes runtime*
-[ ] Confirm pyproject.toml excludes runtime.tests*
+[x] Confirm pyproject.toml package discovery includes runtime*
+[x] Confirm pyproject.toml excludes runtime.tests*
 [ ] Confirm runtime dependencies required by CLI workflows are present
 [ ] Confirm package version is intentionally set for the release candidate
 ```
@@ -87,24 +87,25 @@ Current release/packaging readiness coverage includes:
 [x] Runtime module help exits successfully and advertises evidence and approval subcommands
 [x] Runtime evidence CLI help exits successfully and advertises required inputs
 [x] Runtime approval CLI help exits successfully and advertises required inputs
+[x] Runtime package discovery includes runtime* and excludes runtime.tests*
 ```
 
 ## Current green baseline
 
-The user-confirmed full-suite baseline after pulling the latest Runtime release/packaging readiness changes is:
+The user-confirmed full-suite baseline after validating Slice 4 is:
 
 ```text
-475 passed
+477 passed
 ```
 
-Slice 4 adds two expected help-coverage tests:
+Slice 5 adds one expected package metadata coverage test:
 
 ```text
-+2 tests
++1 test
 ```
 
 Expected full-suite baseline after validation:
 
 ```text
-477 passed
+478 passed
 ```
