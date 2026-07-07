@@ -26,6 +26,12 @@ Use the Runtime evidence CLI to produce an evidence package:
 python -m runtime evidence --spec path/to/runtime-spec.json --workers path/to/workers.json --output-dir artifacts/runtime-evidence --format json
 ```
 
+Installed packages may also use the dedicated evidence console script:
+
+```powershell
+cos-runtime-evidence --spec path/to/runtime-spec.json --workers path/to/workers.json --output-dir artifacts/runtime-evidence --format json
+```
+
 This writes the Runtime report, trace report, contract registry report, and evidence manifest.
 
 The evidence manifest path from the CLI summary is used as the approval input.
@@ -55,6 +61,14 @@ Installed packages may also use:
 
 ```powershell
 cos-runtime-approval --evidence-manifest artifacts/runtime-evidence/evidence/RUNTIME-0001.json --evidence-artifact-id ARTIFACT-0004 --policy examples/runtime/approval-policies/default-runtime-approval-v1.json --decided-by policy-owner --decided-at 2026-07-06T00:00:00Z --output-dir artifacts/runtime-approval --format json
+```
+
+## Packaged command summary
+
+```text
+cos-runtime = full ConstraintOS Runtime execution CLI
+cos-runtime-evidence = Runtime evidence package generation CLI
+cos-runtime-approval = Runtime approval report generation CLI
 ```
 
 ## Exit codes
@@ -106,19 +120,24 @@ If policy enforcement fails, the approval decision is rejected and a policy-enfo
 A minimal CI/CD approval sequence is:
 
 ```powershell
-python -m runtime evidence --spec path/to/runtime-spec.json --workers path/to/workers.json --output-dir artifacts/runtime-evidence --format json
-python -m runtime approval --evidence-manifest artifacts/runtime-evidence/evidence/RUNTIME-0001.json --evidence-artifact-id ARTIFACT-0004 --policy examples/runtime/approval-policies/default-runtime-approval-v1.json --decided-by policy-owner --decided-at 2026-07-06T00:00:00Z --output-dir artifacts/runtime-approval --format json
+cos-runtime-evidence --spec path/to/runtime-spec.json --workers path/to/workers.json --output-dir artifacts/runtime-evidence --format json
+cos-runtime-approval --evidence-manifest artifacts/runtime-evidence/evidence/RUNTIME-0001.json --evidence-artifact-id ARTIFACT-0004 --policy examples/runtime/approval-policies/default-runtime-approval-v1.json --decided-by policy-owner --decided-at 2026-07-06T00:00:00Z --output-dir artifacts/runtime-approval --format json
 ```
+
+The same sequence remains available through `python -m runtime evidence` and `python -m runtime approval` when running directly from source.
 
 Treat approval CLI exit code `0` as pass, `1` as rejected evidence or policy, and `3` as an input/configuration failure.
 
 ## Related files
 
 ```text
+runtime/cli.py
 runtime/approval.py
 runtime/approval_gate.py
 runtime/approval_cli.py
 runtime/artifacts/approval_reporter.py
+runtime/__main__.py
+pyproject.toml
 schemas/runtime/v1/runtime-approval-decision.schema.json
 schemas/runtime/v1/runtime-approval-policy.schema.json
 schemas/runtime/v1/runtime-approval-report.schema.json
