@@ -3,10 +3,15 @@ from __future__ import annotations
 import sys
 from typing import TextIO
 
+from runtime.approval_cli import run_approval_cli
 from runtime.cli import EVIDENCE_CLI_USAGE_ERROR, run_evidence_cli
 
 
-USAGE = "Usage: python -m runtime evidence --spec SPEC --workers WORKERS --output-dir OUTPUT_DIR [--format json|text]"
+USAGE = (
+    "Usage: python -m runtime evidence --spec SPEC --workers WORKERS --output-dir OUTPUT_DIR [--format json|text]\n"
+    "   or: python -m runtime approval --evidence-manifest MANIFEST --evidence-artifact-id ID "
+    "--policy POLICY --decided-by NAME --decided-at TIMESTAMP --output-dir OUTPUT_DIR [--format json|text]"
+)
 
 
 def run_runtime_cli(
@@ -23,6 +28,8 @@ def run_runtime_cli(
     command = args.pop(0)
     if command == "evidence":
         return run_evidence_cli(args, stdout=stdout, stderr=stderr)
+    if command == "approval":
+        return run_approval_cli(args, stdout=stdout, stderr=stderr)
     print(f"Unknown Runtime command: {command}", file=errors)
     print(USAGE, file=errors)
     return EVIDENCE_CLI_USAGE_ERROR
