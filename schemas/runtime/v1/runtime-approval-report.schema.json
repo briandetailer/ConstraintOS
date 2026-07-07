@@ -1,0 +1,76 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://constraintos.dev/schemas/runtime/v1/runtime-approval-report.schema.json",
+  "title": "ConstraintOS Runtime Approval Report Artifact",
+  "type": "object",
+  "required": ["id", "uri", "kind", "producer", "metadata"],
+  "additionalProperties": false,
+  "properties": {
+    "id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "uri": {
+      "type": "string",
+      "minLength": 1
+    },
+    "kind": {
+      "const": "file"
+    },
+    "producer": {
+      "type": "string",
+      "minLength": 1
+    },
+    "metadata": {
+      "type": "object",
+      "required": [
+        "path",
+        "artifact_role",
+        "content_type",
+        "runtime_id",
+        "evidence_manifest_artifact_id",
+        "decision",
+        "approval_policy",
+        "decided_by",
+        "decided_at"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "path": {
+          "type": "string",
+          "minLength": 1
+        },
+        "artifact_role": {
+          "const": "runtime_approval_report"
+        },
+        "content_type": {
+          "const": "application/json"
+        },
+        "runtime_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "evidence_manifest_artifact_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "decision": {
+          "type": "string",
+          "enum": ["approved", "rejected", "needs_review", "waived"]
+        },
+        "approval_policy": {
+          "type": "string",
+          "minLength": 1
+        },
+        "decided_by": {
+          "type": "string",
+          "minLength": 1
+        },
+        "decided_at": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    }
+  }
+}
