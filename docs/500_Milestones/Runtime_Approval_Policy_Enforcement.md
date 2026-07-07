@@ -32,6 +32,12 @@ Decision creation integration:
 runtime/approval_gate.py
 ```
 
+Workflow guide:
+
+```text
+docs/600_Guides/Runtime_Approval_Workflow.md
+```
+
 ## Enforcement behavior
 
 The policy enforcement verifier currently checks:
@@ -61,16 +67,12 @@ If the generated decision does not satisfy the policy, the helper:
 runtime/tests/test_runtime_approval_policy_enforcement.py
 ```
 
-## Validation target
+## Validation
 
-Expected test delta from the previous 468-pass baseline:
-
-```text
-+5 tests
-```
-
-Expected full-suite baseline after validation:
+User-reported validation:
 
 ```text
 473 passed
 ```
+
+The workflow guide is documentation-only and does not change the test baseline.
