@@ -1,6 +1,6 @@
 """ConstraintOS Runtime package."""
 
-from runtime.approval import RuntimeApprovalVerification, verify_runtime_approval_decision, verify_runtime_approval_policy
+from runtime.approval import RuntimeApprovalVerification, verify_runtime_approval_decision, verify_runtime_approval_decision_against_policy, verify_runtime_approval_policy
 from runtime.approval_gate import create_runtime_approval_decision
 from runtime.artifacts import ArtifactCollector, ArtifactStore, ArtifactStoreError, RuntimeApprovalReportWriter, RuntimeArtifact, RuntimeContractRegistryReportWriter, RuntimeEvidenceBundleWriter, RuntimeEvidenceVerification, RuntimeReportWriter, RuntimeTraceReportWriter, verify_runtime_contract_registry_report, verify_runtime_evidence_manifest
 from runtime.context import RuntimeContext
@@ -53,6 +53,7 @@ __all__ = [
     "verify_exception_boundary_runtime_events",
     "verify_partial_schedule_runtime_events",
     "verify_runtime_approval_decision",
+    "verify_runtime_approval_decision_against_policy",
     "verify_runtime_approval_policy",
     "verify_runtime_contract_registry",
     "verify_runtime_contract_registry_report",
