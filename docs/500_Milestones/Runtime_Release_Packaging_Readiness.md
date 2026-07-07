@@ -4,7 +4,7 @@
 
 This note opens the Runtime Release / Packaging Readiness track without reopening Runtime Milestone 3 or the closed Runtime approval-gate tracks.
 
-The first slices verify that Runtime workflows exposed through module execution also have installable package entry points where appropriate, normalize top-level Runtime help behavior for package/source usage, add a broader release packaging checklist, add executable help coverage for dedicated Runtime evidence and approval CLIs, add executable package metadata coverage, and close checklist coverage for registered Runtime console scripts.
+The first slices verify that Runtime workflows exposed through module execution also have installable package entry points where appropriate, normalize top-level Runtime help behavior for package/source usage, add a broader release packaging checklist, add executable help coverage for dedicated Runtime evidence and approval CLIs, add executable package metadata coverage, close checklist coverage for registered Runtime console scripts, and add installed-command help coverage.
 
 ## Status
 
@@ -19,6 +19,7 @@ Slice 5 implemented: Runtime package discovery metadata coverage added
 Slice 6 implemented: Runtime CLI dependency coverage added
 Slice 7 implemented: Package version metadata coverage added
 Slice 8 implemented: Runtime console script registration checklist closed
+Slice 9 implemented: Runtime installed-command help coverage added
 ```
 
 Closed tracks remain closed:
@@ -79,6 +80,14 @@ run_approval_cli(["--help"])
 
 Both help requests are expected to return success and advertise their required inputs.
 
+Installed Runtime command help behavior is covered through entry-point target tests:
+
+```text
+cos-runtime --help
+cos-runtime-evidence --help
+cos-runtime-approval --help
+```
+
 Missing commands and unknown commands remain usage errors.
 
 ## Package metadata coverage
@@ -100,6 +109,16 @@ runtime/tests/test_runtime_approval_cli_packaging.py
 ```
 
 The checklist now records the existing coverage for the registered Runtime console scripts.
+
+## Installed command help coverage
+
+Runtime installed-command help behavior is covered by tests in:
+
+```text
+runtime/tests/test_runtime_installed_command_help.py
+```
+
+The coverage verifies successful help exits for the Runtime, Runtime evidence, and Runtime approval entry-point targets.
 
 ## Release checklist
 
@@ -128,6 +147,7 @@ The checklist covers package metadata, console script registration, installed co
 [x] Runtime CLI dependency metadata has executable coverage
 [x] Package version metadata has executable coverage
 [x] Runtime console script registration checklist is closed
+[x] Runtime installed-command help has executable coverage
 ```
 
 ## Files updated in Slice 1
@@ -194,24 +214,32 @@ docs/600_Guides/Runtime_Release_Packaging_Checklist.md
 docs/500_Milestones/Runtime_Release_Packaging_Readiness.md
 ```
 
+## Files updated in Slice 9
+
+```text
+runtime/tests/test_runtime_installed_command_help.py
+docs/600_Guides/Runtime_Release_Packaging_Checklist.md
+docs/500_Milestones/Runtime_Release_Packaging_Readiness.md
+```
+
 ## Validation target
 
-User-confirmed full-suite baseline after validating Slice 7:
+User-confirmed full-suite baseline after validating Slice 8:
 
 ```text
 480 passed
 ```
 
-Expected test delta from Slice 8:
+Expected test delta from Slice 9:
 
 ```text
-+0 tests
++1 test
 ```
 
 Expected full-suite baseline after validation:
 
 ```text
-480 passed
+481 passed
 ```
 
-This note records the user-confirmed baseline and the Slice 8 expected baseline. It does not claim local validation was run.
+This note records the user-confirmed baseline and the Slice 9 expected baseline. It does not claim local validation was run.
