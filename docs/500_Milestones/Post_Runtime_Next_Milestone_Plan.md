@@ -12,19 +12,25 @@ Runtime package-install GitHub Actions verification is confirmed successful for 
 
 Narrow package-install workflow hardening is complete and confirmed green after push.
 
+CI Package Install Hardening decisions are complete and recorded in:
+
+```text
+docs/500_Milestones/CI_Package_Install_Hardening_Decisions.md
+```
+
 This plan starts after the Runtime release packaging closeout and does not reopen Runtime Milestone 3 or closed Runtime approval-gate tracks.
 
 ## Recommended next milestone
 
 ```text
-Milestone: CI Package Install Hardening
+Milestone: Runtime Package Artifact Handoff
 ```
 
 ## Why this is next
 
-The Runtime package is ready enough for release-candidate packaging checks, but the next risk is environment drift between source-tree tests and installed package behavior.
+The Runtime package is ready enough for release-candidate packaging checks, and the package-install validation path has now been verified and hardened.
 
-The package-install validation workflow has been added, run successfully on GitHub Actions, hardened, and confirmed green after push. CI Package Install Hardening can now continue with CI expansion, version, and distribution decisions without reopening closed Runtime feature tracks.
+The remaining release risk has shifted from installed package correctness to controlled internal distribution: producing downloadable build artifacts from GitHub Actions without moving directly to formal package publishing.
 
 ## Milestone goals
 
@@ -35,9 +41,17 @@ The package-install validation workflow has been added, run successfully on GitH
 [x] Confirm package-install workflow passes on GitHub Actions
 [x] Add workflow result evidence to closeout notes
 [x] Apply narrow package-install workflow hardening
-[ ] Decide whether to expand CI to full-suite plus package-install matrix
-[ ] Decide whether version advances after alpha.26
-[ ] Decide whether distribution stays internal or moves to packaged artifact handoff
+[x] Decide whether to expand CI to full-suite plus package-install matrix
+[x] Decide whether version advances after alpha.26
+[x] Decide whether distribution stays internal or moves to packaged artifact handoff
+```
+
+## Decision summary
+
+```text
+ci_expansion: keep focused package-install matrix; do not expand full-suite matrix yet
+next_version: advance next Runtime-capable package candidate to 1.0.0-alpha.27
+distribution: use internal GitHub Actions artifact handoff before formal publishing
 ```
 
 ## Workflow result evidence
@@ -70,7 +84,7 @@ Implemented hardening coverage:
 [x] Update workflow actions to Node 24-compatible major versions
 ```
 
-## Suggested slices
+## Completed slices
 
 ### Slice 1: CI workflow verification
 
@@ -84,28 +98,37 @@ Rationale: these checks reduce the chance that a workflow accidentally passes be
 
 ### Slice 3: CI expansion decision
 
-Decide whether to keep package-install validation as a focused workflow or expand CI coverage into a full-suite plus package-install matrix.
+Completed. Keep the focused package-install matrix; do not expand full-suite matrix yet.
 
 ### Slice 4: Version decision
 
-Decide whether the next package identifier remains `1.0.0-alpha.26` or advances to a new alpha number.
+Completed. The next Runtime-capable package candidate should advance to `1.0.0-alpha.27` when the next package artifact or release-candidate handoff is cut.
 
 ### Slice 5: Distribution decision
 
-Decide whether to use local wheel artifacts, GitHub Actions artifacts, or a formal package publishing path.
+Completed. Distribution stays internal and moves to GitHub Actions artifact handoff before formal publishing.
 
-### Slice 6: Next functional milestone selection
+## Candidate next milestone
 
-After package-install hardening is stable, select the next functional milestone.
+```text
+Runtime Package Artifact Handoff
+```
 
-## Candidate functional milestones after CI hardening
+Suggested follow-up implementation slices:
+
+```text
+1. Add GitHub Actions artifact upload for built wheel and source distribution
+2. Add alpha.27 version-bump commit when cutting the next package candidate
+3. Add release-candidate artifact handoff notes after the first artifact-producing run
+```
+
+## Candidate functional milestones after artifact handoff
 
 ```text
 1. Runtime CI/CD integration examples
-2. Runtime package artifact handoff workflow
-3. Constraint pack execution integration
-4. Runtime observability handoff cleanup
-5. CLI usability polish for Runtime operators
+2. Constraint pack execution integration
+3. Runtime observability handoff cleanup
+4. CLI usability polish for Runtime operators
 ```
 
 ## Guardrails
@@ -117,4 +140,5 @@ After package-install hardening is stable, select the next functional milestone.
 [x] Keep user-confirmed baseline explicit
 [x] Keep release/distribution decisions separate from readiness evidence
 [x] Keep CI hardening separate from Runtime feature work
+[x] Keep artifact handoff internal until publishing decisions are explicit
 ```
