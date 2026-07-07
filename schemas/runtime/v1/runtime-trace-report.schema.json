@@ -1,0 +1,65 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://constraintos.dev/schemas/runtime/v1/runtime-trace-report.schema.json",
+  "title": "ConstraintOS Runtime Trace Report Artifact",
+  "type": "object",
+  "required": ["id", "uri", "kind", "producer", "metadata"],
+  "additionalProperties": false,
+  "properties": {
+    "id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "uri": {
+      "type": "string",
+      "minLength": 1
+    },
+    "kind": {
+      "const": "file"
+    },
+    "producer": {
+      "type": "string",
+      "minLength": 1
+    },
+    "metadata": {
+      "type": "object",
+      "required": [
+        "path",
+        "artifact_role",
+        "content_type",
+        "runtime_id",
+        "trace_status",
+        "trace_success",
+        "record_count"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "path": {
+          "type": "string",
+          "minLength": 1
+        },
+        "artifact_role": {
+          "const": "runtime_trace_report"
+        },
+        "content_type": {
+          "const": "application/json"
+        },
+        "runtime_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "trace_status": {
+          "type": "string",
+          "minLength": 1
+        },
+        "trace_success": {
+          "type": "boolean"
+        },
+        "record_count": {
+          "type": "integer",
+          "minimum": 0
+        }
+      }
+    }
+  }
+}
