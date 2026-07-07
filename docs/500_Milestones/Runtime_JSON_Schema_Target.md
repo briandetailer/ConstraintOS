@@ -2,16 +2,16 @@
 
 ## Purpose
 
-This document defines the post-Milestone 3 target for promoting Runtime contract inventory into formal JSON Schema files.
+This document defines the Milestone 3 target for promoting Runtime contract inventory into formal JSON Schema files.
 
-Milestone 3 established public Runtime contracts, verifiers, reports, traceability artifacts, evidence bundles, and external-consumer packaging guidance. The next packaging/integration milestone should turn those documented and verified shapes into schema files that non-Python consumers can validate directly.
+Milestone 3 established public Runtime contracts, verifiers, reports, traceability artifacts, evidence bundles, CLI generation, and external-consumer packaging guidance. The schema work turns those documented and verified shapes into schema files that non-Python consumers can validate directly.
 
 ## Status
 
 Current status:
 
 ```text
-target defined / schema files not yet implemented
+in progress / runtime contract registry schema implemented
 ```
 
 Runtime contracts are currently represented by:
@@ -19,11 +19,12 @@ Runtime contracts are currently represented by:
 - Python dataclasses and serializers
 - public contract registry entries
 - verifier functions
+- JSON Schema files, beginning with the contract registry
 - tests
 - documentation
 - example consumer guidance
 
-The next step is to publish language-neutral JSON Schema files for the public evidence boundary.
+The next step is to continue publishing language-neutral JSON Schema files for the public evidence boundary.
 
 ## Schema goals
 
@@ -54,6 +55,12 @@ schemas/runtime/v1/
 
 ### runtime-result.schema.json
 
+Status:
+
+```text
+not implemented
+```
+
 Validates the canonical serialized runtime result payload.
 
 Should cover:
@@ -69,6 +76,12 @@ Should cover:
 
 ### runtime-report.schema.json
 
+Status:
+
+```text
+not implemented
+```
+
 Validates persisted runtime report artifacts.
 
 Should cover:
@@ -80,6 +93,12 @@ Should cover:
 - `content_type: application/json`
 
 ### runtime-traceability.schema.json
+
+Status:
+
+```text
+not implemented
+```
 
 Validates the traceability payload generated from a runtime result.
 
@@ -94,6 +113,12 @@ Should cover:
 
 ### runtime-trace-report.schema.json
 
+Status:
+
+```text
+not implemented
+```
+
 Validates persisted trace report artifacts.
 
 Should cover:
@@ -105,6 +130,12 @@ Should cover:
 - `content_type: application/json`
 
 ### runtime-evidence-manifest.schema.json
+
+Status:
+
+```text
+not implemented
+```
 
 Validates the public evidence package manifest.
 
@@ -125,18 +156,25 @@ Note: JSON Schema can validate structure, required fields, and enums. Some cross
 
 ### runtime-contract-registry.schema.json
 
+Status:
+
+```text
+implemented
+```
+
 Validates the Runtime contract registry artifact.
 
-Should cover:
+Covers:
 
 - registry version
-- contract count
-- contract list
+- contract count shape
+- contract list shape
 - required contract fields
 - `produced_by`
 - `consumed_by`
 - required sections
-- contract type
+- supported contract types
+- rejection of unknown contract fields
 
 ## Contract registry linkage
 
@@ -159,16 +197,21 @@ This should be added carefully because it changes the public contract registry s
 
 The JSON Schema promotion should be test-backed.
 
-Tests should verify:
+Current implemented checks:
+
+1. Current contract registry passes `runtime-contract-registry.schema.json`.
+2. Missing required contract fields fail schema validation.
+3. Unknown contract types fail schema validation.
+
+Remaining checks should verify:
 
 1. Current generated runtime result passes `runtime-result.schema.json`.
 2. Current runtime report artifact passes `runtime-report.schema.json`.
 3. Current traceability payload passes `runtime-traceability.schema.json`.
 4. Current trace report artifact passes `runtime-trace-report.schema.json`.
 5. Current evidence manifest passes `runtime-evidence-manifest.schema.json`.
-6. Current contract registry passes `runtime-contract-registry.schema.json`.
-7. Known malformed payloads fail the expected schema checks.
-8. Python verifiers and JSON Schema validation agree on supported payload classes.
+6. Known malformed payloads fail the expected schema checks.
+7. Python verifiers and JSON Schema validation agree on supported payload classes where the checks overlap.
 
 ## External-consumer value
 
@@ -184,6 +227,6 @@ Once implemented, external consumers can validate Runtime evidence packages usin
 
 ## Milestone 3 disposition
 
-This target does not block Runtime Milestone 3 closeout.
+This target is now active Runtime Milestone 3 implementation work.
 
-It should be treated as a packaging/integration follow-up after Milestone 3 closes.
+The first schema, `runtime-contract-registry.schema.json`, is implemented and test-backed. The remaining schemas should continue in small, green slices.
