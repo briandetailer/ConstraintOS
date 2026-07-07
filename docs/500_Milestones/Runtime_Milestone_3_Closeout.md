@@ -83,9 +83,9 @@ The manifest verifier checks artifact ordering, artifact ids, runtime id alignme
 
 ### Runtime evidence CLI entry point
 
-Milestone 3 added an initial module-level CLI entry point for evidence package generation.
+Milestone 3 added module-level CLI entry points for evidence package generation.
 
-The entry point reads runtime specification and worker capability JSON files, runs the Runtime engine, writes the public evidence package, verifies the evidence manifest, and returns deterministic exit codes.
+The entry points read runtime specification and worker capability JSON files, run the Runtime engine, write the public evidence package, verify the evidence manifest, and return deterministic exit codes.
 
 ### Runtime contract registry and registry report
 
@@ -125,6 +125,7 @@ RuntimeResult
   -> RuntimeEvidenceBundleWriter
   -> verify_runtime_evidence_manifest
   -> runtime.cli
+  -> runtime.__main__
 ```
 
 External consumers can inspect JSON artifacts instead of importing Python internals.
@@ -157,7 +158,7 @@ Do not let CSL implementation replace the Runtime Milestone 3 closeout path. CSL
 
 These items are valid follow-ups but should not block Milestone 3 closeout:
 
-1. Decide whether to wire `runtime.cli` into a packaged console command.
+1. Decide whether to wire the Runtime module CLI into a packaged console command.
 2. Implement the JSON Schema promotion target documented in `Runtime_JSON_Schema_Target.md`.
 3. Implement the approval-gate target documented in `Runtime_Approval_Gate_Target.md`.
 4. Resume CSL as a separate contract/schema/compiler milestone.
