@@ -11,7 +11,7 @@ Runtime Milestone 3 is closed. Approval gates are now a separate follow-up track
 Current status:
 
 ```text
-approval decision verifier, schemas, and report writer implemented
+approval decision verifier, schemas, report writer, and policy verifier implemented
 ```
 
 Implemented module:
@@ -30,6 +30,7 @@ Public exports:
 
 ```python
 verify_runtime_approval_decision(payload)
+verify_runtime_approval_policy(payload)
 RuntimeApprovalReportWriter
 ```
 
@@ -66,6 +67,34 @@ Allowed decisions:
 - `needs_review`
 - `waived`
 
+## Approval policy payload
+
+The policy verifier expects a JSON-style payload with:
+
+```text
+runtime_approval_policy
+required_evidence_artifacts
+required_checks
+allowed_decisions
+allowed_check_statuses
+approvers
+waiver_rules
+rejection_rules
+```
+
+Required policy header fields:
+
+- `name`
+- `version`
+- `contract_registry_version`
+
+Required Runtime evidence artifact roles:
+
+- `runtime_report`
+- `runtime_trace_report`
+- `runtime_contract_registry`
+- `runtime_evidence_manifest`
+
 ## Approval checks
 
 Approval checks may record policy-level checks over the evidence package.
@@ -89,9 +118,9 @@ Optional check fields:
 - `message`
 - `metadata`
 
-## Implemented verification behavior
+## Implemented decision verification behavior
 
-The verifier currently checks:
+The decision verifier currently checks:
 
 1. Approval payload must be a dictionary.
 2. Approval header must include required fields.
@@ -106,6 +135,22 @@ The verifier currently checks:
 11. Rejected decisions require a failed check or note.
 12. Waived decisions require a waived check or note.
 13. Verification does not mutate the supplied approval payload.
+
+## Implemented policy verification behavior
+
+The policy verifier currently checks:
+
+1. Policy payload must be a dictionary.
+2. Policy header must include required fields.
+3. Required evidence artifacts must be a non-empty string list.
+4. Required checks must be a non-empty string list.
+5. Allowed decisions must be a non-empty string list using supported decision values.
+6. Allowed check statuses must be a non-empty string list using supported check status values.
+7. Approvers must be a non-empty string list.
+8. The policy requires all current Runtime evidence artifact roles.
+9. Waiver rules require `requires_note_or_waived_check: true`.
+10. Rejection rules require `requires_note_or_failed_check: true`.
+11. Verification does not mutate the supplied policy payload.
 
 ## Implemented decision schema behavior
 
@@ -158,6 +203,6 @@ runtime/tests/test_runtime_approval.py
 
 Recommended next slices:
 
-1. Add approval policy object and verifier.
+1. Add approval policy JSON Schema.
 2. Decide when approval contracts should be added to the runtime contract registry.
 3. Add evidence-linked approval helpers that consume Runtime evidence manifests without modifying evidence artifacts.
