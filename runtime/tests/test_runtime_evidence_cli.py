@@ -104,6 +104,23 @@ def test_runtime_evidence_cli_returns_unsuccessful_when_runtime_is_not_successfu
     assert (output_dir / "evidence" / "RUNTIME-0001.json").exists()
 
 
+def test_runtime_evidence_cli_reports_help(capsys) -> None:
+    stdout = io.StringIO()
+    stderr = io.StringIO()
+
+    exit_code = run_evidence_cli(["--help"], stdout=stdout, stderr=stderr)
+
+    captured = capsys.readouterr()
+    assert exit_code == EVIDENCE_CLI_SUCCESS
+    assert "Generate a Runtime evidence package." in captured.out
+    assert "--spec" in captured.out
+    assert "--workers" in captured.out
+    assert "--output-dir" in captured.out
+    assert captured.err == ""
+    assert stdout.getvalue() == ""
+    assert stderr.getvalue() == ""
+
+
 def test_runtime_evidence_cli_reports_usage_error_for_malformed_workers(tmp_path) -> None:
     spec_path = tmp_path / "spec.json"
     workers_path = tmp_path / "workers.json"
