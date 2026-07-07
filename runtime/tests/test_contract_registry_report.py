@@ -9,6 +9,19 @@ from runtime import (
 from runtime.artifacts import ArtifactStore
 
 
+EXPECTED_RUNTIME_CONTRACT_NAMES = [
+    "runtime_result",
+    "runtime_report",
+    "runtime_traceability",
+    "runtime_trace_report",
+    "runtime_evidence_manifest",
+    "runtime_contract_registry",
+    "runtime_approval_decision",
+    "runtime_approval_policy",
+    "runtime_approval_report",
+]
+
+
 def test_runtime_contract_registry_report_writer_persists_contract_registry(tmp_path) -> None:
     writer = RuntimeContractRegistryReportWriter(ArtifactStore(tmp_path))
 
@@ -20,7 +33,7 @@ def test_runtime_contract_registry_report_writer_persists_contract_registry(tmp_
     assert artifact.metadata["artifact_role"] == "runtime_contract_registry"
     assert artifact.metadata["content_type"] == "application/json"
     assert artifact.metadata["registry_version"] == "runtime-contracts/v1"
-    assert artifact.metadata["contract_count"] == 6
+    assert artifact.metadata["contract_count"] == len(EXPECTED_RUNTIME_CONTRACT_NAMES)
     assert artifact.metadata["path"] == str(registry_path.resolve())
     assert registry_data == runtime_contract_registry()
     assert verify_runtime_contract_registry(registry_data).successful() is True
@@ -35,14 +48,7 @@ def test_runtime_contract_registry_report_writer_uses_custom_path(tmp_path) -> N
 
     assert artifact.uri == registry_path.resolve().as_uri()
     assert artifact.metadata["registry_version"] == "runtime-contracts/v1"
-    assert [contract["name"] for contract in registry_data["contracts"]] == [
-        "runtime_result",
-        "runtime_report",
-        "runtime_traceability",
-        "runtime_trace_report",
-        "runtime_evidence_manifest",
-        "runtime_contract_registry",
-    ]
+    assert [contract["name"] for contract in registry_data["contracts"]] == EXPECTED_RUNTIME_CONTRACT_NAMES
 
 
 def test_runtime_contract_registry_report_verifier_accepts_written_artifact(tmp_path) -> None:
