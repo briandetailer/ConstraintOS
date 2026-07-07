@@ -17,3 +17,11 @@ def test_runtime_release_console_scripts_are_registered() -> None:
     assert 'cos-runtime = "constraintos.runtime_cli:main"' in pyproject
     assert 'cos-runtime-evidence = "runtime.cli:main"' in pyproject
     assert 'cos-runtime-approval = "runtime.approval_cli:main"' in pyproject
+
+
+def test_runtime_package_discovery_metadata_is_registered() -> None:
+    pyproject = _pyproject_text()
+
+    assert 'where = ["src", "."]' in pyproject
+    assert 'include = ["constraintos*", "runtime*"]' in pyproject
+    assert 'exclude = ["tests*", "runtime.tests*"]' in pyproject
