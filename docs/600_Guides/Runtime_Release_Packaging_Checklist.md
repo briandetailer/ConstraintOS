@@ -43,11 +43,11 @@ It does not change Runtime execution semantics, approval policy semantics, or ap
 ## Source-tree command parity checks
 
 ```text
-[ ] python -m runtime --help exits successfully and writes usage to stdout
-[ ] python -m runtime evidence matches cos-runtime-evidence usage expectations
-[ ] python -m runtime approval matches cos-runtime-approval usage expectations
-[ ] Missing Runtime module command arguments remain usage errors
-[ ] Unknown Runtime module commands remain usage errors
+[x] python -m runtime --help exits successfully and writes usage to stdout
+[x] python -m runtime evidence matches cos-runtime-evidence usage expectations
+[x] python -m runtime approval matches cos-runtime-approval usage expectations
+[x] Missing Runtime module command arguments remain usage errors
+[x] Unknown Runtime module commands remain usage errors
 ```
 
 ## Artifact checks
@@ -93,17 +93,18 @@ Current release/packaging readiness coverage includes:
 [x] Runtime console script registrations are covered
 [x] Runtime installed command help exits successfully
 [x] Runtime installed evidence and approval workflows generate expected artifacts
+[x] Runtime source-tree module command parity is covered
 ```
 
 ## Current green baseline
 
-The user-confirmed full-suite baseline after validating Slice 9 is:
+The user-confirmed full-suite baseline after validating Slice 10 is:
 
 ```text
-483 passed
+485 passed
 ```
 
-Slice 10 adds two expected installed-command workflow test cases:
+Slice 11 adds two expected Runtime module parity test cases:
 
 ```text
 +2 tests
@@ -112,5 +113,5 @@ Slice 10 adds two expected installed-command workflow test cases:
 Expected full-suite baseline after validation:
 
 ```text
-485 passed
+487 passed
 ```
