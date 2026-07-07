@@ -73,10 +73,10 @@ It does not change Runtime execution semantics, approval policy semantics, or ap
 ## Validation evidence checks
 
 ```text
-[ ] Record the user-confirmed full-suite baseline
-[ ] Record any expected test delta for the current slice
-[ ] Do not claim local tests passed unless local validation was actually run
-[ ] Preserve line-cited final summaries for changed files
+[x] Record the user-confirmed full-suite baseline
+[x] Record any expected test delta for the current slice
+[x] Do not claim local tests passed unless local validation was actually run
+[x] Preserve line-cited final summaries for changed files
 ```
 
 ## Executable coverage added
@@ -96,17 +96,18 @@ Current release/packaging readiness coverage includes:
 [x] Runtime source-tree module command parity is covered
 [x] Runtime evidence and approval artifact writes are covered
 [x] Runtime documentation checklist is covered
+[x] Runtime validation evidence checklist is covered
 ```
 
 ## Current green baseline
 
-The user-confirmed full-suite baseline after validating Slice 12 is:
+The user-confirmed full-suite baseline after validating Slice 13 is:
 
 ```text
 487 passed
 ```
 
-Slice 13 is documentation-only and adds no tests:
+Slice 14 is documentation-only and adds no tests:
 
 ```text
 +0 tests
