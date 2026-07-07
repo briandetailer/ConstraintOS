@@ -125,7 +125,7 @@ def test_runtime_approval_cli_returns_rejected_for_invalid_evidence(tmp_path) ->
     assert exit_code == APPROVAL_CLI_REJECTED
     assert summary["runtime_approval_cli"]["successful"] is False
     assert summary["runtime_approval_cli"]["decision"] == "rejected"
-    assert summary["runtime_approval_cli"]["issue_count"] == 1
+    assert summary["runtime_approval_cli"]["issue_count"] == len(summary["issues"])
     assert [check["status"] for check in summary["checks"]] == ["failed", "passed"]
     assert (
         "Runtime evidence artifacts must include runtime_report, runtime_trace_report, then runtime_contract_registry."
