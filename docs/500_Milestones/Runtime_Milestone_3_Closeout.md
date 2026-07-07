@@ -130,6 +130,8 @@ CLI implementation target: `Runtime_Evidence_CLI_Target.md`.
 
 JSON Schema promotion target: `Runtime_JSON_Schema_Target.md`.
 
+Approval gate target: `Runtime_Approval_Gate_Target.md`.
+
 ## Enterprise adoption posture
 
 Runtime Milestone 3 supports the enterprise-adoption stance that ConstraintOS should be consumed through portable artifacts and public contracts.
@@ -150,8 +152,8 @@ These items are valid follow-ups but should not block Milestone 3 closeout:
 
 1. Implement the evidence bundle CLI target documented in `Runtime_Evidence_CLI_Target.md`.
 2. Implement the JSON Schema promotion target documented in `Runtime_JSON_Schema_Target.md`.
-3. Resume CSL as a separate contract/schema/compiler milestone.
-4. Define approval-gate contracts separately from validation.
+3. Implement the approval-gate target documented in `Runtime_Approval_Gate_Target.md`.
+4. Resume CSL as a separate contract/schema/compiler milestone.
 
 ## Closeout assessment
 
