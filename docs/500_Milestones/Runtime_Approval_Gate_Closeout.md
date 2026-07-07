@@ -183,9 +183,14 @@ User-reported final validation:
 
 Runtime approval gates are complete for the current post-Milestone 3 scope.
 
-Recommended future follow-ups are optional and should be handled as separate tracks:
+The packaged approval CLI follow-up was later implemented as a separate track and is recorded in:
 
-1. Add a packaged CLI command for generating approval decisions and reports.
-2. Add policy fixtures/examples for common approval modes.
-3. Add richer policy enforcement beyond the initial structural checks.
-4. Add external documentation for approval workflows.
+```text
+docs/500_Milestones/Runtime_Approval_CLI_Initial_Implementation.md
+```
+
+Remaining optional follow-ups should be handled as separate tracks:
+
+1. Add policy fixtures/examples for common approval modes.
+2. Add richer policy enforcement beyond the initial structural checks.
+3. Add external documentation for approval workflows.
