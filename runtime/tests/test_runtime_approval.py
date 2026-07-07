@@ -39,6 +39,10 @@ def _approval_decision() -> dict:
     }
 
 
+def _approval_report_artifact(tmp_path: Path) -> dict:
+    return RuntimeApprovalReportWriter(ArtifactStore(tmp_path)).write_approval(_approval_decision()).to_dict()
+
+
 def test_runtime_approval_decision_verifier_accepts_valid_approval() -> None:
     verification = verify_runtime_approval_decision(_approval_decision())
 
@@ -188,3 +192,27 @@ def test_runtime_approval_report_writer_rejects_invalid_decision(tmp_path) -> No
 
     with pytest.raises(ValueError, match="Runtime approval report requires a valid approval decision"):
         RuntimeApprovalReportWriter(ArtifactStore(tmp_path)).write_approval(decision)
+
+
+def test_runtime_approval_report_artifact_matches_json_schema(tmp_path) -> None:
+    schema = _schema("runtime-approval-report.schema.json")
+
+    validate(instance=_approval_report_artifact(tmp_path), schema=schema)
+
+
+def test_runtime_approval_report_artifact_schema_rejects_wrong_role(tmp_path) -> None:
+    schema = _schema("runtime-approval-report.schema.json")
+    artifact = _approval_report_artifact(tmp_path)
+    artifact["metadata"]["artifact_role"] = "runtime_report"
+
+    with pytest.raises(ValidationError):
+        validate(instance=artifact, schema=schema)
+
+
+def test_runtime_approval_report_artifact_schema_rejects_unknown_decision(tmp_path) -> None:
+    schema = _schema("runtime-approval-report.schema.json")
+    artifact = _approval_report_artifact(tmp_path)
+    artifact["metadata"]["decision"] = "unknown"
+
+    with pytest.raises(ValidationError):
+        validate(instance=artifact, schema=schema)
