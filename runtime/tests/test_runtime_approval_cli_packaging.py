@@ -1,3 +1,4 @@
+import re
 from pathlib import Path
 
 
@@ -33,3 +34,9 @@ def test_runtime_cli_package_dependencies_are_registered() -> None:
     assert '"pyyaml>=6.0"' in pyproject
     assert '"jsonschema>=4.22"' in pyproject
     assert '"fastapi>=0.115"' in pyproject
+
+
+def test_package_version_is_explicit_alpha_release_track() -> None:
+    pyproject = _pyproject_text()
+
+    assert re.search(r'^version = "1\.0\.0-alpha\.\d+"$', pyproject, re.MULTILINE)
