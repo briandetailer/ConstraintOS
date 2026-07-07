@@ -5,7 +5,12 @@ from pathlib import Path
 import pytest
 from jsonschema import ValidationError, validate
 
-from runtime import ArtifactStore, RuntimeApprovalReportWriter, verify_runtime_approval_decision
+from runtime import (
+    ArtifactStore,
+    RuntimeApprovalReportWriter,
+    verify_runtime_approval_decision,
+    verify_runtime_approval_policy,
+)
 
 
 SCHEMA_ROOT = Path("schemas/runtime/v1")
@@ -36,6 +41,28 @@ def _approval_decision() -> dict:
             }
         ],
         "notes": [],
+    }
+
+
+def _approval_policy() -> dict:
+    return {
+        "runtime_approval_policy": {
+            "name": "default-runtime-approval/v1",
+            "version": "v1",
+            "contract_registry_version": "runtime-contracts/v1",
+        },
+        "required_evidence_artifacts": [
+            "runtime_report",
+            "runtime_trace_report",
+            "runtime_contract_registry",
+            "runtime_evidence_manifest",
+        ],
+        "required_checks": ["verify_runtime_evidence_manifest"],
+        "allowed_decisions": ["approved", "rejected", "needs_review", "waived"],
+        "allowed_check_statuses": ["passed", "failed", "waived", "needs_review"],
+        "approvers": ["policy-owner"],
+        "waiver_rules": {"requires_note_or_waived_check": True},
+        "rejection_rules": {"requires_note_or_failed_check": True},
     }
 
 
@@ -216,3 +243,72 @@ def test_runtime_approval_report_artifact_schema_rejects_unknown_decision(tmp_pa
 
     with pytest.raises(ValidationError):
         validate(instance=artifact, schema=schema)
+
+
+def test_runtime_approval_policy_verifier_accepts_valid_policy() -> None:
+    verification = verify_runtime_approval_policy(_approval_policy())
+
+    assert verification.successful()
+
+
+def test_runtime_approval_policy_requires_header_fields() -> None:
+    policy = _approval_policy()
+    policy["runtime_approval_policy"].pop("name")
+    policy["runtime_approval_policy"].pop("version")
+
+    verification = verify_runtime_approval_policy(policy)
+
+    assert not verification.successful()
+    assert "Runtime approval policy requires name." in verification.issues
+    assert "Runtime approval policy requires version." in verification.issues
+
+
+def test_runtime_approval_policy_requires_all_evidence_artifact_roles() -> None:
+    policy = _approval_policy()
+    policy["required_evidence_artifacts"].remove("runtime_trace_report")
+
+    verification = verify_runtime_approval_policy(policy)
+
+    assert not verification.successful()
+    assert "Runtime approval policy must require all Runtime evidence artifact roles." in verification.issues
+
+
+def test_runtime_approval_policy_rejects_unknown_allowed_decision() -> None:
+    policy = _approval_policy()
+    policy["allowed_decisions"].append("unknown")
+
+    verification = verify_runtime_approval_policy(policy)
+
+    assert not verification.successful()
+    assert "Runtime approval policy allowed_decisions must contain only supported decisions." in verification.issues
+
+
+def test_runtime_approval_policy_rejects_unknown_check_status() -> None:
+    policy = _approval_policy()
+    policy["allowed_check_statuses"].append("unknown")
+
+    verification = verify_runtime_approval_policy(policy)
+
+    assert not verification.successful()
+    assert "Runtime approval policy allowed_check_statuses must contain only supported check statuses." in verification.issues
+
+
+def test_runtime_approval_policy_requires_rule_booleans() -> None:
+    policy = _approval_policy()
+    policy["waiver_rules"]["requires_note_or_waived_check"] = False
+    policy["rejection_rules"].pop("requires_note_or_failed_check")
+
+    verification = verify_runtime_approval_policy(policy)
+
+    assert not verification.successful()
+    assert "Runtime approval policy waiver_rules.requires_note_or_waived_check must be true." in verification.issues
+    assert "Runtime approval policy rejection_rules.requires_note_or_failed_check must be true." in verification.issues
+
+
+def test_runtime_approval_policy_verifier_does_not_mutate_payload() -> None:
+    policy = _approval_policy()
+    original = deepcopy(policy)
+
+    verify_runtime_approval_policy(policy)
+
+    assert policy == original
