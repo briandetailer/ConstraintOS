@@ -4,7 +4,7 @@
 
 ```text
 milestone: Graphics Contract CLI Discovery v1
-status: active
+status: implementation-complete-pending-test
 started_on: 2026-07-08
 previous_gate: Additional Graphics Contract Instances v1 complete
 baseline: 487 passed
@@ -39,13 +39,23 @@ This milestone lets a user list available graphics contracts and inspect a selec
 
 ```text
 [x] Create milestone doc
-[ ] Add reusable contract discovery helpers
-[ ] Add cos-graphics-contracts CLI
-[ ] Add package entry point
-[ ] Add CLI tests for list output
-[ ] Add CLI tests for show output
-[ ] Add README usage notes
+[x] Add reusable contract discovery helpers
+[x] Add cos-graphics-contracts CLI
+[x] Add package entry point
+[x] Add CLI tests for list output
+[x] Add CLI tests for show output
+[x] Add README usage notes
 [ ] Run tests and record verified result
+```
+
+## Implemented files
+
+```text
+src/constraintos/graphics_contracts.py
+src/constraintos/graphics_contracts_cli.py
+pyproject.toml
+tests/test_graphics_contracts_cli.py
+examples/graphics/contracts/README.md
 ```
 
 ## Verification commands
@@ -53,6 +63,17 @@ This milestone lets a user list available graphics contracts and inspect a selec
 ```powershell
 pytest tests/test_graphics_contracts.py
 pytest tests/test_graphics_contracts_cli.py
+```
+
+## CLI commands
+
+```powershell
+cos-graphics-contracts list
+cos-graphics-contracts show perseverance
+cos-graphics-contracts show wind_turbine_nacelle
+cos-graphics-contracts show hydroelectric_dam_powerhouse
+cos-graphics-contracts show supra_2jz_gte_twin_turbo
+cos-graphics-contracts --format json --output reports/graphics-contracts.json list
 ```
 
 ## Guardrails
