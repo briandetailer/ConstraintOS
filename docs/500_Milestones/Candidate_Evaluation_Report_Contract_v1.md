@@ -4,11 +4,14 @@
 
 ```text
 milestone: Candidate Evaluation Report Contract v1
-status: implementation-complete-pending-test
+status: complete
 started_on: 2026-07-08
+completed_on: 2026-07-08
 previous_gate: Candidate Manifest Discovery v1 complete
 track: Foundation Completion Track
 baseline: 487 passed
+latest_user_reported_candidate_evaluation_report_contract_test_result: 15 passed
+latest_user_reported_candidate_evaluation_report_contract_test_result_on: 2026-07-08
 ```
 
 ## Purpose
@@ -52,7 +55,7 @@ This milestone defines what an evaluation report must look like before any candi
 [x] Add report schema and guardrail tests
 [x] Update candidate evaluation README
 [x] Update command reference
-[ ] Run tests and record verified result
+[x] Run tests and record verified result
 ```
 
 ## Implemented files
@@ -70,6 +73,16 @@ docs/700_Use_Cases/Graphics_Validation_Command_Reference.md
 
 ```powershell
 pytest tests/test_candidate_evaluation_report_contract.py
+```
+
+## Verification record
+
+```text
+source: user-reported local test run
+command: pytest tests/test_candidate_evaluation_report_contract.py
+result: 15 passed
+reported_on: 2026-07-08
+assistant_ran_tests: false
 ```
 
 ## Report boundaries
@@ -107,5 +120,16 @@ pytest tests/test_candidate_evaluation_report_contract.py
 [x] Tests reject candidate evaluation claims.
 [x] Tests reject approved recommendations.
 [x] Command reference updated in the same implementation slice.
-[ ] Verification test result recorded.
+[x] Verification test result recorded.
+```
+
+## Handoff notes
+
+```text
+- Candidate Evaluation Report Contract v1 is complete.
+- Fixture-only report contracts now exist for Perseverance and Supra 2JZ-GTE candidate manifests.
+- Reports remain not-observed and recommend needs_review.
+- No candidate-evaluation CLI command, real image loading, computer-vision integration, image generation, image editing, approval automation change, or approved candidate result was introduced.
+- This remains part of the Foundation Completion Track.
+- The next milestone should add fixture-only candidate evaluation behavior using manifest and report fixtures before any real image ingestion.
 ```
