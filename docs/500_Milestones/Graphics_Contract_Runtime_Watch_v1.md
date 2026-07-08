@@ -4,10 +4,15 @@
 
 ```text
 milestone: Graphics Contract Runtime Watch v1
-status: implementation-complete-pending-test
+status: complete
 started_on: 2026-07-08
+completed_on: 2026-07-08
 previous_gate: Graphics Contract Runtime Bridge v1 complete
 baseline: 487 passed
+latest_user_reported_cli_test_result: 6 passed
+latest_user_reported_cli_test_result_on: 2026-07-08
+latest_user_reported_bridge_watch_test_result: 8 passed
+latest_user_reported_bridge_watch_test_result_on: 2026-07-08
 ```
 
 ## Purpose
@@ -44,7 +49,7 @@ This milestone makes `cos-graphics-contracts run` easier to record and explain b
 [x] Add --watch-delay-ms argument
 [x] Add watch-output tests
 [x] Update README usage notes
-[ ] Run tests and record verified result
+[x] Run tests and record verified result
 ```
 
 ## Implemented files
@@ -60,6 +65,30 @@ examples/graphics/contracts/README.md
 ```powershell
 pytest tests/test_graphics_contracts_cli.py
 pytest tests/test_graphics_contract_runtime_bridge.py
+```
+
+## Verification records
+
+```text
+source: user-reported local test run
+command: pytest tests/test_graphics_contracts_cli.py
+platform: win32
+python: 3.12.10
+pytest: 9.1.1
+result: 6 passed in 0.52s
+reported_on: 2026-07-08
+assistant_ran_tests: false
+```
+
+```text
+source: user-reported local test run
+command: pytest tests/test_graphics_contract_runtime_bridge.py
+platform: win32
+python: 3.12.10
+pytest: 9.1.1
+result: 8 passed in 0.62s
+reported_on: 2026-07-08
+assistant_ran_tests: false
 ```
 
 ## CLI commands
@@ -88,5 +117,14 @@ cos-graphics-contracts run supra_2jz_gte_twin_turbo --watch --watch-delay-ms 250
 [x] Plan-only watch output marks node results as not_run_plan_only.
 [x] Dry-run watch output marks node results as dry_run_complete.
 [x] CLI supports optional watch delay for screen recording.
-[ ] Verification test result recorded.
+[x] Verification test result recorded.
+```
+
+## Handoff notes
+
+```text
+- Graphics Contract Runtime Watch v1 is complete.
+- Contract runtime bridge runs now have demo-friendly watch output.
+- The watch mode remains dry-run and fixture-only.
+- The next milestone should add local transcript/report capture for contract runtime watch runs, or begin candidate-evaluation adapter design while keeping image generation gated.
 ```
