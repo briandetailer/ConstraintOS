@@ -4,10 +4,12 @@
 
 ```text
 milestone: Graphics Validation Watch Mode v1
-status: implementation-complete-pending-test
+status: script-verified-pending-test-record
 started_on: 2026-07-07
 previous_gate: Graphics Validation Pipeline - NASA Perseverance v1 complete
 baseline: 487 passed
+latest_user_reported_script_result: four output files verified
+latest_user_reported_script_result_on: 2026-07-07
 ```
 
 ## Purpose
@@ -30,7 +32,7 @@ The goal is to let a user start a single command and capture the run as it moves
 [x] Save run metadata
 [x] Add watch recording guide
 [ ] Run tests and record verified result
-[ ] Run watch script and record verified output files
+[x] Run watch script and record verified output files
 ```
 
 ## Commands
@@ -48,6 +50,23 @@ runs/graphics/perseverance/<timestamp>/terminal-transcript.txt
 runs/graphics/perseverance/<timestamp>/watch-output.txt
 runs/graphics/perseverance/<timestamp>/graphics-validation-result.json
 runs/graphics/perseverance/<timestamp>/run-metadata.json
+```
+
+## Watch script verification record
+
+```text
+source: user-reported local script run
+commands:
+- git pull --rebase origin phase-1-cli-tooling
+- .\scripts\watch-perseverance.ps1
+result: four expected output files exist
+verified_files:
+- terminal-transcript.txt
+- watch-output.txt
+- graphics-validation-result.json
+- run-metadata.json
+reported_on: 2026-07-07
+assistant_ran_script: false
 ```
 
 ## Watch behavior
