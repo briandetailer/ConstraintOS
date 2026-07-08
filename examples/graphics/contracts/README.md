@@ -16,14 +16,6 @@ The contracts define the validation shape shared across engineering-graphics exa
 - approval guardrails
 ```
 
-## Current contract
-
-```text
-perseverance.contract.json
-```
-
-This contract was extracted from the NASA Perseverance graphics-validation fixture.
-
 ## Schema
 
 ```text
@@ -32,15 +24,36 @@ graphics_validation_contract.schema.json
 
 The schema describes the reusable structure expected by graphics-validation contract instances.
 
-## Follow-on contract instances
+## Current contract instances
 
 ```text
+perseverance.contract.json
 wind_turbine_nacelle.contract.json
 hydroelectric_dam_powerhouse.contract.json
 supra_2jz_gte_twin_turbo.contract.json
 ```
 
-These should be added after the Perseverance contract is verified.
+## Source use cases
+
+```text
+perseverance.contract.json:
+  docs/700_Use_Cases/Use_Case_1_NASA_Perseverance_Rover_Technical_Graphic.md
+
+wind_turbine_nacelle.contract.json:
+  docs/700_Use_Cases/Use_Case_2_NREL_5MW_Wind_Turbine_Nacelle_Drivetrain_Cutaway.md
+
+hydroelectric_dam_powerhouse.contract.json:
+  docs/700_Use_Cases/Use_Case_3_Hydroelectric_Dam_Powerhouse_Cross_Section.md
+
+supra_2jz_gte_twin_turbo.contract.json:
+  docs/700_Use_Cases/Use_Case_4_Toyota_Supra_A80_2JZ_GTE_Twin_Turbo_Technical_Graphic.md
+```
+
+## Verification
+
+```powershell
+pytest tests/test_graphics_contracts.py
+```
 
 ## Guardrail
 
