@@ -4,7 +4,7 @@
 
 ```text
 milestone: Observation Adapter Design v1
-status: active
+status: implementation-complete-pending-test
 started_on: 2026-07-08
 previous_gate: Foundation Readiness Review v1 complete
 track: Foundation Completion Track
@@ -29,6 +29,7 @@ This milestone does not implement real candidate image ingestion, computer visio
 - Preserve needs_review as the non-approval default for low-confidence observations.
 - Add machine-readable design fixture.
 - Add tests for design guardrails.
+- Update candidate evaluation README.
 - Update command reference with verification command.
 ```
 
@@ -42,6 +43,16 @@ This milestone does not implement real candidate image ingestion, computer visio
 - No image editing.
 - No automatic approval.
 - No candidate-evaluation scoring behavior change.
+```
+
+## Implemented files
+
+```text
+docs/500_Milestones/Observation_Adapter_Design_v1.md
+examples/graphics/candidate_evaluation/observation_adapter.design.json
+tests/test_observation_adapter_design.py
+examples/graphics/candidate_evaluation/README.md
+docs/700_Use_Cases/Graphics_Validation_Command_Reference.md
 ```
 
 ## Observation source taxonomy
@@ -124,4 +135,18 @@ pytest tests/test_observation_adapter_design.py
 - No generated candidate approval.
 - Low-confidence or incomplete observations default to needs_review.
 - Do not claim tests passed unless actually run.
+```
+
+## Done criteria
+
+```text
+[x] Observation adapter design doc exists.
+[x] Machine-readable observation adapter design fixture exists.
+[x] Observation source taxonomy is defined.
+[x] Normalized observation item shape is defined.
+[x] Non-approval decision safety rules are defined.
+[x] Next gate is Manual Observation Fixture Adapter v1.
+[x] Real image ingestion remains blocked.
+[x] Command reference updated in the same implementation slice.
+[ ] Verification test result recorded.
 ```
