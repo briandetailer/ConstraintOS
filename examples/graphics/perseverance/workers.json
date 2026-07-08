@@ -1,0 +1,34 @@
+{
+  "workers": [
+    {
+      "worker_id": "GRAPHICS-WORKER-REFERENCE-0001",
+      "plugins": ["reference_collector"],
+      "status": "available"
+    },
+    {
+      "worker_id": "GRAPHICS-WORKER-CONSTRAINTS-0001",
+      "plugins": ["constraint_builder"],
+      "status": "available"
+    },
+    {
+      "worker_id": "GRAPHICS-WORKER-PROMPT-0001",
+      "plugins": ["image_prompt_generator"],
+      "status": "available"
+    },
+    {
+      "worker_id": "GRAPHICS-WORKER-EVALUATOR-0001",
+      "plugins": ["image_evaluator"],
+      "status": "available"
+    },
+    {
+      "worker_id": "GRAPHICS-WORKER-EVIDENCE-0001",
+      "plugins": ["evidence_manifest_generator"],
+      "status": "available"
+    },
+    {
+      "worker_id": "GRAPHICS-WORKER-APPROVAL-0001",
+      "plugins": ["approval_reviewer"],
+      "status": "available"
+    }
+  ]
+}
