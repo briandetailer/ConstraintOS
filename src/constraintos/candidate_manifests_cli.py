@@ -14,6 +14,7 @@ from constraintos.candidate_manifests import (
     load_candidate_manifest_report,
     resolve_candidate_manifests_dir,
 )
+from constraintos.manual_observations import build_manual_observation_payload
 
 
 def build_payload(args: argparse.Namespace) -> tuple[int, dict[str, Any]]:
@@ -43,6 +44,9 @@ def build_payload(args: argparse.Namespace) -> tuple[int, dict[str, Any]]:
         return 0, report
     if args.command == "evaluate":
         payload = build_fixture_only_candidate_evaluation(args.manifest, candidate_dir)
+        return 0, payload
+    if args.command == "observe":
+        payload = build_manual_observation_payload(args.manifest, candidate_dir)
         return 0, payload
     raise CandidateManifestError(f"Unsupported command: {args.command}")
 
@@ -116,6 +120,34 @@ def format_evaluate_text(payload: dict[str, Any]) -> str:
     return "\n".join(lines) + "\n"
 
 
+def format_observe_text(payload: dict[str, Any]) -> str:
+    summary = payload.get("summary", {})
+    if not isinstance(summary, dict):
+        summary = {}
+    lines = [
+        f"Manual observation: {summary.get('candidate_manifest_key', 'unknown')}",
+        f"candidate_id: {summary.get('candidate_id', 'unknown')}",
+        f"contract_key: {summary.get('contract_key', 'unknown')}",
+        f"observation_key: {summary.get('observation_key', 'unknown')}",
+        f"observation_mode: {summary.get('observation_mode', 'unknown')}",
+        f"source_type: {summary.get('source_type', 'unknown')}",
+        f"candidate_reference_status: {summary.get('candidate_reference_status', 'unknown')}",
+        f"total_observations: {summary.get('total_observations', 'unknown')}",
+        f"not_observed_count: {summary.get('not_observed_count', 'unknown')}",
+        f"lowest_confidence: {summary.get('lowest_confidence', 'unknown')}",
+        f"overall_observation_status: {summary.get('overall_observation_status', 'unknown')}",
+        f"recommended_decision: {summary.get('recommended_decision', 'unknown')}",
+        f"uncertainty_default: {summary.get('uncertainty_default', 'unknown')}",
+        f"approval_allowed: {summary.get('approval_allowed', 'unknown')}",
+        "real_image_ingestion: not run",
+        "computer_vision: not run",
+        "ocr: not run",
+        "image_generation: not run",
+        "approval_automation: not run",
+    ]
+    return "\n".join(lines) + "\n"
+
+
 def format_payload(payload: dict[str, Any], output_format: str, command: str) -> str:
     if output_format == "json":
         return json.dumps(payload, indent=2, sort_keys=True) + "\n"
@@ -123,6 +155,8 @@ def format_payload(payload: dict[str, Any], output_format: str, command: str) ->
         return format_list_text(payload)
     if command == "evaluate":
         return format_evaluate_text(payload)
+    if command == "observe":
+        return format_observe_text(payload)
     return format_show_text(payload)
 
 
@@ -151,6 +185,9 @@ def build_parser() -> argparse.ArgumentParser:
 
     evaluate_parser = subparsers.add_parser("evaluate", help="Run fixture-only candidate evaluation from static report fixtures.")
     evaluate_parser.add_argument("manifest", help="Manifest key, contract key, candidate id, filename, or path.")
+
+    observe_parser = subparsers.add_parser("observe", help="Load fixture-only manual observations for a candidate manifest.")
+    observe_parser.add_argument("manifest", help="Manifest key, contract key, candidate id, filename, or path.")
     return parser
 
 
