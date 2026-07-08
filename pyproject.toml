@@ -19,6 +19,7 @@ cos-validate = "constraintos.validation_cli:main"
 cos-apply-constraints = "constraintos.constraint_pack_cli:main"
 cos-graphics-validate = "constraintos.graphics_validation_cli:main"
 cos-graphics-contracts = "constraintos.graphics_contracts_cli:main"
+cos-graphics-candidates = "constraintos.candidate_manifests_cli:main"
 
 [tool.setuptools.packages.find]
 where = ["src", "."]
