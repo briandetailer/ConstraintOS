@@ -57,6 +57,25 @@ def test_graphics_validation_cli_writes_output_file(tmp_path, capsys) -> None:
     assert policy_path.parts[-4:] == ("examples", "graphics", "perseverance", "policy.json")
 
 
+def test_graphics_validation_cli_watch_output(capsys, tmp_path) -> None:
+    exit_code = main([
+        "perseverance",
+        "--watch",
+        "--artifact-root",
+        str(tmp_path / "artifacts"),
+    ])
+
+    output = capsys.readouterr().out
+    assert exit_code == 0
+    assert "ConstraintOS Graphics Validation Watch" in output
+    assert "example: perseverance" in output
+    assert "subject: NASA Perseverance rover" in output
+    assert "[1/6] collect_public_reference_requirements" in output
+    assert "[6/6] review_graphics_approval_result" in output
+    assert "approval expectation: needs_review" in output
+    assert "image generation: not run" in output
+
+
 def test_graphics_validation_cli_returns_error_for_unknown_example(capsys) -> None:
     exit_code = main(["unknown-example", "--plan-only"])
 
