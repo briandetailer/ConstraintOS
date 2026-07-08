@@ -13,6 +13,7 @@ It covers:
 - graphics contract discovery
 - graphics contract runtime bridge runs
 - graphics contract runtime watch runs
+- graphics contract watch capture
 - local verification commands
 ```
 
@@ -196,6 +197,49 @@ Run watch mode with a screen-recording delay:
 cos-graphics-contracts run supra_2jz_gte_twin_turbo --watch --watch-delay-ms 250
 ```
 
+## Graphics contract watch capture
+
+Capture a contract-backed runtime watch with the default `perseverance` contract:
+
+```powershell
+.\scripts\watch-graphics-contract.ps1
+```
+
+Capture a specific contract-backed dry-run watch:
+
+```powershell
+.\scripts\watch-graphics-contract.ps1 -Contract supra_2jz_gte_twin_turbo
+```
+
+Capture a plan-only contract watch:
+
+```powershell
+.\scripts\watch-graphics-contract.ps1 -Contract perseverance -PlanOnly
+```
+
+Capture with a slower screen-recording delay:
+
+```powershell
+.\scripts\watch-graphics-contract.ps1 -Contract hydroelectric_dam_powerhouse -WatchDelayMs 500
+```
+
+The contract watch capture helper writes local run artifacts such as:
+
+```text
+terminal-transcript.txt
+watch-output.txt
+graphics-contract-runtime-result.json
+run-metadata.json
+```
+
+Generated run artifacts remain local-only by default under ignored `runs/graphics-contracts/` output.
+
+Run the contract watch capture script tests:
+
+```powershell
+pytest tests/test_graphics_contract_watch_capture_script.py
+```
+
 ## Full recent graphics-validation verification set
 
 Run all recent graphics-validation and contract-focused test suites:
@@ -206,11 +250,12 @@ pytest tests/test_graphics_validation_cli.py
 pytest tests/test_graphics_contracts.py
 pytest tests/test_graphics_contracts_cli.py
 pytest tests/test_graphics_contract_runtime_bridge.py
+pytest tests/test_graphics_contract_watch_capture_script.py
 ```
 
 ## Current contract keys
 
-Use these keys with `cos-graphics-contracts show` and `cos-graphics-contracts run`:
+Use these keys with `cos-graphics-contracts show`, `cos-graphics-contracts run`, and `scripts/watch-graphics-contract.ps1 -Contract`:
 
 ```text
 perseverance
