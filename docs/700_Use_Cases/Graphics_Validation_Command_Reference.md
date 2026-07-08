@@ -21,6 +21,7 @@ It covers:
 - fixture-only candidate evaluation
 - foundation readiness review
 - observation adapter design verification
+- manual observation fixture adapter
 - local verification commands
 ```
 
@@ -349,6 +350,29 @@ pytest tests/test_observation_adapter_design.py
 
 This is a design-only verification command. It does not load real candidate images, choose machine-observation providers, evaluate real candidate images, or generate images.
 
+## Manual observation fixture adapter
+
+Load fixture-only manual observations for static candidate manifests:
+
+```powershell
+cos-graphics-candidates observe perseverance
+cos-graphics-candidates observe supra_2jz_gte_twin_turbo
+```
+
+Write a manual observation fixture report as JSON:
+
+```powershell
+cos-graphics-candidates --format json --output reports/perseverance-observations.json observe perseverance
+```
+
+Run the manual observation fixture adapter tests:
+
+```powershell
+pytest tests/test_manual_observation_fixture_adapter.py
+```
+
+This is a fixture-only command. It loads static manifest and manual-observation fixtures, but it does not load, decode, inspect, or evaluate image bytes.
+
 ## Full recent graphics-validation verification set
 
 Run all recent graphics-validation and contract-focused test suites:
@@ -367,6 +391,7 @@ pytest tests/test_candidate_evaluation_report_contract.py
 pytest tests/test_fixture_only_candidate_evaluation.py
 pytest tests/test_foundation_readiness_review.py
 pytest tests/test_observation_adapter_design.py
+pytest tests/test_manual_observation_fixture_adapter.py
 ```
 
 ## Current contract keys
@@ -382,7 +407,7 @@ supra_2jz_gte_twin_turbo
 
 ## Current candidate manifest keys
 
-Use these keys with `cos-graphics-candidates show` and `cos-graphics-candidates evaluate`:
+Use these keys with `cos-graphics-candidates show`, `cos-graphics-candidates evaluate`, and `cos-graphics-candidates observe`:
 
 ```text
 perseverance
