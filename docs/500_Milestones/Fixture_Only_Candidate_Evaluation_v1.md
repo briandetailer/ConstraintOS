@@ -4,11 +4,14 @@
 
 ```text
 milestone: Fixture-only Candidate Evaluation v1
-status: implementation-complete-pending-test
+status: complete
 started_on: 2026-07-08
+completed_on: 2026-07-08
 previous_gate: Candidate Evaluation Report Contract v1 complete
 track: Foundation Completion Track
 baseline: 487 passed
+latest_user_reported_fixture_only_candidate_evaluation_test_result: 9 passed
+latest_user_reported_fixture_only_candidate_evaluation_test_result_on: 2026-07-08
 ```
 
 ## Purpose
@@ -51,7 +54,7 @@ This milestone does not evaluate real candidate images. It loads an existing can
 [x] Add fixture-only evaluation tests
 [x] Update candidate evaluation README
 [x] Update command reference
-[ ] Run tests and record verified result
+[x] Run tests and record verified result
 ```
 
 ## Implemented files
@@ -68,6 +71,16 @@ docs/700_Use_Cases/Graphics_Validation_Command_Reference.md
 
 ```powershell
 pytest tests/test_fixture_only_candidate_evaluation.py
+```
+
+## Verification record
+
+```text
+source: user-reported local test run
+command: pytest tests/test_fixture_only_candidate_evaluation.py
+result: 9 passed
+reported_on: 2026-07-08
+assistant_ran_tests: false
 ```
 
 ## CLI commands
@@ -114,5 +127,16 @@ cos-graphics-candidates --format json --output reports/perseverance-candidate-ev
 [x] JSON output is supported.
 [x] JSON file output is supported.
 [x] Command reference updated in the same implementation slice.
-[ ] Verification test result recorded.
+[x] Verification test result recorded.
+```
+
+## Handoff notes
+
+```text
+- Fixture-only Candidate Evaluation v1 is complete.
+- cos-graphics-candidates evaluate now returns controlled fixture-only recommendations from static manifest and report fixtures.
+- The current recommendation remains needs_review because evidence remains not_observed.
+- No real image loading, computer-vision integration, image generation, image editing, approval automation change, approved candidate result, or evidence observation beyond static fixtures was introduced.
+- This remains part of the Foundation Completion Track.
+- The next milestone should be Foundation Readiness Review v1 before any real candidate image ingestion or observation adapter work.
 ```
