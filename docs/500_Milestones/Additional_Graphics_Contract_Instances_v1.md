@@ -4,10 +4,13 @@
 
 ```text
 milestone: Additional Graphics Contract Instances v1
-status: implementation-complete-pending-test
+status: complete
 started_on: 2026-07-08
+completed_on: 2026-07-08
 previous_gate: Reusable Graphics Validation Contracts v1 complete
 baseline: 487 passed
+latest_user_reported_test_result: 19 passed
+latest_user_reported_test_result_on: 2026-07-08
 ```
 
 ## Purpose
@@ -41,7 +44,7 @@ examples/graphics/contracts/supra_2jz_gte_twin_turbo.contract.json
 [x] Add Supra 2JZ-GTE contract instance
 [x] Update graphics contracts README
 [x] Extend contract tests across all contract instances
-[ ] Run tests and record verified result
+[x] Run tests and record verified result
 ```
 
 ## Implemented files
@@ -60,6 +63,19 @@ tests/test_graphics_contracts.py
 pytest tests/test_graphics_contracts.py
 ```
 
+## Verification record
+
+```text
+source: user-reported local test run
+command: pytest tests/test_graphics_contracts.py
+platform: win32
+python: 3.12.10
+pytest: 9.1.1
+result: 19 passed in 0.71s
+reported_on: 2026-07-08
+assistant_ran_tests: false
+```
+
 ## Guardrails
 
 ```text
@@ -76,5 +92,14 @@ pytest tests/test_graphics_contracts.py
 [x] All contract instances satisfy the reusable schema through tests.
 [x] Tests confirm each contract preserves the key subject identity and forbidden substitution guardrails.
 [x] README documents all contract instances.
-[ ] Verification test result recorded.
+[x] Verification test result recorded.
+```
+
+## Handoff notes
+
+```text
+- Additional Graphics Contract Instances v1 is complete.
+- Four total graphics contracts are now covered: Perseverance, wind turbine, hydroelectric dam, and Supra 2JZ-GTE.
+- The project remains fixture-only for graphics validation.
+- Next milestone should connect these reusable contracts to CLI discovery/reporting before introducing image generation.
 ```
