@@ -20,6 +20,7 @@ It covers:
 - candidate evaluation report contract verification
 - fixture-only candidate evaluation
 - foundation readiness review
+- observation adapter design verification
 - local verification commands
 ```
 
@@ -338,6 +339,16 @@ pytest tests/test_foundation_readiness_review.py
 
 This is a documentation and guardrail verification command. It does not evaluate real candidate images and does not generate images.
 
+## Observation adapter design
+
+Validate the observation adapter design fixture and guardrails:
+
+```powershell
+pytest tests/test_observation_adapter_design.py
+```
+
+This is a design-only verification command. It does not load real candidate images, choose machine-observation providers, evaluate real candidate images, or generate images.
+
 ## Full recent graphics-validation verification set
 
 Run all recent graphics-validation and contract-focused test suites:
@@ -355,6 +366,7 @@ pytest tests/test_candidate_manifest_discovery_cli.py
 pytest tests/test_candidate_evaluation_report_contract.py
 pytest tests/test_fixture_only_candidate_evaluation.py
 pytest tests/test_foundation_readiness_review.py
+pytest tests/test_observation_adapter_design.py
 ```
 
 ## Current contract keys
