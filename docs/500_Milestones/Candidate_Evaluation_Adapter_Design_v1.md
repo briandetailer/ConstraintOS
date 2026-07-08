@@ -4,10 +4,13 @@
 
 ```text
 milestone: Candidate Evaluation Adapter Design v1
-status: implementation-complete-pending-test
+status: complete
 started_on: 2026-07-08
+completed_on: 2026-07-08
 previous_gate: Graphics Contract Watch Capture v1 complete
 baseline: 487 passed
+latest_user_reported_candidate_adapter_design_test_result: 8 passed
+latest_user_reported_candidate_adapter_design_test_result_on: 2026-07-08
 ```
 
 ## Purpose
@@ -47,7 +50,7 @@ This milestone defines how candidate evaluation should be shaped later without i
 [x] Add machine-readable adapter design fixture
 [x] Add design guardrail tests
 [x] Update command reference
-[ ] Run tests and record verified result
+[x] Run tests and record verified result
 ```
 
 ## Implemented files
@@ -64,6 +67,19 @@ docs/700_Use_Cases/Graphics_Validation_Command_Reference.md
 
 ```powershell
 pytest tests/test_candidate_evaluation_adapter_design.py
+```
+
+## Verification record
+
+```text
+source: user-reported local test run
+command: pytest tests/test_candidate_evaluation_adapter_design.py
+platform: win32
+python: 3.12.10
+pytest: 9.1.1
+result: 8 passed in 0.24s
+reported_on: 2026-07-08
+assistant_ran_tests: false
 ```
 
 ## Design boundaries
@@ -97,5 +113,16 @@ pytest tests/test_candidate_evaluation_adapter_design.py
 [x] Design fixture preserves allowed decisions and uncertainty behavior.
 [x] Tests cover design guardrails.
 [x] Command reference updated in the same implementation slice.
-[ ] Verification test result recorded.
+[x] Verification test result recorded.
+```
+
+## Handoff notes
+
+```text
+- Candidate Evaluation Adapter Design v1 is complete.
+- The candidate-evaluation boundary is design-only and gated.
+- Candidate graphics remain external inputs.
+- No image generation, image editing, real image ingestion, computer-vision integration, or approval automation change was introduced.
+- The future candidate-evaluation CLI command remains proposed_not_available.
+- The next milestone should define a candidate manifest schema and static fixture examples before implementing any candidate-evaluation command.
 ```
