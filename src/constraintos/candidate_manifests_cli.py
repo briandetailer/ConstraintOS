@@ -6,6 +6,7 @@ import sys
 from pathlib import Path
 from typing import Any
 
+from constraintos.candidate_evaluation import build_fixture_only_candidate_evaluation
 from constraintos.candidate_manifests import (
     CandidateManifestError,
     discover_project_root,
@@ -40,6 +41,9 @@ def build_payload(args: argparse.Namespace) -> tuple[int, dict[str, Any]]:
             "candidate_evaluation": "not_run",
         }
         return 0, report
+    if args.command == "evaluate":
+        payload = build_fixture_only_candidate_evaluation(args.manifest, candidate_dir)
+        return 0, payload
     raise CandidateManifestError(f"Unsupported command: {args.command}")
 
 
@@ -88,11 +92,37 @@ def format_show_text(payload: dict[str, Any]) -> str:
     return "\n".join(lines) + "\n"
 
 
+def format_evaluate_text(payload: dict[str, Any]) -> str:
+    summary = payload.get("summary", {})
+    if not isinstance(summary, dict):
+        summary = {}
+    lines = [
+        f"Candidate evaluation: {summary.get('candidate_manifest_key', 'unknown')}",
+        f"candidate_id: {summary.get('candidate_id', 'unknown')}",
+        f"contract_key: {summary.get('contract_key', 'unknown')}",
+        f"report_key: {summary.get('report_key', 'unknown')}",
+        f"report_mode: {summary.get('report_mode', 'unknown')}",
+        f"candidate_reference_status: {summary.get('candidate_reference_status', 'unknown')}",
+        f"overall_evidence_status: {summary.get('overall_evidence_status', 'unknown')}",
+        f"not_observed_count: {summary.get('not_observed_count', 'unknown')}",
+        f"recommended_decision: {summary.get('recommended_decision', 'unknown')}",
+        f"uncertainty_default: {summary.get('uncertainty_default', 'unknown')}",
+        f"approval_allowed: {summary.get('approval_allowed', 'unknown')}",
+        "image_generation: not run",
+        "real_image_ingestion: not run",
+        "computer_vision: not run",
+        "approval_automation: not run",
+    ]
+    return "\n".join(lines) + "\n"
+
+
 def format_payload(payload: dict[str, Any], output_format: str, command: str) -> str:
     if output_format == "json":
         return json.dumps(payload, indent=2, sort_keys=True) + "\n"
     if command == "list":
         return format_list_text(payload)
+    if command == "evaluate":
+        return format_evaluate_text(payload)
     return format_show_text(payload)
 
 
@@ -118,6 +148,9 @@ def build_parser() -> argparse.ArgumentParser:
 
     show_parser = subparsers.add_parser("show", help="Show a static candidate manifest summary.")
     show_parser.add_argument("manifest", help="Manifest key, contract key, candidate id, filename, or path.")
+
+    evaluate_parser = subparsers.add_parser("evaluate", help="Run fixture-only candidate evaluation from static report fixtures.")
+    evaluate_parser.add_argument("manifest", help="Manifest key, contract key, candidate id, filename, or path.")
     return parser
 
 
