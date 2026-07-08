@@ -53,7 +53,8 @@ def test_graphics_validation_cli_writes_output_file(tmp_path, capsys) -> None:
     assert "Wrote graphics validation result" in capsys.readouterr().out
     payload = json.loads(output_path.read_text(encoding="utf-8"))
     assert payload["graphics_validation"]["mode"] == "fixture_only_no_image_generation"
-    assert payload["graphics_validation"]["policy_path"].endswith("examples/graphics/perseverance/policy.json")
+    policy_path = Path(payload["graphics_validation"]["policy_path"])
+    assert policy_path.parts[-4:] == ("examples", "graphics", "perseverance", "policy.json")
 
 
 def test_graphics_validation_cli_returns_error_for_unknown_example(capsys) -> None:
