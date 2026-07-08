@@ -1,0 +1,24 @@
+{
+  "graphics_prompt_result": {
+    "id": "PROMPT-PERSEVERANCE-0001",
+    "source_artifact_id": "GRAPHICS-PERSEVERANCE-0001",
+    "status": "ready_for_candidate_generation",
+    "mode": "fixture_only_no_image_generation"
+  },
+  "final_prompt": "Create a clean engineering-manual technical infographic of NASA's Perseverance Mars rover in a front-left three-quarter view. Preserve the six-wheel rocker-bogie rover layout, central chassis, mast/camera head rising from the rover body, and front robotic arm with an instrument turret. Include legible callout labels for Mastcam-Z and SuperCam on the mast/camera head, MEDA environmental sensors, MOXIE as an internal/body-mounted technology payload, PIXL and SHERLOC on the arm/turret region, RIMFAX at the lower/rear underside antenna region, robotic arm, wheels, mast, and chassis. Use precise technical-illustration composition with clear leader lines, no invented parts, and enough spacing for evidence review.",
+  "negative_prompt": "Do not depict Curiosity, Opportunity, Spirit, a generic Mars rover, a lunar rover, a fictional rover, or a crewed rover. Do not add tank tracks, solar panels, cockpit glass, human seats, animal-like legs, duplicate/conflicting instrument labels, labels pointing to empty space, invented instruments, or a NASA logo unless a later policy explicitly allows it.",
+  "required_label_targets": {
+    "Mastcam-Z": "mast/camera head",
+    "SuperCam": "mast unit",
+    "MEDA": "environmental sensor region",
+    "MOXIE": "internal/body-mounted payload",
+    "PIXL": "arm/turret region",
+    "RIMFAX": "lower/rear underside antenna region",
+    "SHERLOC": "arm/turret region",
+    "robotic arm": "front/body-mounted arm",
+    "wheels": "six rocker-bogie wheels",
+    "mast": "body-mounted mast",
+    "chassis": "central rover body"
+  },
+  "approval_instruction": "If any required label target is missing or ambiguous, the candidate must be marked needs_review rather than approved."
+}
