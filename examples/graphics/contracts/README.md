@@ -50,10 +50,20 @@ cos-graphics-contracts show hydroelectric_dam_powerhouse
 cos-graphics-contracts show supra_2jz_gte_twin_turbo
 ```
 
-Write a JSON report:
+Run a contract-backed runtime bridge without image generation:
+
+```powershell
+cos-graphics-contracts run perseverance --plan-only
+cos-graphics-contracts run wind_turbine_nacelle
+cos-graphics-contracts run hydroelectric_dam_powerhouse
+cos-graphics-contracts run supra_2jz_gte_twin_turbo
+```
+
+Write JSON reports:
 
 ```powershell
 cos-graphics-contracts --format json --output reports/graphics-contracts.json list
+cos-graphics-contracts --format json --output reports/supra-contract-runtime.json run supra_2jz_gte_twin_turbo
 ```
 
 ## Source use cases
@@ -77,6 +87,7 @@ supra_2jz_gte_twin_turbo.contract.json:
 ```powershell
 pytest tests/test_graphics_contracts.py
 pytest tests/test_graphics_contracts_cli.py
+pytest tests/test_graphics_contract_runtime_bridge.py
 ```
 
 ## Guardrail
