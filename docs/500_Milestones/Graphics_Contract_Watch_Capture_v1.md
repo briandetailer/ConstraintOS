@@ -4,10 +4,13 @@
 
 ```text
 milestone: Graphics Contract Watch Capture v1
-status: implementation-complete-pending-test
+status: complete
 started_on: 2026-07-08
+completed_on: 2026-07-08
 previous_gate: Graphics Contract Runtime Watch v1 complete
 baseline: 487 passed
+latest_user_reported_capture_script_test_result: 5 passed
+latest_user_reported_capture_script_test_result_on: 2026-07-08
 ```
 
 ## Purpose
@@ -43,7 +46,7 @@ This milestone captures demo-friendly watch output, JSON runtime report, termina
 [x] Add graphics contract watch capture script
 [x] Add script coverage tests
 [x] Update graphics command reference
-[ ] Run tests and record verified result
+[x] Run tests and record verified result
 ```
 
 ## Implemented files
@@ -58,6 +61,19 @@ docs/700_Use_Cases/Graphics_Validation_Command_Reference.md
 
 ```powershell
 pytest tests/test_graphics_contract_watch_capture_script.py
+```
+
+## Verification record
+
+```text
+source: user-reported local test run
+command: pytest tests/test_graphics_contract_watch_capture_script.py
+platform: win32
+python: 3.12.10
+pytest: 9.1.1
+result: 5 passed in 0.18s
+reported_on: 2026-07-08
+assistant_ran_tests: false
 ```
 
 ## CLI commands
@@ -95,5 +111,15 @@ runs/graphics-contracts/<contract>/<timestamp>/run-metadata.json
 [x] Capture helper supports plan-only capture.
 [x] Capture helper writes transcript, watch output, JSON result, and metadata.
 [x] Command reference updated in the same implementation slice.
-[ ] Verification test result recorded.
+[x] Verification test result recorded.
+```
+
+## Handoff notes
+
+```text
+- Graphics Contract Watch Capture v1 is complete.
+- Contract-backed watch runs can now be captured locally with transcript, watch output, JSON runtime report, and metadata.
+- Captured output remains local-only under ignored runs/graphics-contracts/ paths.
+- The command reference was updated in the same implementation slice.
+- The next milestone should begin candidate-evaluation adapter design while keeping image generation gated, or add a higher-level demo runbook that links the command reference, contracts, and captured outputs.
 ```
