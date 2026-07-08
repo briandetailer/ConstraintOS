@@ -4,11 +4,12 @@
 
 ```text
 milestone: Graphics Validation Pipeline - NASA Perseverance v1
-status: implementation-complete-pending-wrapper-test
+status: complete
 started_on: 2026-07-07
+completed_on: 2026-07-07
 previous_gate: Runtime Package Artifact Handoff complete
 baseline: 487 passed
-latest_user_reported_test_result: 4 passed
+latest_user_reported_test_result: 5 passed
 latest_user_reported_test_result_on: 2026-07-07
 ```
 
@@ -54,7 +55,7 @@ Can ConstraintOS preserve a complex, real-world engineering subject across style
 [x] Document example runtime commands
 [x] Run tests and record verified result
 [x] Add first graphics-validation CLI/API wrapper around the example
-[ ] Run graphics-validation wrapper tests and record verified result
+[x] Run graphics-validation wrapper tests and record verified result
 ```
 
 ## Example fixture paths
@@ -154,6 +155,14 @@ reported_on: 2026-07-07
 assistant_ran_tests: false
 ```
 
+```text
+source: user-reported local test run
+command: pytest tests/test_graphics_validation_cli.py
+result: 5 passed
+reported_on: 2026-07-07
+assistant_ran_tests: false
+```
+
 ## Wrapper behavior
 
 ```text
@@ -172,5 +181,14 @@ assistant_ran_tests: false
 [x] Runtime dry-run can schedule and execute all graphics-validation nodes using the example workers.
 [x] Tests confirm required labels, forbidden substitutions, and needs_review behavior are represented.
 [x] First CLI/API wrapper is identified as the next implementation slice.
-[ ] Wrapper tests confirm plan-only JSON, runtime text output, output-file behavior, and unknown-example error handling.
+[x] Wrapper tests confirm plan-only JSON, runtime text output, output-file behavior, and unknown-example error handling.
+```
+
+## Handoff notes
+
+```text
+- NASA Perseverance v1 is the first executable graphics-validation pipeline slice.
+- The milestone remains fixture-only and does not generate final images.
+- The graphics-validation wrapper provides the first product-facing command path.
+- The next milestone should introduce reusable graphics validation contracts beyond a single example fixture.
 ```
