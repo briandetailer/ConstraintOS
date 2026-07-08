@@ -4,11 +4,14 @@
 
 ```text
 milestone: Foundation Readiness Review v1
-status: implementation-complete-pending-test
+status: complete
 started_on: 2026-07-08
+completed_on: 2026-07-08
 previous_gate: Fixture-only Candidate Evaluation v1 complete
 track: Foundation Completion Track
 baseline: 487 passed
+latest_user_reported_foundation_readiness_review_test_result: 5 passed
+latest_user_reported_foundation_readiness_review_test_result_on: 2026-07-08
 ```
 
 ## Purpose
@@ -99,6 +102,16 @@ required_before_real_ingestion:
 pytest tests/test_foundation_readiness_review.py
 ```
 
+## Verification record
+
+```text
+source: user-reported local test run
+command: pytest tests/test_foundation_readiness_review.py
+result: 5 passed
+reported_on: 2026-07-08
+assistant_ran_tests: false
+```
+
 ## Guardrails
 
 ```text
@@ -119,5 +132,15 @@ pytest tests/test_foundation_readiness_review.py
 [x] Next allowed milestone is Observation Adapter Design v1.
 [x] Real image ingestion remains blocked.
 [x] Command reference is updated with verification command.
-[ ] Verification test result recorded.
+[x] Verification test result recorded.
+```
+
+## Handoff notes
+
+```text
+- Foundation Readiness Review v1 is complete.
+- The graphics-validation foundation is ready for Observation Adapter Design v1.
+- Real image ingestion, computer-vision integration, image generation integration, and approval automation remain blocked.
+- The next allowed milestone is Observation Adapter Design v1.
+- Real candidate image ingestion must not begin until an observation adapter boundary and evidence normalization rules are defined.
 ```
