@@ -17,6 +17,7 @@ It covers:
 - candidate evaluation adapter design verification
 - candidate manifest schema verification
 - candidate manifest discovery
+- candidate evaluation report contract verification
 - local verification commands
 ```
 
@@ -292,6 +293,16 @@ pytest tests/test_candidate_manifest_discovery_cli.py
 
 This is a read-only discovery command. It does not evaluate real candidate images and does not generate images.
 
+## Candidate evaluation report contract
+
+Validate the fixture-only candidate evaluation report contract and static report fixtures:
+
+```powershell
+pytest tests/test_candidate_evaluation_report_contract.py
+```
+
+This is a report-contract verification command. It does not evaluate real candidate images and does not generate images.
+
 ## Full recent graphics-validation verification set
 
 Run all recent graphics-validation and contract-focused test suites:
@@ -306,6 +317,7 @@ pytest tests/test_graphics_contract_watch_capture_script.py
 pytest tests/test_candidate_evaluation_adapter_design.py
 pytest tests/test_candidate_manifest_schema.py
 pytest tests/test_candidate_manifest_discovery_cli.py
+pytest tests/test_candidate_evaluation_report_contract.py
 ```
 
 ## Current contract keys
