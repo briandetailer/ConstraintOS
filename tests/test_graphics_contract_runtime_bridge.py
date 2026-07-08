@@ -1,4 +1,5 @@
 import json
+from pathlib import Path
 
 from constraintos.graphics_contract_runtime import (
     build_contract_runtime_payload,
@@ -7,8 +8,6 @@ from constraintos.graphics_contract_runtime import (
 )
 from constraintos.graphics_contracts import load_json
 from constraintos.graphics_contracts_cli import main
-
-from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 CONTRACT_DIR = ROOT / "examples" / "graphics" / "contracts"
@@ -109,3 +108,38 @@ def test_graphics_contracts_cli_runs_contract_bridge_json(tmp_path, capsys) -> N
     assert payload["graphics_contract_runtime"]["image_generation"] == "not_run"
     assert payload["runtime_result"]["status"] == "completed"
     assert payload["summary"]["node_results"] == 6
+
+
+def test_graphics_contracts_cli_runs_contract_bridge_plan_only_watch(capsys) -> None:
+    exit_code = main(["run", "perseverance", "--plan-only", "--watch"])
+
+    output = capsys.readouterr().out
+    assert exit_code == 0
+    assert "ConstraintOS Graphics Contract Runtime Watch" in output
+    assert "contract: perseverance" in output
+    assert "image_generation: not run" in output
+    assert "[1/6] collect_contract_reference_requirements" in output
+    assert "result: not_run_plan_only" in output
+    assert "Final result:" in output
+    assert "execution: not_run_plan_only" in output
+
+
+def test_graphics_contracts_cli_runs_contract_bridge_dry_run_watch(tmp_path, capsys) -> None:
+    exit_code = main([
+        "run",
+        "supra_2jz_gte_twin_turbo",
+        "--watch",
+        "--artifact-root",
+        str(tmp_path / "artifacts"),
+        "--workspace",
+        str(tmp_path),
+    ])
+
+    output = capsys.readouterr().out
+    assert exit_code == 0
+    assert "ConstraintOS Graphics Contract Runtime Watch" in output
+    assert "contract: supra_2jz_gte_twin_turbo" in output
+    assert "[6/6] review_contract_graphics_approval_result" in output
+    assert "result: dry_run_complete" in output
+    assert "runtime: completed" in output
+    assert "image generation: not run" in output
