@@ -16,6 +16,20 @@ It covers:
 - local verification commands
 ```
 
+## Maintenance rule
+
+Whenever a future milestone, script, CLI entry point, or workflow makes new user-facing commands available, update this document in the same implementation slice.
+
+Include:
+
+```text
+- the exact command
+- what the command does
+- whether it is plan-only, dry-run, fixture-only, or writes files
+- any relevant output path
+- any related verification command
+```
+
 ## Branch sync
 
 Use this before running newly added commands locally:
