@@ -6,6 +6,7 @@ import sys
 from pathlib import Path
 from typing import Any
 
+from constraintos.graphics_contract_runtime import build_contract_runtime_payload
 from constraintos.graphics_contracts import (
     GraphicsContractError,
     discover_project_root,
@@ -15,12 +16,12 @@ from constraintos.graphics_contracts import (
 )
 
 
-def build_payload(args: argparse.Namespace) -> dict[str, Any]:
+def build_payload(args: argparse.Namespace) -> tuple[int, dict[str, Any]]:
     project_root = Path(args.project_root).resolve() if args.project_root else discover_project_root()
     contracts_dir = resolve_contracts_dir(project_root, args.contracts_dir)
     if args.command == "list":
         contracts = list_contract_summaries(contracts_dir)
-        return {
+        return 0, {
             "graphics_contracts": {
                 "count": len(contracts),
                 "contracts_dir": str(contracts_dir),
@@ -33,7 +34,23 @@ def build_payload(args: argparse.Namespace) -> dict[str, Any]:
             "contracts_dir": str(contracts_dir),
             "selected": report["summary"]["key"],
         }
-        return report
+        return 0, report
+    if args.command == "run":
+        report = load_contract_report(args.contract, contracts_dir)
+        exit_code, payload = build_contract_runtime_payload(
+            report["summary"]["key"],
+            report["contract"],
+            plan_only=args.plan_only,
+            artifact_root=args.artifact_root,
+            workspace=args.workspace,
+            runtime_id=args.runtime_id,
+        )
+        payload["graphics_contracts"] = {
+            "contracts_dir": str(contracts_dir),
+            "selected": report["summary"]["key"],
+            "runtime_bridge": True,
+        }
+        return exit_code, payload
     raise GraphicsContractError(f"Unsupported command: {args.command}")
 
 
@@ -77,11 +94,40 @@ def format_show_text(payload: dict[str, Any]) -> str:
     return "\n".join(lines) + "\n"
 
 
+def format_run_text(payload: dict[str, Any]) -> str:
+    metadata = payload.get("graphics_contract_runtime", {})
+    if not isinstance(metadata, dict):
+        metadata = {}
+    plan = payload.get("plan", {})
+    schedule = payload.get("schedule", {})
+    execution = payload.get("execution", {})
+    runtime_result = payload.get("runtime_result", {})
+    nodes = plan.get("nodes", []) if isinstance(plan, dict) else []
+    unscheduled = schedule.get("unscheduled_nodes", []) if isinstance(schedule, dict) else []
+    schedule_result = schedule.get("schedule_result", {}) if isinstance(schedule, dict) else {}
+    execution_result = execution.get("execution_result", {}) if isinstance(execution, dict) else {}
+    lines = [
+        f"Graphics contract runtime: {metadata.get('contract_key', 'unknown')}",
+        f"subject: {metadata.get('subject', 'unknown')}",
+        f"mode: {metadata.get('mode', 'unknown')}",
+        f"expected_decision: {metadata.get('expected_decision', 'unknown')}",
+        f"plan_nodes: {len(nodes) if isinstance(nodes, list) else 0}",
+        f"schedule: {schedule_result.get('status', 'unknown') if isinstance(schedule_result, dict) else 'unknown'}",
+        f"unscheduled_nodes: {len(unscheduled) if isinstance(unscheduled, list) else 0}",
+        f"execution: {execution_result.get('status', 'not_run_plan_only') if isinstance(execution_result, dict) else 'not_run_plan_only'}",
+        f"runtime: {runtime_result.get('status', 'plan_only') if isinstance(runtime_result, dict) else 'plan_only'}",
+        "image_generation: not run",
+    ]
+    return "\n".join(lines) + "\n"
+
+
 def format_payload(payload: dict[str, Any], output_format: str, command: str) -> str:
     if output_format == "json":
         return json.dumps(payload, indent=2, sort_keys=True) + "\n"
     if command == "list":
         return format_list_text(payload)
+    if command == "run":
+        return format_run_text(payload)
     return format_show_text(payload)
 
 
@@ -107,6 +153,13 @@ def build_parser() -> argparse.ArgumentParser:
 
     show_parser = subparsers.add_parser("show", help="Show a graphics validation contract summary.")
     show_parser.add_argument("contract", help="Contract key, filename, or path.")
+
+    run_parser = subparsers.add_parser("run", help="Run a contract-backed dry-run runtime bridge.")
+    run_parser.add_argument("contract", help="Contract key, filename, or path.")
+    run_parser.add_argument("--plan-only", action="store_true")
+    run_parser.add_argument("--workspace", default=".")
+    run_parser.add_argument("--artifact-root", default=".constraintos/runtime/artifacts/graphics/contracts")
+    run_parser.add_argument("--runtime-id")
     return parser
 
 
@@ -114,9 +167,9 @@ def main(argv: list[str] | None = None) -> int:
     parser = build_parser()
     try:
         args = parser.parse_args(argv)
-        payload = build_payload(args)
+        exit_code, payload = build_payload(args)
         write_output(format_payload(payload, args.format, args.command), args.output)
-        return 0
+        return exit_code
     except SystemExit:
         raise
     except Exception as error:
