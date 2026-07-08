@@ -1,0 +1,89 @@
+{
+  "evaluation_report": {
+    "id": "GRAPHICS-CANDIDATE-EVALUATION-REPORT-SUPRA-2JZ-GTE-0001",
+    "version": "v1",
+    "domain": "graphics_validation",
+    "status": "fixture_only",
+    "report_mode": "contract_shape_only_no_image_evaluation",
+    "generated_at": "2026-07-08T00:00:00Z",
+    "notes": "Static report fixture that defines report shape only. No image was loaded or evaluated."
+  },
+  "candidate_binding": {
+    "candidate_manifest_id": "GRAPHICS-CANDIDATE-MANIFEST-SUPRA-2JZ-GTE-0001",
+    "candidate_id": "GRAPHICS-CANDIDATE-SUPRA-2JZ-GTE-0001",
+    "candidate_manifest_key": "supra_2jz_gte",
+    "contract_key": "supra_2jz_gte_twin_turbo",
+    "candidate_reference_status": "reference_only_not_loaded"
+  },
+  "evaluation_boundary": {
+    "image_generation_ran": false,
+    "image_editing_ran": false,
+    "real_image_ingestion_ran": false,
+    "computer_vision_integration_ran": false,
+    "candidate_evaluation_ran": false,
+    "approval_automation_ran": false
+  },
+  "evidence_summary": {
+    "total_items": 5,
+    "satisfied_count": 0,
+    "missing_count": 0,
+    "ambiguous_count": 0,
+    "contradicted_count": 0,
+    "not_observed_count": 5,
+    "overall_evidence_status": "not_observed"
+  },
+  "evidence_items": [
+    {
+      "constraint_id": "supra_2jz_gte.subject_identity",
+      "constraint_group": "subject_identity",
+      "claim": "Candidate must remain Toyota Supra Mk IV / A80 Turbo.",
+      "observed_status": "not_observed",
+      "evidence_source": "fixture_only_no_image_evidence",
+      "confidence": 0,
+      "notes": "No image evidence was loaded."
+    },
+    {
+      "constraint_id": "supra_2jz_gte.geometry.inline_six",
+      "constraint_group": "geometry",
+      "claim": "Candidate must preserve 2JZ-GTE inline-six engine layout.",
+      "observed_status": "not_observed",
+      "evidence_source": "fixture_only_no_image_evidence",
+      "confidence": 0,
+      "notes": "No image evidence was loaded."
+    },
+    {
+      "constraint_id": "supra_2jz_gte.component_location.sequential_turbos",
+      "constraint_group": "component_location",
+      "claim": "Candidate must preserve primary and secondary sequential twin turbocharger relationship.",
+      "observed_status": "not_observed",
+      "evidence_source": "fixture_only_no_image_evidence",
+      "confidence": 0,
+      "notes": "No image evidence was loaded."
+    },
+    {
+      "constraint_id": "supra_2jz_gte.required_label.primary_turbocharger",
+      "constraint_group": "required_label",
+      "claim": "Candidate must include required labels such as primary turbocharger.",
+      "observed_status": "not_observed",
+      "evidence_source": "fixture_only_no_image_evidence",
+      "confidence": 0,
+      "notes": "No image evidence was loaded."
+    },
+    {
+      "constraint_id": "supra_2jz_gte.approval_guardrail.uncertainty",
+      "constraint_group": "approval_guardrail",
+      "claim": "Uncertainty must produce needs_review, not approval.",
+      "observed_status": "not_observed",
+      "evidence_source": "fixture_only_no_image_evidence",
+      "confidence": 0,
+      "notes": "Fixture-only report cannot approve a candidate."
+    }
+  ],
+  "recommendation": {
+    "allowed_decisions": ["approved", "needs_review", "rejected"],
+    "recommended_decision": "needs_review",
+    "reason": "No candidate image evidence has been observed. A real evaluation has not run.",
+    "uncertainty_default": "needs_review",
+    "approval_allowed": false
+  }
+}
