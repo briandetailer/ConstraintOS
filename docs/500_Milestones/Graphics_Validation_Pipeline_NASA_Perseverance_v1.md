@@ -4,7 +4,7 @@
 
 ```text
 milestone: Graphics Validation Pipeline - NASA Perseverance v1
-status: active
+status: implementation-complete-pending-wrapper-test
 started_on: 2026-07-07
 previous_gate: Runtime Package Artifact Handoff complete
 baseline: 487 passed
@@ -53,7 +53,8 @@ Can ConstraintOS preserve a complex, real-world engineering subject across style
 [x] Add runtime fixture tests for the Perseverance example
 [x] Document example runtime commands
 [x] Run tests and record verified result
-[ ] Add first graphics-validation CLI/API wrapper around the example
+[x] Add first graphics-validation CLI/API wrapper around the example
+[ ] Run graphics-validation wrapper tests and record verified result
 ```
 
 ## Example fixture paths
@@ -67,6 +68,14 @@ examples/graphics/perseverance/expected_prompt.json
 examples/graphics/perseverance/expected_evidence.json
 examples/graphics/perseverance/expected_approval.json
 runtime/tests/test_graphics_perseverance_example.py
+```
+
+## Graphics-validation wrapper paths
+
+```text
+src/constraintos/graphics_validation_cli.py
+tests/test_graphics_validation_cli.py
+pyproject.toml project script: cos-graphics-validate
 ```
 
 ## Runtime approach
@@ -127,17 +136,12 @@ approval_behavior:
 ## Manual verification commands
 
 ```bash
-cos-runtime examples/graphics/perseverance/spec.json \
-  --workers-file examples/graphics/perseverance/workers.json \
-  --plan-only \
-  --format text
+cos-graphics-validate perseverance --plan-only --format text
 
-cos-runtime examples/graphics/perseverance/spec.json \
-  --workers-file examples/graphics/perseverance/workers.json \
-  --runtime-id GRAPHICS-PERSEVERANCE-RUNTIME-0001 \
-  --format text
+cos-graphics-validate perseverance --format text
 
 pytest runtime/tests/test_graphics_perseverance_example.py
+pytest tests/test_graphics_validation_cli.py
 ```
 
 ## Verification record
@@ -150,11 +154,23 @@ reported_on: 2026-07-07
 assistant_ran_tests: false
 ```
 
+## Wrapper behavior
+
+```text
+- Defaults to the Perseverance graphics-validation fixture.
+- Reuses the existing Runtime Planner, Scheduler, and DryRunExecutor.
+- Supports plan-only and dry-run runtime execution.
+- Emits graphics_validation metadata in JSON output.
+- Appends graphics-validation subject, expected decision, and mode to text output.
+- Keeps expected decision at needs_review while candidate image generation remains fixture-only.
+```
+
 ## Done criteria
 
 ```text
 [x] Fixture files exist and are internally consistent.
 [x] Runtime dry-run can schedule and execute all graphics-validation nodes using the example workers.
 [x] Tests confirm required labels, forbidden substitutions, and needs_review behavior are represented.
-[ ] First CLI/API wrapper is identified as the next implementation slice.
+[x] First CLI/API wrapper is identified as the next implementation slice.
+[ ] Wrapper tests confirm plan-only JSON, runtime text output, output-file behavior, and unknown-example error handling.
 ```
