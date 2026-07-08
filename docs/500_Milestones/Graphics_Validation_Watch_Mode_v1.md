@@ -10,6 +10,7 @@ previous_gate: Graphics Validation Pipeline - NASA Perseverance v1 complete
 baseline: 487 passed
 latest_user_reported_script_result: four output files verified
 latest_user_reported_script_result_on: 2026-07-07
+artifact_policy: generated runs are local-only by default
 ```
 
 ## Purpose
@@ -31,6 +32,7 @@ The goal is to let a user start a single command and capture the run as it moves
 [x] Save machine-readable JSON result
 [x] Save run metadata
 [x] Add watch recording guide
+[x] Ignore generated runs/ artifacts by default
 [ ] Run tests and record verified result
 [x] Run watch script and record verified output files
 ```
@@ -50,6 +52,15 @@ runs/graphics/perseverance/<timestamp>/terminal-transcript.txt
 runs/graphics/perseverance/<timestamp>/watch-output.txt
 runs/graphics/perseverance/<timestamp>/graphics-validation-result.json
 runs/graphics/perseverance/<timestamp>/run-metadata.json
+```
+
+## Artifact policy
+
+```text
+policy: local-only generated run artifacts
+ignore_rule: runs/
+file: .gitignore
+reason: watch transcripts, JSON results, metadata, and screen recordings should not be committed unless a curated demo artifact is explicitly approved.
 ```
 
 ## Watch script verification record
