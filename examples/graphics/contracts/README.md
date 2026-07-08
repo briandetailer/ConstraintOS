@@ -33,6 +33,29 @@ hydroelectric_dam_powerhouse.contract.json
 supra_2jz_gte_twin_turbo.contract.json
 ```
 
+## CLI discovery
+
+List available contracts:
+
+```powershell
+cos-graphics-contracts list
+```
+
+Show a contract summary:
+
+```powershell
+cos-graphics-contracts show perseverance
+cos-graphics-contracts show wind_turbine_nacelle
+cos-graphics-contracts show hydroelectric_dam_powerhouse
+cos-graphics-contracts show supra_2jz_gte_twin_turbo
+```
+
+Write a JSON report:
+
+```powershell
+cos-graphics-contracts --format json --output reports/graphics-contracts.json list
+```
+
 ## Source use cases
 
 ```text
@@ -53,6 +76,7 @@ supra_2jz_gte_twin_turbo.contract.json:
 
 ```powershell
 pytest tests/test_graphics_contracts.py
+pytest tests/test_graphics_contracts_cli.py
 ```
 
 ## Guardrail
