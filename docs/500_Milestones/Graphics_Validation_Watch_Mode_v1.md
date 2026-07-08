@@ -4,10 +4,13 @@
 
 ```text
 milestone: Graphics Validation Watch Mode v1
-status: script-verified-pending-test-record
+status: complete
 started_on: 2026-07-07
+completed_on: 2026-07-08
 previous_gate: Graphics Validation Pipeline - NASA Perseverance v1 complete
 baseline: 487 passed
+latest_user_reported_test_result: 6 passed
+latest_user_reported_test_result_on: 2026-07-08
 latest_user_reported_script_result: four output files verified
 latest_user_reported_script_result_on: 2026-07-07
 artifact_policy: generated runs are local-only by default
@@ -33,7 +36,7 @@ The goal is to let a user start a single command and capture the run as it moves
 [x] Save run metadata
 [x] Add watch recording guide
 [x] Ignore generated runs/ artifacts by default
-[ ] Run tests and record verified result
+[x] Run tests and record verified result
 [x] Run watch script and record verified output files
 ```
 
@@ -63,7 +66,7 @@ file: .gitignore
 reason: watch transcripts, JSON results, metadata, and screen recordings should not be committed unless a curated demo artifact is explicitly approved.
 ```
 
-## Watch script verification record
+## Verification records
 
 ```text
 source: user-reported local script run
@@ -78,6 +81,17 @@ verified_files:
 - run-metadata.json
 reported_on: 2026-07-07
 assistant_ran_script: false
+```
+
+```text
+source: user-reported local test run
+command: pytest tests/test_graphics_validation_cli.py
+platform: win32
+python: 3.12.10
+pytest: 9.1.1
+result: 6 passed in 0.44s
+reported_on: 2026-07-08
+assistant_ran_tests: false
 ```
 
 ## Watch behavior
@@ -97,4 +111,13 @@ assistant_ran_script: false
 - Do not claim tests passed unless actually run.
 - Do not claim the watch script produced files until the script has actually been run.
 - Keep this fixture-only until real image generation/evaluation adapters are deliberately introduced.
+```
+
+## Handoff notes
+
+```text
+- Watch Mode v1 is complete.
+- Generated watch outputs remain local-only by default through the runs/ ignore rule.
+- A curated demo artifact can be introduced later only by explicit approval.
+- Next product milestone should move to reusable graphics-validation contracts across multiple use cases.
 ```
