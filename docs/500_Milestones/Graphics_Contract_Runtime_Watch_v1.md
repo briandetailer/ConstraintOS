@@ -4,7 +4,7 @@
 
 ```text
 milestone: Graphics Contract Runtime Watch v1
-status: active
+status: implementation-complete-pending-test
 started_on: 2026-07-08
 previous_gate: Graphics Contract Runtime Bridge v1 complete
 baseline: 487 passed
@@ -39,12 +39,20 @@ This milestone makes `cos-graphics-contracts run` easier to record and explain b
 
 ```text
 [x] Create milestone doc
-[ ] Add contract runtime watch formatter
-[ ] Add --watch argument
-[ ] Add --watch-delay-ms argument
-[ ] Add watch-output tests
-[ ] Update README usage notes
+[x] Add contract runtime watch formatter
+[x] Add --watch argument
+[x] Add --watch-delay-ms argument
+[x] Add watch-output tests
+[x] Update README usage notes
 [ ] Run tests and record verified result
+```
+
+## Implemented files
+
+```text
+src/constraintos/graphics_contracts_cli.py
+tests/test_graphics_contract_runtime_bridge.py
+examples/graphics/contracts/README.md
 ```
 
 ## Verification commands
@@ -54,10 +62,31 @@ pytest tests/test_graphics_contracts_cli.py
 pytest tests/test_graphics_contract_runtime_bridge.py
 ```
 
+## CLI commands
+
+```powershell
+cos-graphics-contracts run perseverance --plan-only --watch
+cos-graphics-contracts run wind_turbine_nacelle --watch
+cos-graphics-contracts run hydroelectric_dam_powerhouse --watch
+cos-graphics-contracts run supra_2jz_gte_twin_turbo --watch
+cos-graphics-contracts run supra_2jz_gte_twin_turbo --watch --watch-delay-ms 250
+```
+
 ## Guardrails
 
 ```text
 - Keep watch output dry-run and fixture-only.
 - Do not introduce image generation.
 - Do not claim tests passed unless actually run.
+```
+
+## Done criteria
+
+```text
+[x] Watch output shows contract key, subject, mode, expected decision, and image-generation status.
+[x] Watch output lists all generated runtime nodes in order.
+[x] Plan-only watch output marks node results as not_run_plan_only.
+[x] Dry-run watch output marks node results as dry_run_complete.
+[x] CLI supports optional watch delay for screen recording.
+[ ] Verification test result recorded.
 ```
