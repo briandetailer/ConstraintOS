@@ -1,0 +1,56 @@
+{
+  "candidate_manifest": {
+    "id": "GRAPHICS-CANDIDATE-MANIFEST-PERSEVERANCE-0001",
+    "version": "v1",
+    "domain": "graphics_validation",
+    "status": "static_fixture_only",
+    "candidate_id": "GRAPHICS-CANDIDATE-PERSEVERANCE-0001",
+    "submitted_at": "2026-07-08T00:00:00Z",
+    "notes": "Static manifest fixture for a future external Perseverance candidate graphic. No image bytes are loaded."
+  },
+  "contract_binding": {
+    "contract_key": "perseverance",
+    "contract_required": true,
+    "allowed_contract_keys": [
+      "perseverance",
+      "wind_turbine_nacelle",
+      "hydroelectric_dam_powerhouse",
+      "supra_2jz_gte_twin_turbo"
+    ],
+    "source_contract_id": "GRAPHICS-CONTRACT-PERSEVERANCE-0001"
+  },
+  "candidate_reference": {
+    "reference_type": "artifact_uri",
+    "reference": "artifact://external-candidates/perseverance/candidate-0001.png",
+    "reference_status": "reference_only_not_loaded",
+    "media_type": "image/png",
+    "image_sha256": "0000000000000000000000000000000000000000000000000000000000000000",
+    "width": 1600,
+    "height": 900
+  },
+  "candidate_source": {
+    "candidate_source_type": "external",
+    "generated_by_constraintos": false,
+    "producer": "external-placeholder",
+    "model_or_tool": "not_recorded_fixture",
+    "source_prompt_id": "PROMPT-PERSEVERANCE-EXTERNAL-0001",
+    "source_prompt_text": "External candidate placeholder for future validation only.",
+    "negative_prompt_text": "Not used by this static fixture.",
+    "render_settings": {},
+    "notes": "ConstraintOS did not generate this candidate."
+  },
+  "evaluation_boundary": {
+    "image_generation_allowed": false,
+    "image_editing_allowed": false,
+    "real_image_ingestion_allowed": false,
+    "computer_vision_integration_allowed": false,
+    "evaluation_status": "not_evaluated",
+    "image_bytes_embedded": false
+  },
+  "approval_expectation": {
+    "allowed_decisions": ["approved", "needs_review", "rejected"],
+    "initial_decision": "needs_review",
+    "uncertainty_default": "needs_review",
+    "guardrail": "Uncertainty must produce needs_review, not approval."
+  }
+}
