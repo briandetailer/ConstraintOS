@@ -1,11 +1,12 @@
 # Candidate Evaluation Fixtures
 
-This directory contains design-only, schema-only, read-only discovery, fixture-only report contract, and fixture-only evaluation artifacts for future candidate graphics evaluation.
+This directory contains design-only, schema-only, read-only discovery, fixture-only report contract, fixture-only evaluation, and observation-adapter design artifacts for future candidate graphics evaluation.
 
 ## Current fixtures
 
 ```text
 candidate_evaluation_adapter.design.json
+observation_adapter.design.json
 candidate_manifest.schema.json
 candidate_evaluation_report.schema.json
 perseverance_candidate_manifest.fixture.json
@@ -18,6 +19,7 @@ supra_2jz_gte_candidate_evaluation_report.fixture.json
 
 ```text
 adapter_status: design_only
+observation_adapter_status: design_only
 manifest_status: static_fixture_only
 discovery_status: read_only
 report_contract_status: fixture_only
@@ -37,6 +39,8 @@ approval_allowed: false
 
 The adapter design fixture defines the boundary between reusable graphics-validation contracts and future externally produced candidate graphics.
 
+The observation adapter design fixture defines the future boundary for collecting observations without starting real image ingestion or selecting machine-observation providers.
+
 The candidate manifest schema defines the static manifest shape required before any future candidate-evaluation command can exist.
 
 The candidate manifest discovery CLI lists and shows static manifest summaries without evaluating candidate images.
@@ -44,6 +48,30 @@ The candidate manifest discovery CLI lists and shows static manifest summaries w
 The candidate evaluation report contract defines the future report shape before any real candidate evaluation behavior is implemented.
 
 The fixture-only candidate evaluation command loads a static manifest fixture and its matching static report fixture, validates their binding, and reports the fixture recommendation.
+
+## Observation adapter design
+
+The observation adapter design defines source types and normalization rules for future evidence collection.
+
+```text
+source_types:
+  manual_human_review
+  metadata_only
+  machine_assisted_placeholder
+  external_claim
+
+next_gate:
+  Manual Observation Fixture Adapter v1
+
+blocked_until_later:
+  real_image_ingestion
+  computer_vision_provider_integration
+  ocr_provider_integration
+  image_generation_integration
+  approval_automation_change
+```
+
+No observation source can approve alone. Low-confidence or incomplete observations default to `needs_review`.
 
 ## Candidate manifest fixtures
 
@@ -104,6 +132,7 @@ These commands load static manifest and report fixtures only. They do not load, 
 
 ```powershell
 pytest tests/test_candidate_evaluation_adapter_design.py
+pytest tests/test_observation_adapter_design.py
 pytest tests/test_candidate_manifest_schema.py
 pytest tests/test_candidate_manifest_discovery_cli.py
 pytest tests/test_candidate_evaluation_report_contract.py
@@ -112,4 +141,4 @@ pytest tests/test_fixture_only_candidate_evaluation.py
 
 ## Guardrail
 
-Candidate graphics are external inputs. ConstraintOS does not generate, edit, load, inspect, or approve images in these milestones. Fixture-only candidate evaluation reports `needs_review` from static report fixtures only.
+Candidate graphics are external inputs. ConstraintOS does not generate, edit, load, inspect, or approve images in these milestones. Fixture-only candidate evaluation reports `needs_review` from static report fixtures only. Observation adapter design does not enable real image ingestion.
