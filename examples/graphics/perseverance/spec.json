@@ -1,0 +1,139 @@
+{
+  "artifact": {
+    "id": "GRAPHICS-PERSEVERANCE-0001",
+    "title": "NASA Perseverance Rover Technical Graphic",
+    "domain": "graphics_validation",
+    "use_case": "docs/700_Use_Cases/Use_Case_1_NASA_Perseverance_Rover_Technical_Graphic.md"
+  },
+  "graphics_request": {
+    "subject": "NASA Perseverance rover",
+    "target_graphic": "annotated technical infographic / engineering atlas plate",
+    "view": "front-left three-quarter view",
+    "style": "clean engineering-manual technical infographic",
+    "label_density": "full instrument labels plus major subsystem labels",
+    "output_format": "landscape poster",
+    "background_policy": "decorative Mars background allowed only if it does not obscure rover geometry or labels",
+    "logo_policy": "avoid NASA logo use unless explicitly allowed by later policy"
+  },
+  "required_labels": [
+    "Mastcam-Z",
+    "SuperCam",
+    "MEDA",
+    "MOXIE",
+    "PIXL",
+    "RIMFAX",
+    "SHERLOC",
+    "robotic arm",
+    "wheels",
+    "mast",
+    "chassis"
+  ],
+  "subject_identity_constraints": [
+    "The subject must be NASA's Perseverance Mars rover.",
+    "The subject must not become Curiosity, Opportunity, Spirit, a generic rover, a lunar rover, or a fictional rover.",
+    "The rover must remain an unmanned robotic vehicle.",
+    "The rover must retain six wheels, a central chassis, a mast/camera head, and a front robotic arm with an instrument turret."
+  ],
+  "geometry_constraints": [
+    "Six wheels must remain visible or logically present.",
+    "Wheel arrangement must follow rocker-bogie rover layout.",
+    "Mast must rise from the rover body, not from the arm.",
+    "Robotic arm must attach to the front/body area.",
+    "Instrument turret must be at the end of the robotic arm.",
+    "The rover must not gain tank tracks, solar panels, cockpit glass, human seats, or animal-like legs."
+  ],
+  "instrument_constraints": {
+    "Mastcam-Z": "associated with the mast/camera head",
+    "SuperCam": "associated with the mast unit",
+    "PIXL": "associated with the arm/turret region",
+    "SHERLOC": "associated with the arm/turret region",
+    "MOXIE": "represented as an internal/body-mounted technology payload, not an external antenna",
+    "RIMFAX": "associated with the lower/rear underside antenna region",
+    "MEDA": "represented as environmental sensors, not a camera cluster"
+  },
+  "forbidden_substitutions": [
+    "Curiosity rover",
+    "Opportunity rover",
+    "Spirit rover",
+    "generic Mars rover",
+    "lunar rover",
+    "fictional rover",
+    "crewed rover",
+    "tank tracks",
+    "solar panels",
+    "cockpit glass",
+    "human seats",
+    "animal-like legs"
+  ],
+  "approval_expectations": {
+    "approved": "all required subject, geometry, instrument, label, and style constraints are satisfied with traceable evidence",
+    "needs_review": "required subsystem placement is missing, ambiguous, or uncertain",
+    "rejected": "subject identity is wrong, forbidden substitutions appear, or geometry is incompatible with Perseverance"
+  },
+  "execution_steps": [
+    {
+      "id": "NODE-0001",
+      "plugin": "reference_collector",
+      "action": "collect_public_reference_requirements",
+      "inputs": {
+        "subject": "NASA Perseverance rover",
+        "reference_scope": ["subject identity", "external geometry", "instrument placement", "label vocabulary"]
+      },
+      "outputs": ["reference_requirements"]
+    },
+    {
+      "id": "NODE-0002",
+      "plugin": "constraint_builder",
+      "action": "build_graphics_constraints",
+      "depends_on": ["NODE-0001"],
+      "inputs": {
+        "constraint_groups": ["subject_identity", "geometry", "instrument_labels", "style", "forbidden_substitutions"]
+      },
+      "outputs": ["constraint_checklist"]
+    },
+    {
+      "id": "NODE-0003",
+      "plugin": "image_prompt_generator",
+      "action": "generate_constrained_prompt",
+      "depends_on": ["NODE-0002"],
+      "inputs": {
+        "prompt_target": "front-left three-quarter clean engineering-manual technical infographic",
+        "negative_prompt_source": "forbidden_substitutions"
+      },
+      "outputs": ["final_prompt", "negative_prompt"]
+    },
+    {
+      "id": "NODE-0004",
+      "plugin": "image_evaluator",
+      "action": "evaluate_candidate_against_constraints",
+      "depends_on": ["NODE-0003"],
+      "inputs": {
+        "candidate_image": "placeholder://graphics/perseverance/candidate-0001.png",
+        "evaluation_mode": "fixture_only_no_image_generation"
+      },
+      "outputs": ["constraint_evaluation"]
+    },
+    {
+      "id": "NODE-0005",
+      "plugin": "evidence_manifest_generator",
+      "action": "build_graphics_evidence_report",
+      "depends_on": ["NODE-0004"],
+      "inputs": {
+        "evidence_required": true,
+        "trace_required_labels": true
+      },
+      "outputs": ["graphics_evidence_report"]
+    },
+    {
+      "id": "NODE-0006",
+      "plugin": "approval_reviewer",
+      "action": "review_graphics_approval_result",
+      "depends_on": ["NODE-0005"],
+      "inputs": {
+        "allowed_decisions": ["approved", "needs_review", "rejected"],
+        "uncertainty_decision": "needs_review"
+      },
+      "outputs": ["approval_result"]
+    }
+  ]
+}
