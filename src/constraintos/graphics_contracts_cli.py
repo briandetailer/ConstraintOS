@@ -3,6 +3,7 @@ from __future__ import annotations
 import argparse
 import json
 import sys
+import time
 from pathlib import Path
 from typing import Any
 
@@ -121,7 +122,82 @@ def format_run_text(payload: dict[str, Any]) -> str:
     return "\n".join(lines) + "\n"
 
 
-def format_payload(payload: dict[str, Any], output_format: str, command: str) -> str:
+def _index_by_key(items: list[Any], key: str) -> dict[str, dict[str, Any]]:
+    indexed: dict[str, dict[str, Any]] = {}
+    for item in items:
+        if not isinstance(item, dict):
+            continue
+        value = item.get(key)
+        if isinstance(value, str):
+            indexed[value] = item
+    return indexed
+
+
+def format_run_watch(payload: dict[str, Any]) -> str:
+    metadata = payload.get("graphics_contract_runtime", {})
+    if not isinstance(metadata, dict):
+        metadata = {}
+    plan = payload.get("plan", {})
+    schedule = payload.get("schedule", {})
+    execution = payload.get("execution", {})
+    runtime_result = payload.get("runtime_result", {})
+    nodes = plan.get("nodes", []) if isinstance(plan, dict) else []
+    assignments = schedule.get("assignments", []) if isinstance(schedule, dict) else []
+    node_results = execution.get("node_results", []) if isinstance(execution, dict) else []
+    assignments_by_node = _index_by_key(assignments if isinstance(assignments, list) else [], "node_id")
+    results_by_node = _index_by_key(node_results if isinstance(node_results, list) else [], "node_id")
+    node_count = len(nodes) if isinstance(nodes, list) else 0
+
+    lines = [
+        "ConstraintOS Graphics Contract Runtime Watch",
+        f"contract: {metadata.get('contract_key', 'unknown')}",
+        f"subject: {metadata.get('subject', 'unknown')}",
+        f"expected_decision: {metadata.get('expected_decision', 'unknown')}",
+        f"mode: {metadata.get('mode', 'unknown')}",
+        "image_generation: not run",
+        "",
+    ]
+
+    if isinstance(nodes, list):
+        for index, node in enumerate(nodes, start=1):
+            if not isinstance(node, dict):
+                continue
+            node_id = str(node.get("id", "unknown"))
+            assignment = assignments_by_node.get(node_id, {})
+            result = results_by_node.get(node_id, {})
+            worker_id = assignment.get("worker_id") or result.get("worker_id") or "unassigned"
+            result_status = result.get("status", "not_run_plan_only")
+            lines.extend(
+                [
+                    f"[{index}/{node_count}] {node.get('action', 'unknown')}",
+                    f"  node: {node_id}",
+                    f"  plugin: {node.get('plugin', 'unknown')}",
+                    f"  worker: {worker_id}",
+                    "  schedule: assigned" if assignment else "  schedule: unassigned",
+                    f"  result: {result_status}",
+                    "",
+                ]
+            )
+
+    schedule_result = schedule.get("schedule_result", {}) if isinstance(schedule, dict) else {}
+    execution_result = execution.get("execution_result", {}) if isinstance(execution, dict) else {}
+    lines.extend(
+        [
+            "Final result:",
+            f"  runtime: {runtime_result.get('status', 'plan_only') if isinstance(runtime_result, dict) else 'plan_only'}",
+            f"  schedule: {schedule_result.get('status', 'unknown') if isinstance(schedule_result, dict) else 'unknown'}",
+            f"  execution: {execution_result.get('status', 'not_run_plan_only') if isinstance(execution_result, dict) else 'not_run_plan_only'}",
+            f"  approval expectation: {metadata.get('expected_decision', 'unknown')}",
+            "  image generation: not run",
+            "",
+        ]
+    )
+    return "\n".join(lines)
+
+
+def format_payload(payload: dict[str, Any], output_format: str, command: str, watch: bool = False) -> str:
+    if watch:
+        return format_run_watch(payload)
     if output_format == "json":
         return json.dumps(payload, indent=2, sort_keys=True) + "\n"
     if command == "list":
@@ -131,12 +207,17 @@ def format_payload(payload: dict[str, Any], output_format: str, command: str) ->
     return format_show_text(payload)
 
 
-def write_output(output: str, output_path: str | None) -> None:
+def write_output(output: str, output_path: str | None, watch: bool = False, watch_delay_ms: int = 0) -> None:
     if output_path:
         target = Path(output_path)
         target.parent.mkdir(parents=True, exist_ok=True)
         target.write_text(output, encoding="utf-8")
         print(f"Wrote graphics contract report: {target}")
+        return
+    if watch and watch_delay_ms > 0:
+        for line in output.splitlines():
+            print(line, flush=True)
+            time.sleep(watch_delay_ms / 1000)
         return
     print(output, end="")
 
@@ -157,6 +238,8 @@ def build_parser() -> argparse.ArgumentParser:
     run_parser = subparsers.add_parser("run", help="Run a contract-backed dry-run runtime bridge.")
     run_parser.add_argument("contract", help="Contract key, filename, or path.")
     run_parser.add_argument("--plan-only", action="store_true")
+    run_parser.add_argument("--watch", action="store_true", help="Print a step-by-step contract runtime trace suitable for recording.")
+    run_parser.add_argument("--watch-delay-ms", type=int, default=0, help="Delay between watch-output lines, useful for screen recording.")
     run_parser.add_argument("--workspace", default=".")
     run_parser.add_argument("--artifact-root", default=".constraintos/runtime/artifacts/graphics/contracts")
     run_parser.add_argument("--runtime-id")
@@ -168,7 +251,9 @@ def main(argv: list[str] | None = None) -> int:
     try:
         args = parser.parse_args(argv)
         exit_code, payload = build_payload(args)
-        write_output(format_payload(payload, args.format, args.command), args.output)
+        watch = bool(getattr(args, "watch", False))
+        watch_delay_ms = int(getattr(args, "watch_delay_ms", 0) or 0)
+        write_output(format_payload(payload, args.format, args.command, watch=watch), args.output, watch=watch, watch_delay_ms=watch_delay_ms)
         return exit_code
     except SystemExit:
         raise
