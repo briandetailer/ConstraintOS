@@ -4,7 +4,7 @@
 
 ```text
 milestone: Candidate Manifest Discovery v1
-status: active
+status: implementation-complete-pending-test
 started_on: 2026-07-08
 previous_gate: Candidate Manifest Schema v1 complete
 track: Foundation Completion Track
@@ -44,13 +44,24 @@ This milestone lets users list candidate manifests and show a selected manifest 
 
 ```text
 [x] Create milestone doc
-[ ] Add candidate manifest discovery helpers
-[ ] Add cos-graphics-candidates CLI
-[ ] Add package entry point
-[ ] Add discovery and CLI tests
-[ ] Update candidate evaluation README
-[ ] Update command reference
+[x] Add candidate manifest discovery helpers
+[x] Add cos-graphics-candidates CLI
+[x] Add package entry point
+[x] Add discovery and CLI tests
+[x] Update candidate evaluation README
+[x] Update command reference
 [ ] Run tests and record verified result
+```
+
+## Implemented files
+
+```text
+src/constraintos/candidate_manifests.py
+src/constraintos/candidate_manifests_cli.py
+pyproject.toml
+tests/test_candidate_manifest_discovery_cli.py
+examples/graphics/candidate_evaluation/README.md
+docs/700_Use_Cases/Graphics_Validation_Command_Reference.md
 ```
 
 ## Verification command
@@ -59,7 +70,7 @@ This milestone lets users list candidate manifests and show a selected manifest 
 pytest tests/test_candidate_manifest_discovery_cli.py
 ```
 
-## Planned commands
+## CLI commands
 
 ```powershell
 cos-graphics-candidates list
@@ -72,8 +83,21 @@ cos-graphics-candidates --format json --output reports/candidate-manifests.json 
 
 ```text
 - CLI is read-only.
-- CLI must report evaluation_status as not_evaluated.
-- CLI must report image_generation as not run.
-- CLI must not load candidate image bytes.
+- CLI reports evaluation_status as not_evaluated.
+- CLI reports image_generation as not run.
+- CLI reports candidate_evaluation as not run.
+- CLI does not load candidate image bytes.
 - Do not claim tests passed unless actually run.
+```
+
+## Done criteria
+
+```text
+[x] Static candidate manifests can be listed.
+[x] Static candidate manifests can be shown by manifest key.
+[x] Static candidate manifests can be shown by bound contract key.
+[x] JSON output is supported.
+[x] Package exposes cos-graphics-candidates.
+[x] Command reference updated in the same implementation slice.
+[ ] Verification test result recorded.
 ```
