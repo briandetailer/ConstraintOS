@@ -1,0 +1,78 @@
+{
+  "manual_observation_fixture": {
+    "id": "GRAPHICS-MANUAL-OBSERVATION-PERSEVERANCE-0001",
+    "version": "v1",
+    "domain": "graphics_validation",
+    "status": "fixture_only",
+    "observation_mode": "manual_human_review_fixture",
+    "recorded_at": "2026-07-08T00:00:00Z"
+  },
+  "candidate_binding": {
+    "candidate_manifest_id": "GRAPHICS-CANDIDATE-MANIFEST-PERSEVERANCE-0001",
+    "candidate_id": "GRAPHICS-CANDIDATE-PERSEVERANCE-0001",
+    "candidate_manifest_key": "perseverance",
+    "contract_key": "perseverance",
+    "candidate_reference_status": "reference_only_not_loaded"
+  },
+  "observation_boundary": {
+    "source_type": "manual_human_review",
+    "real_image_ingestion_ran": false,
+    "computer_vision_ran": false,
+    "ocr_ran": false,
+    "image_generation_ran": false,
+    "image_editing_ran": false,
+    "approval_automation_ran": false
+  },
+  "observations": [
+    {
+      "observation_id": "OBS-PERSEVERANCE-IDENTITY-0001",
+      "constraint_id": "perseverance.subject_identity",
+      "constraint_group": "subject_identity",
+      "source_type": "manual_human_review",
+      "claim": "Candidate should remain NASA Perseverance rover.",
+      "observed_status": "not_observed",
+      "confidence": 0,
+      "reviewer_or_agent": "manual_fixture_placeholder",
+      "notes": "No real image was loaded for this fixture."
+    },
+    {
+      "observation_id": "OBS-PERSEVERANCE-GEOMETRY-0001",
+      "constraint_id": "perseverance.geometry.six_wheels",
+      "constraint_group": "geometry",
+      "source_type": "manual_human_review",
+      "claim": "Candidate should preserve six-wheel rover geometry.",
+      "observed_status": "not_observed",
+      "confidence": 0,
+      "reviewer_or_agent": "manual_fixture_placeholder",
+      "notes": "No real image was loaded for this fixture."
+    },
+    {
+      "observation_id": "OBS-PERSEVERANCE-LABEL-0001",
+      "constraint_id": "perseverance.required_label.Mastcam-Z",
+      "constraint_group": "required_label",
+      "source_type": "manual_human_review",
+      "claim": "Candidate should include required Perseverance labels such as Mastcam-Z.",
+      "observed_status": "not_observed",
+      "confidence": 0,
+      "reviewer_or_agent": "manual_fixture_placeholder",
+      "notes": "No real image was loaded for this fixture."
+    }
+  ],
+  "observation_summary": {
+    "total_observations": 3,
+    "satisfied_count": 0,
+    "missing_count": 0,
+    "ambiguous_count": 0,
+    "contradicted_count": 0,
+    "not_observed_count": 3,
+    "lowest_confidence": 0,
+    "overall_observation_status": "needs_review"
+  },
+  "recommendation": {
+    "recommended_decision": "needs_review",
+    "reason": "Manual observation fixture did not inspect a real image, so approval remains disallowed.",
+    "approval_allowed": false,
+    "uncertainty_default": "needs_review",
+    "manual_observations_can_approve_alone": false
+  }
+}
