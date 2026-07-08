@@ -4,10 +4,15 @@
 
 ```text
 milestone: Graphics Contract CLI Discovery v1
-status: implementation-complete-pending-test
+status: complete
 started_on: 2026-07-08
+completed_on: 2026-07-08
 previous_gate: Additional Graphics Contract Instances v1 complete
 baseline: 487 passed
+latest_user_reported_contract_test_result: 19 passed
+latest_user_reported_contract_test_result_on: 2026-07-08
+latest_user_reported_cli_test_result: 6 passed
+latest_user_reported_cli_test_result_on: 2026-07-08
 ```
 
 ## Purpose
@@ -45,7 +50,7 @@ This milestone lets a user list available graphics contracts and inspect a selec
 [x] Add CLI tests for list output
 [x] Add CLI tests for show output
 [x] Add README usage notes
-[ ] Run tests and record verified result
+[x] Run tests and record verified result
 ```
 
 ## Implemented files
@@ -65,6 +70,32 @@ pytest tests/test_graphics_contracts.py
 pytest tests/test_graphics_contracts_cli.py
 ```
 
+## Verification records
+
+```text
+source: user-reported local test run
+command: pytest tests/test_graphics_contracts.py
+platform: win32
+python: 3.12.10
+pytest: 9.1.1
+result: 19 passed in 0.31s
+reported_on: 2026-07-08
+assistant_ran_tests: false
+```
+
+```text
+source: user-reported local test run after assertion patch
+commands:
+- git pull --rebase origin phase-1-cli-tooling
+- pytest tests/test_graphics_contracts_cli.py
+platform: win32
+python: 3.12.10
+pytest: 9.1.1
+result: 6 passed in 0.33s
+reported_on: 2026-07-08
+assistant_ran_tests: false
+```
+
 ## CLI commands
 
 ```powershell
@@ -82,4 +113,13 @@ cos-graphics-contracts --format json --output reports/graphics-contracts.json li
 - Keep this read-only and fixture-only.
 - Do not introduce image generation.
 - Do not claim tests passed unless actually run.
+```
+
+## Handoff notes
+
+```text
+- Graphics Contract CLI Discovery v1 is complete.
+- Four graphics-validation contracts are discoverable through cos-graphics-contracts.
+- The CLI remains read-only and fixture-only.
+- The next milestone should decide whether to add contract-backed runtime example generation, richer reports, or a demo-friendly contract listing/watch workflow before image generation.
 ```
