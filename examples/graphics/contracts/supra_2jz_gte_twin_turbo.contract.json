@@ -1,0 +1,166 @@
+{
+  "contract": {
+    "id": "GRAPHICS-CONTRACT-SUPRA-2JZ-GTE-TWIN-TURBO-0001",
+    "version": "v1",
+    "domain": "graphics_validation",
+    "mode": "fixture_only_no_image_generation",
+    "source_artifact_id": "GRAPHICS-SUPRA-2JZ-GTE-TWIN-TURBO-0001",
+    "source_use_case": "docs/700_Use_Cases/Use_Case_4_Toyota_Supra_A80_2JZ_GTE_Twin_Turbo_Technical_Graphic.md"
+  },
+  "subject": {
+    "name": "Toyota Supra Mk IV / A80 Turbo 2JZ-GTE sequential twin-turbo system",
+    "category": "enthusiast automotive engine and forced-induction technical graphic",
+    "identity_constraints": [
+      "The subject must be a Toyota Supra Mk IV / A80 Turbo.",
+      "It must not become a Nissan Skyline GT-R, Mazda RX-7, Mitsubishi 3000GT, BMW Z4, newer GR Supra, generic tuner car, or fictional sports car.",
+      "The engine must be represented as a Toyota 2JZ-GTE inline-six, not a V6, V8, rotary, boxer, or electric drivetrain.",
+      "The turbo system must be twin-turbocharged.",
+      "The turbo system must be represented as sequential unless a variant explicitly asks for a simplified high-level twin-turbo diagram.",
+      "The car must remain front-engine, rear-wheel-drive in whole-car views."
+    ],
+    "forbidden_substitutions": [
+      "Nissan Skyline GT-R",
+      "Mazda RX-7",
+      "Mitsubishi 3000GT",
+      "BMW Z4",
+      "newer GR Supra",
+      "generic tuner car",
+      "fictional sports car",
+      "V6 engine",
+      "V8 engine",
+      "rotary engine",
+      "boxer engine",
+      "electric drivetrain",
+      "RB26DETT",
+      "VR38DETT",
+      "LF4",
+      "13B",
+      "LS",
+      "B58",
+      "single-turbo swap",
+      "simple parallel twin-turbo layout"
+    ]
+  },
+  "rendering_requirements": {
+    "target_graphic": "technical engine-bay / sequential twin-turbo system illustration",
+    "view": "engine-bay top/front three-quarter view",
+    "style": "clean engineering manual",
+    "label_density": "full turbo-system labels",
+    "output_format": "landscape poster",
+    "background_policy": "decorative smoke, flames, racing graphics, or cinematic backgrounds are allowed only if they do not obscure technical components",
+    "logo_policy": "Toyota logos, Supra badges, and exact OEM diagrams require explicit source/reuse approval"
+  },
+  "required_labels": [
+    "2JZ-GTE inline-six",
+    "valve cover / cam cover",
+    "intake manifold / plenum",
+    "exhaust manifold",
+    "primary turbocharger",
+    "secondary turbocharger",
+    "intercooler",
+    "intake charge path",
+    "exhaust flow path",
+    "throttle body",
+    "wastegate / boost-control path",
+    "sequential turbo control valves / actuators",
+    "downpipe / exhaust outlet"
+  ],
+  "constraint_groups": {
+    "geometry": [
+      "The engine must be an inline-six layout.",
+      "Turbochargers must be on the exhaust side of the engine, not randomly placed on top of the valve cover.",
+      "Intake manifold/plenum must be distinguishable from exhaust/turbo hardware.",
+      "Intercooler path must route compressed air through an intercooler before entering the intake path.",
+      "Exhaust path must feed turbine housings before exiting through downpipe/exhaust.",
+      "The engine bay must not gain an impossible second engine, V-bank, rotary housing, or electric motor pack.",
+      "Whole-car views must preserve A80 Supra proportions: long hood, hatchback/liftback rear, rounded 1990s body, optional large rear wing.",
+      "The system must distinguish primary and secondary turbocharger function.",
+      "Low-RPM operation should emphasize the first/primary turbo.",
+      "Transition/pre-spool operation may show exhaust routing to bring the second turbo up to speed.",
+      "High-RPM operation should show both turbochargers contributing.",
+      "Turbo-control valves, actuators, or VSV-style controls may be simplified but must not be replaced with unrelated parts.",
+      "The diagram must not claim the system is a simple symmetrical parallel twin-turbo layout unless specifically presenting a simplified comparison."
+    ],
+    "component_location": {
+      "2JZ-GTE inline-six": "front-engine inline-six engine bay layout",
+      "valve cover / cam cover": "top of inline-six cylinder head",
+      "intake manifold / plenum": "intake side distinct from exhaust/turbo hardware",
+      "exhaust manifold": "exhaust side feeding turbochargers",
+      "primary turbocharger": "exhaust side primary turbo position",
+      "secondary turbocharger": "exhaust side secondary turbo position",
+      "intercooler": "charge-air cooling path before intake manifold",
+      "intake charge path": "compressed air route through intercooler to throttle/intake",
+      "exhaust flow path": "exhaust route through turbine housings to downpipe",
+      "throttle body": "entry point to intake manifold/plenum",
+      "wastegate / boost-control path": "boost-control routing associated with turbo system",
+      "sequential turbo control valves / actuators": "control hardware for primary/secondary turbo operation",
+      "downpipe / exhaust outlet": "post-turbine exhaust outlet"
+    },
+    "style": [
+      "clean engineering manual",
+      "enthusiast-magazine styling is allowed",
+      "fictionalization is not allowed"
+    ]
+  },
+  "decision_policy": {
+    "allowed_decisions": ["approved", "needs_review", "rejected"],
+    "approved_requires": [
+      "subject_identity_passed",
+      "required_geometry_passed",
+      "required_labels_passed",
+      "forbidden_substitutions_absent",
+      "uncertainty_count_zero"
+    ],
+    "needs_review_when_any": [
+      "turbo_system_logic_uncertain",
+      "intake_exhaust_path_uncertain",
+      "component_location_uncertain",
+      "evidence_trace_incomplete"
+    ],
+    "rejected_when_any": [
+      "wrong_car_identity",
+      "wrong_engine_family",
+      "wrong_turbo_count",
+      "non_sequential_turbo_logic",
+      "forbidden_substitution_present",
+      "impossible_flow_direction"
+    ],
+    "uncertainty_default": "needs_review"
+  },
+  "evidence_contract": {
+    "required_checks": [
+      "verify_a80_supra_turbo_identity",
+      "verify_2jz_gte_inline_six_identity",
+      "verify_twin_turbo_count",
+      "verify_sequential_turbo_logic",
+      "verify_intake_exhaust_flow_direction",
+      "verify_required_labels",
+      "verify_forbidden_substitutions_absent",
+      "verify_uncertainty_marked_needs_review"
+    ],
+    "required_label_trace": {
+      "2JZ-GTE inline-six": "front-engine inline-six engine",
+      "valve cover / cam cover": "top cylinder-head cover",
+      "intake manifold / plenum": "intake side of engine",
+      "exhaust manifold": "exhaust side feeding turbines",
+      "primary turbocharger": "primary turbocharger on exhaust side",
+      "secondary turbocharger": "secondary turbocharger on exhaust side",
+      "intercooler": "compressed-air cooling path",
+      "intake charge path": "intercooler-to-throttle/intake route",
+      "exhaust flow path": "manifold-to-turbine-to-downpipe route",
+      "throttle body": "intake plenum entry",
+      "wastegate / boost-control path": "turbo boost-control routing",
+      "sequential turbo control valves / actuators": "primary/secondary turbo control hardware",
+      "downpipe / exhaust outlet": "post-turbine exhaust exit"
+    },
+    "issue_shape": {
+      "required_fields": ["severity", "constraint", "message"],
+      "allowed_severities": ["review_required", "failed", "passed"]
+    }
+  },
+  "approval_contract": {
+    "decision_source": "graphics-approval-policy/v1",
+    "expected_initial_decision": "needs_review",
+    "guardrail": "Uncertainty must produce needs_review, not approval."
+  }
+}
