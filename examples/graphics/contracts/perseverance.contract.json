@@ -1,0 +1,136 @@
+{
+  "contract": {
+    "id": "GRAPHICS-CONTRACT-PERSEVERANCE-0001",
+    "version": "v1",
+    "domain": "graphics_validation",
+    "mode": "fixture_only_no_image_generation",
+    "source_artifact_id": "GRAPHICS-PERSEVERANCE-0001",
+    "source_use_case": "docs/700_Use_Cases/Use_Case_1_NASA_Perseverance_Rover_Technical_Graphic.md"
+  },
+  "subject": {
+    "name": "NASA Perseverance rover",
+    "category": "robotic planetary rover",
+    "identity_constraints": [
+      "The subject must be NASA's Perseverance Mars rover.",
+      "The subject must not become Curiosity, Opportunity, Spirit, a generic rover, a lunar rover, or a fictional rover.",
+      "The rover must remain an unmanned robotic vehicle.",
+      "The rover must retain six wheels, a central chassis, a mast/camera head, and a front robotic arm with an instrument turret."
+    ],
+    "forbidden_substitutions": [
+      "Curiosity rover",
+      "Opportunity rover",
+      "Spirit rover",
+      "generic Mars rover",
+      "lunar rover",
+      "fictional rover",
+      "crewed rover",
+      "tank tracks",
+      "solar panels",
+      "cockpit glass",
+      "human seats",
+      "animal-like legs"
+    ]
+  },
+  "rendering_requirements": {
+    "target_graphic": "annotated technical infographic / engineering atlas plate",
+    "view": "front-left three-quarter view",
+    "style": "clean engineering-manual technical infographic",
+    "label_density": "full instrument labels plus major subsystem labels",
+    "output_format": "landscape poster",
+    "background_policy": "decorative Mars background allowed only if it does not obscure rover geometry or labels",
+    "logo_policy": "avoid NASA logo use unless explicitly allowed by later policy"
+  },
+  "required_labels": [
+    "Mastcam-Z",
+    "SuperCam",
+    "MEDA",
+    "MOXIE",
+    "PIXL",
+    "RIMFAX",
+    "SHERLOC",
+    "robotic arm",
+    "wheels",
+    "mast",
+    "chassis"
+  ],
+  "constraint_groups": {
+    "geometry": [
+      "Six wheels must remain visible or logically present.",
+      "Wheel arrangement must follow rocker-bogie rover layout.",
+      "Mast must rise from the rover body, not from the arm.",
+      "Robotic arm must attach to the front/body area.",
+      "Instrument turret must be at the end of the robotic arm.",
+      "The rover must not gain tank tracks, solar panels, cockpit glass, human seats, or animal-like legs."
+    ],
+    "component_location": {
+      "Mastcam-Z": "associated with the mast/camera head",
+      "SuperCam": "associated with the mast unit",
+      "PIXL": "associated with the arm/turret region",
+      "SHERLOC": "associated with the arm/turret region",
+      "MOXIE": "represented as an internal/body-mounted technology payload, not an external antenna",
+      "RIMFAX": "associated with the lower/rear underside antenna region",
+      "MEDA": "represented as environmental sensors, not a camera cluster"
+    },
+    "style": [
+      "clean engineering-manual technical infographic",
+      "decorative Mars background allowed only if it does not obscure rover geometry or labels",
+      "avoid NASA logo use unless explicitly allowed by later policy"
+    ]
+  },
+  "decision_policy": {
+    "allowed_decisions": ["approved", "needs_review", "rejected"],
+    "approved_requires": [
+      "subject_identity_passed",
+      "required_geometry_passed",
+      "required_labels_passed",
+      "forbidden_substitutions_absent",
+      "uncertainty_count_zero"
+    ],
+    "needs_review_when_any": [
+      "required_label_location_ambiguous",
+      "required_subsystem_missing",
+      "instrument_location_uncertain",
+      "evidence_trace_incomplete"
+    ],
+    "rejected_when_any": [
+      "wrong_subject_identity",
+      "forbidden_substitution_present",
+      "incompatible_rover_geometry",
+      "invented_major_system_present"
+    ],
+    "uncertainty_default": "needs_review"
+  },
+  "evidence_contract": {
+    "required_checks": [
+      "verify_subject_identity",
+      "verify_six_wheel_rover_layout",
+      "verify_mast_camera_head",
+      "verify_front_robotic_arm_and_turret",
+      "verify_required_labels",
+      "verify_forbidden_substitutions_absent",
+      "verify_uncertainty_marked_needs_review"
+    ],
+    "required_label_trace": {
+      "Mastcam-Z": "mast/camera head",
+      "SuperCam": "mast unit",
+      "MEDA": "environmental sensors",
+      "MOXIE": "internal/body-mounted technology payload",
+      "PIXL": "arm/turret region",
+      "RIMFAX": "lower/rear underside antenna region",
+      "SHERLOC": "arm/turret region",
+      "robotic arm": "front/body-mounted arm",
+      "wheels": "six rocker-bogie wheels",
+      "mast": "body-mounted mast",
+      "chassis": "central rover body"
+    },
+    "issue_shape": {
+      "required_fields": ["severity", "constraint", "message"],
+      "allowed_severities": ["review_required", "failed", "passed"]
+    }
+  },
+  "approval_contract": {
+    "decision_source": "graphics-approval-policy/v1",
+    "expected_initial_decision": "needs_review",
+    "guardrail": "Uncertainty must produce needs_review, not approval."
+  }
+}
