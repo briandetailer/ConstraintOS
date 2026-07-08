@@ -1,0 +1,117 @@
+{
+  "design": {
+    "id": "GRAPHICS-CANDIDATE-EVALUATION-ADAPTER-DESIGN-0001",
+    "name": "candidate-evaluation-adapter-design/v1",
+    "status": "design_only",
+    "implementation_status": "not_started",
+    "domain": "graphics_validation",
+    "source_milestone": "docs/500_Milestones/Candidate_Evaluation_Adapter_Design_v1.md",
+    "source_design_doc": "docs/700_Use_Cases/Candidate_Evaluation_Adapter_Design.md"
+  },
+  "guardrails": {
+    "image_generation_allowed": false,
+    "image_editing_allowed": false,
+    "real_candidate_image_ingestion_allowed": false,
+    "computer_vision_integration_allowed": false,
+    "approval_automation_change_allowed": false,
+    "candidate_images_are_external_inputs": true,
+    "uncertainty_default": "needs_review"
+  },
+  "candidate_manifest_contract": {
+    "required_fields": [
+      "candidate_id",
+      "contract_key",
+      "candidate_reference",
+      "candidate_source",
+      "submitted_at"
+    ],
+    "recommended_fields": [
+      "source_prompt_id",
+      "source_prompt_text",
+      "negative_prompt_text",
+      "producer",
+      "model_or_tool",
+      "render_settings",
+      "image_sha256",
+      "media_type",
+      "width",
+      "height",
+      "notes"
+    ],
+    "candidate_reference_types_future": [
+      "local_path",
+      "artifact_uri",
+      "connector_file_reference",
+      "object_store_uri"
+    ]
+  },
+  "contract_inputs": {
+    "required_fields": [
+      "contract.id",
+      "contract.mode",
+      "subject.name",
+      "subject.identity_constraints",
+      "subject.forbidden_substitutions",
+      "rendering_requirements",
+      "required_labels",
+      "constraint_groups",
+      "decision_policy",
+      "approval_contract"
+    ]
+  },
+  "adapter_stages": [
+    "ingest_candidate_manifest",
+    "validate_candidate_manifest",
+    "resolve_graphics_contract",
+    "map_contract_constraints",
+    "request_observation_evidence",
+    "normalize_observation_evidence",
+    "score_constraints",
+    "build_evidence_report",
+    "recommend_approval_decision"
+  ],
+  "evidence_item_contract": {
+    "required_fields": [
+      "constraint_id",
+      "constraint_group",
+      "claim",
+      "observed_status",
+      "evidence_source",
+      "confidence",
+      "notes"
+    ],
+    "allowed_observed_statuses": [
+      "satisfied",
+      "missing",
+      "ambiguous",
+      "contradicted",
+      "not_observed"
+    ]
+  },
+  "decision_contract": {
+    "allowed_decisions": [
+      "approved",
+      "needs_review",
+      "rejected"
+    ],
+    "approval_requires_all_required_constraints_satisfied": true,
+    "missing_evidence_decision": "needs_review",
+    "ambiguous_evidence_decision": "needs_review",
+    "contradicted_required_constraint_decision": "rejected"
+  },
+  "non_goals": [
+    "image_generation_pipeline",
+    "candidate_image_upload_workflow",
+    "generated_image_storage_policy",
+    "computer_vision_provider_choice",
+    "human_review_ui",
+    "final_approval_automation"
+  ],
+  "future_command_proposals": [
+    {
+      "command": "cos-graphics-candidate evaluate <candidate-manifest>",
+      "status": "proposed_not_available",
+      "requires_command_reference_update_before_implementation": true
+    }
+  ]
+}
