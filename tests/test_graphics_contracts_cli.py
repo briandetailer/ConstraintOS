@@ -13,7 +13,8 @@ def test_graphics_contracts_cli_lists_contracts_text(capsys) -> None:
     assert "wind_turbine_nacelle" in output
     assert "hydroelectric_dam_powerhouse" in output
     assert "supra_2jz_gte_twin_turbo" in output
-    assert "image_generation" not in output
+    assert "mode=fixture_only_no_image_generation" in output
+    assert "image_generation: not run" not in output
 
 
 def test_graphics_contracts_cli_lists_contracts_json(capsys) -> None:
