@@ -1,0 +1,129 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://constraintos.local/schemas/graphics_validation_contract.schema.json",
+  "title": "ConstraintOS Graphics Validation Contract",
+  "type": "object",
+  "required": [
+    "contract",
+    "subject",
+    "rendering_requirements",
+    "required_labels",
+    "constraint_groups",
+    "decision_policy",
+    "evidence_contract",
+    "approval_contract"
+  ],
+  "properties": {
+    "contract": {
+      "type": "object",
+      "required": ["id", "version", "domain", "mode"],
+      "properties": {
+        "id": {"type": "string"},
+        "version": {"type": "string"},
+        "domain": {"const": "graphics_validation"},
+        "mode": {"enum": ["fixture_only_no_image_generation", "candidate_evaluation"]},
+        "source_artifact_id": {"type": "string"},
+        "source_use_case": {"type": "string"}
+      },
+      "additionalProperties": false
+    },
+    "subject": {
+      "type": "object",
+      "required": ["name", "identity_constraints", "forbidden_substitutions"],
+      "properties": {
+        "name": {"type": "string"},
+        "category": {"type": "string"},
+        "identity_constraints": {"$ref": "#/$defs/non_empty_string_array"},
+        "forbidden_substitutions": {"$ref": "#/$defs/non_empty_string_array"}
+      },
+      "additionalProperties": false
+    },
+    "rendering_requirements": {
+      "type": "object",
+      "required": ["target_graphic", "view", "style", "label_density", "output_format"],
+      "properties": {
+        "target_graphic": {"type": "string"},
+        "view": {"type": "string"},
+        "style": {"type": "string"},
+        "label_density": {"type": "string"},
+        "output_format": {"type": "string"},
+        "background_policy": {"type": "string"},
+        "logo_policy": {"type": "string"}
+      },
+      "additionalProperties": false
+    },
+    "required_labels": {"$ref": "#/$defs/non_empty_string_array"},
+    "constraint_groups": {
+      "type": "object",
+      "required": ["geometry", "component_location"],
+      "properties": {
+        "geometry": {"$ref": "#/$defs/non_empty_string_array"},
+        "component_location": {
+          "type": "object",
+          "minProperties": 1,
+          "additionalProperties": {"type": "string", "minLength": 1}
+        },
+        "style": {"$ref": "#/$defs/non_empty_string_array"}
+      },
+      "additionalProperties": false
+    },
+    "decision_policy": {
+      "type": "object",
+      "required": ["allowed_decisions", "approved_requires", "needs_review_when_any", "rejected_when_any", "uncertainty_default"],
+      "properties": {
+        "allowed_decisions": {
+          "type": "array",
+          "items": {"enum": ["approved", "needs_review", "rejected"]},
+          "minItems": 3,
+          "uniqueItems": true
+        },
+        "approved_requires": {"$ref": "#/$defs/non_empty_string_array"},
+        "needs_review_when_any": {"$ref": "#/$defs/non_empty_string_array"},
+        "rejected_when_any": {"$ref": "#/$defs/non_empty_string_array"},
+        "uncertainty_default": {"const": "needs_review"}
+      },
+      "additionalProperties": false
+    },
+    "evidence_contract": {
+      "type": "object",
+      "required": ["required_checks", "required_label_trace", "issue_shape"],
+      "properties": {
+        "required_checks": {"$ref": "#/$defs/non_empty_string_array"},
+        "required_label_trace": {
+          "type": "object",
+          "minProperties": 1,
+          "additionalProperties": {"type": "string", "minLength": 1}
+        },
+        "issue_shape": {
+          "type": "object",
+          "required": ["required_fields", "allowed_severities"],
+          "properties": {
+            "required_fields": {"$ref": "#/$defs/non_empty_string_array"},
+            "allowed_severities": {"$ref": "#/$defs/non_empty_string_array"}
+          },
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false
+    },
+    "approval_contract": {
+      "type": "object",
+      "required": ["decision_source", "expected_initial_decision", "guardrail"],
+      "properties": {
+        "decision_source": {"type": "string"},
+        "expected_initial_decision": {"enum": ["approved", "needs_review", "rejected"]},
+        "guardrail": {"type": "string"}
+      },
+      "additionalProperties": false
+    }
+  },
+  "$defs": {
+    "non_empty_string_array": {
+      "type": "array",
+      "items": {"type": "string", "minLength": 1},
+      "minItems": 1,
+      "uniqueItems": true
+    }
+  },
+  "additionalProperties": false
+}
