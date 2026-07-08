@@ -8,6 +8,8 @@ status: active
 started_on: 2026-07-07
 previous_gate: Runtime Package Artifact Handoff complete
 baseline: 487 passed
+latest_user_reported_test_result: 4 passed
+latest_user_reported_test_result_on: 2026-07-07
 ```
 
 ## Purpose
@@ -50,7 +52,7 @@ Can ConstraintOS preserve a complex, real-world engineering subject across style
 [x] Create expected approval result fixture
 [x] Add runtime fixture tests for the Perseverance example
 [x] Document example runtime commands
-[ ] Run tests and record verified result
+[x] Run tests and record verified result
 [ ] Add first graphics-validation CLI/API wrapper around the example
 ```
 
@@ -138,11 +140,21 @@ cos-runtime examples/graphics/perseverance/spec.json \
 pytest runtime/tests/test_graphics_perseverance_example.py
 ```
 
+## Verification record
+
+```text
+source: user-reported local test run
+command: pytest runtime/tests/test_graphics_perseverance_example.py
+result: 4 passed
+reported_on: 2026-07-07
+assistant_ran_tests: false
+```
+
 ## Done criteria
 
 ```text
-[ ] Fixture files exist and are internally consistent.
-[ ] Runtime dry-run can schedule and execute all graphics-validation nodes using the example workers.
-[ ] Tests confirm required labels, forbidden substitutions, and needs_review behavior are represented.
+[x] Fixture files exist and are internally consistent.
+[x] Runtime dry-run can schedule and execute all graphics-validation nodes using the example workers.
+[x] Tests confirm required labels, forbidden substitutions, and needs_review behavior are represented.
 [ ] First CLI/API wrapper is identified as the next implementation slice.
 ```
