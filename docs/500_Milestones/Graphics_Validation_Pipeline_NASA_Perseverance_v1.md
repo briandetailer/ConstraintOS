@@ -49,6 +49,7 @@ Can ConstraintOS preserve a complex, real-world engineering subject across style
 [x] Create expected evidence report fixture
 [x] Create expected approval result fixture
 [x] Add runtime fixture tests for the Perseverance example
+[x] Document example runtime commands
 [ ] Run tests and record verified result
 [ ] Add first graphics-validation CLI/API wrapper around the example
 ```
@@ -56,6 +57,7 @@ Can ConstraintOS preserve a complex, real-world engineering subject across style
 ## Example fixture paths
 
 ```text
+examples/graphics/perseverance/README.md
 examples/graphics/perseverance/spec.json
 examples/graphics/perseverance/workers.json
 examples/graphics/perseverance/policy.json
@@ -118,6 +120,22 @@ approval_behavior:
 - Keep the user-confirmed baseline explicit: 487 passed.
 - Do not reopen Runtime Milestone 3.
 - Keep image generation out of this milestone until the pipeline and expected evidence shape are established.
+```
+
+## Manual verification commands
+
+```bash
+cos-runtime examples/graphics/perseverance/spec.json \
+  --workers-file examples/graphics/perseverance/workers.json \
+  --plan-only \
+  --format text
+
+cos-runtime examples/graphics/perseverance/spec.json \
+  --workers-file examples/graphics/perseverance/workers.json \
+  --runtime-id GRAPHICS-PERSEVERANCE-RUNTIME-0001 \
+  --format text
+
+pytest runtime/tests/test_graphics_perseverance_example.py
 ```
 
 ## Done criteria
