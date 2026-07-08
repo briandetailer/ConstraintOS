@@ -16,6 +16,7 @@ It covers:
 - graphics contract watch capture
 - candidate evaluation adapter design verification
 - candidate manifest schema verification
+- candidate manifest discovery
 - local verification commands
 ```
 
@@ -262,6 +263,35 @@ pytest tests/test_candidate_manifest_schema.py
 
 This is a schema-only verification command. It does not evaluate real candidate images and does not generate images.
 
+## Candidate manifest discovery
+
+List available static candidate manifests:
+
+```powershell
+cos-graphics-candidates list
+```
+
+Show individual candidate manifest summaries:
+
+```powershell
+cos-graphics-candidates show perseverance
+cos-graphics-candidates show supra_2jz_gte_twin_turbo
+```
+
+Write a JSON report of static candidate manifests:
+
+```powershell
+cos-graphics-candidates --format json --output reports/candidate-manifests.json list
+```
+
+Run the candidate manifest discovery CLI tests:
+
+```powershell
+pytest tests/test_candidate_manifest_discovery_cli.py
+```
+
+This is a read-only discovery command. It does not evaluate real candidate images and does not generate images.
+
 ## Full recent graphics-validation verification set
 
 Run all recent graphics-validation and contract-focused test suites:
@@ -275,6 +305,7 @@ pytest tests/test_graphics_contract_runtime_bridge.py
 pytest tests/test_graphics_contract_watch_capture_script.py
 pytest tests/test_candidate_evaluation_adapter_design.py
 pytest tests/test_candidate_manifest_schema.py
+pytest tests/test_candidate_manifest_discovery_cli.py
 ```
 
 ## Current contract keys
@@ -285,6 +316,16 @@ Use these keys with `cos-graphics-contracts show`, `cos-graphics-contracts run`,
 perseverance
 wind_turbine_nacelle
 hydroelectric_dam_powerhouse
+supra_2jz_gte_twin_turbo
+```
+
+## Current candidate manifest keys
+
+Use these keys with `cos-graphics-candidates show`:
+
+```text
+perseverance
+supra_2jz_gte
 supra_2jz_gte_twin_turbo
 ```
 
