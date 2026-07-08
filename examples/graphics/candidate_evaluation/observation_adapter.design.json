@@ -1,0 +1,90 @@
+{
+  "design": {
+    "id": "GRAPHICS-OBSERVATION-ADAPTER-DESIGN-0001",
+    "version": "v1",
+    "domain": "graphics_validation",
+    "status": "design_only",
+    "implementation_status": "not_started",
+    "source_milestone": "docs/500_Milestones/Observation_Adapter_Design_v1.md"
+  },
+  "guardrails": {
+    "real_candidate_image_loading_allowed": false,
+    "computer_vision_provider_allowed": false,
+    "ocr_provider_allowed": false,
+    "image_generation_allowed": false,
+    "image_editing_allowed": false,
+    "approval_automation_change_allowed": false,
+    "uncertainty_default": "needs_review",
+    "low_confidence_default": "needs_review"
+  },
+  "source_taxonomy": [
+    {
+      "source_type": "manual_human_review",
+      "availability": "allowed_first",
+      "approval_capability": "cannot_approve_alone",
+      "description": "A human reviewer records observations against known contract constraints."
+    },
+    {
+      "source_type": "metadata_only",
+      "availability": "allowed_with_manifest_only",
+      "approval_capability": "cannot_approve_alone",
+      "description": "File, path, manifest, or producer metadata that does not inspect image pixels."
+    },
+    {
+      "source_type": "machine_assisted_placeholder",
+      "availability": "design_only_not_implemented",
+      "approval_capability": "cannot_approve_alone",
+      "description": "Future machine-assisted observations such as CV or OCR without selecting a provider."
+    },
+    {
+      "source_type": "external_claim",
+      "availability": "allowed_as_claim_only",
+      "approval_capability": "cannot_approve_alone",
+      "description": "Claims supplied by a producer, submitter, or external system."
+    }
+  ],
+  "normalized_observation_item": {
+    "required_fields": [
+      "observation_id",
+      "constraint_id",
+      "constraint_group",
+      "source_type",
+      "claim",
+      "observed_status",
+      "confidence",
+      "reviewer_or_agent",
+      "notes"
+    ],
+    "observed_status_values": [
+      "satisfied",
+      "missing",
+      "ambiguous",
+      "contradicted",
+      "not_observed"
+    ],
+    "confidence_range": {
+      "minimum": 0,
+      "maximum": 1
+    }
+  },
+  "decision_safety_rules": {
+    "low_confidence_satisfied_observations_allow_approval": false,
+    "ambiguous_observations_decision": "needs_review",
+    "missing_required_evidence_decision": "needs_review",
+    "contradicted_required_constraint_decision": "rejected_requires_explicit_source",
+    "manual_observations_can_approve_alone": false,
+    "machine_assisted_observations_can_approve_alone": false,
+    "metadata_only_observations_can_approve_alone": false,
+    "external_claims_can_approve_alone": false
+  },
+  "future_gate": {
+    "recommended_next_milestone": "Manual Observation Fixture Adapter v1",
+    "blocked_until_later": [
+      "real_image_ingestion",
+      "computer_vision_provider_integration",
+      "ocr_provider_integration",
+      "image_generation_integration",
+      "approval_automation_change"
+    ]
+  }
+}
