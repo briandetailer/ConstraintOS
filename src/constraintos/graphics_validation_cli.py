@@ -3,6 +3,7 @@ from __future__ import annotations
 import argparse
 import json
 import sys
+import time
 from pathlib import Path
 from typing import Any
 
@@ -113,19 +114,107 @@ def summarize_graphics_payload(payload: dict[str, Any]) -> str:
     )
 
 
-def format_graphics_payload(payload: dict[str, Any], output_format: str) -> str:
+def _index_by_key(items: list[Any], key: str) -> dict[str, dict[str, Any]]:
+    indexed: dict[str, dict[str, Any]] = {}
+    for item in items:
+        if not isinstance(item, dict):
+            continue
+        value = item.get(key)
+        if isinstance(value, str):
+            indexed[value] = item
+    return indexed
+
+
+def watch_graphics_payload(payload: dict[str, Any]) -> str:
+    graphics = payload.get("graphics_validation", {})
+    if not isinstance(graphics, dict):
+        graphics = {}
+    plan = payload.get("plan", {})
+    schedule = payload.get("schedule", {})
+    execution = payload.get("execution", {})
+    runtime_result = payload.get("runtime_result", {})
+
+    nodes = plan.get("nodes", []) if isinstance(plan, dict) else []
+    node_count = len(nodes) if isinstance(nodes, list) else 0
+    assignments = schedule.get("assignments", []) if isinstance(schedule, dict) else []
+    node_results = execution.get("node_results", []) if isinstance(execution, dict) else []
+    assignments_by_node = _index_by_key(assignments if isinstance(assignments, list) else [], "node_id")
+    results_by_node = _index_by_key(node_results if isinstance(node_results, list) else [], "node_id")
+
+    lines = [
+        "ConstraintOS Graphics Validation Watch",
+        f"example: {graphics.get('example', 'unknown')}",
+        f"subject: {graphics.get('subject', 'unknown')}",
+        f"expected_decision: {graphics.get('expected_decision', 'unknown')}",
+        f"mode: {graphics.get('mode', 'unknown')}",
+        "image_generation: not run",
+        "",
+    ]
+
+    if isinstance(nodes, list):
+        for index, node in enumerate(nodes, start=1):
+            if not isinstance(node, dict):
+                continue
+            node_id = str(node.get("id", "unknown"))
+            assignment = assignments_by_node.get(node_id, {})
+            result = results_by_node.get(node_id, {})
+            worker_id = assignment.get("worker_id") or result.get("worker_id") or "unassigned"
+            result_status = result.get("status", "not_run_plan_only")
+            lines.extend(
+                [
+                    f"[{index}/{node_count}] {node.get('action', 'unknown')}",
+                    f"  node: {node_id}",
+                    f"  plugin: {node.get('plugin', 'unknown')}",
+                    f"  worker: {worker_id}",
+                    "  schedule: assigned" if assignment else "  schedule: unassigned",
+                    f"  result: {result_status}",
+                    "",
+                ]
+            )
+
+    runtime_status = runtime_result.get("status", "plan_only") if isinstance(runtime_result, dict) else "plan_only"
+    schedule_header = schedule.get("schedule_result", {}) if isinstance(schedule, dict) else {}
+    execution_header = execution.get("execution_result", {}) if isinstance(execution, dict) else {}
+    lines.extend(
+        [
+            "Final result:",
+            f"  runtime: {runtime_status}",
+            f"  schedule: {schedule_header.get('status', 'unknown') if isinstance(schedule_header, dict) else 'unknown'}",
+            f"  execution: {execution_header.get('status', 'not_run_plan_only') if isinstance(execution_header, dict) else 'not_run_plan_only'}",
+            f"  approval expectation: {graphics.get('expected_decision', 'unknown')}",
+            "  image generation: not run",
+            "",
+        ]
+    )
+    return "\n".join(lines)
+
+
+def format_graphics_payload(payload: dict[str, Any], output_format: str, watch: bool = False) -> str:
+    if watch:
+        return watch_graphics_payload(payload)
     if output_format == "text":
         return summarize_graphics_payload(payload)
     return json.dumps(payload, indent=2, sort_keys=True) + "\n"
 
 
-def write_graphics_output(payload: dict[str, Any], output_path: str | None, output_format: str) -> None:
-    output = format_graphics_payload(payload, output_format)
+def write_graphics_output(
+    payload: dict[str, Any],
+    output_path: str | None,
+    output_format: str,
+    watch: bool = False,
+    watch_delay_ms: int = 0,
+) -> None:
+    output = format_graphics_payload(payload, output_format, watch=watch)
     if output_path:
         target = Path(output_path)
         target.parent.mkdir(parents=True, exist_ok=True)
         target.write_text(output, encoding="utf-8")
         print(f"Wrote graphics validation result: {target}")
+        return
+    if watch and watch_delay_ms > 0:
+        for line in output.splitlines():
+            print(line, flush=True)
+            time.sleep(watch_delay_ms / 1000)
         return
     print(output, end="")
 
@@ -141,6 +230,8 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--workspace", default=".")
     parser.add_argument("--artifact-root", default=DEFAULT_ARTIFACT_ROOT)
     parser.add_argument("--plan-only", action="store_true")
+    parser.add_argument("--watch", action="store_true", help="Print a step-by-step graphics validation trace suitable for screen or transcript recording.")
+    parser.add_argument("--watch-delay-ms", type=int, default=0, help="Delay between watch-output lines, useful for screen recording.")
     parser.add_argument("--format", choices=["json", "text"], default="json")
     parser.add_argument("--output")
     return parser
@@ -151,7 +242,7 @@ def main(argv: list[str] | None = None) -> int:
     try:
         args = parser.parse_args(argv)
         exit_code, payload = build_graphics_validation_payload(args)
-        write_graphics_output(payload, args.output, args.format)
+        write_graphics_output(payload, args.output, args.format, watch=args.watch, watch_delay_ms=args.watch_delay_ms)
         return exit_code
     except SystemExit:
         raise
