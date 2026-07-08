@@ -15,6 +15,7 @@ It covers:
 - graphics contract runtime watch runs
 - graphics contract watch capture
 - candidate evaluation adapter design verification
+- candidate manifest schema verification
 - local verification commands
 ```
 
@@ -251,6 +252,16 @@ pytest tests/test_candidate_evaluation_adapter_design.py
 
 This is a design-only verification command. It does not evaluate real candidate images and does not generate images.
 
+## Candidate manifest schema
+
+Validate the candidate manifest schema and static fixtures:
+
+```powershell
+pytest tests/test_candidate_manifest_schema.py
+```
+
+This is a schema-only verification command. It does not evaluate real candidate images and does not generate images.
+
 ## Full recent graphics-validation verification set
 
 Run all recent graphics-validation and contract-focused test suites:
@@ -263,6 +274,7 @@ pytest tests/test_graphics_contracts_cli.py
 pytest tests/test_graphics_contract_runtime_bridge.py
 pytest tests/test_graphics_contract_watch_capture_script.py
 pytest tests/test_candidate_evaluation_adapter_design.py
+pytest tests/test_candidate_manifest_schema.py
 ```
 
 ## Current contract keys
