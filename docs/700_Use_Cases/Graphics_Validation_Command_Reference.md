@@ -14,6 +14,7 @@ It covers:
 - graphics contract runtime bridge runs
 - graphics contract runtime watch runs
 - graphics contract watch capture
+- candidate evaluation adapter design verification
 - local verification commands
 ```
 
@@ -240,6 +241,16 @@ Run the contract watch capture script tests:
 pytest tests/test_graphics_contract_watch_capture_script.py
 ```
 
+## Candidate evaluation adapter design
+
+Validate the candidate evaluation adapter design fixture and guardrails:
+
+```powershell
+pytest tests/test_candidate_evaluation_adapter_design.py
+```
+
+This is a design-only verification command. It does not evaluate real candidate images and does not generate images.
+
 ## Full recent graphics-validation verification set
 
 Run all recent graphics-validation and contract-focused test suites:
@@ -251,6 +262,7 @@ pytest tests/test_graphics_contracts.py
 pytest tests/test_graphics_contracts_cli.py
 pytest tests/test_graphics_contract_runtime_bridge.py
 pytest tests/test_graphics_contract_watch_capture_script.py
+pytest tests/test_candidate_evaluation_adapter_design.py
 ```
 
 ## Current contract keys
