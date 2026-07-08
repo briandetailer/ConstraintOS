@@ -1,0 +1,76 @@
+{
+  "graphics_approval_policy": {
+    "name": "graphics-perseverance-approval/v1",
+    "version": "v1",
+    "subject": "NASA Perseverance rover",
+    "mode": "fixture_only_no_image_generation"
+  },
+  "allowed_decisions": ["approved", "needs_review", "rejected"],
+  "decision_rules": {
+    "approved": {
+      "requires": [
+        "subject_identity_passed",
+        "required_geometry_passed",
+        "required_labels_passed",
+        "forbidden_substitutions_absent",
+        "uncertainty_count_zero"
+      ]
+    },
+    "needs_review": {
+      "when_any": [
+        "required_label_location_ambiguous",
+        "required_subsystem_missing",
+        "instrument_location_uncertain",
+        "evidence_trace_incomplete"
+      ]
+    },
+    "rejected": {
+      "when_any": [
+        "wrong_subject_identity",
+        "forbidden_substitution_present",
+        "incompatible_rover_geometry",
+        "invented_major_system_present"
+      ]
+    }
+  },
+  "required_checks": [
+    "verify_subject_identity",
+    "verify_six_wheel_rover_layout",
+    "verify_mast_camera_head",
+    "verify_front_robotic_arm_and_turret",
+    "verify_required_labels",
+    "verify_forbidden_substitutions_absent",
+    "verify_uncertainty_marked_needs_review"
+  ],
+  "required_labels": [
+    "Mastcam-Z",
+    "SuperCam",
+    "MEDA",
+    "MOXIE",
+    "PIXL",
+    "RIMFAX",
+    "SHERLOC",
+    "robotic arm",
+    "wheels",
+    "mast",
+    "chassis"
+  ],
+  "forbidden_substitutions": [
+    "Curiosity rover",
+    "Opportunity rover",
+    "Spirit rover",
+    "generic Mars rover",
+    "lunar rover",
+    "fictional rover",
+    "crewed rover",
+    "tank tracks",
+    "solar panels",
+    "cockpit glass",
+    "human seats",
+    "animal-like legs"
+  ],
+  "uncertainty_handling": {
+    "default_decision": "needs_review",
+    "instruction": "If component location is uncertain, mark it needs_review instead of guessing."
+  }
+}
