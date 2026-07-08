@@ -18,6 +18,7 @@ It covers:
 - candidate manifest schema verification
 - candidate manifest discovery
 - candidate evaluation report contract verification
+- fixture-only candidate evaluation
 - local verification commands
 ```
 
@@ -303,6 +304,29 @@ pytest tests/test_candidate_evaluation_report_contract.py
 
 This is a report-contract verification command. It does not evaluate real candidate images and does not generate images.
 
+## Fixture-only candidate evaluation
+
+Run fixture-only candidate evaluation from static manifest and report fixtures:
+
+```powershell
+cos-graphics-candidates evaluate perseverance
+cos-graphics-candidates evaluate supra_2jz_gte_twin_turbo
+```
+
+Write a fixture-only candidate evaluation report as JSON:
+
+```powershell
+cos-graphics-candidates --format json --output reports/perseverance-candidate-evaluation.json evaluate perseverance
+```
+
+Run the fixture-only candidate evaluation tests:
+
+```powershell
+pytest tests/test_fixture_only_candidate_evaluation.py
+```
+
+This is a fixture-only command. It loads static manifest and report fixtures, but it does not load, decode, inspect, or evaluate image bytes.
+
 ## Full recent graphics-validation verification set
 
 Run all recent graphics-validation and contract-focused test suites:
@@ -318,6 +342,7 @@ pytest tests/test_candidate_evaluation_adapter_design.py
 pytest tests/test_candidate_manifest_schema.py
 pytest tests/test_candidate_manifest_discovery_cli.py
 pytest tests/test_candidate_evaluation_report_contract.py
+pytest tests/test_fixture_only_candidate_evaluation.py
 ```
 
 ## Current contract keys
@@ -333,7 +358,7 @@ supra_2jz_gte_twin_turbo
 
 ## Current candidate manifest keys
 
-Use these keys with `cos-graphics-candidates show`:
+Use these keys with `cos-graphics-candidates show` and `cos-graphics-candidates evaluate`:
 
 ```text
 perseverance
