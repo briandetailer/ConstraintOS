@@ -4,11 +4,14 @@
 
 ```text
 milestone: Candidate Manifest Discovery v1
-status: implementation-complete-pending-test
+status: complete
 started_on: 2026-07-08
+completed_on: 2026-07-08
 previous_gate: Candidate Manifest Schema v1 complete
 track: Foundation Completion Track
 baseline: 487 passed
+latest_user_reported_candidate_manifest_discovery_test_result: 8 passed
+latest_user_reported_candidate_manifest_discovery_test_result_on: 2026-07-08
 ```
 
 ## Purpose
@@ -50,7 +53,7 @@ This milestone lets users list candidate manifests and show a selected manifest 
 [x] Add discovery and CLI tests
 [x] Update candidate evaluation README
 [x] Update command reference
-[ ] Run tests and record verified result
+[x] Run tests and record verified result
 ```
 
 ## Implemented files
@@ -68,6 +71,16 @@ docs/700_Use_Cases/Graphics_Validation_Command_Reference.md
 
 ```powershell
 pytest tests/test_candidate_manifest_discovery_cli.py
+```
+
+## Verification record
+
+```text
+source: user-reported local test run
+command: pytest tests/test_candidate_manifest_discovery_cli.py
+result: 8 passed
+reported_on: 2026-07-08
+assistant_ran_tests: false
 ```
 
 ## CLI commands
@@ -99,5 +112,15 @@ cos-graphics-candidates --format json --output reports/candidate-manifests.json 
 [x] JSON output is supported.
 [x] Package exposes cos-graphics-candidates.
 [x] Command reference updated in the same implementation slice.
-[ ] Verification test result recorded.
+[x] Verification test result recorded.
+```
+
+## Handoff notes
+
+```text
+- Candidate Manifest Discovery v1 is complete.
+- Static candidate manifests can now be listed and shown through cos-graphics-candidates.
+- Discovery remains read-only and does not evaluate, load, decode, inspect, or generate candidate images.
+- This remains part of the Foundation Completion Track.
+- The next milestone should define the fixture-only candidate evaluation report contract before implementing candidate evaluation behavior.
 ```
