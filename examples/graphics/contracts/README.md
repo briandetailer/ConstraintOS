@@ -59,6 +59,16 @@ cos-graphics-contracts run hydroelectric_dam_powerhouse
 cos-graphics-contracts run supra_2jz_gte_twin_turbo
 ```
 
+Watch a contract-backed runtime bridge for demos or screen recordings:
+
+```powershell
+cos-graphics-contracts run perseverance --plan-only --watch
+cos-graphics-contracts run wind_turbine_nacelle --watch
+cos-graphics-contracts run hydroelectric_dam_powerhouse --watch
+cos-graphics-contracts run supra_2jz_gte_twin_turbo --watch
+cos-graphics-contracts run supra_2jz_gte_twin_turbo --watch --watch-delay-ms 250
+```
+
 Write JSON reports:
 
 ```powershell
