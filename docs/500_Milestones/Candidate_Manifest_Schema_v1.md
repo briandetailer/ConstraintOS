@@ -4,10 +4,13 @@
 
 ```text
 milestone: Candidate Manifest Schema v1
-status: implementation-complete-pending-test
+status: complete
 started_on: 2026-07-08
+completed_on: 2026-07-08
 previous_gate: Candidate Evaluation Adapter Design v1 complete
 baseline: 487 passed
+latest_user_reported_candidate_manifest_schema_test_result: 13 passed
+latest_user_reported_candidate_manifest_schema_test_result_on: 2026-07-08
 ```
 
 ## Purpose
@@ -49,7 +52,7 @@ This milestone creates the fixture-only boundary required before any future cand
 [x] Add schema and guardrail tests
 [x] Update candidate evaluation README
 [x] Update command reference
-[ ] Run tests and record verified result
+[x] Run tests and record verified result
 ```
 
 ## Implemented files
@@ -67,6 +70,16 @@ docs/700_Use_Cases/Graphics_Validation_Command_Reference.md
 
 ```powershell
 pytest tests/test_candidate_manifest_schema.py
+```
+
+## Verification record
+
+```text
+source: user-reported local test run
+command: pytest tests/test_candidate_manifest_schema.py
+result: 13 passed
+reported_on: 2026-07-08
+assistant_ran_tests: false
 ```
 
 ## Schema boundaries
@@ -101,5 +114,15 @@ pytest tests/test_candidate_manifest_schema.py
 [x] Tests reject ConstraintOS-generated candidate claims.
 [x] Tests reject approved initial decisions.
 [x] Command reference updated in the same implementation slice.
-[ ] Verification test result recorded.
+[x] Verification test result recorded.
+```
+
+## Handoff notes
+
+```text
+- Candidate Manifest Schema v1 is complete.
+- Static external-candidate manifest fixtures now exist for Perseverance and Supra 2JZ-GTE.
+- Candidate manifests remain reference-only and not evaluated.
+- No image generation, image editing, real image ingestion, computer-vision integration, approval automation change, or candidate-evaluation CLI command was introduced.
+- The next milestone should add candidate manifest discovery/reporting or design a fixture-only candidate-evaluation report contract before implementing any real candidate evaluation.
 ```
