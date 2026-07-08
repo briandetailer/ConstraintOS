@@ -1,0 +1,151 @@
+{
+  "contract": {
+    "id": "GRAPHICS-CONTRACT-HYDROELECTRIC-DAM-POWERHOUSE-0001",
+    "version": "v1",
+    "domain": "graphics_validation",
+    "mode": "fixture_only_no_image_generation",
+    "source_artifact_id": "GRAPHICS-HYDROELECTRIC-DAM-POWERHOUSE-0001",
+    "source_use_case": "docs/700_Use_Cases/Use_Case_3_Hydroelectric_Dam_Powerhouse_Cross_Section.md"
+  },
+  "subject": {
+    "name": "Conventional hydroelectric dam and powerhouse cross-section",
+    "category": "civil hydraulic electrical infrastructure cross-section",
+    "identity_constraints": [
+      "The subject must be a conventional hydroelectric dam / powerhouse system unless the variant explicitly asks for pumped storage.",
+      "It must include water as the energy source.",
+      "It must include a dam/reservoir relationship or explicitly state if using run-of-river.",
+      "It must not become a coal, nuclear, geothermal, tidal, or generic factory power plant.",
+      "It must not show combustion engines or smokestacks as the primary generation mechanism."
+    ],
+    "forbidden_substitutions": [
+      "coal power plant",
+      "nuclear power plant",
+      "geothermal power plant",
+      "tidal power plant",
+      "generic factory power plant",
+      "combustion engine",
+      "smokestack",
+      "fuel tank",
+      "steam boiler",
+      "solar farm",
+      "wind turbine",
+      "unrelated industrial equipment"
+    ]
+  },
+  "rendering_requirements": {
+    "target_graphic": "labeled technical cross-section of a conventional hydroelectric dam and powerhouse",
+    "view": "side cross-section through dam and powerhouse",
+    "style": "clean engineering manual",
+    "label_density": "full infrastructure labels",
+    "output_format": "landscape poster",
+    "background_policy": "background landscape is allowed only if it does not obscure the cross-section or labels",
+    "logo_policy": "avoid logos unless explicitly allowed by later policy"
+  },
+  "required_labels": [
+    "reservoir",
+    "dam wall",
+    "intake",
+    "trash rack",
+    "penstock",
+    "turbine",
+    "generator",
+    "powerhouse",
+    "transformer",
+    "transmission line",
+    "spillway",
+    "tailrace",
+    "water-flow arrows"
+  ],
+  "constraint_groups": {
+    "geometry": [
+      "Reservoir must be upstream and higher than the downstream tailrace for a conventional dam cross-section.",
+      "Intake must connect reservoir water to the penstock.",
+      "Penstock must carry water from the intake toward the turbine.",
+      "Turbine must be downstream of the penstock and inside or near the powerhouse.",
+      "Generator must be mechanically coupled to the turbine, not floating in the reservoir.",
+      "Transformer and transmission lines must be on the electrical-output side, not in the water path.",
+      "Spillway must be distinct from the penstock/turbine path.",
+      "Tailrace must receive water after it passes through the turbine.",
+      "Water-flow arrows must not contradict gravity/head unless the variant is pumped storage."
+    ],
+    "component_location": {
+      "reservoir": "upstream and higher than tailrace behind dam wall",
+      "dam wall": "retains reservoir water and creates head",
+      "intake": "reservoir side feeding penstock",
+      "trash rack": "at intake on reservoir side",
+      "penstock": "pipe or conduit from intake to turbine",
+      "turbine": "downstream of penstock inside or near powerhouse",
+      "generator": "dry or housed, mechanically coupled to turbine",
+      "powerhouse": "houses turbine/generator equipment",
+      "transformer": "electrical-output side connected to transmission line",
+      "transmission line": "electrical output leaving transformer/grid side",
+      "spillway": "separate overflow route distinct from penstock/turbine path",
+      "tailrace": "downstream water channel after turbine discharge",
+      "water-flow arrows": "gravity-fed reservoir-to-penstock-to-turbine-to-tailrace direction"
+    },
+    "style": [
+      "clean engineering manual",
+      "flow arrows must remain legible and directionally consistent",
+      "fictionalization is not allowed"
+    ]
+  },
+  "decision_policy": {
+    "allowed_decisions": ["approved", "needs_review", "rejected"],
+    "approved_requires": [
+      "subject_identity_passed",
+      "required_geometry_passed",
+      "required_labels_passed",
+      "forbidden_substitutions_absent",
+      "uncertainty_count_zero"
+    ],
+    "needs_review_when_any": [
+      "water_flow_direction_uncertain",
+      "component_location_uncertain",
+      "turbine_generator_relationship_uncertain",
+      "evidence_trace_incomplete"
+    ],
+    "rejected_when_any": [
+      "wrong_power_plant_type",
+      "forbidden_substitution_present",
+      "impossible_water_flow_direction",
+      "generator_submerged_or_uncoupled",
+      "spillway_penstock_conflict"
+    ],
+    "uncertainty_default": "needs_review"
+  },
+  "evidence_contract": {
+    "required_checks": [
+      "verify_hydropower_subject_identity",
+      "verify_reservoir_dam_head_relationship",
+      "verify_penstock_turbine_tailrace_flow",
+      "verify_turbine_generator_relationship",
+      "verify_required_labels",
+      "verify_forbidden_substitutions_absent",
+      "verify_uncertainty_marked_needs_review"
+    ],
+    "required_label_trace": {
+      "reservoir": "upstream stored water",
+      "dam wall": "water-retaining structure",
+      "intake": "reservoir-side water entry",
+      "trash rack": "intake screen region",
+      "penstock": "pipe/conduit to turbine",
+      "turbine": "water-driven mechanical rotor",
+      "generator": "dry/housed electrical generator coupled to turbine",
+      "powerhouse": "turbine/generator building",
+      "transformer": "electrical output equipment",
+      "transmission line": "grid/export line",
+      "spillway": "separate overflow path",
+      "tailrace": "downstream discharge channel",
+      "water-flow arrows": "reservoir to tailrace flow path"
+    },
+    "issue_shape": {
+      "required_fields": ["severity", "constraint", "message"],
+      "allowed_severities": ["review_required", "failed", "passed"]
+    }
+  },
+  "approval_contract": {
+    "decision_source": "graphics-approval-policy/v1",
+    "expected_initial_decision": "needs_review",
+    "guardrail": "Uncertainty must produce needs_review, not approval."
+  }
+}
