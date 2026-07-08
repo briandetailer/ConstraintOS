@@ -1,0 +1,71 @@
+{
+  "graphics_evidence_report": {
+    "id": "EVIDENCE-PERSEVERANCE-0001",
+    "source_artifact_id": "GRAPHICS-PERSEVERANCE-0001",
+    "candidate_image": "placeholder://graphics/perseverance/candidate-0001.png",
+    "status": "needs_review",
+    "mode": "fixture_only_no_image_generation"
+  },
+  "checks": [
+    {
+      "id": "verify_subject_identity",
+      "status": "passed",
+      "evidence": "Candidate is intended to depict NASA Perseverance rover, not another rover family."
+    },
+    {
+      "id": "verify_six_wheel_rover_layout",
+      "status": "passed",
+      "evidence": "Six-wheel rover layout is required and must remain visible or logically present."
+    },
+    {
+      "id": "verify_mast_camera_head",
+      "status": "passed",
+      "evidence": "Mast/camera head must rise from the rover body."
+    },
+    {
+      "id": "verify_front_robotic_arm_and_turret",
+      "status": "passed",
+      "evidence": "Robotic arm must attach to the front/body area with an instrument turret at the end."
+    },
+    {
+      "id": "verify_required_labels",
+      "status": "needs_review",
+      "evidence": "RIMFAX and MOXIE placement are common ambiguity risks and require explicit placement evidence before approval."
+    },
+    {
+      "id": "verify_forbidden_substitutions_absent",
+      "status": "passed",
+      "evidence": "Forbidden substitutions are listed in policy and must be rejected if present."
+    },
+    {
+      "id": "verify_uncertainty_marked_needs_review",
+      "status": "passed",
+      "evidence": "The expected decision remains needs_review when instrument placement is ambiguous."
+    }
+  ],
+  "required_label_trace": {
+    "Mastcam-Z": "mast/camera head",
+    "SuperCam": "mast unit",
+    "MEDA": "environmental sensors",
+    "MOXIE": "internal/body-mounted technology payload",
+    "PIXL": "arm/turret region",
+    "RIMFAX": "lower/rear underside antenna region",
+    "SHERLOC": "arm/turret region",
+    "robotic arm": "front/body-mounted arm",
+    "wheels": "six rocker-bogie wheels",
+    "mast": "body-mounted mast",
+    "chassis": "central rover body"
+  },
+  "issues": [
+    {
+      "severity": "review_required",
+      "constraint": "MOXIE placement",
+      "message": "MOXIE must be represented as an internal/body-mounted payload, not as an external antenna or decorative object."
+    },
+    {
+      "severity": "review_required",
+      "constraint": "RIMFAX placement",
+      "message": "RIMFAX must be associated with the lower/rear underside antenna region. Ambiguous placement must trigger needs_review."
+    }
+  ]
+}
