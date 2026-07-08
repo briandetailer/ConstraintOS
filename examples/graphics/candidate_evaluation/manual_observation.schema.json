@@ -1,0 +1,102 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "ConstraintOS Manual Observation Fixture",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "manual_observation_fixture",
+    "candidate_binding",
+    "observation_boundary",
+    "observations",
+    "observation_summary",
+    "recommendation"
+  ],
+  "properties": {
+    "manual_observation_fixture": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "version", "domain", "status", "observation_mode", "recorded_at"],
+      "properties": {
+        "id": {"type": "string", "minLength": 1},
+        "version": {"type": "string", "const": "v1"},
+        "domain": {"type": "string", "const": "graphics_validation"},
+        "status": {"type": "string", "const": "fixture_only"},
+        "observation_mode": {"type": "string", "const": "manual_human_review_fixture"},
+        "recorded_at": {"type": "string", "format": "date-time"}
+      }
+    },
+    "candidate_binding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["candidate_manifest_id", "candidate_id", "candidate_manifest_key", "contract_key", "candidate_reference_status"],
+      "properties": {
+        "candidate_manifest_id": {"type": "string", "minLength": 1},
+        "candidate_id": {"type": "string", "minLength": 1},
+        "candidate_manifest_key": {"type": "string", "minLength": 1},
+        "contract_key": {"type": "string", "enum": ["perseverance", "wind_turbine_nacelle", "hydroelectric_dam_powerhouse", "supra_2jz_gte_twin_turbo"]},
+        "candidate_reference_status": {"type": "string", "const": "reference_only_not_loaded"}
+      }
+    },
+    "observation_boundary": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["source_type", "real_image_ingestion_ran", "computer_vision_ran", "ocr_ran", "image_generation_ran", "image_editing_ran", "approval_automation_ran"],
+      "properties": {
+        "source_type": {"type": "string", "const": "manual_human_review"},
+        "real_image_ingestion_ran": {"type": "boolean", "const": false},
+        "computer_vision_ran": {"type": "boolean", "const": false},
+        "ocr_ran": {"type": "boolean", "const": false},
+        "image_generation_ran": {"type": "boolean", "const": false},
+        "image_editing_ran": {"type": "boolean", "const": false},
+        "approval_automation_ran": {"type": "boolean", "const": false}
+      }
+    },
+    "observations": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["observation_id", "constraint_id", "constraint_group", "source_type", "claim", "observed_status", "confidence", "reviewer_or_agent", "notes"],
+        "properties": {
+          "observation_id": {"type": "string", "minLength": 1},
+          "constraint_id": {"type": "string", "minLength": 1},
+          "constraint_group": {"type": "string", "minLength": 1},
+          "source_type": {"type": "string", "const": "manual_human_review"},
+          "claim": {"type": "string", "minLength": 1},
+          "observed_status": {"type": "string", "enum": ["satisfied", "missing", "ambiguous", "contradicted", "not_observed"]},
+          "confidence": {"type": "number", "minimum": 0, "maximum": 1},
+          "reviewer_or_agent": {"type": "string", "minLength": 1},
+          "notes": {"type": "string"}
+        }
+      }
+    },
+    "observation_summary": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["total_observations", "satisfied_count", "missing_count", "ambiguous_count", "contradicted_count", "not_observed_count", "lowest_confidence", "overall_observation_status"],
+      "properties": {
+        "total_observations": {"type": "integer", "minimum": 1},
+        "satisfied_count": {"type": "integer", "minimum": 0},
+        "missing_count": {"type": "integer", "minimum": 0},
+        "ambiguous_count": {"type": "integer", "minimum": 0},
+        "contradicted_count": {"type": "integer", "minimum": 0},
+        "not_observed_count": {"type": "integer", "minimum": 0},
+        "lowest_confidence": {"type": "number", "minimum": 0, "maximum": 1},
+        "overall_observation_status": {"type": "string", "enum": ["partial", "complete", "needs_review"]}
+      }
+    },
+    "recommendation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["recommended_decision", "reason", "approval_allowed", "uncertainty_default", "manual_observations_can_approve_alone"],
+      "properties": {
+        "recommended_decision": {"type": "string", "const": "needs_review"},
+        "reason": {"type": "string", "minLength": 1},
+        "approval_allowed": {"type": "boolean", "const": false},
+        "uncertainty_default": {"type": "string", "const": "needs_review"},
+        "manual_observations_can_approve_alone": {"type": "boolean", "const": false}
+      }
+    }
+  }
+}
