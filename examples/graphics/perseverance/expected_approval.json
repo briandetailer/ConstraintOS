@@ -1,0 +1,30 @@
+{
+  "graphics_approval_result": {
+    "id": "APPROVAL-PERSEVERANCE-0001",
+    "source_artifact_id": "GRAPHICS-PERSEVERANCE-0001",
+    "decision": "needs_review",
+    "decided_by": "graphics-approval-policy/v1",
+    "mode": "fixture_only_no_image_generation"
+  },
+  "passed": [
+    "subject identity specified as NASA Perseverance rover",
+    "six-wheel rocker-bogie rover layout required",
+    "mast/camera head required",
+    "front robotic arm and instrument turret required",
+    "clean engineering-manual style preserved",
+    "major subsystem and instrument labels specified",
+    "forbidden substitutions enumerated"
+  ],
+  "needs_review": [
+    "RIMFAX label placement must be verified against lower/rear underside antenna region",
+    "MOXIE must be verified as internal/body-mounted payload rather than external object",
+    "Generated candidate image is not present in this fixture-only runtime slice"
+  ],
+  "failed": [],
+  "required_action": [
+    "Run the generated prompt through an image-generation adapter only after the validation pipeline shape is stable.",
+    "Evaluate the candidate image against subject identity, geometry, instrument placement, labels, and forbidden substitutions.",
+    "Approve only if ambiguous subsystem placement is resolved by evidence."
+  ],
+  "guardrail": "Uncertainty must produce needs_review, not approval."
+}
