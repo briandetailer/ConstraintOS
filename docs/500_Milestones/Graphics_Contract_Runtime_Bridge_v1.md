@@ -4,10 +4,17 @@
 
 ```text
 milestone: Graphics Contract Runtime Bridge v1
-status: implementation-complete-pending-test
+status: complete
 started_on: 2026-07-08
+completed_on: 2026-07-08
 previous_gate: Graphics Contract CLI Discovery v1 complete
 baseline: 487 passed
+latest_user_reported_contract_test_result: 19 passed
+latest_user_reported_contract_test_result_on: 2026-07-08
+latest_user_reported_cli_test_result: 6 passed
+latest_user_reported_cli_test_result_on: 2026-07-08
+latest_user_reported_bridge_test_result: 6 passed
+latest_user_reported_bridge_test_result_on: 2026-07-08
 ```
 
 ## Purpose
@@ -45,7 +52,7 @@ This milestone lets a selected contract produce an in-memory runtime specificati
 [x] Add cos-graphics-contracts run command
 [x] Add bridge tests
 [x] Update README usage notes
-[ ] Run tests and record verified result
+[x] Run tests and record verified result
 ```
 
 ## Implemented files
@@ -63,6 +70,41 @@ examples/graphics/contracts/README.md
 pytest tests/test_graphics_contracts.py
 pytest tests/test_graphics_contracts_cli.py
 pytest tests/test_graphics_contract_runtime_bridge.py
+```
+
+## Verification records
+
+```text
+source: user-reported local test run
+command: pytest tests/test_graphics_contracts.py
+platform: win32
+python: 3.12.10
+pytest: 9.1.1
+result: 19 passed in 0.29s
+reported_on: 2026-07-08
+assistant_ran_tests: false
+```
+
+```text
+source: user-reported local test run
+command: pytest tests/test_graphics_contracts_cli.py
+platform: win32
+python: 3.12.10
+pytest: 9.1.1
+result: 6 passed in 0.58s
+reported_on: 2026-07-08
+assistant_ran_tests: false
+```
+
+```text
+source: user-reported local test run
+command: pytest tests/test_graphics_contract_runtime_bridge.py
+platform: win32
+python: 3.12.10
+pytest: 9.1.1
+result: 6 passed in 0.47s
+reported_on: 2026-07-08
+assistant_ran_tests: false
 ```
 
 ## CLI commands
@@ -91,5 +133,14 @@ cos-graphics-contracts --format json --output reports/supra-contract-runtime.jso
 [x] Contract-backed runtime bridge can plan and schedule all six nodes.
 [x] Contract-backed runtime bridge can execute dry-run runtime nodes.
 [x] CLI exposes contract runtime bridge reporting.
-[ ] Verification test result recorded.
+[x] Verification test result recorded.
+```
+
+## Handoff notes
+
+```text
+- Graphics Contract Runtime Bridge v1 is complete.
+- Four reusable graphics contracts can now be bridged into runtime-ready dry-run payloads.
+- The bridge remains fixture-only and does not generate images.
+- The next milestone should add demo-friendly watch/reporting for contract runtime runs or begin designing candidate-evaluation adapters while keeping image generation gated.
 ```
