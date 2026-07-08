@@ -1,0 +1,149 @@
+{
+  "contract": {
+    "id": "GRAPHICS-CONTRACT-WIND-TURBINE-NACELLE-0001",
+    "version": "v1",
+    "domain": "graphics_validation",
+    "mode": "fixture_only_no_image_generation",
+    "source_artifact_id": "GRAPHICS-WIND-TURBINE-NACELLE-0001",
+    "source_use_case": "docs/700_Use_Cases/Use_Case_2_NREL_5MW_Wind_Turbine_Nacelle_Drivetrain_Cutaway.md"
+  },
+  "subject": {
+    "name": "NREL offshore 5-MW baseline wind turbine nacelle / drivetrain",
+    "category": "renewable energy drivetrain cutaway",
+    "identity_constraints": [
+      "The subject must be a horizontal-axis utility-scale wind turbine.",
+      "It must represent the NREL offshore 5-MW baseline turbine concept.",
+      "It must have exactly three blades.",
+      "It must be an upwind turbine: rotor in front of the tower/nacelle relative to wind direction.",
+      "It must not become a vertical-axis turbine.",
+      "It must not become a small residential turbine.",
+      "It must not include solar panels, sails, propellers unrelated to the rotor, or aircraft-like wings."
+    ],
+    "forbidden_substitutions": [
+      "vertical-axis wind turbine",
+      "small residential turbine",
+      "two-bladed turbine",
+      "four-bladed turbine",
+      "downwind turbine",
+      "solar panels",
+      "sails",
+      "aircraft propeller",
+      "aircraft wings",
+      "combustion engine",
+      "fuel tank",
+      "exhaust pipe",
+      "solar inverter"
+    ]
+  },
+  "rendering_requirements": {
+    "target_graphic": "labeled technical cutaway of the NREL 5-MW wind turbine nacelle and rotor drivetrain",
+    "view": "nacelle cutaway side view",
+    "style": "clean engineering manual",
+    "label_density": "full drivetrain labels",
+    "output_format": "detailed nacelle-only diagram",
+    "background_policy": "background wind farm scenery is allowed only if it does not obscure the turbine or labels",
+    "logo_policy": "avoid logos unless explicitly allowed by later policy"
+  },
+  "required_labels": [
+    "rotor",
+    "blades",
+    "hub",
+    "low-speed shaft",
+    "gearbox",
+    "high-speed shaft",
+    "generator",
+    "brake",
+    "yaw system",
+    "pitch system",
+    "nacelle housing",
+    "tower interface"
+  ],
+  "constraint_groups": {
+    "geometry": [
+      "Rotor must connect to the hub.",
+      "Hub must connect to the nacelle.",
+      "Nacelle must sit on top of the tower through the yaw bearing/system.",
+      "Main shaft / low-speed shaft must run from the hub into the nacelle.",
+      "Gearbox must sit between low-speed shaft and generator in geared drivetrain views.",
+      "Generator must be behind the gearbox, not inside the blade hub.",
+      "Tower must support the nacelle; nacelle must not float.",
+      "Blade count must remain three in every view where the rotor is visible."
+    ],
+    "component_location": {
+      "rotor": "front of nacelle on upwind side",
+      "blades": "three blades connected to the hub",
+      "hub": "between blades and low-speed shaft",
+      "low-speed shaft": "runs from hub into nacelle toward gearbox",
+      "gearbox": "between low-speed shaft and high-speed shaft/generator",
+      "high-speed shaft": "between gearbox and generator/brake area",
+      "generator": "inside nacelle downstream of gearbox",
+      "brake": "near drivetrain, not on blade tips",
+      "yaw system": "nacelle/tower interface",
+      "pitch system": "blade root or hub pitch mechanism",
+      "nacelle housing": "encloses drivetrain components",
+      "tower interface": "support point below nacelle"
+    },
+    "style": [
+      "clean engineering manual",
+      "cutaway views may expose nacelle internals but must preserve exterior nacelle/tower relationships",
+      "fictionalization is not allowed"
+    ]
+  },
+  "decision_policy": {
+    "allowed_decisions": ["approved", "needs_review", "rejected"],
+    "approved_requires": [
+      "subject_identity_passed",
+      "required_geometry_passed",
+      "required_labels_passed",
+      "forbidden_substitutions_absent",
+      "uncertainty_count_zero"
+    ],
+    "needs_review_when_any": [
+      "wrong_or_uncertain_blade_count",
+      "missing_drivetrain_path",
+      "gearbox_generator_location_uncertain",
+      "evidence_trace_incomplete"
+    ],
+    "rejected_when_any": [
+      "wrong_turbine_class",
+      "forbidden_substitution_present",
+      "impossible_component_placement",
+      "hallucinated_major_system_present"
+    ],
+    "uncertainty_default": "needs_review"
+  },
+  "evidence_contract": {
+    "required_checks": [
+      "verify_horizontal_axis_utility_scale_identity",
+      "verify_three_blade_upwind_rotor",
+      "verify_nacelle_tower_relationship",
+      "verify_drivetrain_order",
+      "verify_required_labels",
+      "verify_forbidden_substitutions_absent",
+      "verify_uncertainty_marked_needs_review"
+    ],
+    "required_label_trace": {
+      "rotor": "upwind rotor assembly",
+      "blades": "three rotor blades",
+      "hub": "rotor hub",
+      "low-speed shaft": "hub-to-gearbox shaft",
+      "gearbox": "nacelle drivetrain gearbox",
+      "high-speed shaft": "gearbox-to-generator shaft",
+      "generator": "downstream nacelle generator",
+      "brake": "drivetrain brake region",
+      "yaw system": "nacelle/tower interface",
+      "pitch system": "blade root or hub pitch mechanism",
+      "nacelle housing": "nacelle enclosure",
+      "tower interface": "tower top / nacelle support"
+    },
+    "issue_shape": {
+      "required_fields": ["severity", "constraint", "message"],
+      "allowed_severities": ["review_required", "failed", "passed"]
+    }
+  },
+  "approval_contract": {
+    "decision_source": "graphics-approval-policy/v1",
+    "expected_initial_decision": "needs_review",
+    "guardrail": "Uncertainty must produce needs_review, not approval."
+  }
+}
