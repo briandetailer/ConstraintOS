@@ -108,3 +108,14 @@ jobs:
             --output-dir runtime-approval \
             --format json
           test -f runtime-approval/approvals/RUNTIME-0001.json
+
+      - name: Upload Runtime package artifact
+        if: ${{ matrix.python-version == '3.12' }}
+        uses: actions/upload-artifact@v7
+        with:
+          name: constraintos-runtime-package-1.0.0-alpha.27
+          path: |
+            dist/*.whl
+            dist/*.tar.gz
+          if-no-files-found: error
+          retention-days: 30
