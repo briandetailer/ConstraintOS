@@ -4,7 +4,7 @@
 
 ```text
 milestone: Reusable Graphics Validation Contracts v1
-status: active
+status: implementation-complete-pending-test
 started_on: 2026-07-08
 previous_gate: Graphics Validation Watch Mode v1 complete
 baseline: 487 passed
@@ -51,13 +51,29 @@ examples/graphics/perseverance/expected_approval.json
 
 ```text
 [x] Create milestone doc
-[ ] Create reusable graphics contract schema fixture
-[ ] Create Perseverance contract instance from existing fixture
-[ ] Add contract validation helper
-[ ] Add tests for required contract fields
-[ ] Add tests for Perseverance contract consistency with existing fixture
-[ ] Document next contract instances for wind turbine, hydro dam, and Supra
+[x] Create reusable graphics contract schema fixture
+[x] Create Perseverance contract instance from existing fixture
+[x] Add contract validation helper
+[x] Add tests for required contract fields
+[x] Add tests for Perseverance contract consistency with existing fixture
+[x] Document next contract instances for wind turbine, hydro dam, and Supra
 [ ] Run tests and record verified result
+```
+
+## Implemented files
+
+```text
+examples/graphics/contracts/README.md
+examples/graphics/contracts/graphics_validation_contract.schema.json
+examples/graphics/contracts/perseverance.contract.json
+src/constraintos/graphics_contracts.py
+tests/test_graphics_contracts.py
+```
+
+## Verification command
+
+```powershell
+pytest tests/test_graphics_contracts.py
 ```
 
 ## Guardrails
@@ -72,9 +88,10 @@ examples/graphics/perseverance/expected_approval.json
 ## Done criteria
 
 ```text
-[ ] Reusable contract schema exists.
-[ ] Perseverance contract instance exists.
-[ ] Tests confirm the contract captures identity, geometry, labels, forbidden substitutions, evidence, approval, and uncertainty behavior.
-[ ] Existing Perseverance runtime fixture remains compatible.
-[ ] Next contract subjects are documented as follow-on work.
+[x] Reusable contract schema exists.
+[x] Perseverance contract instance exists.
+[x] Tests confirm the contract captures identity, geometry, labels, forbidden substitutions, evidence, approval, and uncertainty behavior.
+[x] Existing Perseverance runtime fixture remains compatible by contract consistency checks.
+[x] Next contract subjects are documented as follow-on work.
+[ ] Verification test result recorded.
 ```
