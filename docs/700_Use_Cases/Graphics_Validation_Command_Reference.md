@@ -19,6 +19,7 @@ It covers:
 - candidate manifest discovery
 - candidate evaluation report contract verification
 - fixture-only candidate evaluation
+- foundation readiness review
 - local verification commands
 ```
 
@@ -327,6 +328,16 @@ pytest tests/test_fixture_only_candidate_evaluation.py
 
 This is a fixture-only command. It loads static manifest and report fixtures, but it does not load, decode, inspect, or evaluate image bytes.
 
+## Foundation readiness review
+
+Validate the foundation readiness checkpoint before real image ingestion or observation adapter work:
+
+```powershell
+pytest tests/test_foundation_readiness_review.py
+```
+
+This is a documentation and guardrail verification command. It does not evaluate real candidate images and does not generate images.
+
 ## Full recent graphics-validation verification set
 
 Run all recent graphics-validation and contract-focused test suites:
@@ -343,6 +354,7 @@ pytest tests/test_candidate_manifest_schema.py
 pytest tests/test_candidate_manifest_discovery_cli.py
 pytest tests/test_candidate_evaluation_report_contract.py
 pytest tests/test_fixture_only_candidate_evaluation.py
+pytest tests/test_foundation_readiness_review.py
 ```
 
 ## Current contract keys
