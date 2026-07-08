@@ -6,6 +6,10 @@ from typing import Any
 
 from jsonschema import Draft202012Validator
 
+DEFAULT_CONTRACTS_DIR = Path("examples") / "graphics" / "contracts"
+DEFAULT_SCHEMA_NAME = "graphics_validation_contract.schema.json"
+CONTRACT_SUFFIX = ".contract.json"
+
 
 class GraphicsContractError(ValueError):
     """Raised when a graphics validation contract is invalid or inconsistent."""
@@ -35,6 +39,105 @@ def require_same_set(name: str, left: list[str], right: list[str]) -> None:
         missing = sorted(left_set - right_set)
         unexpected = sorted(right_set - left_set)
         raise GraphicsContractError(f"{name} mismatch; missing={missing}; unexpected={unexpected}")
+
+
+def discover_project_root(start: Path | None = None) -> Path:
+    """Find the repository root for graphics contract discovery."""
+    current = (start or Path.cwd()).resolve()
+    for candidate in (current, *current.parents):
+        if (candidate / DEFAULT_CONTRACTS_DIR / DEFAULT_SCHEMA_NAME).exists():
+            return candidate
+    return current
+
+
+def resolve_contracts_dir(project_root: Path, explicit_contracts_dir: str | None = None) -> Path:
+    if explicit_contracts_dir:
+        contracts_dir = Path(explicit_contracts_dir)
+        return contracts_dir if contracts_dir.is_absolute() else project_root / contracts_dir
+    return project_root / DEFAULT_CONTRACTS_DIR
+
+
+def contract_key(path: Path) -> str:
+    name = path.name
+    if name.endswith(CONTRACT_SUFFIX):
+        return name[: -len(CONTRACT_SUFFIX)]
+    return path.stem
+
+
+def iter_contract_paths(contracts_dir: Path) -> list[Path]:
+    if not contracts_dir.exists():
+        raise GraphicsContractError(f"Graphics contracts directory does not exist: {contracts_dir}")
+    return sorted(path for path in contracts_dir.glob(f"*{CONTRACT_SUFFIX}") if path.is_file())
+
+
+def load_contract_schema(contracts_dir: Path) -> dict[str, Any]:
+    return load_json(contracts_dir / DEFAULT_SCHEMA_NAME)
+
+
+def load_validated_contract(path: Path, schema: dict[str, Any]) -> dict[str, Any]:
+    contract = load_json(path)
+    validate_contract_schema(contract, schema)
+    return contract
+
+
+def summarize_contract(path: Path, contract: dict[str, Any]) -> dict[str, Any]:
+    contract_meta = contract.get("contract", {})
+    subject = contract.get("subject", {})
+    rendering = contract.get("rendering_requirements", {})
+    decision = contract.get("decision_policy", {})
+    approval = contract.get("approval_contract", {})
+    required_labels = contract.get("required_labels", [])
+    forbidden = subject.get("forbidden_substitutions", {}) if isinstance(subject, dict) else []
+    return {
+        "key": contract_key(path),
+        "file": str(path),
+        "id": contract_meta.get("id") if isinstance(contract_meta, dict) else None,
+        "subject": subject.get("name") if isinstance(subject, dict) else None,
+        "category": subject.get("category") if isinstance(subject, dict) else None,
+        "mode": contract_meta.get("mode") if isinstance(contract_meta, dict) else None,
+        "view": rendering.get("view") if isinstance(rendering, dict) else None,
+        "style": rendering.get("style") if isinstance(rendering, dict) else None,
+        "allowed_decisions": decision.get("allowed_decisions") if isinstance(decision, dict) else [],
+        "expected_initial_decision": approval.get("expected_initial_decision") if isinstance(approval, dict) else None,
+        "required_label_count": len(required_labels) if isinstance(required_labels, list) else 0,
+        "forbidden_substitution_count": len(forbidden) if isinstance(forbidden, list) else 0,
+        "source_use_case": contract_meta.get("source_use_case") if isinstance(contract_meta, dict) else None,
+        "guardrail": approval.get("guardrail") if isinstance(approval, dict) else None,
+    }
+
+
+def list_contract_summaries(contracts_dir: Path) -> list[dict[str, Any]]:
+    schema = load_contract_schema(contracts_dir)
+    summaries: list[dict[str, Any]] = []
+    for path in iter_contract_paths(contracts_dir):
+        summaries.append(summarize_contract(path, load_validated_contract(path, schema)))
+    return summaries
+
+
+def resolve_contract_path(reference: str, contracts_dir: Path) -> Path:
+    candidate = Path(reference)
+    if candidate.is_absolute() and candidate.exists():
+        return candidate
+    if candidate.suffix == ".json":
+        relative = contracts_dir / candidate
+        if relative.exists():
+            return relative
+    key = reference[:-len(CONTRACT_SUFFIX)] if reference.endswith(CONTRACT_SUFFIX) else reference
+    relative = contracts_dir / f"{key}{CONTRACT_SUFFIX}"
+    if relative.exists():
+        return relative
+    available = ", ".join(contract_key(path) for path in iter_contract_paths(contracts_dir))
+    raise GraphicsContractError(f"Unknown graphics contract: {reference}. Available contracts: {available}")
+
+
+def load_contract_report(reference: str, contracts_dir: Path) -> dict[str, Any]:
+    schema = load_contract_schema(contracts_dir)
+    path = resolve_contract_path(reference, contracts_dir)
+    contract = load_validated_contract(path, schema)
+    return {
+        "summary": summarize_contract(path, contract),
+        "contract": contract,
+    }
 
 
 def validate_perseverance_contract_consistency(
