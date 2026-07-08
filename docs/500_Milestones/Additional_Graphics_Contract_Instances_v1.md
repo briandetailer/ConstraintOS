@@ -4,7 +4,7 @@
 
 ```text
 milestone: Additional Graphics Contract Instances v1
-status: active
+status: implementation-complete-pending-test
 started_on: 2026-07-08
 previous_gate: Reusable Graphics Validation Contracts v1 complete
 baseline: 487 passed
@@ -36,12 +36,28 @@ examples/graphics/contracts/supra_2jz_gte_twin_turbo.contract.json
 
 ```text
 [x] Create milestone doc
-[ ] Add wind turbine contract instance
-[ ] Add hydroelectric dam contract instance
-[ ] Add Supra 2JZ-GTE contract instance
-[ ] Update graphics contracts README
-[ ] Extend contract tests across all contract instances
+[x] Add wind turbine contract instance
+[x] Add hydroelectric dam contract instance
+[x] Add Supra 2JZ-GTE contract instance
+[x] Update graphics contracts README
+[x] Extend contract tests across all contract instances
 [ ] Run tests and record verified result
+```
+
+## Implemented files
+
+```text
+examples/graphics/contracts/wind_turbine_nacelle.contract.json
+examples/graphics/contracts/hydroelectric_dam_powerhouse.contract.json
+examples/graphics/contracts/supra_2jz_gte_twin_turbo.contract.json
+examples/graphics/contracts/README.md
+tests/test_graphics_contracts.py
+```
+
+## Verification command
+
+```powershell
+pytest tests/test_graphics_contracts.py
 ```
 
 ## Guardrails
@@ -56,9 +72,9 @@ examples/graphics/contracts/supra_2jz_gte_twin_turbo.contract.json
 ## Done criteria
 
 ```text
-[ ] All three new contract instances exist.
-[ ] All contract instances satisfy the reusable schema.
-[ ] Tests confirm each contract preserves the key subject identity and forbidden substitution guardrails.
-[ ] README documents all contract instances.
+[x] All three new contract instances exist.
+[x] All contract instances satisfy the reusable schema through tests.
+[x] Tests confirm each contract preserves the key subject identity and forbidden substitution guardrails.
+[x] README documents all contract instances.
 [ ] Verification test result recorded.
 ```
