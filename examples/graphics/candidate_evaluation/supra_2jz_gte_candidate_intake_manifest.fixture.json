@@ -1,0 +1,76 @@
+{
+  "candidate_intake_manifest": {
+    "id": "GRAPHICS-CANDIDATE-INTAKE-MANIFEST-SUPRA-2JZ-GTE-0001",
+    "version": "v1",
+    "domain": "graphics_validation",
+    "status": "static_fixture_only",
+    "candidate_id": "GRAPHICS-CANDIDATE-SUPRA-2JZ-GTE-0001",
+    "intake_state": "intake_pending",
+    "submitted_at": "2026-07-09T00:00:00Z",
+    "notes": "Static intake manifest fixture for a future external Toyota Supra 2JZ-GTE candidate graphic. No image bytes are loaded."
+  },
+  "contract_binding": {
+    "contract_key": "supra_2jz_gte_twin_turbo",
+    "contract_required": true,
+    "allowed_contract_keys": [
+      "perseverance",
+      "wind_turbine_nacelle",
+      "hydroelectric_dam_powerhouse",
+      "supra_2jz_gte_twin_turbo"
+    ],
+    "source_contract_id": "GRAPHICS-CONTRACT-SUPRA-2JZ-GTE-0001"
+  },
+  "candidate_reference": {
+    "reference_type": "artifact_uri",
+    "reference": "artifact://external-candidates/supra-2jz-gte/candidate-0001.png",
+    "reference_status": "intake_pending",
+    "media_type": "image/png",
+    "image_sha256": "2222222222222222222222222222222222222222222222222222222222222222",
+    "expected_byte_count": 1,
+    "width": 1600,
+    "height": 900
+  },
+  "candidate_source": {
+    "candidate_source_type": "external",
+    "generated_by_constraintos": false,
+    "producer": "external-placeholder",
+    "model_or_tool": "not_recorded_fixture",
+    "source_prompt_id": "PROMPT-SUPRA-2JZ-GTE-EXTERNAL-0001",
+    "source_prompt_text": "External candidate placeholder for future validation only.",
+    "negative_prompt_text": "Not used by this static fixture.",
+    "render_settings": {},
+    "notes": "ConstraintOS did not generate this candidate."
+  },
+  "intake_policy_snapshot": {
+    "accepted_reference_types": ["artifact_uri", "local_file_path", "file_uri"],
+    "accepted_media_types": ["image/png", "image/jpeg", "image/webp"],
+    "forbidden_reference_behaviors": [
+      "http_image_fetch",
+      "https_image_fetch",
+      "arbitrary_network_retrieval",
+      "redirect_following",
+      "implicit_cloud_provider_download",
+      "shell_open_file",
+      "path_traversal_outside_allowed_roots"
+    ],
+    "checksum_required": true,
+    "network_fetch_allowed": false,
+    "successful_intake_can_approve": false
+  },
+  "intake_boundary": {
+    "image_bytes_loaded": false,
+    "image_decoded": false,
+    "pixel_inspection_ran": false,
+    "computer_vision_ran": false,
+    "ocr_ran": false,
+    "candidate_scoring_ran": false,
+    "approval_automation_ran": false,
+    "source_report_mutation_ran": false
+  },
+  "approval_expectation": {
+    "initial_decision": "needs_review",
+    "uncertainty_default": "needs_review",
+    "approval_allowed": false,
+    "guardrail": "Intake-ready metadata cannot approve a candidate without future image loading, evaluation, and evidence."
+  }
+}
