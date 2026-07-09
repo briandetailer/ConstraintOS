@@ -1,6 +1,6 @@
 # Candidate Evaluation Fixtures
 
-This directory contains design-only, schema-only, read-only discovery, fixture-only report contract, fixture-only evaluation, observation-adapter design, manual-observation fixture, observation-to-report binding, fixture-only evidence merge, fixture-only candidate review packet, real-candidate-image intake design, and candidate-intake manifest contract artifacts for future candidate graphics evaluation.
+This directory contains design-only, schema-only, read-only discovery, fixture-only report contract, fixture-only evaluation, observation-adapter design, manual-observation fixture, observation-to-report binding, fixture-only evidence merge, fixture-only candidate review packet, real-candidate-image intake design, candidate-intake manifest contract, and candidate-intake manifest discovery artifacts for future candidate graphics evaluation.
 
 ## Current fixtures
 
@@ -30,6 +30,7 @@ observation_adapter_status: design_only
 real_candidate_image_intake_status: design_only
 manifest_status: static_fixture_only
 candidate_intake_manifest_status: static_fixture_only
+candidate_intake_discovery_status: read_only
 discovery_status: read_only
 report_contract_status: fixture_only
 fixture_only_evaluation_status: available
@@ -37,7 +38,7 @@ manual_observation_status: fixture_only
 observation_report_binding_status: fixture_only
 observation_evidence_merge_status: fixture_only
 candidate_review_packet_status: fixture_only
-implementation_status: intake_manifest_contract_only
+implementation_status: intake_manifest_discovery_only
 image_generation_allowed: false
 image_editing_allowed: false
 real_candidate_image_ingestion_allowed: false
@@ -58,6 +59,8 @@ The observation adapter design fixture defines the future boundary for collectin
 The real candidate image intake design fixture defines accepted future reference types, forbidden network/path behaviors, checksum and media-type expectations, byte-handling policy, and failure states before any image bytes are loaded.
 
 The candidate intake manifest contract defines a future intake-ready manifest shape with accepted reference type, reference URI, media type, checksum, policy snapshot, and non-approval intake boundary.
+
+Candidate intake manifest discovery lists and shows intake-ready metadata fixtures without loading, opening, downloading, decoding, inspecting, scoring, mutating, or approving candidate images.
 
 The manual observation fixtures define the first allowed observation source path, but they remain fixture-only and do not inspect images.
 
@@ -136,6 +139,17 @@ supra_2jz_gte_candidate_intake_manifest.fixture.json:
 ```
 
 Candidate intake manifest fixtures do not load, open, download, decode, inspect, score, mutate, or approve candidate images.
+
+## Candidate intake manifest discovery commands
+
+```powershell
+cos-graphics-candidates intake-list
+cos-graphics-candidates intake-show perseverance
+cos-graphics-candidates intake-show supra_2jz_gte_twin_turbo
+cos-graphics-candidates --format json --output reports/candidate-intake-manifests.json intake-list
+```
+
+These commands are read-only. They discover intake manifest metadata only and do not load, open, download, decode, inspect, score, mutate, or approve candidate images.
 
 ## Observation adapter design
 
@@ -343,6 +357,7 @@ pytest tests/test_candidate_evaluation_adapter_design.py
 pytest tests/test_observation_adapter_design.py
 pytest tests/test_real_candidate_image_intake_design.py
 pytest tests/test_candidate_intake_manifest_contract.py
+pytest tests/test_candidate_intake_manifest_discovery_cli.py
 pytest tests/test_candidate_manifest_schema.py
 pytest tests/test_candidate_manifest_discovery_cli.py
 pytest tests/test_candidate_evaluation_report_contract.py
@@ -355,4 +370,4 @@ pytest tests/test_candidate_review_packet.py
 
 ## Guardrail
 
-Candidate graphics are external inputs. ConstraintOS does not generate, edit, load, inspect, or approve images in these milestones. Candidate intake manifest fixtures do not enable image byte loading, image decoding, pixel inspection, scoring, report mutation, or approval.
+Candidate graphics are external inputs. ConstraintOS does not generate, edit, load, inspect, or approve images in these milestones. Candidate intake manifest discovery does not enable image byte loading, image decoding, pixel inspection, scoring, report mutation, or approval.
