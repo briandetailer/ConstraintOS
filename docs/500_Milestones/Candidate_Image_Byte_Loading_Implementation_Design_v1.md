@@ -4,11 +4,14 @@
 
 ```text
 milestone: Candidate Image Byte Loading Implementation Design v1
-status: implementation-complete-pending-test
+status: complete
 started_on: 2026-07-09
+completed_on: 2026-07-09
 previous_gate: Byte Loading Foundation Exit Review v1 complete
 track: Real Candidate Intake Track
 baseline: 487 passed
+latest_user_reported_candidate_image_byte_loading_implementation_design_test_result: 9 passed
+latest_user_reported_candidate_image_byte_loading_implementation_design_test_result_on: 2026-07-09
 ```
 
 ## Purpose
@@ -221,6 +224,16 @@ blocked_until_later:
 pytest tests/test_candidate_image_byte_loading_implementation_design.py
 ```
 
+## Verification record
+
+```text
+source: user-reported local test run
+command: pytest tests/test_candidate_image_byte_loading_implementation_design.py
+result: 9 passed
+reported_on: 2026-07-09
+assistant_ran_tests: false
+```
+
 ## Guardrails
 
 ```text
@@ -253,5 +266,15 @@ pytest tests/test_candidate_image_byte_loading_implementation_design.py
 [x] Safe failure reporting behavior is defined.
 [x] Byte loading alone cannot approve candidates.
 [x] Command reference updated with verification command.
-[ ] Verification test result recorded.
+[x] Verification test result recorded.
+```
+
+## Handoff notes
+
+```text
+- Candidate Image Byte Loading Implementation Design v1 is complete.
+- Future implementation behavior is defined for entry point boundaries, allowed-root enforcement, path normalization, artifact registry lookup, checksum computation, size-limit enforcement, media-type sniffing, and safe failure reporting.
+- This milestone did not implement image byte loading, local file opening, artifact download, network fetch, image decoding, pixel inspection, CV/OCR integration, image generation, image editing, candidate scoring, report mutation, or approval automation.
+- The next milestone should be Candidate Image Byte Loading Implementation Contract v1.
+- Image byte loading must not begin until implementation contract behavior is defined and verified.
 ```
