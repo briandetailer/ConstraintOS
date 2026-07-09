@@ -25,6 +25,7 @@ It covers:
 - observation-to-report binding
 - fixture-only observation evidence merge
 - fixture-only candidate review packet
+- foundation exit review
 - local verification commands
 ```
 
@@ -445,6 +446,16 @@ pytest tests/test_candidate_review_packet.py
 
 This is a fixture-only command. It summarizes candidate identity, manual observations, report status, merged evidence, and approval blockers, but it does not mutate reports, score candidates, load image bytes, or approve candidates.
 
+## Foundation exit review
+
+Validate the fixture-only foundation exit checkpoint before real image intake design:
+
+```powershell
+pytest tests/test_foundation_exit_review.py
+```
+
+This is a documentation and guardrail verification command. It does not load real candidate images, score candidates, choose providers, or generate images.
+
 ## Full recent graphics-validation verification set
 
 Run all recent graphics-validation and contract-focused test suites:
@@ -467,6 +478,7 @@ pytest tests/test_manual_observation_fixture_adapter.py
 pytest tests/test_observation_report_binding.py
 pytest tests/test_observation_evidence_merge.py
 pytest tests/test_candidate_review_packet.py
+pytest tests/test_foundation_exit_review.py
 ```
 
 ## Current contract keys
