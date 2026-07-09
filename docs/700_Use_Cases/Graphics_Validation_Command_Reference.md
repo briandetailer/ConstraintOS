@@ -31,6 +31,7 @@ It covers:
 - candidate image byte loading implementation design
 - candidate image byte loading implementation contract
 - candidate image byte loading pre-implementation exit review
+- candidate image byte loading minimal implementation
 - candidate image byte loading contract
 - candidate image byte loading discovery
 - candidate image byte loading review packet
@@ -299,6 +300,16 @@ pytest tests/test_candidate_image_byte_loading_pre_implementation_exit_review.py
 
 This is a documentation and guardrail verification command. It does not open files, download artifacts, fetch network resources, load image bytes, decode images, inspect pixels, score candidates, mutate reports, choose providers, or approve candidates.
 
+## Candidate image byte loading minimal implementation
+
+Validate the helper-only minimal byte-loading implementation:
+
+```powershell
+pytest tests/test_candidate_image_byte_loading_minimal_implementation.py
+```
+
+This is a helper-only implementation test. It loads bytes only from an explicit in-memory artifact registry adapter and verifies byte count, sha256, and signature-based media type. It does not open local files, download artifacts, fetch network resources, decode images, inspect pixels, score candidates, mutate reports, choose providers, or approve candidates.
+
 ## Candidate image byte loading contract
 
 Validate the static byte-loading record schema and fixture records:
@@ -452,6 +463,7 @@ pytest tests/test_candidate_image_byte_loading_design.py
 pytest tests/test_candidate_image_byte_loading_implementation_design.py
 pytest tests/test_candidate_image_byte_loading_implementation_contract.py
 pytest tests/test_candidate_image_byte_loading_pre_implementation_exit_review.py
+pytest tests/test_candidate_image_byte_loading_minimal_implementation.py
 pytest tests/test_candidate_image_byte_loading_contract.py
 pytest tests/test_candidate_image_byte_loading_discovery_cli.py
 pytest tests/test_candidate_image_byte_loading_review_packet.py
@@ -486,9 +498,10 @@ supra_2jz_gte_twin_turbo
 ## Guardrails
 
 ```text
-- These commands are dry-run / fixture-only / design-only / contract-only / read-only for graphics validation.
+- These commands are dry-run / fixture-only / design-only / contract-only / read-only / helper-only for graphics validation.
 - These commands do not generate images.
 - These commands do not evaluate real generated candidates yet.
-- Real candidate image intake design, candidate image byte-loading design, implementation design/contract, pre-implementation exit review, byte-loading contract/discovery/review-packet fixtures, intake manifests, and intake review packets do not load or decode images.
+- Candidate image byte-loading minimal implementation is limited to explicit in-memory artifact registry bytes.
+- Real candidate image intake design, candidate image byte-loading design, implementation design/contract, pre-implementation exit review, byte-loading contract/discovery/review-packet fixtures, intake manifests, and intake review packets do not decode images.
 - Approval expectations remain contract-driven and default uncertainty to needs_review.
 ```
