@@ -4,11 +4,14 @@
 
 ```text
 milestone: Fixture-only Observation Evidence Merge v1
-status: implementation-complete-pending-test
+status: complete
 started_on: 2026-07-08
+completed_on: 2026-07-08
 previous_gate: Observation-to-Report Binding v1 complete
 track: Foundation Completion Track
 baseline: 487 passed
+latest_user_reported_observation_evidence_merge_test_result: 8 passed
+latest_user_reported_observation_evidence_merge_test_result_on: 2026-07-08
 ```
 
 ## Purpose
@@ -62,6 +65,16 @@ docs/700_Use_Cases/Graphics_Validation_Command_Reference.md
 pytest tests/test_observation_evidence_merge.py
 ```
 
+## Verification record
+
+```text
+source: user-reported local test run
+command: pytest tests/test_observation_evidence_merge.py
+result: 8 passed
+reported_on: 2026-07-08
+assistant_ran_tests: false
+```
+
 ## CLI commands
 
 ```powershell
@@ -111,5 +124,15 @@ cos-graphics-candidates --format json --output reports/perseverance-merged-evide
 [x] JSON output is supported.
 [x] JSON file output is supported.
 [x] Command reference updated in the same implementation slice.
-[ ] Verification test result recorded.
+[x] Verification test result recorded.
+```
+
+## Handoff notes
+
+```text
+- Fixture-only Observation Evidence Merge v1 is complete.
+- cos-graphics-candidates merge-evidence now produces derived merged evidence from manual observation and candidate evaluation report fixtures.
+- Merged evidence surfaces matched, manual-only, and report-only constraints without mutating source report fixtures.
+- Real image ingestion, computer-vision integration, OCR integration, image generation, image editing, approval automation, candidate scoring, and report mutation remain blocked.
+- The next milestone should produce a fixture-only candidate review packet for human-facing review before any real image ingestion work.
 ```
