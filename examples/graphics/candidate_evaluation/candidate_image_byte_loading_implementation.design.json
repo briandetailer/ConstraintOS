@@ -1,0 +1,157 @@
+{
+  "candidate_image_byte_loading_implementation_design": {
+    "id": "CANDIDATE-IMAGE-BYTE-LOADING-IMPLEMENTATION-DESIGN-V1",
+    "version": "v1",
+    "domain": "graphics_validation",
+    "status": "design_only",
+    "image_byte_loading_implemented": false,
+    "local_file_opening_implemented": false,
+    "artifact_download_implemented": false,
+    "network_fetch_implemented": false,
+    "image_decoding_implemented": false,
+    "pixel_inspection_implemented": false,
+    "computer_vision_implemented": false,
+    "ocr_implemented": false,
+    "image_generation_implemented": false,
+    "image_editing_implemented": false,
+    "candidate_scoring_implemented": false,
+    "approval_automation_changed": false
+  },
+  "entry_point_boundary": {
+    "entry_point_name": "load_candidate_image_bytes",
+    "allowed_input": [
+      "validated_candidate_image_byte_loading_record_fixture",
+      "repository_local_candidate_directory_path",
+      "explicit_artifact_registry_adapter",
+      "explicit_allowed_root_policy"
+    ],
+    "forbidden_input": [
+      "arbitrary_url",
+      "arbitrary_absolute_path",
+      "implicit_cloud_storage_pointer",
+      "shell_expanded_path",
+      "unvalidated_manifest_data"
+    ],
+    "entry_point_output": [
+      "immutable_byte_loading_result_object",
+      "safe_failure_record_when_loading_cannot_proceed",
+      "no_mutation_of_source_fixtures",
+      "no_candidate_approval"
+    ]
+  },
+  "allowed_root_enforcement_behavior": {
+    "local_file_path": [
+      "normalize_candidate_path_before_loading",
+      "resolve_against_configured_allowed_roots",
+      "reject_traversal_outside_allowed_roots",
+      "reject_absolute_paths_unless_explicitly_allowlisted_by_policy",
+      "fail_closed_on_ambiguity"
+    ],
+    "file_uri": [
+      "parse_uri_before_path_conversion",
+      "allow_only_empty_host_or_localhost",
+      "normalize_decoded_path",
+      "resolve_against_configured_file_uri_roots",
+      "reject_traversal_outside_allowed_roots",
+      "fail_closed_on_ambiguity"
+    ]
+  },
+  "path_normalization_behavior": {
+    "normalization_order": [
+      "read_reference_type_and_raw_reference_string",
+      "reject_empty_whitespace_only_or_control_character_references",
+      "parse_by_reference_type",
+      "normalize_separators",
+      "collapse_dot_segments",
+      "resolve_symlink_behavior_according_to_platform_policy_before_byte_open",
+      "confirm_normalized_path_remains_inside_allowed_root",
+      "refuse_loading_if_normalized_path_is_ambiguous_or_outside_policy"
+    ]
+  },
+  "artifact_registry_lookup_behavior": {
+    "scheme": "artifact://",
+    "explicit_artifact_registry_adapter_required": true,
+    "http_allowed": false,
+    "https_allowed": false,
+    "implicit_cloud_download_allowed": false,
+    "descriptor_required_fields": [
+      "byte_source",
+      "expected_media_type",
+      "expected_sha256",
+      "expected_byte_count"
+    ],
+    "missing_artifact_behavior": "intake_failed"
+  },
+  "checksum_computation_behavior": {
+    "checksum_order": [
+      "load_bytes_only_after_reference_policy_passes",
+      "compute_sha256_over_exact_loaded_byte_sequence",
+      "compare_computed_sha256_to_manifest_image_sha256",
+      "record_computed_sha256",
+      "fail_intake_on_mismatch",
+      "do_not_decode_until_checksum_passes",
+      "checksum_match_cannot_approve_candidate"
+    ]
+  },
+  "size_limit_enforcement_behavior": {
+    "max_candidate_image_bytes": 25000000,
+    "size_order": [
+      "enforce_expected_byte_count_before_byte_loading_when_present",
+      "refuse_expected_byte_count_above_max_candidate_image_bytes",
+      "track_bytes_read_during_loading",
+      "stop_loading_when_maximum_is_exceeded",
+      "record_actual_loaded_byte_count_only_after_safe_completion",
+      "oversize_candidate_produces_intake_failed",
+      "size_compliance_cannot_approve_candidate"
+    ]
+  },
+  "media_type_sniffing_behavior": {
+    "accepted_media_types": [
+      "image/png",
+      "image/jpeg",
+      "image/webp"
+    ],
+    "sniffing_order": [
+      "require_declared_media_type_before_loading",
+      "sniff_media_type_from_loaded_bytes_only_after_checksum_passes",
+      "record_sniffed_media_type",
+      "require_declared_media_type_and_sniffed_media_type_to_match",
+      "fail_intake_on_unsupported_or_mismatched_media_type",
+      "media_type_match_cannot_approve_candidate"
+    ]
+  },
+  "safe_failure_reporting_behavior": {
+    "required_fields": [
+      "failure_code",
+      "failure_reason",
+      "reference_type",
+      "candidate_id",
+      "contract_key",
+      "image_bytes_loaded",
+      "image_decoded",
+      "candidate_scoring_ran",
+      "approval_allowed"
+    ],
+    "defaults": {
+      "image_bytes_loaded": false,
+      "image_decoded": false,
+      "candidate_scoring_ran": false,
+      "approval_allowed": false,
+      "initial_decision": "needs_review_or_intake_failed"
+    }
+  },
+  "next_gate": {
+    "recommended_next_milestone": "Candidate Image Byte Loading Implementation Contract v1",
+    "blocked_until_later": [
+      "image_byte_loading_implementation",
+      "image_decoding_implementation",
+      "pixel_inspection",
+      "computer_vision_provider_integration",
+      "ocr_provider_integration",
+      "image_generation_integration",
+      "image_editing_integration",
+      "candidate_scoring",
+      "approval_automation_change"
+    ]
+  }
+}
