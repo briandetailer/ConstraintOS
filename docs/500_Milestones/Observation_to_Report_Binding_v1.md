@@ -4,7 +4,7 @@
 
 ```text
 milestone: Observation-to-Report Binding v1
-status: active
+status: implementation-complete-pending-test
 started_on: 2026-07-08
 previous_gate: Manual Observation Fixture Adapter v1 complete
 track: Foundation Completion Track
@@ -44,6 +44,17 @@ This milestone compares the static candidate manifest, manual observation fixtur
 - No mutation of existing report fixtures.
 ```
 
+## Implemented files
+
+```text
+docs/500_Milestones/Observation_to_Report_Binding_v1.md
+src/constraintos/observation_report_binding.py
+src/constraintos/candidate_manifests_cli.py
+tests/test_observation_report_binding.py
+examples/graphics/candidate_evaluation/README.md
+docs/700_Use_Cases/Graphics_Validation_Command_Reference.md
+```
+
 ## Verification command
 
 ```powershell
@@ -58,6 +69,22 @@ cos-graphics-candidates bind-observations supra_2jz_gte_twin_turbo
 cos-graphics-candidates --format json --output reports/perseverance-observation-binding.json bind-observations perseverance
 ```
 
+## Binding boundaries
+
+```text
+- Binding mode is fixture_only.
+- Candidate image references remain reference_only_not_loaded.
+- Real image ingestion is not run.
+- Computer vision is not run.
+- OCR is not run.
+- Image generation is not run.
+- Approval automation is not run.
+- Candidate scoring is not run.
+- Existing report fixtures are not mutated.
+- Recommendation remains needs_review.
+- Approval remains disallowed.
+```
+
 ## Guardrails
 
 ```text
@@ -68,4 +95,17 @@ cos-graphics-candidates --format json --output reports/perseverance-observation-
 - Recommendation remains needs_review.
 - Approval remains disallowed.
 - Do not claim tests passed unless actually run.
+```
+
+## Done criteria
+
+```text
+[x] Observation-to-report binding helper module exists.
+[x] CLI exposes cos-graphics-candidates bind-observations.
+[x] Binding validates candidate manifest, manual observation fixture, and candidate evaluation report agreement.
+[x] Text output is supported.
+[x] JSON output is supported.
+[x] JSON file output is supported.
+[x] Command reference updated in the same implementation slice.
+[ ] Verification test result recorded.
 ```
