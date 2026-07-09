@@ -30,6 +30,7 @@ It covers:
 - candidate intake manifest contract
 - candidate intake manifest discovery
 - candidate intake review packet
+- intake foundation exit review
 - local verification commands
 ```
 
@@ -293,6 +294,16 @@ pytest tests/test_candidate_intake_review_packet.py
 
 This is a fixture-only command. It summarizes intake candidate identity, reference metadata, policy snapshot, intake boundaries, and approval blockers, but it does not load image bytes, decode images, fetch network images, inspect pixels, score candidates, mutate reports, or approve candidates.
 
+## Intake foundation exit review
+
+Validate the fixture-only intake metadata foundation exit checkpoint before byte-loading design:
+
+```powershell
+pytest tests/test_intake_foundation_exit_review.py
+```
+
+This is a documentation and guardrail verification command. It does not load image bytes, decode images, fetch network images, inspect pixels, score candidates, mutate reports, choose providers, or approve candidates.
+
 ## Full recent graphics-validation verification set
 
 Run all recent graphics-validation and contract-focused test suites:
@@ -320,6 +331,7 @@ pytest tests/test_real_candidate_image_intake_design.py
 pytest tests/test_candidate_intake_manifest_contract.py
 pytest tests/test_candidate_intake_manifest_discovery_cli.py
 pytest tests/test_candidate_intake_review_packet.py
+pytest tests/test_intake_foundation_exit_review.py
 ```
 
 ## Current contract keys
