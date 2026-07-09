@@ -4,7 +4,7 @@
 
 ```text
 milestone: Candidate Intake Review Packet v1
-status: active
+status: implementation-complete-pending-test
 started_on: 2026-07-09
 previous_gate: Candidate Intake Manifest Discovery v1 complete
 track: Real Candidate Intake Track
@@ -53,6 +53,17 @@ This milestone packages intake manifest discovery into a readable review packet.
 - No approval automation change.
 ```
 
+## Implemented files
+
+```text
+docs/500_Milestones/Candidate_Intake_Review_Packet_v1.md
+src/constraintos/candidate_intake_review_packet.py
+src/constraintos/candidate_manifests_cli.py
+tests/test_candidate_intake_review_packet.py
+examples/graphics/candidate_evaluation/README.md
+docs/700_Use_Cases/Graphics_Validation_Command_Reference.md
+```
+
 ## Verification command
 
 ```powershell
@@ -65,6 +76,32 @@ pytest tests/test_candidate_intake_review_packet.py
 cos-graphics-candidates intake-review-packet perseverance
 cos-graphics-candidates intake-review-packet supra_2jz_gte_twin_turbo
 cos-graphics-candidates --format json --output reports/perseverance-intake-review-packet.json intake-review-packet perseverance
+```
+
+## Review packet sections
+
+```text
+- candidate_identity
+- reference_metadata
+- policy_snapshot
+- intake_boundaries
+- decision_guardrails
+```
+
+## Packet boundaries
+
+```text
+- Packet mode is fixture_only.
+- Image bytes are not loaded.
+- Image decoding is not run.
+- Network fetch is not run.
+- Pixel inspection is not run.
+- Computer vision is not run.
+- OCR is not run.
+- Candidate scoring is not run.
+- Source report mutation is not run.
+- Approval automation is not run.
+- Approval remains disallowed.
 ```
 
 ## Required next gate
@@ -93,4 +130,21 @@ blocked_until_later:
 - No candidate scoring.
 - No approval automation change.
 - Do not claim tests passed unless actually run.
+```
+
+## Done criteria
+
+```text
+[x] Candidate intake review packet helper module exists.
+[x] CLI exposes cos-graphics-candidates intake-review-packet.
+[x] Intake candidate identity is summarized.
+[x] Reference metadata is summarized.
+[x] Policy snapshot is summarized.
+[x] Intake boundaries are summarized.
+[x] Approval blockers are summarized.
+[x] Text output is supported.
+[x] JSON output is supported.
+[x] JSON file output is supported.
+[x] Command reference updated in the same implementation slice.
+[ ] Verification test result recorded.
 ```
