@@ -1,0 +1,125 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://constraintos.local/schemas/graphics/candidate_image_byte_loading_record.schema.json",
+  "title": "ConstraintOS Graphics Candidate Image Byte Loading Record",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "candidate_image_byte_loading_record",
+    "contract_binding",
+    "reference_snapshot",
+    "byte_loading_policy_snapshot",
+    "byte_loading_result",
+    "post_load_boundary",
+    "approval_expectation"
+  ],
+  "properties": {
+    "candidate_image_byte_loading_record": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "version", "domain", "status", "candidate_id", "byte_loading_state", "recorded_at"],
+      "properties": {
+        "id": {"type": "string", "minLength": 1},
+        "version": {"type": "string", "const": "v1"},
+        "domain": {"type": "string", "const": "graphics_validation"},
+        "status": {"type": "string", "const": "static_fixture_only"},
+        "candidate_id": {"type": "string", "minLength": 1},
+        "byte_loading_state": {"type": "string", "const": "not_run_contract_only"},
+        "recorded_at": {"type": "string", "format": "date-time"},
+        "notes": {"type": "string"}
+      }
+    },
+    "contract_binding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["contract_key", "source_contract_id", "candidate_intake_manifest_id", "candidate_intake_manifest_required"],
+      "properties": {
+        "contract_key": {
+          "type": "string",
+          "enum": ["perseverance", "wind_turbine_nacelle", "hydroelectric_dam_powerhouse", "supra_2jz_gte_twin_turbo"]
+        },
+        "source_contract_id": {"type": "string", "minLength": 1},
+        "candidate_intake_manifest_id": {"type": "string", "minLength": 1},
+        "candidate_intake_manifest_required": {"type": "boolean", "const": true}
+      }
+    },
+    "reference_snapshot": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["reference_type", "reference", "media_type", "image_sha256", "expected_byte_count"],
+      "properties": {
+        "reference_type": {"type": "string", "enum": ["artifact_uri", "local_file_path", "file_uri"]},
+        "reference": {"type": "string", "minLength": 1},
+        "media_type": {"type": "string", "enum": ["image/png", "image/jpeg", "image/webp"]},
+        "image_sha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+        "expected_byte_count": {"type": "integer", "minimum": 1}
+      }
+    },
+    "byte_loading_policy_snapshot": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["allowed_local_roots", "allowed_file_uri_roots", "artifact_uri_resolution", "max_candidate_image_bytes", "network_fetch_allowed", "implicit_cloud_download_allowed", "byte_loading_success_can_approve"],
+      "properties": {
+        "allowed_local_roots": {
+          "type": "array",
+          "items": {"type": "string"},
+          "minItems": 2,
+          "uniqueItems": true
+        },
+        "allowed_file_uri_roots": {
+          "type": "array",
+          "items": {"type": "string"},
+          "minItems": 2,
+          "uniqueItems": true
+        },
+        "artifact_uri_resolution": {"type": "string", "const": "internal_artifact_registry_required_later"},
+        "max_candidate_image_bytes": {"type": "integer", "minimum": 1, "maximum": 25000000},
+        "network_fetch_allowed": {"type": "boolean", "const": false},
+        "implicit_cloud_download_allowed": {"type": "boolean", "const": false},
+        "byte_loading_success_can_approve": {"type": "boolean", "const": false}
+      }
+    },
+    "byte_loading_result": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["image_bytes_loaded", "local_file_opened", "artifact_downloaded", "network_fetch_ran", "actual_loaded_byte_count", "computed_sha256", "sniffed_media_type", "byte_count_within_limit", "checksum_matches", "media_type_matches"],
+      "properties": {
+        "image_bytes_loaded": {"type": "boolean", "const": false},
+        "local_file_opened": {"type": "boolean", "const": false},
+        "artifact_downloaded": {"type": "boolean", "const": false},
+        "network_fetch_ran": {"type": "boolean", "const": false},
+        "actual_loaded_byte_count": {"type": "null"},
+        "computed_sha256": {"type": "null"},
+        "sniffed_media_type": {"type": "null"},
+        "byte_count_within_limit": {"type": "null"},
+        "checksum_matches": {"type": "null"},
+        "media_type_matches": {"type": "null"}
+      }
+    },
+    "post_load_boundary": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["image_decoded", "pixel_inspection_ran", "computer_vision_ran", "ocr_ran", "candidate_scoring_ran", "source_report_mutation_ran", "approval_automation_ran"],
+      "properties": {
+        "image_decoded": {"type": "boolean", "const": false},
+        "pixel_inspection_ran": {"type": "boolean", "const": false},
+        "computer_vision_ran": {"type": "boolean", "const": false},
+        "ocr_ran": {"type": "boolean", "const": false},
+        "candidate_scoring_ran": {"type": "boolean", "const": false},
+        "source_report_mutation_ran": {"type": "boolean", "const": false},
+        "approval_automation_ran": {"type": "boolean", "const": false}
+      }
+    },
+    "approval_expectation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["initial_decision", "uncertainty_default", "approval_allowed", "guardrail"],
+      "properties": {
+        "initial_decision": {"type": "string", "const": "needs_review"},
+        "uncertainty_default": {"type": "string", "const": "needs_review"},
+        "approval_allowed": {"type": "boolean", "const": false},
+        "guardrail": {"type": "string", "minLength": 1}
+      }
+    }
+  }
+}
