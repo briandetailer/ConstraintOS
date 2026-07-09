@@ -4,11 +4,14 @@
 
 ```text
 milestone: Candidate Intake Manifest Contract v1
-status: implementation-complete-pending-test
+status: complete
 started_on: 2026-07-09
+completed_on: 2026-07-09
 previous_gate: Real Candidate Image Intake Design v1 complete
 track: Real Candidate Intake Track
 baseline: 487 passed
+latest_user_reported_candidate_intake_manifest_contract_test_result: 9 passed
+latest_user_reported_candidate_intake_manifest_contract_test_result_on: 2026-07-09
 ```
 
 ## Purpose
@@ -114,6 +117,16 @@ approval_expectation:
 pytest tests/test_candidate_intake_manifest_contract.py
 ```
 
+## Verification record
+
+```text
+source: user-reported local test run
+command: pytest tests/test_candidate_intake_manifest_contract.py
+result: 9 passed
+reported_on: 2026-07-09
+assistant_ran_tests: false
+```
+
 ## Required next gate
 
 ```text
@@ -154,5 +167,15 @@ blocked_until_later:
 [x] Intake boundaries keep image loading, decoding, inspection, scoring, mutation, and approval disabled.
 [x] Approval expectation keeps approval_allowed false.
 [x] Command reference updated in the same implementation slice.
-[ ] Verification test result recorded.
+[x] Verification test result recorded.
+```
+
+## Handoff notes
+
+```text
+- Candidate Intake Manifest Contract v1 is complete.
+- Intake-ready candidate manifest fixtures now exist for Perseverance and Supra 2JZ-GTE.
+- Intake manifests require accepted reference type, media type, image_sha256, policy snapshot, intake boundary, and approval expectation.
+- Image loading, image decoding, pixel inspection, CV/OCR integration, image generation, image editing, candidate scoring, report mutation, and approval automation remain blocked.
+- The next milestone should be Candidate Intake Manifest Discovery v1.
 ```
