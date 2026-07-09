@@ -1,0 +1,139 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://constraintos.local/schemas/graphics/candidate_intake_manifest.schema.json",
+  "title": "ConstraintOS Graphics Candidate Intake Manifest",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "candidate_intake_manifest",
+    "contract_binding",
+    "candidate_reference",
+    "candidate_source",
+    "intake_policy_snapshot",
+    "intake_boundary",
+    "approval_expectation"
+  ],
+  "properties": {
+    "candidate_intake_manifest": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "version", "domain", "status", "candidate_id", "intake_state", "submitted_at"],
+      "properties": {
+        "id": {"type": "string", "minLength": 1},
+        "version": {"type": "string", "const": "v1"},
+        "domain": {"type": "string", "const": "graphics_validation"},
+        "status": {"type": "string", "const": "static_fixture_only"},
+        "candidate_id": {"type": "string", "minLength": 1},
+        "intake_state": {"type": "string", "enum": ["reference_only_not_loaded", "intake_pending"]},
+        "submitted_at": {"type": "string", "format": "date-time"},
+        "notes": {"type": "string"}
+      }
+    },
+    "contract_binding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["contract_key", "contract_required", "allowed_contract_keys", "source_contract_id"],
+      "properties": {
+        "contract_key": {
+          "type": "string",
+          "enum": ["perseverance", "wind_turbine_nacelle", "hydroelectric_dam_powerhouse", "supra_2jz_gte_twin_turbo"]
+        },
+        "contract_required": {"type": "boolean", "const": true},
+        "allowed_contract_keys": {
+          "type": "array",
+          "items": {"type": "string"},
+          "minItems": 4,
+          "uniqueItems": true
+        },
+        "source_contract_id": {"type": "string", "minLength": 1}
+      }
+    },
+    "candidate_reference": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["reference_type", "reference", "reference_status", "media_type", "image_sha256"],
+      "properties": {
+        "reference_type": {"type": "string", "enum": ["artifact_uri", "local_file_path", "file_uri"]},
+        "reference": {"type": "string", "minLength": 1},
+        "reference_status": {"type": "string", "enum": ["reference_only_not_loaded", "intake_pending"]},
+        "media_type": {"type": "string", "enum": ["image/png", "image/jpeg", "image/webp"]},
+        "image_sha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+        "expected_byte_count": {"type": "integer", "minimum": 1},
+        "width": {"type": "integer", "minimum": 1},
+        "height": {"type": "integer", "minimum": 1}
+      }
+    },
+    "candidate_source": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["candidate_source_type", "generated_by_constraintos", "producer"],
+      "properties": {
+        "candidate_source_type": {"type": "string", "const": "external"},
+        "generated_by_constraintos": {"type": "boolean", "const": false},
+        "producer": {"type": "string", "minLength": 1},
+        "model_or_tool": {"type": "string"},
+        "source_prompt_id": {"type": "string"},
+        "source_prompt_text": {"type": "string"},
+        "negative_prompt_text": {"type": "string"},
+        "render_settings": {"type": "object"},
+        "notes": {"type": "string"}
+      }
+    },
+    "intake_policy_snapshot": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["accepted_reference_types", "accepted_media_types", "forbidden_reference_behaviors", "checksum_required", "network_fetch_allowed", "successful_intake_can_approve"],
+      "properties": {
+        "accepted_reference_types": {
+          "type": "array",
+          "items": {"type": "string", "enum": ["artifact_uri", "local_file_path", "file_uri"]},
+          "minItems": 3,
+          "maxItems": 3,
+          "uniqueItems": true
+        },
+        "accepted_media_types": {
+          "type": "array",
+          "items": {"type": "string", "enum": ["image/png", "image/jpeg", "image/webp"]},
+          "minItems": 3,
+          "maxItems": 3,
+          "uniqueItems": true
+        },
+        "forbidden_reference_behaviors": {
+          "type": "array",
+          "items": {"type": "string"},
+          "minItems": 7,
+          "uniqueItems": true
+        },
+        "checksum_required": {"type": "boolean", "const": true},
+        "network_fetch_allowed": {"type": "boolean", "const": false},
+        "successful_intake_can_approve": {"type": "boolean", "const": false}
+      }
+    },
+    "intake_boundary": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["image_bytes_loaded", "image_decoded", "pixel_inspection_ran", "computer_vision_ran", "ocr_ran", "candidate_scoring_ran", "approval_automation_ran", "source_report_mutation_ran"],
+      "properties": {
+        "image_bytes_loaded": {"type": "boolean", "const": false},
+        "image_decoded": {"type": "boolean", "const": false},
+        "pixel_inspection_ran": {"type": "boolean", "const": false},
+        "computer_vision_ran": {"type": "boolean", "const": false},
+        "ocr_ran": {"type": "boolean", "const": false},
+        "candidate_scoring_ran": {"type": "boolean", "const": false},
+        "approval_automation_ran": {"type": "boolean", "const": false},
+        "source_report_mutation_ran": {"type": "boolean", "const": false}
+      }
+    },
+    "approval_expectation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["initial_decision", "uncertainty_default", "approval_allowed", "guardrail"],
+      "properties": {
+        "initial_decision": {"type": "string", "const": "needs_review"},
+        "uncertainty_default": {"type": "string", "const": "needs_review"},
+        "approval_allowed": {"type": "boolean", "const": false},
+        "guardrail": {"type": "string", "minLength": 1}
+      }
+    }
+  }
+}
