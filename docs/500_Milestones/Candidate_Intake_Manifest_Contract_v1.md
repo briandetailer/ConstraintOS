@@ -4,7 +4,7 @@
 
 ```text
 milestone: Candidate Intake Manifest Contract v1
-status: active
+status: implementation-complete-pending-test
 started_on: 2026-07-09
 previous_gate: Real Candidate Image Intake Design v1 complete
 track: Real Candidate Intake Track
@@ -48,6 +48,18 @@ This milestone turns the image-intake design rules into a manifest schema and st
 - No candidate scoring.
 - No report mutation.
 - No approval automation change.
+```
+
+## Implemented files
+
+```text
+docs/500_Milestones/Candidate_Intake_Manifest_Contract_v1.md
+examples/graphics/candidate_evaluation/candidate_intake_manifest.schema.json
+examples/graphics/candidate_evaluation/perseverance_candidate_intake_manifest.fixture.json
+examples/graphics/candidate_evaluation/supra_2jz_gte_candidate_intake_manifest.fixture.json
+tests/test_candidate_intake_manifest_contract.py
+examples/graphics/candidate_evaluation/README.md
+docs/700_Use_Cases/Graphics_Validation_Command_Reference.md
 ```
 
 ## Contract fields
@@ -129,4 +141,18 @@ blocked_until_later:
 - No candidate scoring.
 - No approval automation change.
 - Do not claim tests passed unless actually run.
+```
+
+## Done criteria
+
+```text
+[x] Candidate intake manifest schema exists.
+[x] Perseverance candidate intake manifest fixture exists.
+[x] Supra 2JZ-GTE candidate intake manifest fixture exists.
+[x] Accepted reference types are limited to artifact_uri, local_file_path, and file_uri.
+[x] Checksum and media-type metadata are required.
+[x] Intake boundaries keep image loading, decoding, inspection, scoring, mutation, and approval disabled.
+[x] Approval expectation keeps approval_allowed false.
+[x] Command reference updated in the same implementation slice.
+[ ] Verification test result recorded.
 ```
