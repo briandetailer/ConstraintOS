@@ -1,0 +1,158 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://constraintos.local/schemas/graphics/candidate_image_byte_loading_implementation_contract.schema.json",
+  "title": "ConstraintOS Candidate Image Byte Loading Implementation Contract",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "candidate_image_byte_loading_implementation_contract",
+    "input_binding",
+    "policy_enforcement_result_contract",
+    "reference_resolution_result_contract",
+    "byte_loading_result_contract",
+    "validation_result_contract",
+    "safe_failure_contract",
+    "post_contract_boundary"
+  ],
+  "properties": {
+    "candidate_image_byte_loading_implementation_contract": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "version", "domain", "status", "contract_state", "implementation_allowed"],
+      "properties": {
+        "id": {"type": "string", "const": "CANDIDATE-IMAGE-BYTE-LOADING-IMPLEMENTATION-CONTRACT-V1"},
+        "version": {"type": "string", "const": "v1"},
+        "domain": {"type": "string", "const": "graphics_validation"},
+        "status": {"type": "string", "const": "contract_only"},
+        "contract_state": {"type": "string", "const": "not_implemented"},
+        "implementation_allowed": {"type": "boolean", "const": false}
+      }
+    },
+    "input_binding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "source_byte_loading_record_schema",
+        "source_byte_loading_record_fixture_required",
+        "source_intake_manifest_required",
+        "explicit_artifact_registry_adapter_required",
+        "explicit_allowed_root_policy_required",
+        "unvalidated_manifest_data_allowed"
+      ],
+      "properties": {
+        "source_byte_loading_record_schema": {"type": "string", "const": "candidate_image_byte_loading_record.schema.json"},
+        "source_byte_loading_record_fixture_required": {"type": "boolean", "const": true},
+        "source_intake_manifest_required": {"type": "boolean", "const": true},
+        "explicit_artifact_registry_adapter_required": {"type": "boolean", "const": true},
+        "explicit_allowed_root_policy_required": {"type": "boolean", "const": true},
+        "unvalidated_manifest_data_allowed": {"type": "boolean", "const": false}
+      }
+    },
+    "policy_enforcement_result_contract": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "reference_type_allowed",
+        "allowed_root_checked",
+        "path_normalized",
+        "traversal_rejected",
+        "absolute_path_policy_checked",
+        "network_fetch_allowed",
+        "implicit_cloud_download_allowed"
+      ],
+      "properties": {
+        "reference_type_allowed": {"type": "string", "const": "future_boolean"},
+        "allowed_root_checked": {"type": "string", "const": "future_boolean"},
+        "path_normalized": {"type": "string", "const": "future_boolean"},
+        "traversal_rejected": {"type": "string", "const": "future_boolean"},
+        "absolute_path_policy_checked": {"type": "string", "const": "future_boolean"},
+        "network_fetch_allowed": {"type": "boolean", "const": false},
+        "implicit_cloud_download_allowed": {"type": "boolean", "const": false}
+      }
+    },
+    "reference_resolution_result_contract": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "reference_resolved",
+        "resolved_reference_kind",
+        "artifact_descriptor_required",
+        "resolved_byte_source_mutable",
+        "http_resolution_allowed",
+        "https_resolution_allowed"
+      ],
+      "properties": {
+        "reference_resolved": {"type": "string", "const": "future_boolean"},
+        "resolved_reference_kind": {"type": "array", "items": {"type": "string", "enum": ["local_file_path", "file_uri", "artifact_descriptor", "safe_failure"]}, "minItems": 4, "uniqueItems": true},
+        "artifact_descriptor_required": {"type": "boolean", "const": true},
+        "resolved_byte_source_mutable": {"type": "boolean", "const": false},
+        "http_resolution_allowed": {"type": "boolean", "const": false},
+        "https_resolution_allowed": {"type": "boolean", "const": false}
+      }
+    },
+    "byte_loading_result_contract": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "image_bytes_loaded",
+        "local_file_opened",
+        "artifact_downloaded",
+        "network_fetch_ran",
+        "actual_loaded_byte_count",
+        "computed_sha256",
+        "sniffed_media_type"
+      ],
+      "properties": {
+        "image_bytes_loaded": {"type": "string", "const": "future_boolean"},
+        "local_file_opened": {"type": "string", "const": "future_boolean"},
+        "artifact_downloaded": {"type": "boolean", "const": false},
+        "network_fetch_ran": {"type": "boolean", "const": false},
+        "actual_loaded_byte_count": {"type": "string", "const": "future_integer_or_null"},
+        "computed_sha256": {"type": "string", "const": "future_sha256_or_null"},
+        "sniffed_media_type": {"type": "string", "const": "future_media_type_or_null"}
+      }
+    },
+    "validation_result_contract": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["byte_count_within_limit", "checksum_matches", "media_type_matches", "safe_to_decode", "approval_allowed"],
+      "properties": {
+        "byte_count_within_limit": {"type": "string", "const": "future_boolean_or_null"},
+        "checksum_matches": {"type": "string", "const": "future_boolean_or_null"},
+        "media_type_matches": {"type": "string", "const": "future_boolean_or_null"},
+        "safe_to_decode": {"type": "string", "const": "future_boolean"},
+        "approval_allowed": {"type": "boolean", "const": false}
+      }
+    },
+    "safe_failure_contract": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["failure_code", "failure_reason", "initial_decision", "approval_allowed", "failure_codes"],
+      "properties": {
+        "failure_code": {"type": "string", "const": "future_string_or_null"},
+        "failure_reason": {"type": "string", "const": "future_string_or_null"},
+        "initial_decision": {"type": "string", "enum": ["needs_review", "intake_failed"]},
+        "approval_allowed": {"type": "boolean", "const": false},
+        "failure_codes": {
+          "type": "array",
+          "items": {"type": "string"},
+          "minItems": 8,
+          "uniqueItems": true
+        }
+      }
+    },
+    "post_contract_boundary": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["image_decoding_implemented", "pixel_inspection_implemented", "computer_vision_implemented", "ocr_implemented", "candidate_scoring_implemented", "approval_automation_changed"],
+      "properties": {
+        "image_decoding_implemented": {"type": "boolean", "const": false},
+        "pixel_inspection_implemented": {"type": "boolean", "const": false},
+        "computer_vision_implemented": {"type": "boolean", "const": false},
+        "ocr_implemented": {"type": "boolean", "const": false},
+        "candidate_scoring_implemented": {"type": "boolean", "const": false},
+        "approval_automation_changed": {"type": "boolean", "const": false}
+      }
+    }
+  }
+}
