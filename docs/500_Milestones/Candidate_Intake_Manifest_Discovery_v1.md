@@ -4,7 +4,7 @@
 
 ```text
 milestone: Candidate Intake Manifest Discovery v1
-status: active
+status: implementation-complete-pending-test
 started_on: 2026-07-09
 previous_gate: Candidate Intake Manifest Contract v1 complete
 track: Real Candidate Intake Track
@@ -51,6 +51,17 @@ This milestone lets users list and inspect intake-ready candidate manifest fixtu
 - No approval automation change.
 ```
 
+## Implemented files
+
+```text
+docs/500_Milestones/Candidate_Intake_Manifest_Discovery_v1.md
+src/constraintos/candidate_intake_manifests.py
+src/constraintos/candidate_manifests_cli.py
+tests/test_candidate_intake_manifest_discovery_cli.py
+examples/graphics/candidate_evaluation/README.md
+docs/700_Use_Cases/Graphics_Validation_Command_Reference.md
+```
+
 ## Verification command
 
 ```powershell
@@ -64,6 +75,21 @@ cos-graphics-candidates intake-list
 cos-graphics-candidates intake-show perseverance
 cos-graphics-candidates intake-show supra_2jz_gte_twin_turbo
 cos-graphics-candidates --format json --output reports/candidate-intake-manifests.json intake-list
+```
+
+## Discovery boundaries
+
+```text
+- Discovery is read-only.
+- Candidate intake manifests are fixture-only.
+- Image bytes are not loaded.
+- Image decoding is not run.
+- Network fetch is not run.
+- Pixel inspection is not run.
+- Candidate scoring is not run.
+- Source report mutation is not run.
+- Approval automation is not run.
+- Approval remains disallowed.
 ```
 
 ## Required next gate
@@ -93,4 +119,18 @@ blocked_until_later:
 - No candidate scoring.
 - No approval automation change.
 - Do not claim tests passed unless actually run.
+```
+
+## Done criteria
+
+```text
+[x] Candidate intake manifest helper module exists.
+[x] CLI exposes cos-graphics-candidates intake-list.
+[x] CLI exposes cos-graphics-candidates intake-show.
+[x] Text output is supported.
+[x] JSON output is supported.
+[x] JSON file output is supported.
+[x] Discovery preserves no image byte loading, decoding, inspection, scoring, mutation, or approval.
+[x] Command reference updated in the same implementation slice.
+[ ] Verification test result recorded.
 ```
