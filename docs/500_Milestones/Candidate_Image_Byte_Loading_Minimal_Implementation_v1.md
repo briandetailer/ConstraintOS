@@ -4,7 +4,7 @@
 
 ```text
 milestone: Candidate Image Byte Loading Minimal Implementation v1
-status: active
+status: implementation-complete-pending-test
 started_on: 2026-07-09
 previous_gate: Candidate Image Byte Loading Pre-Implementation Exit Review v1 complete
 track: Real Candidate Intake Track
@@ -60,6 +60,16 @@ This milestone implements an explicit, fixture-controlled byte-loading helper fo
 - No candidate scoring.
 - No report mutation.
 - No approval automation change.
+```
+
+## Implemented files
+
+```text
+docs/500_Milestones/Candidate_Image_Byte_Loading_Minimal_Implementation_v1.md
+src/constraintos/candidate_image_byte_loader.py
+tests/test_candidate_image_byte_loading_minimal_implementation.py
+examples/graphics/candidate_evaluation/README.md
+docs/700_Use_Cases/Graphics_Validation_Command_Reference.md
 ```
 
 ## Minimal implementation boundary
@@ -156,4 +166,26 @@ pytest tests/test_candidate_image_byte_loading_minimal_implementation.py
 - No report mutation.
 - No approval automation change.
 - Do not claim tests passed unless actually run.
+```
+
+## Done criteria
+
+```text
+[x] Minimal byte-loading helper module exists.
+[x] Minimal helper accepts explicit artifact registry byte sources.
+[x] Minimal helper rejects HTTP and HTTPS references.
+[x] Minimal helper rejects non-artifact references.
+[x] Minimal helper rejects missing artifacts safely.
+[x] Minimal helper enforces expected byte count.
+[x] Minimal helper enforces max_candidate_image_bytes.
+[x] Minimal helper computes sha256 over exact loaded bytes.
+[x] Minimal helper compares declared and sniffed media type.
+[x] Minimal helper returns immutable result dictionaries.
+[x] Minimal helper keeps image_decoded false.
+[x] Minimal helper keeps candidate_scoring_ran false.
+[x] Minimal helper keeps source_report_mutation_ran false.
+[x] Minimal helper keeps approval_allowed false.
+[x] README updated.
+[x] Command reference updated with verification command.
+[ ] Verification test result recorded.
 ```
