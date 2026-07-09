@@ -1,0 +1,67 @@
+{
+  "candidate_image_byte_loading_record": {
+    "id": "GRAPHICS-CANDIDATE-BYTE-LOADING-PERSEVERANCE-0001",
+    "version": "v1",
+    "domain": "graphics_validation",
+    "status": "static_fixture_only",
+    "candidate_id": "GRAPHICS-CANDIDATE-PERSEVERANCE-0001",
+    "byte_loading_state": "not_run_contract_only",
+    "recorded_at": "2026-07-09T00:00:00Z",
+    "notes": "Static byte-loading contract fixture. No image bytes are loaded."
+  },
+  "contract_binding": {
+    "contract_key": "perseverance",
+    "source_contract_id": "GRAPHICS-CONTRACT-PERSEVERANCE-0001",
+    "candidate_intake_manifest_id": "GRAPHICS-CANDIDATE-INTAKE-MANIFEST-PERSEVERANCE-0001",
+    "candidate_intake_manifest_required": true
+  },
+  "reference_snapshot": {
+    "reference_type": "artifact_uri",
+    "reference": "artifact://external-candidates/perseverance/candidate-0001.png",
+    "media_type": "image/png",
+    "image_sha256": "1111111111111111111111111111111111111111111111111111111111111111",
+    "expected_byte_count": 1
+  },
+  "byte_loading_policy_snapshot": {
+    "allowed_local_roots": [
+      "./external-candidates/",
+      "./runs/manual-candidates/"
+    ],
+    "allowed_file_uri_roots": [
+      "file:///workspace/external-candidates/",
+      "file:///workspace/runs/manual-candidates/"
+    ],
+    "artifact_uri_resolution": "internal_artifact_registry_required_later",
+    "max_candidate_image_bytes": 25000000,
+    "network_fetch_allowed": false,
+    "implicit_cloud_download_allowed": false,
+    "byte_loading_success_can_approve": false
+  },
+  "byte_loading_result": {
+    "image_bytes_loaded": false,
+    "local_file_opened": false,
+    "artifact_downloaded": false,
+    "network_fetch_ran": false,
+    "actual_loaded_byte_count": null,
+    "computed_sha256": null,
+    "sniffed_media_type": null,
+    "byte_count_within_limit": null,
+    "checksum_matches": null,
+    "media_type_matches": null
+  },
+  "post_load_boundary": {
+    "image_decoded": false,
+    "pixel_inspection_ran": false,
+    "computer_vision_ran": false,
+    "ocr_ran": false,
+    "candidate_scoring_ran": false,
+    "source_report_mutation_ran": false,
+    "approval_automation_ran": false
+  },
+  "approval_expectation": {
+    "initial_decision": "needs_review",
+    "uncertainty_default": "needs_review",
+    "approval_allowed": false,
+    "guardrail": "Byte-loading contract fixtures cannot approve candidates and do not load bytes."
+  }
+}
