@@ -1,0 +1,135 @@
+{
+  "real_candidate_image_intake_design": {
+    "id": "REAL-CANDIDATE-IMAGE-INTAKE-DESIGN-V1",
+    "version": "v1",
+    "domain": "graphics_validation",
+    "status": "design_only",
+    "image_loading_implemented": false,
+    "image_decoding_implemented": false,
+    "network_fetch_implemented": false,
+    "computer_vision_implemented": false,
+    "ocr_implemented": false,
+    "candidate_scoring_implemented": false,
+    "approval_automation_changed": false
+  },
+  "accepted_reference_types": [
+    {
+      "reference_type": "artifact_uri",
+      "status": "accepted_for_future_intake",
+      "example": "artifact://external-candidates/perseverance/candidate-0001.png",
+      "requires_workspace_policy": false
+    },
+    {
+      "reference_type": "local_file_path",
+      "status": "accepted_for_future_intake_with_policy",
+      "example": "./external-candidates/perseverance/candidate-0001.png",
+      "requires_workspace_policy": true
+    },
+    {
+      "reference_type": "file_uri",
+      "status": "accepted_for_future_intake_with_policy",
+      "example": "file:///workspace/external-candidates/perseverance/candidate-0001.png",
+      "requires_workspace_policy": true
+    }
+  ],
+  "forbidden_reference_behaviors": [
+    "http_image_fetch",
+    "https_image_fetch",
+    "arbitrary_network_retrieval",
+    "redirect_following",
+    "implicit_cloud_provider_download",
+    "shell_open_file",
+    "path_traversal_outside_allowed_roots"
+  ],
+  "intake_states": [
+    {
+      "state": "reference_only_not_loaded",
+      "approval_allowed": false
+    },
+    {
+      "state": "intake_design_only",
+      "approval_allowed": false
+    },
+    {
+      "state": "intake_pending",
+      "approval_allowed": false
+    },
+    {
+      "state": "intake_failed",
+      "approval_allowed": false
+    },
+    {
+      "state": "intake_loaded_not_evaluated",
+      "approval_allowed": false
+    }
+  ],
+  "checksum_policy": {
+    "preferred_checksum": "image_sha256",
+    "missing_checksum_decision": "needs_review",
+    "checksum_mismatch_decision": "rejected_or_intake_failed_after_policy_confirmation",
+    "checksum_alone_can_approve": false
+  },
+  "media_type_policy": {
+    "accepted_media_types": [
+      "image/png",
+      "image/jpeg",
+      "image/webp"
+    ],
+    "unsupported_media_type_decision": "needs_review",
+    "approval_allowed_for_unsupported_media_type": false
+  },
+  "byte_handling_policy": {
+    "treat_bytes_as_untrusted": true,
+    "execute_embedded_content": false,
+    "successful_load_can_approve": false,
+    "preserve_original_reference_metadata": true,
+    "future_record_byte_count": true,
+    "future_record_checksum": true,
+    "decoded_pixel_inspection_separate_from_intake": true
+  },
+  "failure_states": [
+    {
+      "state": "missing_reference",
+      "decision": "needs_review",
+      "approval_allowed": false
+    },
+    {
+      "state": "missing_checksum",
+      "decision": "needs_review",
+      "approval_allowed": false
+    },
+    {
+      "state": "unreadable_candidate",
+      "decision": "needs_review",
+      "approval_allowed": false
+    },
+    {
+      "state": "unsupported_media_type",
+      "decision": "needs_review",
+      "approval_allowed": false
+    },
+    {
+      "state": "checksum_mismatch",
+      "decision": "rejected_or_intake_failed_after_policy_confirmation",
+      "approval_allowed": false
+    },
+    {
+      "state": "outside_allowed_root",
+      "decision": "rejected_or_intake_failed_after_policy_confirmation",
+      "approval_allowed": false
+    }
+  ],
+  "next_gate": {
+    "recommended_next_milestone": "Candidate Intake Manifest Contract v1",
+    "blocked_until_later": [
+      "image_byte_loading_implementation",
+      "image_decoding_implementation",
+      "computer_vision_provider_integration",
+      "ocr_provider_integration",
+      "image_generation_integration",
+      "image_editing_integration",
+      "candidate_scoring",
+      "approval_automation_change"
+    ]
+  }
+}
