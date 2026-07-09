@@ -31,6 +31,7 @@ It covers:
 - candidate image byte loading contract
 - candidate image byte loading discovery
 - candidate image byte loading review packet
+- byte loading foundation exit review
 - candidate intake manifest contract
 - candidate intake manifest discovery
 - candidate intake review packet
@@ -327,6 +328,16 @@ pytest tests/test_candidate_image_byte_loading_review_packet.py
 
 This is a fixture-only command. It summarizes byte-loading record identity, intake binding, reference metadata, policy snapshot, not-run byte-loading result fields, post-load boundaries, and approval blockers, but it does not open files, download artifacts, fetch network resources, load image bytes, decode images, inspect pixels, score candidates, mutate reports, choose providers, or approve candidates.
 
+## Byte loading foundation exit review
+
+Validate the fixture-only byte-loading metadata foundation exit checkpoint before implementation design:
+
+```powershell
+pytest tests/test_byte_loading_foundation_exit_review.py
+```
+
+This is a documentation and guardrail verification command. It does not open files, download artifacts, fetch network resources, load image bytes, decode images, inspect pixels, score candidates, mutate reports, choose providers, or approve candidates.
+
 ## Candidate intake manifest contract
 
 ```powershell
@@ -408,6 +419,7 @@ pytest tests/test_candidate_image_byte_loading_design.py
 pytest tests/test_candidate_image_byte_loading_contract.py
 pytest tests/test_candidate_image_byte_loading_discovery_cli.py
 pytest tests/test_candidate_image_byte_loading_review_packet.py
+pytest tests/test_byte_loading_foundation_exit_review.py
 pytest tests/test_candidate_intake_manifest_contract.py
 pytest tests/test_candidate_intake_manifest_discovery_cli.py
 pytest tests/test_candidate_intake_review_packet.py
