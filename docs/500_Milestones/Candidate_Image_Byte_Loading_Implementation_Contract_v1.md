@@ -4,7 +4,7 @@
 
 ```text
 milestone: Candidate Image Byte Loading Implementation Contract v1
-status: active
+status: implementation-complete-pending-test
 started_on: 2026-07-09
 previous_gate: Candidate Image Byte Loading Implementation Design v1 complete
 track: Real Candidate Intake Track
@@ -52,6 +52,17 @@ This milestone converts the implementation design into a schema and static contr
 - No approval automation change.
 ```
 
+## Implemented files
+
+```text
+docs/500_Milestones/Candidate_Image_Byte_Loading_Implementation_Contract_v1.md
+examples/graphics/candidate_evaluation/candidate_image_byte_loading_implementation_contract.schema.json
+examples/graphics/candidate_evaluation/candidate_image_byte_loading_implementation_contract.fixture.json
+tests/test_candidate_image_byte_loading_implementation_contract.py
+examples/graphics/candidate_evaluation/README.md
+docs/700_Use_Cases/Graphics_Validation_Command_Reference.md
+```
+
 ## Contract sections
 
 ```text
@@ -61,6 +72,7 @@ candidate_image_byte_loading_implementation_contract:
   domain
   status
   contract_state
+  implementation_allowed
 
 input_binding:
   source_byte_loading_record_schema
@@ -68,6 +80,7 @@ input_binding:
   source_intake_manifest_required
   explicit_artifact_registry_adapter_required
   explicit_allowed_root_policy_required
+  unvalidated_manifest_data_allowed
 
 policy_enforcement_result_contract:
   reference_type_allowed
@@ -83,6 +96,8 @@ reference_resolution_result_contract:
   resolved_reference_kind
   artifact_descriptor_required
   resolved_byte_source_mutable
+  http_resolution_allowed
+  https_resolution_allowed
 
 byte_loading_result_contract:
   image_bytes_loaded
@@ -98,12 +113,22 @@ validation_result_contract:
   checksum_matches
   media_type_matches
   safe_to_decode
+  approval_allowed
 
 safe_failure_contract:
   failure_code
   failure_reason
   initial_decision
   approval_allowed
+  failure_codes
+
+post_contract_boundary:
+  image_decoding_implemented
+  pixel_inspection_implemented
+  computer_vision_implemented
+  ocr_implemented
+  candidate_scoring_implemented
+  approval_automation_changed
 ```
 
 ## Verification command
@@ -144,4 +169,20 @@ blocked_until_later:
 - No candidate scoring.
 - No approval automation change.
 - Do not claim tests passed unless actually run.
+```
+
+## Done criteria
+
+```text
+[x] Candidate image byte-loading implementation contract schema exists.
+[x] Static implementation contract fixture exists.
+[x] Future input binding fields are defined.
+[x] Future policy enforcement result fields are defined.
+[x] Future reference resolution result fields are defined.
+[x] Future byte-loading result envelope is defined.
+[x] Future checksum, size, and media-type result fields are defined.
+[x] Safe failure result fields are defined.
+[x] Design-only and approval_allowed false are preserved.
+[x] Command reference updated with verification command.
+[ ] Verification test result recorded.
 ```
