@@ -4,7 +4,7 @@
 
 ```text
 milestone: Foundation Exit Review v1
-status: active
+status: implementation-complete-pending-test
 started_on: 2026-07-09
 previous_gate: Fixture-only Candidate Review Packet v1 complete
 track: Foundation Completion Track
@@ -128,4 +128,18 @@ pytest tests/test_foundation_exit_review.py
 - No candidate scoring.
 - No approval automation change.
 - Do not claim tests passed unless actually run.
+```
+
+## Done criteria
+
+```text
+[x] Foundation exit review doc exists.
+[x] Fixture-only foundation-ready status is recorded.
+[x] Completed foundation capabilities are listed.
+[x] Current user-facing graphics candidate commands are listed.
+[x] Safe foundation capabilities are listed.
+[x] Blocked real-image and provider work is listed.
+[x] Next allowed milestone is Real Candidate Image Intake Design v1.
+[x] Command reference updated with verification command.
+[ ] Verification test result recorded.
 ```
