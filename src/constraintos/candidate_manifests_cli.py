@@ -7,6 +7,10 @@ from pathlib import Path
 from typing import Any
 
 from constraintos.candidate_evaluation import build_fixture_only_candidate_evaluation
+from constraintos.candidate_intake_manifests import (
+    list_candidate_intake_manifest_summaries,
+    load_candidate_intake_manifest_report,
+)
 from constraintos.candidate_manifests import (
     CandidateManifestError,
     discover_project_root,
@@ -43,6 +47,34 @@ def build_payload(args: argparse.Namespace) -> tuple[int, dict[str, Any]]:
             "read_only": True,
             "image_generation": "not_run",
             "candidate_evaluation": "not_run",
+        }
+        return 0, report
+    if args.command == "intake-list":
+        manifests = list_candidate_intake_manifest_summaries(candidate_dir)
+        return 0, {
+            "candidate_intake_manifests": {
+                "count": len(manifests),
+                "candidate_dir": str(candidate_dir),
+                "read_only": True,
+                "image_bytes_loaded": "not_run",
+                "image_decoding": "not_run",
+                "network_fetch": "not_run",
+                "candidate_scoring": "not_run",
+                "approval_automation": "not_run",
+            },
+            "manifests": manifests,
+        }
+    if args.command == "intake-show":
+        report = load_candidate_intake_manifest_report(args.manifest, candidate_dir)
+        report["candidate_intake_manifests"] = {
+            "candidate_dir": str(candidate_dir),
+            "selected": report["summary"]["key"],
+            "read_only": True,
+            "image_bytes_loaded": "not_run",
+            "image_decoding": "not_run",
+            "network_fetch": "not_run",
+            "candidate_scoring": "not_run",
+            "approval_automation": "not_run",
         }
         return 0, report
     if args.command == "evaluate":
@@ -86,6 +118,33 @@ def format_list_text(payload: dict[str, Any]) -> str:
     return "\n".join(lines) + "\n"
 
 
+def format_intake_list_text(payload: dict[str, Any]) -> str:
+    header = payload.get("candidate_intake_manifests", {})
+    manifests = payload.get("manifests", [])
+    lines = [f"Candidate intake manifests: {header.get('count', 0)}"]
+    if isinstance(manifests, list):
+        for item in manifests:
+            if not isinstance(item, dict):
+                continue
+            lines.append(
+                "- "
+                + f"{item.get('key', 'unknown')} | "
+                + f"contract={item.get('contract_key', 'unknown')} | "
+                + f"intake_state={item.get('intake_state', 'unknown')} | "
+                + f"reference_type={item.get('reference_type', 'unknown')} | "
+                + f"media_type={item.get('media_type', 'unknown')} | "
+                + f"approval_allowed={item.get('approval_allowed', 'unknown')}"
+            )
+    lines.extend([
+        "image_bytes_loaded: not run",
+        "image_decoding: not run",
+        "network_fetch: not run",
+        "candidate_scoring: not run",
+        "approval_automation: not run",
+    ])
+    return "\n".join(lines) + "\n"
+
+
 def format_show_text(payload: dict[str, Any]) -> str:
     summary = payload.get("summary", {})
     if not isinstance(summary, dict):
@@ -104,6 +163,33 @@ def format_show_text(payload: dict[str, Any]) -> str:
         f"uncertainty_default: {summary.get('uncertainty_default', 'unknown')}",
         "image_generation: not run",
         "candidate_evaluation: not run",
+    ]
+    return "\n".join(lines) + "\n"
+
+
+def format_intake_show_text(payload: dict[str, Any]) -> str:
+    summary = payload.get("summary", {})
+    if not isinstance(summary, dict):
+        summary = {}
+    lines = [
+        f"Candidate intake manifest: {summary.get('key', 'unknown')}",
+        f"candidate_id: {summary.get('candidate_id', 'unknown')}",
+        f"contract_key: {summary.get('contract_key', 'unknown')}",
+        f"status: {summary.get('status', 'unknown')}",
+        f"intake_state: {summary.get('intake_state', 'unknown')}",
+        f"reference_type: {summary.get('reference_type', 'unknown')}",
+        f"reference_status: {summary.get('reference_status', 'unknown')}",
+        f"media_type: {summary.get('media_type', 'unknown')}",
+        f"image_sha256: {summary.get('image_sha256', 'unknown')}",
+        f"network_fetch_allowed: {summary.get('network_fetch_allowed', 'unknown')}",
+        f"successful_intake_can_approve: {summary.get('successful_intake_can_approve', 'unknown')}",
+        f"approval_allowed: {summary.get('approval_allowed', 'unknown')}",
+        "image_bytes_loaded: not run",
+        "image_decoding: not run",
+        "network_fetch: not run",
+        "candidate_scoring: not run",
+        "source_report_mutation: not run",
+        "approval_automation: not run",
     ]
     return "\n".join(lines) + "\n"
 
@@ -255,6 +341,10 @@ def format_payload(payload: dict[str, Any], output_format: str, command: str) ->
         return json.dumps(payload, indent=2, sort_keys=True) + "\n"
     if command == "list":
         return format_list_text(payload)
+    if command == "intake-list":
+        return format_intake_list_text(payload)
+    if command == "intake-show":
+        return format_intake_show_text(payload)
     if command == "evaluate":
         return format_evaluate_text(payload)
     if command == "observe":
@@ -290,6 +380,11 @@ def build_parser() -> argparse.ArgumentParser:
 
     show_parser = subparsers.add_parser("show", help="Show a static candidate manifest summary.")
     show_parser.add_argument("manifest", help="Manifest key, contract key, candidate id, filename, or path.")
+
+    subparsers.add_parser("intake-list", help="List fixture-only candidate intake manifest fixtures.")
+
+    intake_show_parser = subparsers.add_parser("intake-show", help="Show a fixture-only candidate intake manifest summary.")
+    intake_show_parser.add_argument("manifest", help="Manifest key, contract key, candidate id, filename, or path.")
 
     evaluate_parser = subparsers.add_parser("evaluate", help="Run fixture-only candidate evaluation from static report fixtures.")
     evaluate_parser.add_argument("manifest", help="Manifest key, contract key, candidate id, filename, or path.")
