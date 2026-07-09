@@ -4,7 +4,7 @@
 
 ```text
 milestone: Candidate Image Byte Loading Discovery v1
-status: active
+status: implementation-complete-pending-test
 started_on: 2026-07-09
 previous_gate: Candidate Image Byte Loading Contract v1 complete
 track: Real Candidate Intake Track
@@ -53,6 +53,17 @@ This milestone lets users list and inspect byte-loading contract records without
 - No approval automation change.
 ```
 
+## Implemented files
+
+```text
+docs/500_Milestones/Candidate_Image_Byte_Loading_Discovery_v1.md
+src/constraintos/candidate_image_byte_loading_records.py
+src/constraintos/candidate_manifests_cli.py
+tests/test_candidate_image_byte_loading_discovery_cli.py
+examples/graphics/candidate_evaluation/README.md
+docs/700_Use_Cases/Graphics_Validation_Command_Reference.md
+```
+
 ## Verification command
 
 ```powershell
@@ -66,6 +77,23 @@ cos-graphics-candidates byte-loading-list
 cos-graphics-candidates byte-loading-show perseverance
 cos-graphics-candidates byte-loading-show supra_2jz_gte_twin_turbo
 cos-graphics-candidates --format json --output reports/candidate-byte-loading-records.json byte-loading-list
+```
+
+## Discovery boundaries
+
+```text
+- Discovery is read-only.
+- Candidate image byte-loading records are static fixtures.
+- Image bytes are not loaded.
+- Local files are not opened.
+- Artifacts are not downloaded.
+- Network fetch is not run.
+- Image decoding is not run.
+- Pixel inspection is not run.
+- Candidate scoring is not run.
+- Source report mutation is not run.
+- Approval automation is not run.
+- Approval remains disallowed.
 ```
 
 ## Required next gate
@@ -98,4 +126,18 @@ blocked_until_later:
 - No candidate scoring.
 - No approval automation change.
 - Do not claim tests passed unless actually run.
+```
+
+## Done criteria
+
+```text
+[x] Candidate image byte-loading record helper module exists.
+[x] CLI exposes cos-graphics-candidates byte-loading-list.
+[x] CLI exposes cos-graphics-candidates byte-loading-show.
+[x] Text output is supported.
+[x] JSON output is supported.
+[x] JSON file output is supported.
+[x] Discovery preserves no image byte loading, file opening, artifact download, network fetch, decoding, inspection, scoring, mutation, or approval.
+[x] Command reference updated in the same implementation slice.
+[ ] Verification test result recorded.
 ```
