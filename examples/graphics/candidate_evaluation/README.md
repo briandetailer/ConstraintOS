@@ -1,12 +1,13 @@
 # Candidate Evaluation Fixtures
 
-This directory contains design-only, schema-only, read-only discovery, fixture-only report contract, fixture-only evaluation, observation-adapter design, manual-observation fixture, observation-to-report binding, fixture-only evidence merge, and fixture-only candidate review packet artifacts for future candidate graphics evaluation.
+This directory contains design-only, schema-only, read-only discovery, fixture-only report contract, fixture-only evaluation, observation-adapter design, manual-observation fixture, observation-to-report binding, fixture-only evidence merge, fixture-only candidate review packet, and real-candidate-image intake design artifacts for future candidate graphics evaluation.
 
 ## Current fixtures
 
 ```text
 candidate_evaluation_adapter.design.json
 observation_adapter.design.json
+real_candidate_image_intake.design.json
 candidate_manifest.schema.json
 candidate_evaluation_report.schema.json
 manual_observation.schema.json
@@ -23,6 +24,7 @@ supra_2jz_gte_manual_observation.fixture.json
 ```text
 adapter_status: design_only
 observation_adapter_status: design_only
+real_candidate_image_intake_status: design_only
 manifest_status: static_fixture_only
 discovery_status: read_only
 report_contract_status: fixture_only
@@ -31,7 +33,7 @@ manual_observation_status: fixture_only
 observation_report_binding_status: fixture_only
 observation_evidence_merge_status: fixture_only
 candidate_review_packet_status: fixture_only
-implementation_status: foundation_only
+implementation_status: intake_design_only
 image_generation_allowed: false
 image_editing_allowed: false
 real_candidate_image_ingestion_allowed: false
@@ -49,6 +51,8 @@ The adapter design fixture defines the boundary between reusable graphics-valida
 
 The observation adapter design fixture defines the future boundary for collecting observations without starting real image ingestion or selecting machine-observation providers.
 
+The real candidate image intake design fixture defines accepted future reference types, forbidden network/path behaviors, checksum and media-type expectations, byte-handling policy, and failure states before any image bytes are loaded.
+
 The manual observation fixtures define the first allowed observation source path, but they remain fixture-only and do not inspect images.
 
 Observation-to-report binding compares candidate manifests, manual observation fixtures, and fixture-only evaluation reports for the same candidate before any real image ingestion work begins.
@@ -64,6 +68,36 @@ The candidate manifest discovery CLI lists and shows static manifest summaries w
 The candidate evaluation report contract defines the future report shape before any real candidate evaluation behavior is implemented.
 
 The fixture-only candidate evaluation command loads a static manifest fixture and its matching static report fixture, validates their binding, and reports the fixture recommendation.
+
+## Real candidate image intake design
+
+The real candidate image intake design defines policy boundaries for future image intake.
+
+```text
+accepted_reference_types:
+  artifact_uri
+  local_file_path
+  file_uri
+
+forbidden_reference_behaviors:
+  http_image_fetch
+  https_image_fetch
+  arbitrary_network_retrieval
+  redirect_following
+  implicit_cloud_provider_download
+  shell_open_file
+  path_traversal_outside_allowed_roots
+
+accepted_media_types:
+  image/png
+  image/jpeg
+  image/webp
+
+next_gate:
+  Candidate Intake Manifest Contract v1
+```
+
+Successful intake will not approve a candidate. Image byte loading, image decoding, pixel inspection, CV/OCR provider integration, scoring, and approval automation remain blocked.
 
 ## Observation adapter design
 
@@ -269,6 +303,7 @@ These commands produce human-facing fixture-only review packets. They do not mut
 ```powershell
 pytest tests/test_candidate_evaluation_adapter_design.py
 pytest tests/test_observation_adapter_design.py
+pytest tests/test_real_candidate_image_intake_design.py
 pytest tests/test_candidate_manifest_schema.py
 pytest tests/test_candidate_manifest_discovery_cli.py
 pytest tests/test_candidate_evaluation_report_contract.py
@@ -281,4 +316,4 @@ pytest tests/test_candidate_review_packet.py
 
 ## Guardrail
 
-Candidate graphics are external inputs. ConstraintOS does not generate, edit, load, inspect, or approve images in these milestones. Fixture-only candidate evaluation reports `needs_review` from static report fixtures only. Manual observation, observation-to-report binding, fixture-only evidence merge, and candidate review packets do not enable real image ingestion.
+Candidate graphics are external inputs. ConstraintOS does not generate, edit, load, inspect, or approve images in these milestones. Real candidate image intake design does not enable image byte loading, image decoding, pixel inspection, scoring, or approval.
