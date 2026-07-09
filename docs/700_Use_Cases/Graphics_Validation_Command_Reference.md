@@ -27,6 +27,7 @@ It covers:
 - fixture-only candidate review packet
 - foundation exit review
 - real candidate image intake design
+- candidate intake manifest contract
 - local verification commands
 ```
 
@@ -467,6 +468,16 @@ pytest tests/test_real_candidate_image_intake_design.py
 
 This is a design-only verification command. It does not load image bytes, decode images, fetch network images, inspect pixels, score candidates, choose providers, or approve candidates.
 
+## Candidate intake manifest contract
+
+Validate the candidate intake manifest schema and static intake-manifest fixtures:
+
+```powershell
+pytest tests/test_candidate_intake_manifest_contract.py
+```
+
+This is a contract-only verification command. It does not load image bytes, decode images, fetch network images, inspect pixels, score candidates, mutate reports, or approve candidates.
+
 ## Full recent graphics-validation verification set
 
 Run all recent graphics-validation and contract-focused test suites:
@@ -491,6 +502,7 @@ pytest tests/test_observation_evidence_merge.py
 pytest tests/test_candidate_review_packet.py
 pytest tests/test_foundation_exit_review.py
 pytest tests/test_real_candidate_image_intake_design.py
+pytest tests/test_candidate_intake_manifest_contract.py
 ```
 
 ## Current contract keys
@@ -517,9 +529,9 @@ supra_2jz_gte_twin_turbo
 ## Guardrails
 
 ```text
-- These commands are dry-run / fixture-only / design-only for graphics validation.
+- These commands are dry-run / fixture-only / design-only / contract-only for graphics validation.
 - These commands do not generate images.
 - These commands do not evaluate real generated candidates yet.
-- Real candidate image intake design does not load or decode images.
+- Real candidate image intake design and intake manifests do not load or decode images.
 - Approval expectations remain contract-driven and default uncertainty to needs_review.
 ```
