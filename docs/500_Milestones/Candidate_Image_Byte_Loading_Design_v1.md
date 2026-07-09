@@ -4,7 +4,7 @@
 
 ```text
 milestone: Candidate Image Byte Loading Design v1
-status: active
+status: implementation-complete-pending-test
 started_on: 2026-07-09
 previous_gate: Intake Foundation Exit Review v1 complete
 track: Real Candidate Intake Track
@@ -50,6 +50,16 @@ This milestone is design-only. It does not implement image byte loading, local f
 - No candidate scoring.
 - No report mutation.
 - No approval automation change.
+```
+
+## Implemented files
+
+```text
+docs/500_Milestones/Candidate_Image_Byte_Loading_Design_v1.md
+examples/graphics/candidate_evaluation/candidate_image_byte_loading.design.json
+tests/test_candidate_image_byte_loading_design.py
+examples/graphics/candidate_evaluation/README.md
+docs/700_Use_Cases/Graphics_Validation_Command_Reference.md
 ```
 
 ## Allowed roots policy
@@ -216,4 +226,21 @@ pytest tests/test_candidate_image_byte_loading_design.py
 - No candidate scoring.
 - No approval automation change.
 - Do not claim tests passed unless actually run.
+```
+
+## Done criteria
+
+```text
+[x] Candidate image byte loading design doc exists.
+[x] Machine-readable byte-loading design fixture exists.
+[x] Allowed roots policy is defined.
+[x] Artifact URI resolution policy is defined.
+[x] Maximum byte size policy is defined.
+[x] Checksum verification order is defined.
+[x] Media-type sniffing policy is defined.
+[x] Byte-count recording policy is defined.
+[x] Failure states are defined and cannot approve.
+[x] Next gate is Candidate Image Byte Loading Contract v1.
+[x] Command reference updated in the same implementation slice.
+[ ] Verification test result recorded.
 ```
