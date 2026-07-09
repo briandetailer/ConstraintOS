@@ -1,6 +1,6 @@
 # Candidate Evaluation Fixtures
 
-This directory contains design-only, schema-only, read-only discovery, fixture-only report contract, fixture-only evaluation, observation-adapter design, manual-observation fixture, observation-to-report binding, fixture-only evidence merge, fixture-only candidate review packet, real-candidate-image intake design, candidate-intake manifest contract, candidate-intake manifest discovery, candidate-intake review packet, candidate-image byte-loading design, candidate-image byte-loading implementation design, candidate-image byte-loading implementation contract, candidate-image byte-loading contract, candidate-image byte-loading discovery, and candidate-image byte-loading review packet artifacts for future candidate graphics evaluation.
+This directory contains design-only, schema-only, read-only discovery, fixture-only report contract, fixture-only evaluation, observation-adapter design, manual-observation fixture, observation-to-report binding, fixture-only evidence merge, fixture-only candidate review packet, real-candidate-image intake design, candidate-intake manifest contract, candidate-intake manifest discovery, candidate-intake review packet, candidate-image byte-loading design, candidate-image byte-loading implementation design, candidate-image byte-loading implementation contract, candidate-image byte-loading minimal helper implementation, candidate-image byte-loading contract, candidate-image byte-loading discovery, and candidate-image byte-loading review packet artifacts for future candidate graphics evaluation.
 
 ## Current fixtures
 
@@ -38,6 +38,7 @@ real_candidate_image_intake_status: design_only
 candidate_image_byte_loading_status: design_only
 candidate_image_byte_loading_implementation_design_status: design_only
 candidate_image_byte_loading_implementation_contract_status: contract_only
+candidate_image_byte_loading_minimal_implementation_status: helper_only
 candidate_image_byte_loading_contract_status: static_fixture_only
 candidate_image_byte_loading_discovery_status: read_only
 candidate_image_byte_loading_review_packet_status: fixture_only
@@ -52,11 +53,11 @@ manual_observation_status: fixture_only
 observation_report_binding_status: fixture_only
 observation_evidence_merge_status: fixture_only
 candidate_review_packet_status: fixture_only
-implementation_status: byte_loading_implementation_contract_only
+implementation_status: byte_loading_minimal_helper_only
 image_generation_allowed: false
 image_editing_allowed: false
 real_candidate_image_ingestion_allowed: false
-image_byte_loading_allowed: false
+image_byte_loading_allowed: explicit_fixture_controlled_artifact_registry_only
 local_file_opening_allowed: false
 artifact_download_allowed: false
 network_fetch_allowed: false
@@ -82,6 +83,8 @@ The candidate image byte-loading design fixture defines future allowed roots, ar
 The candidate image byte-loading implementation design fixture defines future implementation entry point boundaries, allowed-root enforcement, path normalization, artifact registry lookup, checksum computation, size-limit enforcement, media-type sniffing, and safe failure reporting before byte-loading code is written.
 
 The candidate image byte-loading implementation contract schema and fixture define the future byte-loading attempt result contract before byte-loading code is written.
+
+The candidate image byte-loading minimal implementation helper loads bytes only from an explicit in-memory artifact registry adapter, computes checksum, compares byte count and media type, and never decodes, scores, mutates, or approves candidates.
 
 The candidate image byte-loading contract defines the future byte-loading record shape with reference metadata, policy snapshot, not-run byte-loading result fields, post-load boundaries, and non-approval expectations.
 
@@ -210,6 +213,23 @@ candidate_image_byte_loading_implementation_contract.fixture.json:
 ```
 
 Candidate image byte-loading implementation contract fixtures do not open files, download artifacts, fetch network resources, load bytes, decode images, inspect pixels, score candidates, mutate reports, or approve candidates.
+
+## Candidate image byte-loading minimal implementation
+
+```text
+helper: load_candidate_image_bytes_minimal
+artifact_registry: InMemoryArtifactRegistry
+accepted_reference_type: artifact_uri
+byte_source: explicit in-memory artifact registry only
+local_file_opened: false
+artifact_downloaded: false
+network_fetch_ran: false
+image_decoded: false
+candidate_scoring_ran: false
+approval_allowed: false
+```
+
+The minimal implementation helper can load fixture-controlled artifact bytes and validate byte count, checksum, and signature-based media type. It does not open local files, download artifacts, fetch network resources, decode images, inspect pixels, score candidates, mutate reports, or approve candidates.
 
 ## Candidate image byte-loading contract
 
@@ -505,6 +525,8 @@ pytest tests/test_real_candidate_image_intake_design.py
 pytest tests/test_candidate_image_byte_loading_design.py
 pytest tests/test_candidate_image_byte_loading_implementation_design.py
 pytest tests/test_candidate_image_byte_loading_implementation_contract.py
+pytest tests/test_candidate_image_byte_loading_pre_implementation_exit_review.py
+pytest tests/test_candidate_image_byte_loading_minimal_implementation.py
 pytest tests/test_candidate_image_byte_loading_contract.py
 pytest tests/test_candidate_image_byte_loading_discovery_cli.py
 pytest tests/test_candidate_image_byte_loading_review_packet.py
@@ -524,4 +546,4 @@ pytest tests/test_candidate_review_packet.py
 
 ## Guardrail
 
-Candidate graphics are external inputs. ConstraintOS does not generate, edit, load, inspect, or approve images in these milestones. Candidate image byte-loading implementation contract does not enable image byte loading, local file opening, artifact download, network fetch, image decoding, pixel inspection, scoring, report mutation, or approval.
+Candidate graphics are external inputs. ConstraintOS does not generate, edit, inspect, score, or approve images in these milestones. Candidate image byte-loading minimal implementation is helper-only and limited to explicit in-memory artifact registry bytes; it does not enable local file opening, artifact download, network fetch, image decoding, pixel inspection, scoring, report mutation, or approval.
