@@ -1,6 +1,6 @@
 # Candidate Evaluation Fixtures
 
-This directory contains design-only, schema-only, read-only discovery, fixture-only report contract, fixture-only evaluation, observation-adapter design, manual-observation fixture, and observation-to-report binding artifacts for future candidate graphics evaluation.
+This directory contains design-only, schema-only, read-only discovery, fixture-only report contract, fixture-only evaluation, observation-adapter design, manual-observation fixture, observation-to-report binding, and fixture-only evidence merge artifacts for future candidate graphics evaluation.
 
 ## Current fixtures
 
@@ -29,6 +29,7 @@ report_contract_status: fixture_only
 fixture_only_evaluation_status: available
 manual_observation_status: fixture_only
 observation_report_binding_status: fixture_only
+observation_evidence_merge_status: fixture_only
 implementation_status: foundation_only
 image_generation_allowed: false
 image_editing_allowed: false
@@ -50,6 +51,8 @@ The observation adapter design fixture defines the future boundary for collectin
 The manual observation fixtures define the first allowed observation source path, but they remain fixture-only and do not inspect images.
 
 Observation-to-report binding compares candidate manifests, manual observation fixtures, and fixture-only evaluation reports for the same candidate before any real image ingestion work begins.
+
+Fixture-only evidence merge creates a derived view of manual observations aligned to report evidence items without mutating source reports or scoring candidates.
 
 The candidate manifest schema defines the static manifest shape required before any future candidate-evaluation command can exist.
 
@@ -122,6 +125,26 @@ binding_output:
 ```
 
 Binding does not mutate report fixtures, score candidates, inspect image bytes, or approve candidates.
+
+## Fixture-only observation evidence merge
+
+Fixture-only observation evidence merge aligns manual observation items to report evidence items by `constraint_id`.
+
+```text
+merge_inputs:
+  manual_observation.fixture.json
+  candidate_evaluation_report.fixture.json
+
+merge_output:
+  matched_constraint_count
+  manual_only_constraint_count
+  report_only_constraint_count
+  merged_evidence_items
+  recommended_decision: needs_review
+  approval_allowed: false
+```
+
+Merged evidence is derived output only. It does not mutate report fixtures, score candidates, inspect image bytes, or approve candidates.
 
 ## Candidate manifest fixtures
 
@@ -198,6 +221,16 @@ cos-graphics-candidates --format json --output reports/perseverance-observation-
 
 These commands bind static manifest, manual observation, and candidate evaluation report fixtures only. They do not mutate report fixtures, score candidates, or inspect image bytes.
 
+## Fixture-only evidence merge commands
+
+```powershell
+cos-graphics-candidates merge-evidence perseverance
+cos-graphics-candidates merge-evidence supra_2jz_gte_twin_turbo
+cos-graphics-candidates --format json --output reports/perseverance-merged-evidence.json merge-evidence perseverance
+```
+
+These commands merge static manual observation and candidate evaluation report evidence only. They do not mutate report fixtures, score candidates, or inspect image bytes.
+
 ## Verification
 
 ```powershell
@@ -209,8 +242,9 @@ pytest tests/test_candidate_evaluation_report_contract.py
 pytest tests/test_fixture_only_candidate_evaluation.py
 pytest tests/test_manual_observation_fixture_adapter.py
 pytest tests/test_observation_report_binding.py
+pytest tests/test_observation_evidence_merge.py
 ```
 
 ## Guardrail
 
-Candidate graphics are external inputs. ConstraintOS does not generate, edit, load, inspect, or approve images in these milestones. Fixture-only candidate evaluation reports `needs_review` from static report fixtures only. Manual observation and observation-to-report binding fixtures do not enable real image ingestion.
+Candidate graphics are external inputs. ConstraintOS does not generate, edit, load, inspect, or approve images in these milestones. Fixture-only candidate evaluation reports `needs_review` from static report fixtures only. Manual observation, observation-to-report binding, and fixture-only evidence merge do not enable real image ingestion.
