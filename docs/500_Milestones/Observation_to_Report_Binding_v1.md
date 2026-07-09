@@ -4,11 +4,14 @@
 
 ```text
 milestone: Observation-to-Report Binding v1
-status: implementation-complete-pending-test
+status: complete
 started_on: 2026-07-08
+completed_on: 2026-07-08
 previous_gate: Manual Observation Fixture Adapter v1 complete
 track: Foundation Completion Track
 baseline: 487 passed
+latest_user_reported_observation_report_binding_test_result: 7 passed
+latest_user_reported_observation_report_binding_test_result_on: 2026-07-08
 ```
 
 ## Purpose
@@ -61,6 +64,16 @@ docs/700_Use_Cases/Graphics_Validation_Command_Reference.md
 pytest tests/test_observation_report_binding.py
 ```
 
+## Verification record
+
+```text
+source: user-reported local test run
+command: pytest tests/test_observation_report_binding.py
+result: 7 passed
+reported_on: 2026-07-08
+assistant_ran_tests: false
+```
+
 ## CLI commands
 
 ```powershell
@@ -107,5 +120,15 @@ cos-graphics-candidates --format json --output reports/perseverance-observation-
 [x] JSON output is supported.
 [x] JSON file output is supported.
 [x] Command reference updated in the same implementation slice.
-[ ] Verification test result recorded.
+[x] Verification test result recorded.
+```
+
+## Handoff notes
+
+```text
+- Observation-to-Report Binding v1 is complete.
+- cos-graphics-candidates bind-observations now binds fixture-only manual observations to fixture-only candidate evaluation reports.
+- Binding validates agreement across candidate manifest, manual observation fixture, and candidate evaluation report fixture.
+- Real image ingestion, computer-vision integration, OCR integration, image generation, image editing, approval automation, candidate scoring, and report mutation remain blocked.
+- The next milestone should define a fixture-only observation evidence merge before any real image ingestion work.
 ```
