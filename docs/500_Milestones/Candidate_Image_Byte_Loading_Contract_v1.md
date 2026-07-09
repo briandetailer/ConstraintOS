@@ -4,7 +4,7 @@
 
 ```text
 milestone: Candidate Image Byte Loading Contract v1
-status: active
+status: implementation-complete-pending-test
 started_on: 2026-07-09
 previous_gate: Candidate Image Byte Loading Design v1 complete
 track: Real Candidate Intake Track
@@ -49,6 +49,18 @@ This milestone turns the byte-loading design into a schema and static fixture re
 - No candidate scoring.
 - No report mutation.
 - No approval automation change.
+```
+
+## Implemented files
+
+```text
+docs/500_Milestones/Candidate_Image_Byte_Loading_Contract_v1.md
+examples/graphics/candidate_evaluation/candidate_image_byte_loading_record.schema.json
+examples/graphics/candidate_evaluation/perseverance_candidate_image_byte_loading_record.fixture.json
+examples/graphics/candidate_evaluation/supra_2jz_gte_candidate_image_byte_loading_record.fixture.json
+tests/test_candidate_image_byte_loading_contract.py
+examples/graphics/candidate_evaluation/README.md
+docs/700_Use_Cases/Graphics_Validation_Command_Reference.md
 ```
 
 ## Contract fields
@@ -146,4 +158,19 @@ blocked_until_later:
 - No candidate scoring.
 - No approval automation change.
 - Do not claim tests passed unless actually run.
+```
+
+## Done criteria
+
+```text
+[x] Candidate image byte-loading record schema exists.
+[x] Perseverance byte-loading record fixture exists.
+[x] Supra 2JZ-GTE byte-loading record fixture exists.
+[x] Reference metadata snapshot is required.
+[x] Byte-loading policy snapshot is required.
+[x] Byte-loading result remains not_run_contract_only.
+[x] Checksum, media-type, and byte-count result fields are null until implementation.
+[x] Approval expectation keeps approval_allowed false.
+[x] Command reference updated in the same implementation slice.
+[ ] Verification test result recorded.
 ```
