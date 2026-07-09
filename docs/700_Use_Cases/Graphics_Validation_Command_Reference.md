@@ -26,6 +26,7 @@ It covers:
 - fixture-only observation evidence merge
 - fixture-only candidate review packet
 - foundation exit review
+- real candidate image intake design
 - local verification commands
 ```
 
@@ -456,6 +457,16 @@ pytest tests/test_foundation_exit_review.py
 
 This is a documentation and guardrail verification command. It does not load real candidate images, score candidates, choose providers, or generate images.
 
+## Real candidate image intake design
+
+Validate the real candidate image intake design fixture and guardrails:
+
+```powershell
+pytest tests/test_real_candidate_image_intake_design.py
+```
+
+This is a design-only verification command. It does not load image bytes, decode images, fetch network images, inspect pixels, score candidates, choose providers, or approve candidates.
+
 ## Full recent graphics-validation verification set
 
 Run all recent graphics-validation and contract-focused test suites:
@@ -479,6 +490,7 @@ pytest tests/test_observation_report_binding.py
 pytest tests/test_observation_evidence_merge.py
 pytest tests/test_candidate_review_packet.py
 pytest tests/test_foundation_exit_review.py
+pytest tests/test_real_candidate_image_intake_design.py
 ```
 
 ## Current contract keys
@@ -505,8 +517,9 @@ supra_2jz_gte_twin_turbo
 ## Guardrails
 
 ```text
-- These commands are dry-run / fixture-only for graphics validation.
+- These commands are dry-run / fixture-only / design-only for graphics validation.
 - These commands do not generate images.
 - These commands do not evaluate real generated candidates yet.
+- Real candidate image intake design does not load or decode images.
 - Approval expectations remain contract-driven and default uncertainty to needs_review.
 ```
