@@ -24,18 +24,21 @@ def build_candidate_review_sections(merge_payload: dict[str, Any]) -> dict[str, 
     evaluation_summary = binding_payload["candidate_evaluation"]["summary"]
     candidate_manifest = binding_payload["candidate_evaluation"]["candidate_manifest"]
     manifest = candidate_manifest.get("candidate_manifest", {})
-    subject = candidate_manifest.get("subject", {})
-    candidate = candidate_manifest.get("candidate", {})
+    contract_binding = candidate_manifest.get("contract_binding", {})
+    candidate_reference = candidate_manifest.get("candidate_reference", {})
+    candidate_source = candidate_manifest.get("candidate_source", {})
     return {
         "candidate_identity": {
             "candidate_manifest_key": merge_summary.get("candidate_manifest_key"),
             "candidate_manifest_id": manifest.get("id"),
             "candidate_id": merge_summary.get("candidate_id"),
             "contract_key": merge_summary.get("contract_key"),
-            "subject_name": subject.get("name"),
+            "source_contract_id": contract_binding.get("source_contract_id"),
             "candidate_reference_status": merge_summary.get("candidate_reference_status"),
-            "candidate_source_type": candidate.get("source_type"),
-            "generated_by_constraintos": candidate.get("generated_by_constraintos"),
+            "reference_type": candidate_reference.get("reference_type"),
+            "media_type": candidate_reference.get("media_type"),
+            "candidate_source_type": candidate_source.get("candidate_source_type"),
+            "generated_by_constraintos": candidate_source.get("generated_by_constraintos"),
         },
         "manual_observations": {
             "observation_key": merge_summary.get("observation_key"),
