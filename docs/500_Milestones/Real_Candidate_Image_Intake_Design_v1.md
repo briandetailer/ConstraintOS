@@ -4,11 +4,14 @@
 
 ```text
 milestone: Real Candidate Image Intake Design v1
-status: implementation-complete-pending-test
+status: complete
 started_on: 2026-07-09
+completed_on: 2026-07-09
 previous_gate: Foundation Exit Review v1 complete
 track: Real Candidate Intake Track
 baseline: 487 passed
+latest_user_reported_real_candidate_image_intake_design_test_result: 10 passed
+latest_user_reported_real_candidate_image_intake_design_test_result_on: 2026-07-09
 ```
 
 ## Purpose
@@ -199,6 +202,16 @@ blocked_until_later:
 pytest tests/test_real_candidate_image_intake_design.py
 ```
 
+## Verification record
+
+```text
+source: user-reported local test run
+command: pytest tests/test_real_candidate_image_intake_design.py
+result: 10 passed
+reported_on: 2026-07-09
+assistant_ran_tests: false
+```
+
 ## Guardrails
 
 ```text
@@ -228,5 +241,15 @@ pytest tests/test_real_candidate_image_intake_design.py
 [x] Failure states are defined and cannot approve.
 [x] Next gate is Candidate Intake Manifest Contract v1.
 [x] Command reference updated in the same implementation slice.
-[ ] Verification test result recorded.
+[x] Verification test result recorded.
+```
+
+## Handoff notes
+
+```text
+- Real Candidate Image Intake Design v1 is complete.
+- Future intake reference types are limited to artifact_uri, local_file_path, and file_uri.
+- HTTP/HTTPS image fetching, arbitrary network retrieval, redirects, implicit cloud downloads, shell-open behavior, and path traversal outside approved roots are blocked.
+- Image loading, image decoding, pixel inspection, CV/OCR integration, image generation, image editing, candidate scoring, report mutation, and approval automation remain blocked.
+- The next milestone should be Candidate Intake Manifest Contract v1.
 ```
