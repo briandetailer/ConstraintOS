@@ -28,6 +28,7 @@ It covers:
 - foundation exit review
 - real candidate image intake design
 - candidate intake manifest contract
+- candidate intake manifest discovery
 - local verification commands
 ```
 
@@ -478,6 +479,35 @@ pytest tests/test_candidate_intake_manifest_contract.py
 
 This is a contract-only verification command. It does not load image bytes, decode images, fetch network images, inspect pixels, score candidates, mutate reports, or approve candidates.
 
+## Candidate intake manifest discovery
+
+List available static candidate intake manifests:
+
+```powershell
+cos-graphics-candidates intake-list
+```
+
+Show individual candidate intake manifest summaries:
+
+```powershell
+cos-graphics-candidates intake-show perseverance
+cos-graphics-candidates intake-show supra_2jz_gte_twin_turbo
+```
+
+Write a JSON report of static candidate intake manifests:
+
+```powershell
+cos-graphics-candidates --format json --output reports/candidate-intake-manifests.json intake-list
+```
+
+Run the candidate intake manifest discovery CLI tests:
+
+```powershell
+pytest tests/test_candidate_intake_manifest_discovery_cli.py
+```
+
+This is a read-only discovery command. It does not load image bytes, decode images, fetch network images, inspect pixels, score candidates, mutate reports, or approve candidates.
+
 ## Full recent graphics-validation verification set
 
 Run all recent graphics-validation and contract-focused test suites:
@@ -503,6 +533,7 @@ pytest tests/test_candidate_review_packet.py
 pytest tests/test_foundation_exit_review.py
 pytest tests/test_real_candidate_image_intake_design.py
 pytest tests/test_candidate_intake_manifest_contract.py
+pytest tests/test_candidate_intake_manifest_discovery_cli.py
 ```
 
 ## Current contract keys
@@ -518,7 +549,7 @@ supra_2jz_gte_twin_turbo
 
 ## Current candidate manifest keys
 
-Use these keys with `cos-graphics-candidates show`, `cos-graphics-candidates evaluate`, `cos-graphics-candidates observe`, `cos-graphics-candidates bind-observations`, `cos-graphics-candidates merge-evidence`, and `cos-graphics-candidates review-packet`:
+Use these keys with `cos-graphics-candidates show`, `cos-graphics-candidates evaluate`, `cos-graphics-candidates observe`, `cos-graphics-candidates bind-observations`, `cos-graphics-candidates merge-evidence`, `cos-graphics-candidates review-packet`, and `cos-graphics-candidates intake-show`:
 
 ```text
 perseverance
@@ -529,7 +560,7 @@ supra_2jz_gte_twin_turbo
 ## Guardrails
 
 ```text
-- These commands are dry-run / fixture-only / design-only / contract-only for graphics validation.
+- These commands are dry-run / fixture-only / design-only / contract-only / read-only for graphics validation.
 - These commands do not generate images.
 - These commands do not evaluate real generated candidates yet.
 - Real candidate image intake design and intake manifests do not load or decode images.
