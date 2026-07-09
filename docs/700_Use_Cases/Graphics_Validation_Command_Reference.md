@@ -29,6 +29,7 @@ It covers:
 - real candidate image intake design
 - candidate image byte loading design
 - candidate image byte loading contract
+- candidate image byte loading discovery
 - candidate intake manifest contract
 - candidate intake manifest discovery
 - candidate intake review packet
@@ -273,6 +274,35 @@ pytest tests/test_candidate_image_byte_loading_contract.py
 
 This is a contract-only verification command. It does not open files, download artifacts, fetch network resources, load image bytes, decode images, inspect pixels, score candidates, mutate reports, choose providers, or approve candidates.
 
+## Candidate image byte loading discovery
+
+List available static candidate image byte-loading records:
+
+```powershell
+cos-graphics-candidates byte-loading-list
+```
+
+Show individual candidate image byte-loading record summaries:
+
+```powershell
+cos-graphics-candidates byte-loading-show perseverance
+cos-graphics-candidates byte-loading-show supra_2jz_gte_twin_turbo
+```
+
+Write a JSON report of static candidate image byte-loading records:
+
+```powershell
+cos-graphics-candidates --format json --output reports/candidate-byte-loading-records.json byte-loading-list
+```
+
+Run the candidate image byte-loading discovery CLI tests:
+
+```powershell
+pytest tests/test_candidate_image_byte_loading_discovery_cli.py
+```
+
+This is a read-only discovery command. It does not open files, download artifacts, fetch network resources, load image bytes, decode images, inspect pixels, score candidates, mutate reports, choose providers, or approve candidates.
+
 ## Candidate intake manifest contract
 
 ```powershell
@@ -352,6 +382,7 @@ pytest tests/test_foundation_exit_review.py
 pytest tests/test_real_candidate_image_intake_design.py
 pytest tests/test_candidate_image_byte_loading_design.py
 pytest tests/test_candidate_image_byte_loading_contract.py
+pytest tests/test_candidate_image_byte_loading_discovery_cli.py
 pytest tests/test_candidate_intake_manifest_contract.py
 pytest tests/test_candidate_intake_manifest_discovery_cli.py
 pytest tests/test_candidate_intake_review_packet.py
@@ -371,7 +402,7 @@ supra_2jz_gte_twin_turbo
 
 ## Current candidate manifest keys
 
-Use these keys with `cos-graphics-candidates show`, `cos-graphics-candidates evaluate`, `cos-graphics-candidates observe`, `cos-graphics-candidates bind-observations`, `cos-graphics-candidates merge-evidence`, `cos-graphics-candidates review-packet`, `cos-graphics-candidates intake-show`, and `cos-graphics-candidates intake-review-packet`:
+Use these keys with `cos-graphics-candidates show`, `cos-graphics-candidates evaluate`, `cos-graphics-candidates observe`, `cos-graphics-candidates bind-observations`, `cos-graphics-candidates merge-evidence`, `cos-graphics-candidates review-packet`, `cos-graphics-candidates intake-show`, `cos-graphics-candidates intake-review-packet`, and `cos-graphics-candidates byte-loading-show`:
 
 ```text
 perseverance
@@ -385,6 +416,6 @@ supra_2jz_gte_twin_turbo
 - These commands are dry-run / fixture-only / design-only / contract-only / read-only for graphics validation.
 - These commands do not generate images.
 - These commands do not evaluate real generated candidates yet.
-- Real candidate image intake design, candidate image byte-loading design, byte-loading contract fixtures, intake manifests, and intake review packets do not load or decode images.
+- Real candidate image intake design, candidate image byte-loading design, byte-loading contract/discovery fixtures, intake manifests, and intake review packets do not load or decode images.
 - Approval expectations remain contract-driven and default uncertainty to needs_review.
 ```
