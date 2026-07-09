@@ -28,6 +28,7 @@ It covers:
 - foundation exit review
 - real candidate image intake design
 - candidate image byte loading design
+- candidate image byte loading contract
 - candidate intake manifest contract
 - candidate intake manifest discovery
 - candidate intake review packet
@@ -262,6 +263,16 @@ pytest tests/test_candidate_image_byte_loading_design.py
 
 This is a design-only verification command. It does not open files, download artifacts, fetch network resources, load image bytes, decode images, inspect pixels, score candidates, mutate reports, choose providers, or approve candidates.
 
+## Candidate image byte loading contract
+
+Validate the static byte-loading record schema and fixture records:
+
+```powershell
+pytest tests/test_candidate_image_byte_loading_contract.py
+```
+
+This is a contract-only verification command. It does not open files, download artifacts, fetch network resources, load image bytes, decode images, inspect pixels, score candidates, mutate reports, choose providers, or approve candidates.
+
 ## Candidate intake manifest contract
 
 ```powershell
@@ -340,6 +351,7 @@ pytest tests/test_candidate_review_packet.py
 pytest tests/test_foundation_exit_review.py
 pytest tests/test_real_candidate_image_intake_design.py
 pytest tests/test_candidate_image_byte_loading_design.py
+pytest tests/test_candidate_image_byte_loading_contract.py
 pytest tests/test_candidate_intake_manifest_contract.py
 pytest tests/test_candidate_intake_manifest_discovery_cli.py
 pytest tests/test_candidate_intake_review_packet.py
@@ -373,6 +385,6 @@ supra_2jz_gte_twin_turbo
 - These commands are dry-run / fixture-only / design-only / contract-only / read-only for graphics validation.
 - These commands do not generate images.
 - These commands do not evaluate real generated candidates yet.
-- Real candidate image intake design, candidate image byte-loading design, intake manifests, and intake review packets do not load or decode images.
+- Real candidate image intake design, candidate image byte-loading design, byte-loading contract fixtures, intake manifests, and intake review packets do not load or decode images.
 - Approval expectations remain contract-driven and default uncertainty to needs_review.
 ```
