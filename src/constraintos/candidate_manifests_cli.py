@@ -7,6 +7,10 @@ from pathlib import Path
 from typing import Any
 
 from constraintos.candidate_evaluation import build_fixture_only_candidate_evaluation
+from constraintos.candidate_image_byte_loading_records import (
+    list_candidate_image_byte_loading_record_summaries,
+    load_candidate_image_byte_loading_record_report,
+)
 from constraintos.candidate_intake_manifests import (
     list_candidate_intake_manifest_summaries,
     load_candidate_intake_manifest_report,
@@ -74,6 +78,38 @@ def build_payload(args: argparse.Namespace) -> tuple[int, dict[str, Any]]:
             "image_bytes_loaded": "not_run",
             "image_decoding": "not_run",
             "network_fetch": "not_run",
+            "candidate_scoring": "not_run",
+            "approval_automation": "not_run",
+        }
+        return 0, report
+    if args.command == "byte-loading-list":
+        records = list_candidate_image_byte_loading_record_summaries(candidate_dir)
+        return 0, {
+            "candidate_image_byte_loading_records": {
+                "count": len(records),
+                "candidate_dir": str(candidate_dir),
+                "read_only": True,
+                "image_bytes_loaded": "not_run",
+                "local_file_opening": "not_run",
+                "artifact_download": "not_run",
+                "network_fetch": "not_run",
+                "image_decoding": "not_run",
+                "candidate_scoring": "not_run",
+                "approval_automation": "not_run",
+            },
+            "records": records,
+        }
+    if args.command == "byte-loading-show":
+        report = load_candidate_image_byte_loading_record_report(args.manifest, candidate_dir)
+        report["candidate_image_byte_loading_records"] = {
+            "candidate_dir": str(candidate_dir),
+            "selected": report["summary"]["key"],
+            "read_only": True,
+            "image_bytes_loaded": "not_run",
+            "local_file_opening": "not_run",
+            "artifact_download": "not_run",
+            "network_fetch": "not_run",
+            "image_decoding": "not_run",
             "candidate_scoring": "not_run",
             "approval_automation": "not_run",
         }
@@ -149,6 +185,36 @@ def format_intake_list_text(payload: dict[str, Any]) -> str:
     return "\n".join(lines) + "\n"
 
 
+def format_byte_loading_list_text(payload: dict[str, Any]) -> str:
+    header = payload.get("candidate_image_byte_loading_records", {})
+    records = payload.get("records", [])
+    lines = [f"Candidate image byte-loading records: {header.get('count', 0)}"]
+    if isinstance(records, list):
+        for item in records:
+            if not isinstance(item, dict):
+                continue
+            lines.append(
+                "- "
+                + f"{item.get('key', 'unknown')} | "
+                + f"contract={item.get('contract_key', 'unknown')} | "
+                + f"byte_loading_state={item.get('byte_loading_state', 'unknown')} | "
+                + f"reference_type={item.get('reference_type', 'unknown')} | "
+                + f"media_type={item.get('media_type', 'unknown')} | "
+                + f"image_bytes_loaded={item.get('image_bytes_loaded', 'unknown')} | "
+                + f"approval_allowed={item.get('approval_allowed', 'unknown')}"
+            )
+    lines.extend([
+        "image_bytes_loaded: not run",
+        "local_file_opening: not run",
+        "artifact_download: not run",
+        "network_fetch: not run",
+        "image_decoding: not run",
+        "candidate_scoring: not run",
+        "approval_automation: not run",
+    ])
+    return "\n".join(lines) + "\n"
+
+
 def format_show_text(payload: dict[str, Any]) -> str:
     summary = payload.get("summary", {})
     if not isinstance(summary, dict):
@@ -191,6 +257,51 @@ def format_intake_show_text(payload: dict[str, Any]) -> str:
         "image_bytes_loaded: not run",
         "image_decoding: not run",
         "network_fetch: not run",
+        "candidate_scoring: not run",
+        "source_report_mutation: not run",
+        "approval_automation: not run",
+    ]
+    return "\n".join(lines) + "\n"
+
+
+def format_byte_loading_show_text(payload: dict[str, Any]) -> str:
+    summary = payload.get("summary", {})
+    if not isinstance(summary, dict):
+        summary = {}
+    lines = [
+        f"Candidate image byte-loading record: {summary.get('key', 'unknown')}",
+        f"candidate_id: {summary.get('candidate_id', 'unknown')}",
+        f"contract_key: {summary.get('contract_key', 'unknown')}",
+        f"candidate_intake_manifest_id: {summary.get('candidate_intake_manifest_id', 'unknown')}",
+        f"status: {summary.get('status', 'unknown')}",
+        f"byte_loading_state: {summary.get('byte_loading_state', 'unknown')}",
+        f"reference_type: {summary.get('reference_type', 'unknown')}",
+        f"media_type: {summary.get('media_type', 'unknown')}",
+        f"image_sha256: {summary.get('image_sha256', 'unknown')}",
+        f"expected_byte_count: {summary.get('expected_byte_count', 'unknown')}",
+        f"max_candidate_image_bytes: {summary.get('max_candidate_image_bytes', 'unknown')}",
+        f"network_fetch_allowed: {summary.get('network_fetch_allowed', 'unknown')}",
+        f"implicit_cloud_download_allowed: {summary.get('implicit_cloud_download_allowed', 'unknown')}",
+        f"byte_loading_success_can_approve: {summary.get('byte_loading_success_can_approve', 'unknown')}",
+        f"image_bytes_loaded: {summary.get('image_bytes_loaded', 'unknown')}",
+        f"local_file_opened: {summary.get('local_file_opened', 'unknown')}",
+        f"artifact_downloaded: {summary.get('artifact_downloaded', 'unknown')}",
+        f"network_fetch_ran: {summary.get('network_fetch_ran', 'unknown')}",
+        f"actual_loaded_byte_count: {summary.get('actual_loaded_byte_count', 'unknown')}",
+        f"computed_sha256: {summary.get('computed_sha256', 'unknown')}",
+        f"sniffed_media_type: {summary.get('sniffed_media_type', 'unknown')}",
+        f"image_decoded: {summary.get('image_decoded', 'unknown')}",
+        f"candidate_scoring_ran: {summary.get('candidate_scoring_ran', 'unknown')}",
+        f"source_report_mutation_ran: {summary.get('source_report_mutation_ran', 'unknown')}",
+        f"approval_allowed: {summary.get('approval_allowed', 'unknown')}",
+        "image_bytes_loaded: not run",
+        "local_file_opening: not run",
+        "artifact_download: not run",
+        "network_fetch: not run",
+        "image_decoding: not run",
+        "pixel_inspection: not run",
+        "computer_vision: not run",
+        "ocr: not run",
         "candidate_scoring: not run",
         "source_report_mutation: not run",
         "approval_automation: not run",
@@ -387,6 +498,10 @@ def format_payload(payload: dict[str, Any], output_format: str, command: str) ->
         return format_intake_list_text(payload)
     if command == "intake-show":
         return format_intake_show_text(payload)
+    if command == "byte-loading-list":
+        return format_byte_loading_list_text(payload)
+    if command == "byte-loading-show":
+        return format_byte_loading_show_text(payload)
     if command == "intake-review-packet":
         return format_intake_review_packet_text(payload)
     if command == "evaluate":
@@ -429,6 +544,11 @@ def build_parser() -> argparse.ArgumentParser:
 
     intake_show_parser = subparsers.add_parser("intake-show", help="Show a fixture-only candidate intake manifest summary.")
     intake_show_parser.add_argument("manifest", help="Manifest key, contract key, candidate id, filename, or path.")
+
+    subparsers.add_parser("byte-loading-list", help="List fixture-only candidate image byte-loading record fixtures.")
+
+    byte_loading_show_parser = subparsers.add_parser("byte-loading-show", help="Show a fixture-only candidate image byte-loading record summary.")
+    byte_loading_show_parser.add_argument("manifest", help="Record key, contract key, candidate id, record id, intake manifest id, filename, or path.")
 
     intake_review_parser = subparsers.add_parser("intake-review-packet", help="Build a fixture-only candidate intake review packet.")
     intake_review_parser.add_argument("manifest", help="Manifest key, contract key, candidate id, filename, or path.")
