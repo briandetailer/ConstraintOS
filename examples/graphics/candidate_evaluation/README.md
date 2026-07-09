@@ -1,6 +1,6 @@
 # Candidate Evaluation Fixtures
 
-This directory contains design-only, schema-only, read-only discovery, fixture-only report contract, fixture-only evaluation, observation-adapter design, manual-observation fixture, observation-to-report binding, fixture-only evidence merge, fixture-only candidate review packet, real-candidate-image intake design, candidate-intake manifest contract, candidate-intake manifest discovery, candidate-intake review packet, candidate-image byte-loading design, candidate-image byte-loading contract, candidate-image byte-loading discovery, and candidate-image byte-loading review packet artifacts for future candidate graphics evaluation.
+This directory contains design-only, schema-only, read-only discovery, fixture-only report contract, fixture-only evaluation, observation-adapter design, manual-observation fixture, observation-to-report binding, fixture-only evidence merge, fixture-only candidate review packet, real-candidate-image intake design, candidate-intake manifest contract, candidate-intake manifest discovery, candidate-intake review packet, candidate-image byte-loading design, candidate-image byte-loading contract, candidate-image byte-loading discovery, candidate-image byte-loading review packet, and candidate-image byte-loading implementation design artifacts for future candidate graphics evaluation.
 
 ## Current fixtures
 
@@ -9,6 +9,7 @@ candidate_evaluation_adapter.design.json
 observation_adapter.design.json
 real_candidate_image_intake.design.json
 candidate_image_byte_loading.design.json
+candidate_image_byte_loading_implementation.design.json
 candidate_image_byte_loading_record.schema.json
 candidate_manifest.schema.json
 candidate_intake_manifest.schema.json
@@ -33,6 +34,7 @@ adapter_status: design_only
 observation_adapter_status: design_only
 real_candidate_image_intake_status: design_only
 candidate_image_byte_loading_status: design_only
+candidate_image_byte_loading_implementation_design_status: design_only
 candidate_image_byte_loading_contract_status: static_fixture_only
 candidate_image_byte_loading_discovery_status: read_only
 candidate_image_byte_loading_review_packet_status: fixture_only
@@ -47,7 +49,7 @@ manual_observation_status: fixture_only
 observation_report_binding_status: fixture_only
 observation_evidence_merge_status: fixture_only
 candidate_review_packet_status: fixture_only
-implementation_status: byte_loading_review_packet_only
+implementation_status: byte_loading_implementation_design_only
 image_generation_allowed: false
 image_editing_allowed: false
 real_candidate_image_ingestion_allowed: false
@@ -73,6 +75,8 @@ The observation adapter design fixture defines the future boundary for collectin
 The real candidate image intake design fixture defines accepted future reference types, forbidden network/path behaviors, checksum and media-type expectations, byte-handling policy, and failure states before any image bytes are loaded.
 
 The candidate image byte-loading design fixture defines future allowed roots, artifact resolution policy, maximum byte size, checksum order, media-type sniffing, byte-count recording, and safe failure states before any file is opened or image byte is loaded.
+
+The candidate image byte-loading implementation design fixture defines future implementation entry point boundaries, allowed-root enforcement, path normalization, artifact registry lookup, checksum computation, size-limit enforcement, media-type sniffing, and safe failure reporting before byte-loading code is written.
 
 The candidate image byte-loading contract defines the future byte-loading record shape with reference metadata, policy snapshot, not-run byte-loading result fields, post-load boundaries, and non-approval expectations.
 
@@ -149,6 +153,32 @@ candidate_image_byte_loading.design.json:
 ```
 
 Candidate image byte-loading design does not open files, download artifacts, fetch network resources, load bytes, decode images, inspect pixels, score candidates, mutate reports, or approve candidates.
+
+## Candidate image byte-loading implementation design
+
+```text
+candidate_image_byte_loading_implementation.design.json:
+  status: design_only
+  entry_point_name: load_candidate_image_bytes
+  allowed_inputs:
+    validated_candidate_image_byte_loading_record_fixture
+    repository_local_candidate_directory_path
+    explicit_artifact_registry_adapter
+    explicit_allowed_root_policy
+  forbidden_inputs:
+    arbitrary_url
+    arbitrary_absolute_path
+    implicit_cloud_storage_pointer
+    shell_expanded_path
+    unvalidated_manifest_data
+  max_candidate_image_bytes: 25000000
+  artifact_registry_adapter_required: true
+  checksum_match_cannot_approve_candidate: true
+  media_type_match_cannot_approve_candidate: true
+  next_gate: Candidate Image Byte Loading Implementation Contract v1
+```
+
+Candidate image byte-loading implementation design does not implement file opening, artifact download, network fetch, byte loading, image decoding, pixel inspection, scoring, report mutation, or approval.
 
 ## Candidate image byte-loading contract
 
@@ -442,9 +472,11 @@ pytest tests/test_candidate_evaluation_adapter_design.py
 pytest tests/test_observation_adapter_design.py
 pytest tests/test_real_candidate_image_intake_design.py
 pytest tests/test_candidate_image_byte_loading_design.py
+pytest tests/test_candidate_image_byte_loading_implementation_design.py
 pytest tests/test_candidate_image_byte_loading_contract.py
 pytest tests/test_candidate_image_byte_loading_discovery_cli.py
 pytest tests/test_candidate_image_byte_loading_review_packet.py
+pytest tests/test_byte_loading_foundation_exit_review.py
 pytest tests/test_candidate_intake_manifest_contract.py
 pytest tests/test_candidate_intake_manifest_discovery_cli.py
 pytest tests/test_candidate_intake_review_packet.py
@@ -460,4 +492,4 @@ pytest tests/test_candidate_review_packet.py
 
 ## Guardrail
 
-Candidate graphics are external inputs. ConstraintOS does not generate, edit, load, inspect, or approve images in these milestones. Candidate image byte-loading review packets do not enable image byte loading, local file opening, artifact download, network fetch, image decoding, pixel inspection, scoring, report mutation, or approval.
+Candidate graphics are external inputs. ConstraintOS does not generate, edit, load, inspect, or approve images in these milestones. Candidate image byte-loading implementation design does not enable image byte loading, local file opening, artifact download, network fetch, image decoding, pixel inspection, scoring, report mutation, or approval.
