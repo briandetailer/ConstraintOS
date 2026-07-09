@@ -15,6 +15,7 @@ from constraintos.candidate_manifests import (
     resolve_candidate_manifests_dir,
 )
 from constraintos.manual_observations import build_manual_observation_payload
+from constraintos.observation_evidence_merge import build_observation_evidence_merge_payload
 from constraintos.observation_report_binding import build_observation_report_binding_payload
 
 
@@ -51,6 +52,9 @@ def build_payload(args: argparse.Namespace) -> tuple[int, dict[str, Any]]:
         return 0, payload
     if args.command == "bind-observations":
         payload = build_observation_report_binding_payload(args.manifest, candidate_dir)
+        return 0, payload
+    if args.command == "merge-evidence":
+        payload = build_observation_evidence_merge_payload(args.manifest, candidate_dir)
         return 0, payload
     raise CandidateManifestError(f"Unsupported command: {args.command}")
 
@@ -178,6 +182,34 @@ def format_bind_observations_text(payload: dict[str, Any]) -> str:
     return "\n".join(lines) + "\n"
 
 
+def format_merge_evidence_text(payload: dict[str, Any]) -> str:
+    summary = payload.get("summary", {})
+    if not isinstance(summary, dict):
+        summary = {}
+    lines = [
+        f"Observation evidence merge: {summary.get('candidate_manifest_key', 'unknown')}",
+        f"candidate_id: {summary.get('candidate_id', 'unknown')}",
+        f"contract_key: {summary.get('contract_key', 'unknown')}",
+        f"observation_key: {summary.get('observation_key', 'unknown')}",
+        f"report_key: {summary.get('report_key', 'unknown')}",
+        f"merged_evidence_count: {summary.get('merged_evidence_count', 'unknown')}",
+        f"matched_constraint_count: {summary.get('matched_constraint_count', 'unknown')}",
+        f"report_only_constraint_count: {summary.get('report_only_constraint_count', 'unknown')}",
+        f"manual_only_constraint_count: {summary.get('manual_only_constraint_count', 'unknown')}",
+        f"overall_merged_evidence_status: {summary.get('overall_merged_evidence_status', 'unknown')}",
+        f"recommended_decision: {summary.get('recommended_decision', 'unknown')}",
+        f"approval_allowed: {summary.get('approval_allowed', 'unknown')}",
+        "real_image_ingestion: not run",
+        "computer_vision: not run",
+        "ocr: not run",
+        "image_generation: not run",
+        "approval_automation: not run",
+        "candidate_scoring: not run",
+        "source_report_mutation: not run",
+    ]
+    return "\n".join(lines) + "\n"
+
+
 def format_payload(payload: dict[str, Any], output_format: str, command: str) -> str:
     if output_format == "json":
         return json.dumps(payload, indent=2, sort_keys=True) + "\n"
@@ -189,6 +221,8 @@ def format_payload(payload: dict[str, Any], output_format: str, command: str) ->
         return format_observe_text(payload)
     if command == "bind-observations":
         return format_bind_observations_text(payload)
+    if command == "merge-evidence":
+        return format_merge_evidence_text(payload)
     return format_show_text(payload)
 
 
@@ -223,6 +257,9 @@ def build_parser() -> argparse.ArgumentParser:
 
     bind_parser = subparsers.add_parser("bind-observations", help="Bind fixture-only manual observations to fixture-only evaluation reports.")
     bind_parser.add_argument("manifest", help="Manifest key, contract key, candidate id, filename, or path.")
+
+    merge_parser = subparsers.add_parser("merge-evidence", help="Merge fixture-only manual observations with fixture-only report evidence.")
+    merge_parser.add_argument("manifest", help="Manifest key, contract key, candidate id, filename, or path.")
     return parser
 
 
