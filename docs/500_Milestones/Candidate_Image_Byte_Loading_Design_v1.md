@@ -4,11 +4,14 @@
 
 ```text
 milestone: Candidate Image Byte Loading Design v1
-status: implementation-complete-pending-test
+status: complete
 started_on: 2026-07-09
+completed_on: 2026-07-09
 previous_gate: Intake Foundation Exit Review v1 complete
 track: Real Candidate Intake Track
 baseline: 487 passed
+latest_user_reported_candidate_image_byte_loading_design_test_result: 9 passed
+latest_user_reported_candidate_image_byte_loading_design_test_result_on: 2026-07-09
 ```
 
 ## Purpose
@@ -213,6 +216,16 @@ blocked_until_later:
 pytest tests/test_candidate_image_byte_loading_design.py
 ```
 
+## Verification record
+
+```text
+source: user-reported local test run
+command: pytest tests/test_candidate_image_byte_loading_design.py
+result: 9 passed
+reported_on: 2026-07-09
+assistant_ran_tests: false
+```
+
 ## Guardrails
 
 ```text
@@ -242,5 +255,15 @@ pytest tests/test_candidate_image_byte_loading_design.py
 [x] Failure states are defined and cannot approve.
 [x] Next gate is Candidate Image Byte Loading Contract v1.
 [x] Command reference updated in the same implementation slice.
-[ ] Verification test result recorded.
+[x] Verification test result recorded.
+```
+
+## Handoff notes
+
+```text
+- Candidate Image Byte Loading Design v1 is complete.
+- Future byte-loading boundaries are defined, but no image byte loading has been implemented.
+- Allowed roots, artifact URI policy, maximum byte size, checksum order, media-type sniffing, byte-count recording, and safe failure states are documented and tested.
+- Image byte loading, local file opening, artifact download, network fetch, image decoding, pixel inspection, CV/OCR integration, image generation, image editing, candidate scoring, report mutation, and approval automation remain blocked.
+- The next milestone should be Candidate Image Byte Loading Contract v1.
 ```
