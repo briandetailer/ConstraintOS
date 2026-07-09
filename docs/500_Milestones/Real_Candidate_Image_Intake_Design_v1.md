@@ -4,7 +4,7 @@
 
 ```text
 milestone: Real Candidate Image Intake Design v1
-status: active
+status: implementation-complete-pending-test
 started_on: 2026-07-09
 previous_gate: Foundation Exit Review v1 complete
 track: Real Candidate Intake Track
@@ -50,6 +50,16 @@ This milestone is design-only. It does not implement image loading, image decodi
 - No candidate scoring.
 - No report mutation.
 - No approval automation change.
+```
+
+## Implemented files
+
+```text
+docs/500_Milestones/Real_Candidate_Image_Intake_Design_v1.md
+examples/graphics/candidate_evaluation/real_candidate_image_intake.design.json
+tests/test_real_candidate_image_intake_design.py
+examples/graphics/candidate_evaluation/README.md
+docs/700_Use_Cases/Graphics_Validation_Command_Reference.md
 ```
 
 ## Accepted reference types for future intake
@@ -202,4 +212,21 @@ pytest tests/test_real_candidate_image_intake_design.py
 - No candidate scoring.
 - No approval automation change.
 - Do not claim tests passed unless actually run.
+```
+
+## Done criteria
+
+```text
+[x] Real candidate image intake design doc exists.
+[x] Machine-readable real candidate image intake design fixture exists.
+[x] Accepted reference types are defined.
+[x] Forbidden reference behaviors are defined.
+[x] Intake states are defined and cannot approve.
+[x] Checksum expectations are defined.
+[x] Media-type expectations are defined.
+[x] Byte-handling policy is defined.
+[x] Failure states are defined and cannot approve.
+[x] Next gate is Candidate Intake Manifest Contract v1.
+[x] Command reference updated in the same implementation slice.
+[ ] Verification test result recorded.
 ```
