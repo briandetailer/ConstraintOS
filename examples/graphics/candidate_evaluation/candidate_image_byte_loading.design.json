@@ -1,0 +1,150 @@
+{
+  "candidate_image_byte_loading_design": {
+    "id": "CANDIDATE-IMAGE-BYTE-LOADING-DESIGN-V1",
+    "version": "v1",
+    "domain": "graphics_validation",
+    "status": "design_only",
+    "image_byte_loading_implemented": false,
+    "local_file_opening_implemented": false,
+    "artifact_download_implemented": false,
+    "network_fetch_implemented": false,
+    "image_decoding_implemented": false,
+    "pixel_inspection_implemented": false,
+    "computer_vision_implemented": false,
+    "ocr_implemented": false,
+    "candidate_scoring_implemented": false,
+    "approval_automation_changed": false
+  },
+  "allowed_roots_policy": {
+    "local_file_path": {
+      "allowed_roots": [
+        "./external-candidates/",
+        "./runs/manual-candidates/"
+      ],
+      "normalize_before_loading": true,
+      "reject_path_traversal": true,
+      "reject_absolute_paths_unless_allowlisted_later": true,
+      "reject_outside_allowed_roots": true
+    },
+    "file_uri": {
+      "allowed_roots": [
+        "file:///workspace/external-candidates/",
+        "file:///workspace/runs/manual-candidates/"
+      ],
+      "normalize_before_loading": true,
+      "reject_path_traversal": true,
+      "allowed_hosts": ["", "localhost"],
+      "reject_outside_allowed_roots": true
+    }
+  },
+  "artifact_uri_policy": {
+    "status": "design_only",
+    "allowed_scheme": "artifact://",
+    "resolution": "internal_artifact_registry_required_later",
+    "network_fetch_allowed": false,
+    "implicit_cloud_download_allowed": false,
+    "missing_artifact_behavior": "intake_failed"
+  },
+  "maximum_byte_size_policy": {
+    "max_candidate_image_bytes": 25000000,
+    "oversize_behavior": "intake_failed",
+    "approval_allowed": false
+  },
+  "checksum_verification_order": [
+    "resolve_reference_metadata_without_loading_bytes",
+    "confirm_reference_type_is_allowed",
+    "confirm_image_sha256_metadata_is_present",
+    "load_bytes_only_in_future_implementation",
+    "compute_sha256_from_loaded_bytes",
+    "compare_computed_sha256_to_manifest_image_sha256",
+    "fail_intake_on_checksum_mismatch",
+    "do_not_decode_until_checksum_passes"
+  ],
+  "media_type_sniffing_policy": {
+    "accepted_media_types": [
+      "image/png",
+      "image/jpeg",
+      "image/webp"
+    ],
+    "declared_media_type_required_before_loading": true,
+    "record_sniffed_media_type_after_future_loading": true,
+    "declared_and_sniffed_media_types_must_agree": true,
+    "unsupported_or_mismatched_media_type_behavior": "intake_failed",
+    "media_type_validation_can_approve": false
+  },
+  "byte_count_recording_policy": {
+    "required_future_records": [
+      "declared_expected_byte_count",
+      "actual_loaded_byte_count",
+      "max_candidate_image_bytes",
+      "byte_count_within_limit"
+    ],
+    "byte_count_success_can_approve": false
+  },
+  "failure_states": [
+    {
+      "state": "reference_type_not_allowed",
+      "decision": "intake_failed",
+      "approval_allowed": false
+    },
+    {
+      "state": "outside_allowed_root",
+      "decision": "intake_failed",
+      "approval_allowed": false
+    },
+    {
+      "state": "path_traversal_detected",
+      "decision": "intake_failed",
+      "approval_allowed": false
+    },
+    {
+      "state": "artifact_not_found",
+      "decision": "intake_failed",
+      "approval_allowed": false
+    },
+    {
+      "state": "missing_checksum",
+      "decision": "needs_review",
+      "approval_allowed": false
+    },
+    {
+      "state": "checksum_mismatch",
+      "decision": "intake_failed",
+      "approval_allowed": false
+    },
+    {
+      "state": "oversize_candidate",
+      "decision": "intake_failed",
+      "approval_allowed": false
+    },
+    {
+      "state": "unsupported_media_type",
+      "decision": "intake_failed",
+      "approval_allowed": false
+    },
+    {
+      "state": "media_type_mismatch",
+      "decision": "intake_failed",
+      "approval_allowed": false
+    },
+    {
+      "state": "unreadable_candidate",
+      "decision": "needs_review",
+      "approval_allowed": false
+    }
+  ],
+  "next_gate": {
+    "recommended_next_milestone": "Candidate Image Byte Loading Contract v1",
+    "blocked_until_later": [
+      "image_byte_loading_implementation",
+      "image_decoding_implementation",
+      "pixel_inspection",
+      "computer_vision_provider_integration",
+      "ocr_provider_integration",
+      "image_generation_integration",
+      "image_editing_integration",
+      "candidate_scoring",
+      "approval_automation_change"
+    ]
+  }
+}
