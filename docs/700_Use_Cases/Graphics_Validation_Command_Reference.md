@@ -29,6 +29,7 @@ It covers:
 - real candidate image intake design
 - candidate intake manifest contract
 - candidate intake manifest discovery
+- candidate intake review packet
 - local verification commands
 ```
 
@@ -56,208 +57,77 @@ git pull --rebase origin phase-1-cli-tooling
 
 ## Perseverance graphics-validation fixture
 
-Plan the Perseverance graphics-validation runtime fixture without executing it:
-
 ```powershell
 cos-graphics-validate perseverance --plan-only --format text
-```
-
-Run the Perseverance graphics-validation fixture through the current dry-run runtime:
-
-```powershell
 cos-graphics-validate perseverance --format text
-```
-
-Run the Perseverance fixture and emit JSON:
-
-```powershell
 cos-graphics-validate perseverance --format json
-```
-
-Write a Perseverance graphics-validation result to a file:
-
-```powershell
 cos-graphics-validate perseverance --format json --output reports/perseverance-graphics-validation.json
 ```
 
 ## Perseverance watch mode
 
-Run the Perseverance graphics-validation fixture in watch mode:
-
 ```powershell
 cos-graphics-validate perseverance --watch
-```
-
-Run watch mode with a screen-recording delay:
-
-```powershell
 cos-graphics-validate perseverance --watch --watch-delay-ms 250
-```
-
-Run the PowerShell watch helper:
-
-```powershell
 .\scripts\watch-perseverance.ps1
-```
-
-Run the PowerShell watch helper with a slower delay:
-
-```powershell
 .\scripts\watch-perseverance.ps1 -WatchDelayMs 500
-```
-
-The PowerShell helper writes local run artifacts such as:
-
-```text
-terminal-transcript.txt
-watch-output.txt
-graphics-validation-result.json
-run-metadata.json
 ```
 
 Generated run artifacts remain local-only by default under ignored `runs/` output.
 
 ## Reusable graphics contract validation
 
-Run the reusable graphics contract test suite:
-
 ```powershell
 pytest tests/test_graphics_contracts.py
 ```
 
-This validates the reusable graphics contract schema and the current contract instances.
-
 ## Graphics contract discovery CLI
-
-List available graphics contracts:
 
 ```powershell
 cos-graphics-contracts list
-```
-
-Show individual contract summaries:
-
-```powershell
 cos-graphics-contracts show perseverance
 cos-graphics-contracts show wind_turbine_nacelle
 cos-graphics-contracts show hydroelectric_dam_powerhouse
 cos-graphics-contracts show supra_2jz_gte_twin_turbo
-```
-
-Write a JSON list of all graphics contracts:
-
-```powershell
 cos-graphics-contracts --format json --output reports/graphics-contracts.json list
-```
-
-Show a contract summary as JSON:
-
-```powershell
 cos-graphics-contracts --format json show supra_2jz_gte_twin_turbo
-```
-
-Run the contract discovery CLI tests:
-
-```powershell
 pytest tests/test_graphics_contracts_cli.py
 ```
 
 ## Graphics contract runtime bridge
 
-Run a contract-backed runtime bridge in plan-only mode:
-
 ```powershell
 cos-graphics-contracts run perseverance --plan-only
-```
-
-Run contract-backed dry-run runtime bridges:
-
-```powershell
 cos-graphics-contracts run wind_turbine_nacelle
 cos-graphics-contracts run hydroelectric_dam_powerhouse
 cos-graphics-contracts run supra_2jz_gte_twin_turbo
-```
-
-Write a contract runtime bridge report as JSON:
-
-```powershell
 cos-graphics-contracts --format json --output reports/supra-contract-runtime.json run supra_2jz_gte_twin_turbo
-```
-
-Run the contract runtime bridge tests:
-
-```powershell
 pytest tests/test_graphics_contract_runtime_bridge.py
 ```
 
 ## Graphics contract runtime watch mode
 
-Run a plan-only contract runtime watch:
-
 ```powershell
 cos-graphics-contracts run perseverance --plan-only --watch
-```
-
-Run contract-backed dry-run runtime watches:
-
-```powershell
 cos-graphics-contracts run wind_turbine_nacelle --watch
 cos-graphics-contracts run hydroelectric_dam_powerhouse --watch
 cos-graphics-contracts run supra_2jz_gte_twin_turbo --watch
-```
-
-Run watch mode with a screen-recording delay:
-
-```powershell
 cos-graphics-contracts run supra_2jz_gte_twin_turbo --watch --watch-delay-ms 250
 ```
 
 ## Graphics contract watch capture
 
-Capture a contract-backed runtime watch with the default `perseverance` contract:
-
 ```powershell
 .\scripts\watch-graphics-contract.ps1
-```
-
-Capture a specific contract-backed dry-run watch:
-
-```powershell
 .\scripts\watch-graphics-contract.ps1 -Contract supra_2jz_gte_twin_turbo
-```
-
-Capture a plan-only contract watch:
-
-```powershell
 .\scripts\watch-graphics-contract.ps1 -Contract perseverance -PlanOnly
-```
-
-Capture with a slower screen-recording delay:
-
-```powershell
 .\scripts\watch-graphics-contract.ps1 -Contract hydroelectric_dam_powerhouse -WatchDelayMs 500
-```
-
-The contract watch capture helper writes local run artifacts such as:
-
-```text
-terminal-transcript.txt
-watch-output.txt
-graphics-contract-runtime-result.json
-run-metadata.json
+pytest tests/test_graphics_contract_watch_capture_script.py
 ```
 
 Generated run artifacts remain local-only by default under ignored `runs/graphics-contracts/` output.
 
-Run the contract watch capture script tests:
-
-```powershell
-pytest tests/test_graphics_contract_watch_capture_script.py
-```
-
 ## Candidate evaluation adapter design
-
-Validate the candidate evaluation adapter design fixture and guardrails:
 
 ```powershell
 pytest tests/test_candidate_evaluation_adapter_design.py
@@ -267,8 +137,6 @@ This is a design-only verification command. It does not evaluate real candidate 
 
 ## Candidate manifest schema
 
-Validate the candidate manifest schema and static fixtures:
-
 ```powershell
 pytest tests/test_candidate_manifest_schema.py
 ```
@@ -277,36 +145,17 @@ This is a schema-only verification command. It does not evaluate real candidate 
 
 ## Candidate manifest discovery
 
-List available static candidate manifests:
-
 ```powershell
 cos-graphics-candidates list
-```
-
-Show individual candidate manifest summaries:
-
-```powershell
 cos-graphics-candidates show perseverance
 cos-graphics-candidates show supra_2jz_gte_twin_turbo
-```
-
-Write a JSON report of static candidate manifests:
-
-```powershell
 cos-graphics-candidates --format json --output reports/candidate-manifests.json list
-```
-
-Run the candidate manifest discovery CLI tests:
-
-```powershell
 pytest tests/test_candidate_manifest_discovery_cli.py
 ```
 
 This is a read-only discovery command. It does not evaluate real candidate images and does not generate images.
 
 ## Candidate evaluation report contract
-
-Validate the fixture-only candidate evaluation report contract and static report fixtures:
 
 ```powershell
 pytest tests/test_candidate_evaluation_report_contract.py
@@ -316,30 +165,16 @@ This is a report-contract verification command. It does not evaluate real candid
 
 ## Fixture-only candidate evaluation
 
-Run fixture-only candidate evaluation from static manifest and report fixtures:
-
 ```powershell
 cos-graphics-candidates evaluate perseverance
 cos-graphics-candidates evaluate supra_2jz_gte_twin_turbo
-```
-
-Write a fixture-only candidate evaluation report as JSON:
-
-```powershell
 cos-graphics-candidates --format json --output reports/perseverance-candidate-evaluation.json evaluate perseverance
-```
-
-Run the fixture-only candidate evaluation tests:
-
-```powershell
 pytest tests/test_fixture_only_candidate_evaluation.py
 ```
 
 This is a fixture-only command. It loads static manifest and report fixtures, but it does not load, decode, inspect, or evaluate image bytes.
 
 ## Foundation readiness review
-
-Validate the foundation readiness checkpoint before real image ingestion or observation adapter work:
 
 ```powershell
 pytest tests/test_foundation_readiness_review.py
@@ -349,8 +184,6 @@ This is a documentation and guardrail verification command. It does not evaluate
 
 ## Observation adapter design
 
-Validate the observation adapter design fixture and guardrails:
-
 ```powershell
 pytest tests/test_observation_adapter_design.py
 ```
@@ -359,22 +192,10 @@ This is a design-only verification command. It does not load real candidate imag
 
 ## Manual observation fixture adapter
 
-Load fixture-only manual observations for static candidate manifests:
-
 ```powershell
 cos-graphics-candidates observe perseverance
 cos-graphics-candidates observe supra_2jz_gte_twin_turbo
-```
-
-Write a manual observation fixture report as JSON:
-
-```powershell
 cos-graphics-candidates --format json --output reports/perseverance-observations.json observe perseverance
-```
-
-Run the manual observation fixture adapter tests:
-
-```powershell
 pytest tests/test_manual_observation_fixture_adapter.py
 ```
 
@@ -382,22 +203,10 @@ This is a fixture-only command. It loads static manifest and manual-observation 
 
 ## Observation-to-report binding
 
-Bind fixture-only manual observations to fixture-only candidate evaluation reports:
-
 ```powershell
 cos-graphics-candidates bind-observations perseverance
 cos-graphics-candidates bind-observations supra_2jz_gte_twin_turbo
-```
-
-Write an observation-to-report binding report as JSON:
-
-```powershell
 cos-graphics-candidates --format json --output reports/perseverance-observation-binding.json bind-observations perseverance
-```
-
-Run the observation-to-report binding tests:
-
-```powershell
 pytest tests/test_observation_report_binding.py
 ```
 
@@ -405,22 +214,10 @@ This is a fixture-only command. It binds static manifest, manual-observation, an
 
 ## Fixture-only observation evidence merge
 
-Merge fixture-only manual observations with fixture-only report evidence:
-
 ```powershell
 cos-graphics-candidates merge-evidence perseverance
 cos-graphics-candidates merge-evidence supra_2jz_gte_twin_turbo
-```
-
-Write a fixture-only merged evidence report as JSON:
-
-```powershell
 cos-graphics-candidates --format json --output reports/perseverance-merged-evidence.json merge-evidence perseverance
-```
-
-Run the fixture-only observation evidence merge tests:
-
-```powershell
 pytest tests/test_observation_evidence_merge.py
 ```
 
@@ -428,30 +225,16 @@ This is a fixture-only command. It produces derived merged evidence from static 
 
 ## Fixture-only candidate review packet
 
-Create a human-facing fixture-only candidate review packet:
-
 ```powershell
 cos-graphics-candidates review-packet perseverance
 cos-graphics-candidates review-packet supra_2jz_gte_twin_turbo
-```
-
-Write a fixture-only candidate review packet as JSON:
-
-```powershell
 cos-graphics-candidates --format json --output reports/perseverance-review-packet.json review-packet perseverance
-```
-
-Run the fixture-only candidate review packet tests:
-
-```powershell
 pytest tests/test_candidate_review_packet.py
 ```
 
 This is a fixture-only command. It summarizes candidate identity, manual observations, report status, merged evidence, and approval blockers, but it does not mutate reports, score candidates, load image bytes, or approve candidates.
 
 ## Foundation exit review
-
-Validate the fixture-only foundation exit checkpoint before real image intake design:
 
 ```powershell
 pytest tests/test_foundation_exit_review.py
@@ -461,8 +244,6 @@ This is a documentation and guardrail verification command. It does not load rea
 
 ## Real candidate image intake design
 
-Validate the real candidate image intake design fixture and guardrails:
-
 ```powershell
 pytest tests/test_real_candidate_image_intake_design.py
 ```
@@ -470,8 +251,6 @@ pytest tests/test_real_candidate_image_intake_design.py
 This is a design-only verification command. It does not load image bytes, decode images, fetch network images, inspect pixels, score candidates, choose providers, or approve candidates.
 
 ## Candidate intake manifest contract
-
-Validate the candidate intake manifest schema and static intake-manifest fixtures:
 
 ```powershell
 pytest tests/test_candidate_intake_manifest_contract.py
@@ -481,32 +260,38 @@ This is a contract-only verification command. It does not load image bytes, deco
 
 ## Candidate intake manifest discovery
 
-List available static candidate intake manifests:
-
 ```powershell
 cos-graphics-candidates intake-list
-```
-
-Show individual candidate intake manifest summaries:
-
-```powershell
 cos-graphics-candidates intake-show perseverance
 cos-graphics-candidates intake-show supra_2jz_gte_twin_turbo
-```
-
-Write a JSON report of static candidate intake manifests:
-
-```powershell
 cos-graphics-candidates --format json --output reports/candidate-intake-manifests.json intake-list
-```
-
-Run the candidate intake manifest discovery CLI tests:
-
-```powershell
 pytest tests/test_candidate_intake_manifest_discovery_cli.py
 ```
 
 This is a read-only discovery command. It does not load image bytes, decode images, fetch network images, inspect pixels, score candidates, mutate reports, or approve candidates.
+
+## Candidate intake review packet
+
+Create a human-facing fixture-only intake review packet:
+
+```powershell
+cos-graphics-candidates intake-review-packet perseverance
+cos-graphics-candidates intake-review-packet supra_2jz_gte_twin_turbo
+```
+
+Write a fixture-only candidate intake review packet as JSON:
+
+```powershell
+cos-graphics-candidates --format json --output reports/perseverance-intake-review-packet.json intake-review-packet perseverance
+```
+
+Run the candidate intake review packet tests:
+
+```powershell
+pytest tests/test_candidate_intake_review_packet.py
+```
+
+This is a fixture-only command. It summarizes intake candidate identity, reference metadata, policy snapshot, intake boundaries, and approval blockers, but it does not load image bytes, decode images, fetch network images, inspect pixels, score candidates, mutate reports, or approve candidates.
 
 ## Full recent graphics-validation verification set
 
@@ -534,6 +319,7 @@ pytest tests/test_foundation_exit_review.py
 pytest tests/test_real_candidate_image_intake_design.py
 pytest tests/test_candidate_intake_manifest_contract.py
 pytest tests/test_candidate_intake_manifest_discovery_cli.py
+pytest tests/test_candidate_intake_review_packet.py
 ```
 
 ## Current contract keys
@@ -549,7 +335,7 @@ supra_2jz_gte_twin_turbo
 
 ## Current candidate manifest keys
 
-Use these keys with `cos-graphics-candidates show`, `cos-graphics-candidates evaluate`, `cos-graphics-candidates observe`, `cos-graphics-candidates bind-observations`, `cos-graphics-candidates merge-evidence`, `cos-graphics-candidates review-packet`, and `cos-graphics-candidates intake-show`:
+Use these keys with `cos-graphics-candidates show`, `cos-graphics-candidates evaluate`, `cos-graphics-candidates observe`, `cos-graphics-candidates bind-observations`, `cos-graphics-candidates merge-evidence`, `cos-graphics-candidates review-packet`, `cos-graphics-candidates intake-show`, and `cos-graphics-candidates intake-review-packet`:
 
 ```text
 perseverance
@@ -563,6 +349,6 @@ supra_2jz_gte_twin_turbo
 - These commands are dry-run / fixture-only / design-only / contract-only / read-only for graphics validation.
 - These commands do not generate images.
 - These commands do not evaluate real generated candidates yet.
-- Real candidate image intake design and intake manifests do not load or decode images.
+- Real candidate image intake design, intake manifests, and intake review packets do not load or decode images.
 - Approval expectations remain contract-driven and default uncertainty to needs_review.
 ```
