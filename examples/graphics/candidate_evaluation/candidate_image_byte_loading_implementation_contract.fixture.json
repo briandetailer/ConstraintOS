@@ -1,0 +1,81 @@
+{
+  "candidate_image_byte_loading_implementation_contract": {
+    "id": "CANDIDATE-IMAGE-BYTE-LOADING-IMPLEMENTATION-CONTRACT-V1",
+    "version": "v1",
+    "domain": "graphics_validation",
+    "status": "contract_only",
+    "contract_state": "not_implemented",
+    "implementation_allowed": false
+  },
+  "input_binding": {
+    "source_byte_loading_record_schema": "candidate_image_byte_loading_record.schema.json",
+    "source_byte_loading_record_fixture_required": true,
+    "source_intake_manifest_required": true,
+    "explicit_artifact_registry_adapter_required": true,
+    "explicit_allowed_root_policy_required": true,
+    "unvalidated_manifest_data_allowed": false
+  },
+  "policy_enforcement_result_contract": {
+    "reference_type_allowed": "future_boolean",
+    "allowed_root_checked": "future_boolean",
+    "path_normalized": "future_boolean",
+    "traversal_rejected": "future_boolean",
+    "absolute_path_policy_checked": "future_boolean",
+    "network_fetch_allowed": false,
+    "implicit_cloud_download_allowed": false
+  },
+  "reference_resolution_result_contract": {
+    "reference_resolved": "future_boolean",
+    "resolved_reference_kind": [
+      "local_file_path",
+      "file_uri",
+      "artifact_descriptor",
+      "safe_failure"
+    ],
+    "artifact_descriptor_required": true,
+    "resolved_byte_source_mutable": false,
+    "http_resolution_allowed": false,
+    "https_resolution_allowed": false
+  },
+  "byte_loading_result_contract": {
+    "image_bytes_loaded": "future_boolean",
+    "local_file_opened": "future_boolean",
+    "artifact_downloaded": false,
+    "network_fetch_ran": false,
+    "actual_loaded_byte_count": "future_integer_or_null",
+    "computed_sha256": "future_sha256_or_null",
+    "sniffed_media_type": "future_media_type_or_null"
+  },
+  "validation_result_contract": {
+    "byte_count_within_limit": "future_boolean_or_null",
+    "checksum_matches": "future_boolean_or_null",
+    "media_type_matches": "future_boolean_or_null",
+    "safe_to_decode": "future_boolean",
+    "approval_allowed": false
+  },
+  "safe_failure_contract": {
+    "failure_code": "future_string_or_null",
+    "failure_reason": "future_string_or_null",
+    "initial_decision": "needs_review",
+    "approval_allowed": false,
+    "failure_codes": [
+      "reference_type_not_allowed",
+      "outside_allowed_root",
+      "path_traversal_detected",
+      "artifact_not_found",
+      "checksum_mismatch",
+      "oversize_candidate",
+      "unsupported_media_type",
+      "media_type_mismatch",
+      "unreadable_candidate"
+    ]
+  },
+  "post_contract_boundary": {
+    "image_decoding_implemented": false,
+    "pixel_inspection_implemented": false,
+    "computer_vision_implemented": false,
+    "ocr_implemented": false,
+    "candidate_scoring_implemented": false,
+    "approval_automation_changed": false
+  }
+}
