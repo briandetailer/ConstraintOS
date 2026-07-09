@@ -23,6 +23,7 @@ It covers:
 - observation adapter design verification
 - manual observation fixture adapter
 - observation-to-report binding
+- fixture-only observation evidence merge
 - local verification commands
 ```
 
@@ -397,6 +398,29 @@ pytest tests/test_observation_report_binding.py
 
 This is a fixture-only command. It binds static manifest, manual-observation, and candidate-evaluation report fixtures, but it does not mutate reports, score candidates, load image bytes, or approve candidates.
 
+## Fixture-only observation evidence merge
+
+Merge fixture-only manual observations with fixture-only report evidence:
+
+```powershell
+cos-graphics-candidates merge-evidence perseverance
+cos-graphics-candidates merge-evidence supra_2jz_gte_twin_turbo
+```
+
+Write a fixture-only merged evidence report as JSON:
+
+```powershell
+cos-graphics-candidates --format json --output reports/perseverance-merged-evidence.json merge-evidence perseverance
+```
+
+Run the fixture-only observation evidence merge tests:
+
+```powershell
+pytest tests/test_observation_evidence_merge.py
+```
+
+This is a fixture-only command. It produces derived merged evidence from static manual-observation and candidate-evaluation report fixtures, but it does not mutate reports, score candidates, load image bytes, or approve candidates.
+
 ## Full recent graphics-validation verification set
 
 Run all recent graphics-validation and contract-focused test suites:
@@ -417,6 +441,7 @@ pytest tests/test_foundation_readiness_review.py
 pytest tests/test_observation_adapter_design.py
 pytest tests/test_manual_observation_fixture_adapter.py
 pytest tests/test_observation_report_binding.py
+pytest tests/test_observation_evidence_merge.py
 ```
 
 ## Current contract keys
@@ -432,7 +457,7 @@ supra_2jz_gte_twin_turbo
 
 ## Current candidate manifest keys
 
-Use these keys with `cos-graphics-candidates show`, `cos-graphics-candidates evaluate`, `cos-graphics-candidates observe`, and `cos-graphics-candidates bind-observations`:
+Use these keys with `cos-graphics-candidates show`, `cos-graphics-candidates evaluate`, `cos-graphics-candidates observe`, `cos-graphics-candidates bind-observations`, and `cos-graphics-candidates merge-evidence`:
 
 ```text
 perseverance
