@@ -1,6 +1,6 @@
 # Candidate Evaluation Fixtures
 
-This directory contains design-only, schema-only, read-only discovery, fixture-only report contract, fixture-only evaluation, observation-adapter design, and manual-observation fixture artifacts for future candidate graphics evaluation.
+This directory contains design-only, schema-only, read-only discovery, fixture-only report contract, fixture-only evaluation, observation-adapter design, manual-observation fixture, and observation-to-report binding artifacts for future candidate graphics evaluation.
 
 ## Current fixtures
 
@@ -28,6 +28,7 @@ discovery_status: read_only
 report_contract_status: fixture_only
 fixture_only_evaluation_status: available
 manual_observation_status: fixture_only
+observation_report_binding_status: fixture_only
 implementation_status: foundation_only
 image_generation_allowed: false
 image_editing_allowed: false
@@ -47,6 +48,8 @@ The adapter design fixture defines the boundary between reusable graphics-valida
 The observation adapter design fixture defines the future boundary for collecting observations without starting real image ingestion or selecting machine-observation providers.
 
 The manual observation fixtures define the first allowed observation source path, but they remain fixture-only and do not inspect images.
+
+Observation-to-report binding compares candidate manifests, manual observation fixtures, and fixture-only evaluation reports for the same candidate before any real image ingestion work begins.
 
 The candidate manifest schema defines the static manifest shape required before any future candidate-evaluation command can exist.
 
@@ -101,6 +104,24 @@ supra_2jz_gte_manual_observation.fixture.json:
 ```
 
 The manual observation fixtures do not claim that any real image was loaded, decoded, inspected, or evaluated.
+
+## Observation-to-report binding
+
+Observation-to-report binding verifies that the manifest, manual observation fixture, and candidate evaluation report fixture agree on candidate identity and decision guardrails.
+
+```text
+binding_inputs:
+  candidate_manifest.fixture.json
+  manual_observation.fixture.json
+  candidate_evaluation_report.fixture.json
+
+binding_output:
+  fixture_only binding report
+  recommended_decision: needs_review
+  approval_allowed: false
+```
+
+Binding does not mutate report fixtures, score candidates, inspect image bytes, or approve candidates.
 
 ## Candidate manifest fixtures
 
@@ -167,6 +188,16 @@ cos-graphics-candidates --format json --output reports/perseverance-observations
 
 These commands load static manifest and manual observation fixtures only. They do not load, decode, inspect, or evaluate image bytes.
 
+## Observation-to-report binding commands
+
+```powershell
+cos-graphics-candidates bind-observations perseverance
+cos-graphics-candidates bind-observations supra_2jz_gte_twin_turbo
+cos-graphics-candidates --format json --output reports/perseverance-observation-binding.json bind-observations perseverance
+```
+
+These commands bind static manifest, manual observation, and candidate evaluation report fixtures only. They do not mutate report fixtures, score candidates, or inspect image bytes.
+
 ## Verification
 
 ```powershell
@@ -177,8 +208,9 @@ pytest tests/test_candidate_manifest_discovery_cli.py
 pytest tests/test_candidate_evaluation_report_contract.py
 pytest tests/test_fixture_only_candidate_evaluation.py
 pytest tests/test_manual_observation_fixture_adapter.py
+pytest tests/test_observation_report_binding.py
 ```
 
 ## Guardrail
 
-Candidate graphics are external inputs. ConstraintOS does not generate, edit, load, inspect, or approve images in these milestones. Fixture-only candidate evaluation reports `needs_review` from static report fixtures only. Manual observation fixtures do not enable real image ingestion.
+Candidate graphics are external inputs. ConstraintOS does not generate, edit, load, inspect, or approve images in these milestones. Fixture-only candidate evaluation reports `needs_review` from static report fixtures only. Manual observation and observation-to-report binding fixtures do not enable real image ingestion.
