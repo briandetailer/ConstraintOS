@@ -4,7 +4,7 @@
 
 ```text
 milestone: Byte Loading Foundation Exit Review v1
-status: active
+status: implementation-complete-pending-test
 started_on: 2026-07-09
 previous_gate: Candidate Image Byte Loading Review Packet v1 complete
 track: Real Candidate Intake Track
@@ -143,4 +143,18 @@ pytest tests/test_byte_loading_foundation_exit_review.py
 - No candidate scoring.
 - No approval automation change.
 - Do not claim tests passed unless actually run.
+```
+
+## Done criteria
+
+```text
+[x] Byte loading foundation exit review doc exists.
+[x] Fixture-only byte-loading metadata-ready status is recorded.
+[x] Completed byte-loading capabilities are listed.
+[x] Current byte-loading commands are listed.
+[x] Safe byte-loading metadata capabilities are listed.
+[x] Blocked image-loading and provider work is listed.
+[x] Next allowed milestone is Candidate Image Byte Loading Implementation Design v1.
+[x] Command reference updated with verification command.
+[ ] Verification test result recorded.
 ```
