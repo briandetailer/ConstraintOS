@@ -4,11 +4,14 @@
 
 ```text
 milestone: Candidate Image Byte Loading Implementation Contract v1
-status: implementation-complete-pending-test
+status: complete
 started_on: 2026-07-09
+completed_on: 2026-07-09
 previous_gate: Candidate Image Byte Loading Implementation Design v1 complete
 track: Real Candidate Intake Track
 baseline: 487 passed
+latest_user_reported_candidate_image_byte_loading_implementation_contract_test_result: 10 passed
+latest_user_reported_candidate_image_byte_loading_implementation_contract_test_result_on: 2026-07-09
 ```
 
 ## Purpose
@@ -137,6 +140,16 @@ post_contract_boundary:
 pytest tests/test_candidate_image_byte_loading_implementation_contract.py
 ```
 
+## Verification record
+
+```text
+source: user-reported local test run
+command: pytest tests/test_candidate_image_byte_loading_implementation_contract.py
+result: 10 passed
+reported_on: 2026-07-09
+assistant_ran_tests: false
+```
+
 ## Required next gate
 
 ```text
@@ -184,5 +197,16 @@ blocked_until_later:
 [x] Safe failure result fields are defined.
 [x] Design-only and approval_allowed false are preserved.
 [x] Command reference updated with verification command.
-[ ] Verification test result recorded.
+[x] Verification test result recorded.
+```
+
+## Handoff notes
+
+```text
+- Candidate Image Byte Loading Implementation Contract v1 is complete.
+- The future byte-loading attempt result contract is defined by schema and static fixture.
+- The contract defines input binding, policy enforcement, reference resolution, byte-loading result envelope, validation result, safe failure, and post-contract boundary fields.
+- This milestone did not implement image byte loading, local file opening, artifact download, network fetch, image decoding, pixel inspection, CV/OCR integration, image generation, image editing, candidate scoring, report mutation, or approval automation.
+- The next milestone should be Candidate Image Byte Loading Pre-Implementation Exit Review v1.
+- Image byte loading must not begin until pre-implementation readiness is reviewed and verified.
 ```
