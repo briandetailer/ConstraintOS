@@ -4,7 +4,7 @@
 
 ```text
 milestone: Intake Foundation Exit Review v1
-status: active
+status: implementation-complete-pending-test
 started_on: 2026-07-09
 previous_gate: Candidate Intake Review Packet v1 complete
 track: Real Candidate Intake Track
@@ -133,4 +133,18 @@ pytest tests/test_intake_foundation_exit_review.py
 - No candidate scoring.
 - No approval automation change.
 - Do not claim tests passed unless actually run.
+```
+
+## Done criteria
+
+```text
+[x] Intake foundation exit review doc exists.
+[x] Fixture-only intake metadata-ready status is recorded.
+[x] Completed intake capabilities are listed.
+[x] Current intake commands are listed.
+[x] Safe intake metadata capabilities are listed.
+[x] Blocked image-handling and provider work is listed.
+[x] Next allowed milestone is Candidate Image Byte Loading Design v1.
+[x] Command reference updated with verification command.
+[ ] Verification test result recorded.
 ```
