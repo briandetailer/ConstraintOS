@@ -14,6 +14,7 @@ from constraintos.candidate_manifests import (
     load_candidate_manifest_report,
     resolve_candidate_manifests_dir,
 )
+from constraintos.candidate_review_packet import build_candidate_review_packet_payload
 from constraintos.manual_observations import build_manual_observation_payload
 from constraintos.observation_evidence_merge import build_observation_evidence_merge_payload
 from constraintos.observation_report_binding import build_observation_report_binding_payload
@@ -55,6 +56,9 @@ def build_payload(args: argparse.Namespace) -> tuple[int, dict[str, Any]]:
         return 0, payload
     if args.command == "merge-evidence":
         payload = build_observation_evidence_merge_payload(args.manifest, candidate_dir)
+        return 0, payload
+    if args.command == "review-packet":
+        payload = build_candidate_review_packet_payload(args.manifest, candidate_dir)
         return 0, payload
     raise CandidateManifestError(f"Unsupported command: {args.command}")
 
@@ -210,6 +214,42 @@ def format_merge_evidence_text(payload: dict[str, Any]) -> str:
     return "\n".join(lines) + "\n"
 
 
+def format_review_packet_text(payload: dict[str, Any]) -> str:
+    summary = payload.get("summary", {})
+    sections = payload.get("review_sections", {})
+    if not isinstance(summary, dict):
+        summary = {}
+    if not isinstance(sections, dict):
+        sections = {}
+    identity = sections.get("candidate_identity", {}) if isinstance(sections.get("candidate_identity", {}), dict) else {}
+    blockers = sections.get("decision_guardrails", {}).get("approval_blockers", []) if isinstance(sections.get("decision_guardrails", {}), dict) else []
+    lines = [
+        f"Candidate review packet: {summary.get('candidate_manifest_key', 'unknown')}",
+        f"subject_name: {identity.get('subject_name', 'unknown')}",
+        f"candidate_id: {summary.get('candidate_id', 'unknown')}",
+        f"contract_key: {summary.get('contract_key', 'unknown')}",
+        f"candidate_reference_status: {summary.get('candidate_reference_status', 'unknown')}",
+        f"merged_evidence_count: {summary.get('merged_evidence_count', 'unknown')}",
+        f"matched_constraint_count: {summary.get('matched_constraint_count', 'unknown')}",
+        f"overall_merged_evidence_status: {summary.get('overall_merged_evidence_status', 'unknown')}",
+        f"recommended_decision: {summary.get('recommended_decision', 'unknown')}",
+        f"approval_allowed: {summary.get('approval_allowed', 'unknown')}",
+        "approval_blockers:",
+    ]
+    if isinstance(blockers, list):
+        lines.extend(f"- {blocker}" for blocker in blockers)
+    lines.extend([
+        "real_image_ingestion: not run",
+        "computer_vision: not run",
+        "ocr: not run",
+        "image_generation: not run",
+        "approval_automation: not run",
+        "candidate_scoring: not run",
+        "source_report_mutation: not run",
+    ])
+    return "\n".join(lines) + "\n"
+
+
 def format_payload(payload: dict[str, Any], output_format: str, command: str) -> str:
     if output_format == "json":
         return json.dumps(payload, indent=2, sort_keys=True) + "\n"
@@ -223,6 +263,8 @@ def format_payload(payload: dict[str, Any], output_format: str, command: str) ->
         return format_bind_observations_text(payload)
     if command == "merge-evidence":
         return format_merge_evidence_text(payload)
+    if command == "review-packet":
+        return format_review_packet_text(payload)
     return format_show_text(payload)
 
 
@@ -260,6 +302,9 @@ def build_parser() -> argparse.ArgumentParser:
 
     merge_parser = subparsers.add_parser("merge-evidence", help="Merge fixture-only manual observations with fixture-only report evidence.")
     merge_parser.add_argument("manifest", help="Manifest key, contract key, candidate id, filename, or path.")
+
+    review_parser = subparsers.add_parser("review-packet", help="Build a fixture-only human-facing candidate review packet.")
+    review_parser.add_argument("manifest", help="Manifest key, contract key, candidate id, filename, or path.")
     return parser
 
 
