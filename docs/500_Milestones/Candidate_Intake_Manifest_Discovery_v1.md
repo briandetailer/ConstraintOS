@@ -4,11 +4,14 @@
 
 ```text
 milestone: Candidate Intake Manifest Discovery v1
-status: implementation-complete-pending-test
+status: complete
 started_on: 2026-07-09
+completed_on: 2026-07-09
 previous_gate: Candidate Intake Manifest Contract v1 complete
 track: Real Candidate Intake Track
 baseline: 487 passed
+latest_user_reported_candidate_intake_manifest_discovery_test_result: 9 passed
+latest_user_reported_candidate_intake_manifest_discovery_test_result_on: 2026-07-09
 ```
 
 ## Purpose
@@ -66,6 +69,16 @@ docs/700_Use_Cases/Graphics_Validation_Command_Reference.md
 
 ```powershell
 pytest tests/test_candidate_intake_manifest_discovery_cli.py
+```
+
+## Verification record
+
+```text
+source: user-reported local test run
+command: pytest tests/test_candidate_intake_manifest_discovery_cli.py
+result: 9 passed
+reported_on: 2026-07-09
+assistant_ran_tests: false
 ```
 
 ## CLI commands
@@ -132,5 +145,15 @@ blocked_until_later:
 [x] JSON file output is supported.
 [x] Discovery preserves no image byte loading, decoding, inspection, scoring, mutation, or approval.
 [x] Command reference updated in the same implementation slice.
-[ ] Verification test result recorded.
+[x] Verification test result recorded.
+```
+
+## Handoff notes
+
+```text
+- Candidate Intake Manifest Discovery v1 is complete.
+- cos-graphics-candidates intake-list and intake-show now provide read-only discovery for fixture-only intake manifests.
+- Discovery summarizes intake state, reference type, media type, checksum metadata, no-network policy, and approval guardrails.
+- Image loading, image decoding, pixel inspection, CV/OCR integration, image generation, image editing, candidate scoring, report mutation, and approval automation remain blocked.
+- The next milestone should be Candidate Intake Review Packet v1.
 ```
