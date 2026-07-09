@@ -41,6 +41,7 @@ def test_candidate_review_packet_includes_human_facing_sections() -> None:
         "decision_guardrails",
     }
     assert sections["candidate_identity"]["candidate_manifest_key"] == "perseverance"
+    assert sections["candidate_identity"]["media_type"] == "image/png"
     assert sections["manual_observations"]["observation_source_type"] == "manual_human_review"
     assert sections["candidate_evaluation_report"]["overall_evidence_status"] == "not_observed"
     assert sections["merged_evidence"]["overall_merged_evidence_status"] == "not_observed"
@@ -67,7 +68,9 @@ def test_candidate_review_packet_resolves_by_contract_key() -> None:
 
     assert summary["candidate_manifest_key"] == "supra_2jz_gte"
     assert summary["contract_key"] == "supra_2jz_gte_twin_turbo"
-    assert identity["subject_name"] == "Toyota Supra Mk IV / A80 Turbo 2JZ-GTE sequential twin-turbo system"
+    assert identity["source_contract_id"] == "GRAPHICS-CONTRACT-SUPRA-2JZ-GTE-0001"
+    assert identity["candidate_source_type"] == "external"
+    assert identity["generated_by_constraintos"] is False
     assert summary["recommended_decision"] == "needs_review"
     assert summary["approval_allowed"] is False
 
