@@ -4,7 +4,7 @@
 
 ```text
 milestone: Candidate Image Byte Loading Pre-Implementation Exit Review v1
-status: active
+status: implementation-complete-pending-test
 started_on: 2026-07-09
 previous_gate: Candidate Image Byte Loading Implementation Contract v1 complete
 track: Real Candidate Intake Track
@@ -131,4 +131,19 @@ pytest tests/test_candidate_image_byte_loading_pre_implementation_exit_review.py
 - No candidate scoring.
 - No approval automation change.
 - Do not claim tests passed unless actually run.
+```
+
+## Done criteria
+
+```text
+[x] Pre-implementation exit review doc exists.
+[x] Readiness after verification is recorded.
+[x] Real byte-loading implementation remains not started.
+[x] Completed prerequisites are listed.
+[x] Minimum implementation constraints for next milestone are listed.
+[x] Required implementation guardrails are listed.
+[x] Later-stage image decoding, CV/OCR, scoring, mutation, and approval remain blocked.
+[x] Next allowed milestone is Candidate Image Byte Loading Minimal Implementation v1.
+[x] Command reference updated with verification command.
+[ ] Verification test result recorded.
 ```
