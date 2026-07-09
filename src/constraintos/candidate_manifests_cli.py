@@ -11,6 +11,7 @@ from constraintos.candidate_intake_manifests import (
     list_candidate_intake_manifest_summaries,
     load_candidate_intake_manifest_report,
 )
+from constraintos.candidate_intake_review_packet import build_candidate_intake_review_packet_payload
 from constraintos.candidate_manifests import (
     CandidateManifestError,
     discover_project_root,
@@ -77,6 +78,9 @@ def build_payload(args: argparse.Namespace) -> tuple[int, dict[str, Any]]:
             "approval_automation": "not_run",
         }
         return 0, report
+    if args.command == "intake-review-packet":
+        payload = build_candidate_intake_review_packet_payload(args.manifest, candidate_dir)
+        return 0, payload
     if args.command == "evaluate":
         payload = build_fixture_only_candidate_evaluation(args.manifest, candidate_dir)
         return 0, payload
@@ -191,6 +195,44 @@ def format_intake_show_text(payload: dict[str, Any]) -> str:
         "source_report_mutation: not run",
         "approval_automation: not run",
     ]
+    return "\n".join(lines) + "\n"
+
+
+def format_intake_review_packet_text(payload: dict[str, Any]) -> str:
+    summary = payload.get("summary", {})
+    sections = payload.get("review_sections", {})
+    if not isinstance(summary, dict):
+        summary = {}
+    if not isinstance(sections, dict):
+        sections = {}
+    blockers = sections.get("decision_guardrails", {}).get("approval_blockers", []) if isinstance(sections.get("decision_guardrails", {}), dict) else []
+    lines = [
+        f"Candidate intake review packet: {summary.get('candidate_intake_manifest_key', 'unknown')}",
+        f"candidate_id: {summary.get('candidate_id', 'unknown')}",
+        f"contract_key: {summary.get('contract_key', 'unknown')}",
+        f"intake_state: {summary.get('intake_state', 'unknown')}",
+        f"reference_type: {summary.get('reference_type', 'unknown')}",
+        f"reference_status: {summary.get('reference_status', 'unknown')}",
+        f"media_type: {summary.get('media_type', 'unknown')}",
+        f"network_fetch_allowed: {summary.get('network_fetch_allowed', 'unknown')}",
+        f"successful_intake_can_approve: {summary.get('successful_intake_can_approve', 'unknown')}",
+        f"initial_decision: {summary.get('initial_decision', 'unknown')}",
+        f"approval_allowed: {summary.get('approval_allowed', 'unknown')}",
+        "approval_blockers:",
+    ]
+    if isinstance(blockers, list):
+        lines.extend(f"- {blocker}" for blocker in blockers)
+    lines.extend([
+        "image_bytes_loaded: not run",
+        "image_decoding: not run",
+        "network_fetch: not run",
+        "pixel_inspection: not run",
+        "computer_vision: not run",
+        "ocr: not run",
+        "candidate_scoring: not run",
+        "source_report_mutation: not run",
+        "approval_automation: not run",
+    ])
     return "\n".join(lines) + "\n"
 
 
@@ -345,6 +387,8 @@ def format_payload(payload: dict[str, Any], output_format: str, command: str) ->
         return format_intake_list_text(payload)
     if command == "intake-show":
         return format_intake_show_text(payload)
+    if command == "intake-review-packet":
+        return format_intake_review_packet_text(payload)
     if command == "evaluate":
         return format_evaluate_text(payload)
     if command == "observe":
@@ -385,6 +429,9 @@ def build_parser() -> argparse.ArgumentParser:
 
     intake_show_parser = subparsers.add_parser("intake-show", help="Show a fixture-only candidate intake manifest summary.")
     intake_show_parser.add_argument("manifest", help="Manifest key, contract key, candidate id, filename, or path.")
+
+    intake_review_parser = subparsers.add_parser("intake-review-packet", help="Build a fixture-only candidate intake review packet.")
+    intake_review_parser.add_argument("manifest", help="Manifest key, contract key, candidate id, filename, or path.")
 
     evaluate_parser = subparsers.add_parser("evaluate", help="Run fixture-only candidate evaluation from static report fixtures.")
     evaluate_parser.add_argument("manifest", help="Manifest key, contract key, candidate id, filename, or path.")
