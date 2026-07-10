@@ -35,6 +35,7 @@ It covers:
 - Candidate image byte loading minimal CLI
 - Candidate image byte loading minimal CLI review packet
 - Candidate image byte loading minimal CLI exit review
+- Candidate image byte loading fixture artifact registry
 - candidate image byte loading contract
 - candidate image byte loading discovery
 - candidate image byte loading review packet
@@ -73,26 +74,14 @@ cos-graphics-validate perseverance --plan-only --format text
 cos-graphics-validate perseverance --format text
 cos-graphics-validate perseverance --format json
 cos-graphics-validate perseverance --format json --output reports/perseverance-graphics-validation.json
+pytest runtime/tests/test_graphics_perseverance_example.py
+pytest tests/test_graphics_validation_cli.py
 ```
 
-## Perseverance watch mode
-
-```powershell
-cos-graphics-validate perseverance --watch
-cos-graphics-validate perseverance --watch --watch-delay-ms 250
-.\scripts\watch-perseverance.ps1
-.\scripts\watch-perseverance.ps1 -WatchDelayMs 500
-```
-
-## Reusable graphics contract validation
+## Graphics contract commands
 
 ```powershell
 pytest tests/test_graphics_contracts.py
-```
-
-## Graphics contract discovery CLI
-
-```powershell
 cos-graphics-contracts list
 cos-graphics-contracts show perseverance
 cos-graphics-contracts show wind_turbine_nacelle
@@ -101,32 +90,17 @@ cos-graphics-contracts show supra_2jz_gte_twin_turbo
 cos-graphics-contracts --format json --output reports/graphics-contracts.json list
 cos-graphics-contracts --format json show supra_2jz_gte_twin_turbo
 pytest tests/test_graphics_contracts_cli.py
-```
-
-## Graphics contract runtime bridge
-
-```powershell
 cos-graphics-contracts run perseverance --plan-only
 cos-graphics-contracts run wind_turbine_nacelle
 cos-graphics-contracts run hydroelectric_dam_powerhouse
 cos-graphics-contracts run supra_2jz_gte_twin_turbo
 cos-graphics-contracts --format json --output reports/supra-contract-runtime.json run supra_2jz_gte_twin_turbo
 pytest tests/test_graphics_contract_runtime_bridge.py
-```
-
-## Graphics contract runtime watch mode
-
-```powershell
 cos-graphics-contracts run perseverance --plan-only --watch
 cos-graphics-contracts run wind_turbine_nacelle --watch
 cos-graphics-contracts run hydroelectric_dam_powerhouse --watch
 cos-graphics-contracts run supra_2jz_gte_twin_turbo --watch
 cos-graphics-contracts run supra_2jz_gte_twin_turbo --watch --watch-delay-ms 250
-```
-
-## Graphics contract watch capture
-
-```powershell
 .\scripts\watch-graphics-contract.ps1
 .\scripts\watch-graphics-contract.ps1 -Contract supra_2jz_gte_twin_turbo
 .\scripts\watch-graphics-contract.ps1 -Contract perseverance -PlanOnly
@@ -134,98 +108,39 @@ cos-graphics-contracts run supra_2jz_gte_twin_turbo --watch --watch-delay-ms 250
 pytest tests/test_graphics_contract_watch_capture_script.py
 ```
 
-## Candidate evaluation adapter design
+## Candidate evaluation and observation commands
 
 ```powershell
 pytest tests/test_candidate_evaluation_adapter_design.py
-```
-
-This is a design-only verification command. It does not evaluate real candidate images and does not generate images.
-
-## Candidate manifest schema
-
-```powershell
 pytest tests/test_candidate_manifest_schema.py
-```
-
-## Candidate manifest discovery
-
-```powershell
 cos-graphics-candidates list
 cos-graphics-candidates show perseverance
 cos-graphics-candidates show supra_2jz_gte_twin_turbo
 cos-graphics-candidates --format json --output reports/candidate-manifests.json list
 pytest tests/test_candidate_manifest_discovery_cli.py
-```
-
-## Candidate evaluation report contract
-
-```powershell
 pytest tests/test_candidate_evaluation_report_contract.py
-```
-
-## Fixture-only candidate evaluation
-
-```powershell
 cos-graphics-candidates evaluate perseverance
 cos-graphics-candidates evaluate supra_2jz_gte_twin_turbo
 cos-graphics-candidates --format json --output reports/perseverance-candidate-evaluation.json evaluate perseverance
 pytest tests/test_fixture_only_candidate_evaluation.py
-```
-
-This is a fixture-only command. It loads static manifest and report fixtures, but it does not load, decode, inspect, or evaluate image bytes.
-
-## Foundation readiness review
-
-```powershell
 pytest tests/test_foundation_readiness_review.py
-```
-
-## Observation adapter design
-
-```powershell
 pytest tests/test_observation_adapter_design.py
-```
-
-## Manual observation fixture adapter
-
-```powershell
 cos-graphics-candidates observe perseverance
 cos-graphics-candidates observe supra_2jz_gte_twin_turbo
 cos-graphics-candidates --format json --output reports/perseverance-observations.json observe perseverance
 pytest tests/test_manual_observation_fixture_adapter.py
-```
-
-## Observation-to-report binding
-
-```powershell
 cos-graphics-candidates bind-observations perseverance
 cos-graphics-candidates bind-observations supra_2jz_gte_twin_turbo
 cos-graphics-candidates --format json --output reports/perseverance-observation-binding.json bind-observations perseverance
 pytest tests/test_observation_report_binding.py
-```
-
-## Fixture-only observation evidence merge
-
-```powershell
 cos-graphics-candidates merge-evidence perseverance
 cos-graphics-candidates merge-evidence supra_2jz_gte_twin_turbo
 cos-graphics-candidates --format json --output reports/perseverance-merged-evidence.json merge-evidence perseverance
 pytest tests/test_observation_evidence_merge.py
-```
-
-## Fixture-only candidate review packet
-
-```powershell
 cos-graphics-candidates review-packet perseverance
 cos-graphics-candidates review-packet supra_2jz_gte_twin_turbo
 cos-graphics-candidates --format json --output reports/perseverance-review-packet.json review-packet perseverance
 pytest tests/test_candidate_review_packet.py
-```
-
-## Foundation exit review
-
-```powershell
 pytest tests/test_foundation_exit_review.py
 ```
 
@@ -280,36 +195,46 @@ This is a helper-only implementation test. It loads bytes only from an explicit 
 Validate the helper-only minimal byte-loading CLI:
 
 ```powershell
+cos-graphics-byte-loader minimal perseverance
+cos-graphics-byte-loader --format json minimal perseverance
+cos-graphics-byte-loader --format json --output reports/perseverance-byte-loader.json minimal perseverance
 cos-graphics-byte-loader minimal perseverance --fixture-artifact-uri artifact://external-candidates/perseverance/candidate-0001.png --fixture-artifact-hex 89504e470d0a1a0a
-cos-graphics-byte-loader --format json minimal perseverance --fixture-artifact-uri artifact://external-candidates/perseverance/candidate-0001.png --fixture-artifact-hex 89504e470d0a1a0a
-cos-graphics-byte-loader --format json --output reports/perseverance-byte-loader.json minimal perseverance --fixture-artifact-uri artifact://external-candidates/perseverance/candidate-0001.png --fixture-artifact-hex 89504e470d0a1a0a
 pytest tests/test_candidate_image_byte_loading_minimal_cli.py
 ```
 
-This is a helper-only CLI. It accepts fixture bytes only through explicit `--fixture-artifact-uri` and `--fixture-artifact-hex` arguments. It does not open local files, download artifacts, fetch network resources, decode images, inspect pixels, score candidates, mutate reports, choose providers, or approve candidates.
+This is a helper-only CLI. It uses the deterministic fixture artifact registry by default, or accepts fixture bytes through explicit `--fixture-artifact-uri` and `--fixture-artifact-hex` arguments. It does not open local files, download artifacts, fetch network resources, decode images, inspect pixels, score candidates, mutate reports, choose providers, or approve candidates.
 
 ## Candidate image byte loading minimal CLI review packet
 
 Create a human-facing review packet for the helper-only minimal byte-loading CLI result:
 
 ```powershell
+cos-graphics-byte-loader review-packet perseverance
+cos-graphics-byte-loader --format json review-packet perseverance
+cos-graphics-byte-loader --format json --output reports/perseverance-byte-loader-review-packet.json review-packet perseverance
 cos-graphics-byte-loader review-packet perseverance --fixture-artifact-uri artifact://external-candidates/perseverance/candidate-0001.png --fixture-artifact-hex 89504e470d0a1a0a
-cos-graphics-byte-loader --format json review-packet perseverance --fixture-artifact-uri artifact://external-candidates/perseverance/candidate-0001.png --fixture-artifact-hex 89504e470d0a1a0a
-cos-graphics-byte-loader --format json --output reports/perseverance-byte-loader-review-packet.json review-packet perseverance --fixture-artifact-uri artifact://external-candidates/perseverance/candidate-0001.png --fixture-artifact-hex 89504e470d0a1a0a
 pytest tests/test_candidate_image_byte_loading_minimal_cli_review_packet.py
 ```
 
-This is a helper-only review packet command. It accepts fixture bytes only through explicit `--fixture-artifact-uri` and `--fixture-artifact-hex` arguments and reports CLI invocation boundaries, byte-loading result, safety boundaries, and decision guardrails. It does not open local files, download artifacts, fetch network resources, decode images, inspect pixels, score candidates, mutate reports, choose providers, or approve candidates.
+This is a helper-only review packet command. It uses the deterministic fixture artifact registry by default and reports CLI invocation boundaries, byte-loading result, safety boundaries, and decision guardrails. It does not open local files, download artifacts, fetch network resources, decode images, inspect pixels, score candidates, mutate reports, choose providers, or approve candidates.
 
 ## Candidate image byte loading minimal CLI exit review
-
-Validate the minimal CLI track exit checkpoint before any broader byte-source expansion:
 
 ```powershell
 pytest tests/test_candidate_image_byte_loading_minimal_cli_exit_review.py
 ```
 
-This is a documentation and guardrail verification command. It does not add byte-loading sources, open local files, download artifacts, fetch network resources, decode images, inspect pixels, score candidates, mutate reports, choose providers, or approve candidates.
+## Candidate image byte loading fixture artifact registry
+
+Validate the deterministic fixture artifact registry and default registry-backed CLI path:
+
+```powershell
+cos-graphics-byte-loader minimal perseverance
+cos-graphics-byte-loader review-packet perseverance
+pytest tests/test_candidate_image_byte_loading_fixture_artifact_registry.py
+```
+
+This is a fixture-only registry and helper-only CLI path. The registry validates expected sha256, expected byte count, and declared media type before exposing deterministic fixture bytes to the in-memory artifact registry adapter. It does not open local files, download artifacts, fetch network resources, decode images, inspect pixels, score candidates, mutate reports, choose providers, or approve candidates.
 
 ## Candidate image byte loading contract
 
@@ -346,34 +271,19 @@ This is a fixture-only command. It summarizes byte-loading record identity, inta
 pytest tests/test_byte_loading_foundation_exit_review.py
 ```
 
-## Candidate intake manifest contract
+## Candidate intake manifest commands
 
 ```powershell
 pytest tests/test_candidate_intake_manifest_contract.py
-```
-
-## Candidate intake manifest discovery
-
-```powershell
 cos-graphics-candidates intake-list
 cos-graphics-candidates intake-show perseverance
 cos-graphics-candidates intake-show supra_2jz_gte_twin_turbo
 cos-graphics-candidates --format json --output reports/candidate-intake-manifests.json intake-list
 pytest tests/test_candidate_intake_manifest_discovery_cli.py
-```
-
-## Candidate intake review packet
-
-```powershell
 cos-graphics-candidates intake-review-packet perseverance
 cos-graphics-candidates intake-review-packet supra_2jz_gte_twin_turbo
 cos-graphics-candidates --format json --output reports/perseverance-intake-review-packet.json intake-review-packet perseverance
 pytest tests/test_candidate_intake_review_packet.py
-```
-
-## Intake foundation exit review
-
-```powershell
 pytest tests/test_intake_foundation_exit_review.py
 ```
 
@@ -407,6 +317,7 @@ pytest tests/test_candidate_image_byte_loading_minimal_implementation.py
 pytest tests/test_candidate_image_byte_loading_minimal_cli.py
 pytest tests/test_candidate_image_byte_loading_minimal_cli_review_packet.py
 pytest tests/test_candidate_image_byte_loading_minimal_cli_exit_review.py
+pytest tests/test_candidate_image_byte_loading_fixture_artifact_registry.py
 pytest tests/test_candidate_image_byte_loading_contract.py
 pytest tests/test_candidate_image_byte_loading_discovery_cli.py
 pytest tests/test_candidate_image_byte_loading_review_packet.py
@@ -442,7 +353,7 @@ supra_2jz_gte_twin_turbo
 - These commands are dry-run / fixture-only / design-only / contract-only / read-only / helper-only for graphics validation.
 - These commands do not generate images.
 - These commands do not evaluate real generated candidates yet.
-- Candidate image byte-loading minimal implementation, minimal CLI, minimal CLI review packet, and minimal CLI exit review are limited to explicit in-memory artifact registry / fixture hex bytes.
+- Candidate image byte-loading minimal implementation, minimal CLI, minimal CLI review packet, and fixture artifact registry are limited to explicit in-memory artifact registry / deterministic fixture bytes.
 - Real candidate image intake design, candidate image byte-loading design, implementation design/contract, pre-implementation exit review, byte-loading contract/discovery/review-packet fixtures, intake manifests, and intake review packets do not decode images.
 - Approval expectations remain contract-driven and default uncertainty to needs_review.
 ```
