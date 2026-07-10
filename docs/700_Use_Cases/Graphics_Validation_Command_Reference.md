@@ -34,6 +34,7 @@ It covers:
 - candidate image byte loading minimal implementation
 - Candidate image byte loading minimal CLI
 - Candidate image byte loading minimal CLI review packet
+- Candidate image byte loading minimal CLI exit review
 - candidate image byte loading contract
 - candidate image byte loading discovery
 - candidate image byte loading review packet
@@ -300,6 +301,16 @@ pytest tests/test_candidate_image_byte_loading_minimal_cli_review_packet.py
 
 This is a helper-only review packet command. It accepts fixture bytes only through explicit `--fixture-artifact-uri` and `--fixture-artifact-hex` arguments and reports CLI invocation boundaries, byte-loading result, safety boundaries, and decision guardrails. It does not open local files, download artifacts, fetch network resources, decode images, inspect pixels, score candidates, mutate reports, choose providers, or approve candidates.
 
+## Candidate image byte loading minimal CLI exit review
+
+Validate the minimal CLI track exit checkpoint before any broader byte-source expansion:
+
+```powershell
+pytest tests/test_candidate_image_byte_loading_minimal_cli_exit_review.py
+```
+
+This is a documentation and guardrail verification command. It does not add byte-loading sources, open local files, download artifacts, fetch network resources, decode images, inspect pixels, score candidates, mutate reports, choose providers, or approve candidates.
+
 ## Candidate image byte loading contract
 
 ```powershell
@@ -395,6 +406,7 @@ pytest tests/test_candidate_image_byte_loading_pre_implementation_exit_review.py
 pytest tests/test_candidate_image_byte_loading_minimal_implementation.py
 pytest tests/test_candidate_image_byte_loading_minimal_cli.py
 pytest tests/test_candidate_image_byte_loading_minimal_cli_review_packet.py
+pytest tests/test_candidate_image_byte_loading_minimal_cli_exit_review.py
 pytest tests/test_candidate_image_byte_loading_contract.py
 pytest tests/test_candidate_image_byte_loading_discovery_cli.py
 pytest tests/test_candidate_image_byte_loading_review_packet.py
@@ -430,7 +442,7 @@ supra_2jz_gte_twin_turbo
 - These commands are dry-run / fixture-only / design-only / contract-only / read-only / helper-only for graphics validation.
 - These commands do not generate images.
 - These commands do not evaluate real generated candidates yet.
-- Candidate image byte-loading minimal implementation, minimal CLI, and minimal CLI review packet are limited to explicit in-memory artifact registry / fixture hex bytes.
+- Candidate image byte-loading minimal implementation, minimal CLI, minimal CLI review packet, and minimal CLI exit review are limited to explicit in-memory artifact registry / fixture hex bytes.
 - Real candidate image intake design, candidate image byte-loading design, implementation design/contract, pre-implementation exit review, byte-loading contract/discovery/review-packet fixtures, intake manifests, and intake review packets do not decode images.
 - Approval expectations remain contract-driven and default uncertainty to needs_review.
 ```
