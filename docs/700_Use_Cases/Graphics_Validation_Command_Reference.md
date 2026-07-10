@@ -26,6 +26,20 @@ git pull --rebase origin phase-1-cli-tooling
 
 ## Business demo watch commands
 
+### End-to-end fixture POC demo
+
+Run the full fixture-based POC demo as a visible staged product walkthrough:
+
+```powershell
+.\scripts\watch-constraintos-poc.ps1
+.\scripts\watch-constraintos-poc.ps1 -Scenario perseverance
+.\scripts\watch-constraintos-poc.ps1 -Scenario supra_2jz_gte_twin_turbo -WatchDelayMs 750
+.\scripts\watch-constraintos-poc.ps1 -Scenario perseverance -OpenRunFolder
+pytest tests/test_end_to_end_fixture_poc_demo.py
+```
+
+This is a fixture-based, business-demo-friendly dry run. It shows scenario selection, contract/specification loading, candidate manifest/intake evidence, intake review, deterministic fixture byte loading, byte-loading review, fixture registry review, failure-matrix review, manual observation evidence, observation binding, evidence merge, fixture-only evaluation, final review packet, and demo summary. It writes run artifacts under `runs/poc-demo/<scenario>/<timestamp>/` and preserves no local image file opening, artifact download, network fetch, image decoding, CV/OCR provider integration, image generation/editing, source report mutation, or automatic approval.
+
 ### Candidate image byte loader demo watch script
 
 Run a visible staged demo of the current candidate image byte-loading evidence path:
@@ -242,6 +256,7 @@ pytest tests/test_graphics_contracts_cli.py
 pytest tests/test_graphics_contract_runtime_bridge.py
 pytest tests/test_graphics_contract_watch_capture_script.py
 pytest tests/test_candidate_image_byte_loader_demo_watch_script.py
+pytest tests/test_end_to_end_fixture_poc_demo.py
 pytest tests/test_candidate_evaluation_adapter_design.py
 pytest tests/test_candidate_manifest_schema.py
 pytest tests/test_candidate_manifest_discovery_cli.py
@@ -303,7 +318,7 @@ supra_2jz_gte_twin_turbo
 - These commands are dry-run / fixture-only / design-only / contract-only / read-only / helper-only for graphics validation.
 - These commands do not generate images.
 - These commands do not evaluate real generated candidates yet.
-- Candidate image byte-loading minimal implementation, minimal CLI, minimal CLI review packet, fixture artifact registry, fixture registry review packet, fixture registry failure matrix, fixture registry failure review packet, and candidate byte-loader demo watch script are limited to explicit in-memory artifact registry / deterministic fixture bytes and descriptor-only/failure-matrix review.
+- The end-to-end fixture POC demo, candidate byte-loader demo watch script, candidate image byte-loading minimal implementation, minimal CLI, minimal CLI review packet, fixture artifact registry, fixture registry review packet, fixture registry failure matrix, and fixture registry failure review packet are limited to explicit in-memory artifact registry / deterministic fixture bytes and descriptor-only/failure-matrix review.
 - Real candidate image intake design, candidate image byte-loading design, implementation design/contract, pre-implementation exit review, byte-loading contract/discovery/review-packet fixtures, intake manifests, and intake review packets do not decode images.
 - Approval expectations remain contract-driven and default uncertainty to needs_review.
 ```
