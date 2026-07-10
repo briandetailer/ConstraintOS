@@ -4,7 +4,7 @@
 
 ```text
 milestone: Candidate Image Byte Loading Fixture Artifact Registry v1
-status: active
+status: implementation-complete-pending-test
 started_on: 2026-07-09
 previous_gate: Candidate Image Byte Loading Minimal CLI Exit Review v1 complete
 track: Real Candidate Intake Track
@@ -57,6 +57,22 @@ This milestone replaces ad hoc fixture hex arguments as the default byte source 
 - No candidate scoring.
 - No report mutation.
 - No approval automation change.
+```
+
+## Implemented files
+
+```text
+docs/500_Milestones/Candidate_Image_Byte_Loading_Fixture_Artifact_Registry_v1.md
+examples/graphics/candidate_evaluation/candidate_image_fixture_artifact_registry.schema.json
+examples/graphics/candidate_evaluation/candidate_image_fixture_artifact_registry.fixture.json
+src/constraintos/candidate_image_fixture_artifact_registry.py
+examples/graphics/candidate_evaluation/perseverance_candidate_image_byte_loading_record.fixture.json
+examples/graphics/candidate_evaluation/supra_2jz_gte_candidate_image_byte_loading_record.fixture.json
+src/constraintos/candidate_image_byte_loader_cli.py
+tests/test_candidate_image_byte_loading_contract.py
+tests/test_candidate_image_byte_loading_fixture_artifact_registry.py
+examples/graphics/candidate_evaluation/README.md
+docs/700_Use_Cases/Graphics_Validation_Command_Reference.md
 ```
 
 ## Fixture registry boundary
@@ -144,4 +160,26 @@ pytest tests/test_candidate_image_byte_loading_fixture_artifact_registry.py
 - No report mutation.
 - No approval automation change.
 - Do not claim tests passed unless actually run.
+```
+
+## Done criteria
+
+```text
+[x] Fixture artifact registry schema exists.
+[x] Deterministic fixture artifact registry fixture exists.
+[x] Fixture artifact registry loader module exists.
+[x] Deterministic artifact IDs are required.
+[x] artifact:// URIs are required.
+[x] Immutable fixture byte descriptors are required.
+[x] Expected sha256 is required before byte exposure.
+[x] Expected byte count is required before byte exposure.
+[x] Declared media type is required before byte exposure.
+[x] Fixture bytes are validated against byte count, sha256, and signature-based media type before exposure.
+[x] Validated fixture registry entries convert into InMemoryArtifactRegistry.
+[x] Byte-loading record fixtures align with deterministic fixture artifact metadata.
+[x] Dedicated byte-loader CLI uses the default fixture artifact registry when explicit fixture hex is not supplied.
+[x] Explicit fixture hex override remains available.
+[x] README updated.
+[x] Command reference updated.
+[ ] Verification test result recorded.
 ```
