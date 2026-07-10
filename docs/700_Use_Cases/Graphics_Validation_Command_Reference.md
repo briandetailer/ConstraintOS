@@ -37,6 +37,7 @@ It covers:
 - Candidate image byte loading minimal CLI exit review
 - Candidate image byte loading fixture artifact registry
 - Candidate image byte loading fixture registry review packet
+- Candidate image byte loading fixture registry exit review
 - candidate image byte loading contract
 - candidate image byte loading discovery
 - candidate image byte loading review packet
@@ -250,6 +251,12 @@ pytest tests/test_candidate_image_byte_loading_fixture_registry_review_packet.py
 
 This is a fixture-only review packet command. It reports registry identity, artifact descriptors, validation boundaries, and decision guardrails without exposing image bytes. It does not open local files, download artifacts, fetch network resources, decode images, inspect pixels, score candidates, mutate reports, choose providers, or approve candidates.
 
+## Candidate image byte loading fixture registry exit review
+
+```powershell
+pytest tests/test_candidate_image_byte_loading_fixture_registry_exit_review.py
+```
+
 ## Candidate image byte loading contract
 
 ```powershell
@@ -333,6 +340,7 @@ pytest tests/test_candidate_image_byte_loading_minimal_cli_review_packet.py
 pytest tests/test_candidate_image_byte_loading_minimal_cli_exit_review.py
 pytest tests/test_candidate_image_byte_loading_fixture_artifact_registry.py
 pytest tests/test_candidate_image_byte_loading_fixture_registry_review_packet.py
+pytest tests/test_candidate_image_byte_loading_fixture_registry_exit_review.py
 pytest tests/test_candidate_image_byte_loading_contract.py
 pytest tests/test_candidate_image_byte_loading_discovery_cli.py
 pytest tests/test_candidate_image_byte_loading_review_packet.py
@@ -368,7 +376,7 @@ supra_2jz_gte_twin_turbo
 - These commands are dry-run / fixture-only / design-only / contract-only / read-only / helper-only for graphics validation.
 - These commands do not generate images.
 - These commands do not evaluate real generated candidates yet.
-- Candidate image byte-loading minimal implementation, minimal CLI, minimal CLI review packet, fixture artifact registry, and fixture registry review packet are limited to explicit in-memory artifact registry / deterministic fixture bytes and descriptor-only review.
+- Candidate image byte-loading minimal implementation, minimal CLI, minimal CLI review packet, fixture artifact registry, fixture registry review packet, and fixture registry exit review are limited to explicit in-memory artifact registry / deterministic fixture bytes and descriptor-only review.
 - Real candidate image intake design, candidate image byte-loading design, implementation design/contract, pre-implementation exit review, byte-loading contract/discovery/review-packet fixtures, intake manifests, and intake review packets do not decode images.
 - Approval expectations remain contract-driven and default uncertainty to needs_review.
 ```
