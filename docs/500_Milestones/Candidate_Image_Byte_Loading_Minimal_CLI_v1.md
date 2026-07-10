@@ -4,7 +4,7 @@
 
 ```text
 milestone: Candidate Image Byte Loading Minimal CLI v1
-status: active
+status: implementation-complete-pending-test
 started_on: 2026-07-09
 previous_gate: Candidate Image Byte Loading Minimal Implementation v1 complete
 track: Real Candidate Intake Track
@@ -57,6 +57,17 @@ This milestone adds a dedicated helper-only CLI entry point for fixture-controll
 - No candidate scoring.
 - No report mutation.
 - No approval automation change.
+```
+
+## Implemented files
+
+```text
+docs/500_Milestones/Candidate_Image_Byte_Loading_Minimal_CLI_v1.md
+src/constraintos/candidate_image_byte_loader_cli.py
+pyproject.toml
+tests/test_candidate_image_byte_loading_minimal_cli.py
+examples/graphics/candidate_evaluation/README.md
+docs/700_Use_Cases/Graphics_Validation_Command_Reference.md
 ```
 
 ## CLI boundary
@@ -124,4 +135,27 @@ pytest tests/test_candidate_image_byte_loading_minimal_cli.py
 - No report mutation.
 - No approval automation change.
 - Do not claim tests passed unless actually run.
+```
+
+## Done criteria
+
+```text
+[x] Dedicated minimal byte-loading CLI module exists.
+[x] Console script exists for the minimal byte-loading CLI.
+[x] CLI accepts a byte-loading record reference.
+[x] CLI accepts fixture artifact bytes only through explicit hex input.
+[x] CLI binds fixture bytes only to an explicit artifact URI.
+[x] CLI reuses load_candidate_image_bytes_minimal.
+[x] CLI emits JSON and text output.
+[x] CLI supports --output file writing for reports.
+[x] CLI preserves no local image file opening.
+[x] CLI preserves no artifact download.
+[x] CLI preserves no network fetch.
+[x] CLI preserves no image decoding.
+[x] CLI preserves no candidate scoring.
+[x] CLI preserves no source report mutation.
+[x] CLI preserves no approval automation.
+[x] README updated.
+[x] Command reference updated.
+[ ] Verification test result recorded.
 ```
