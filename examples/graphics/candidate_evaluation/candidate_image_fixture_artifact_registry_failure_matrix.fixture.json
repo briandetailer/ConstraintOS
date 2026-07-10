@@ -1,0 +1,104 @@
+{
+  "candidate_image_fixture_artifact_registry_failure_matrix": {
+    "id": "GRAPHICS-CANDIDATE-IMAGE-FIXTURE-ARTIFACT-REGISTRY-FAILURE-MATRIX-0001",
+    "version": "v1",
+    "domain": "graphics_validation",
+    "status": "fixture_only",
+    "matrix_state": "in_memory_mutation_cases",
+    "base_registry_fixture": "candidate_image_fixture_artifact_registry.fixture.json",
+    "case_count": 11,
+    "local_file_opening_allowed": false,
+    "artifact_download_allowed": false,
+    "network_fetch_allowed": false,
+    "image_decoding_allowed": false,
+    "approval_allowed": false
+  },
+  "failure_cases": [
+    {
+      "case_id": "invalid_sha256",
+      "mutation_path": "artifacts.0.sha256",
+      "mutation_value": "0000000000000000000000000000000000000000000000000000000000000000",
+      "expected_error_contains": "sha256",
+      "bytes_exposed_on_failure": false
+    },
+    {
+      "case_id": "invalid_byte_count",
+      "mutation_path": "artifacts.0.byte_count",
+      "mutation_value": 7,
+      "expected_error_contains": "byte_count",
+      "bytes_exposed_on_failure": false
+    },
+    {
+      "case_id": "invalid_media_type",
+      "mutation_path": "artifacts.0.media_type",
+      "mutation_value": "image/jpeg",
+      "expected_error_contains": "media_type",
+      "bytes_exposed_on_failure": false
+    },
+    {
+      "case_id": "invalid_artifact_uri",
+      "mutation_path": "artifacts.0.artifact_uri",
+      "mutation_value": "file:///workspace/external-candidates/perseverance/candidate-0001.png",
+      "expected_error_contains": "artifact_uri",
+      "bytes_exposed_on_failure": false
+    },
+    {
+      "case_id": "duplicate_artifact_id",
+      "mutation_path": "artifacts.1.artifact_id",
+      "mutation_value_from_path": "artifacts.0.artifact_id",
+      "expected_error_contains": "artifact_id values must be unique",
+      "bytes_exposed_on_failure": false
+    },
+    {
+      "case_id": "duplicate_artifact_uri",
+      "mutation_path": "artifacts.1.artifact_uri",
+      "mutation_value_from_path": "artifacts.0.artifact_uri",
+      "expected_error_contains": "artifact_uri values must be unique",
+      "bytes_exposed_on_failure": false
+    },
+    {
+      "case_id": "descriptor_mutability_violation",
+      "mutation_path": "artifacts.0.descriptor_immutable",
+      "mutation_value": false,
+      "expected_error_contains": "immutable",
+      "bytes_exposed_on_failure": false
+    },
+    {
+      "case_id": "local_file_opening_guardrail_violation",
+      "mutation_path": "artifacts.0.local_file_opened",
+      "mutation_value": true,
+      "expected_error_contains": "local files",
+      "bytes_exposed_on_failure": false
+    },
+    {
+      "case_id": "network_fetch_guardrail_violation",
+      "mutation_path": "artifacts.0.network_fetch_ran",
+      "mutation_value": true,
+      "expected_error_contains": "network resources",
+      "bytes_exposed_on_failure": false
+    },
+    {
+      "case_id": "image_decoding_guardrail_violation",
+      "mutation_path": "artifacts.0.image_decoded",
+      "mutation_value": true,
+      "expected_error_contains": "decode images",
+      "bytes_exposed_on_failure": false
+    },
+    {
+      "case_id": "approval_guardrail_violation",
+      "mutation_path": "artifacts.0.approval_allowed",
+      "mutation_value": true,
+      "expected_error_contains": "approve candidates",
+      "bytes_exposed_on_failure": false
+    }
+  ],
+  "guardrails": {
+    "failure_cases_are_in_memory_mutations_only": true,
+    "local_file_opening_allowed": false,
+    "artifact_download_allowed": false,
+    "network_fetch_allowed": false,
+    "image_decoding_allowed": false,
+    "byte_loading_success_can_approve": false,
+    "failure_can_approve": false
+  }
+}
