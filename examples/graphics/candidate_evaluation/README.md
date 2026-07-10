@@ -12,6 +12,8 @@ candidate_image_byte_loading.design.json
 candidate_image_byte_loading_implementation.design.json
 candidate_image_byte_loading_implementation_contract.schema.json
 candidate_image_byte_loading_implementation_contract.fixture.json
+candidate_image_fixture_artifact_registry.schema.json
+candidate_image_fixture_artifact_registry.fixture.json
 candidate_image_byte_loading_record.schema.json
 candidate_manifest.schema.json
 candidate_intake_manifest.schema.json
@@ -41,6 +43,7 @@ candidate_image_byte_loading_implementation_contract_status: contract_only
 candidate_image_byte_loading_minimal_implementation_status: helper_only
 candidate_image_byte_loading_minimal_cli_status: helper_only
 candidate_image_byte_loading_minimal_cli_review_packet_status: helper_only
+candidate_image_byte_loading_fixture_artifact_registry_status: fixture_only
 candidate_image_byte_loading_contract_status: static_fixture_only
 candidate_image_byte_loading_discovery_status: read_only
 candidate_image_byte_loading_review_packet_status: fixture_only
@@ -55,11 +58,11 @@ manual_observation_status: fixture_only
 observation_report_binding_status: fixture_only
 observation_evidence_merge_status: fixture_only
 candidate_review_packet_status: fixture_only
-implementation_status: byte_loading_minimal_cli_review_packet_helper_only
+implementation_status: byte_loading_fixture_artifact_registry_helper_only
 image_generation_allowed: false
 image_editing_allowed: false
 real_candidate_image_ingestion_allowed: false
-image_byte_loading_allowed: explicit_fixture_controlled_artifact_registry_only
+image_byte_loading_allowed: deterministic_fixture_artifact_registry_only
 local_file_opening_allowed: false
 artifact_download_allowed: false
 network_fetch_allowed: false
@@ -88,7 +91,9 @@ The candidate image byte-loading implementation contract schema and fixture defi
 
 The candidate image byte-loading minimal implementation helper loads bytes only from an explicit in-memory artifact registry adapter, computes checksum, compares byte count and media type, and never decodes, scores, mutates, or approves candidates.
 
-The candidate image byte-loading minimal CLI exposes that helper through `cos-graphics-byte-loader minimal` using explicit fixture hex bytes bound to an explicit `artifact://` URI. It does not open local image files, download artifacts, fetch network resources, decode images, inspect pixels, score candidates, mutate reports, or approve candidates.
+The candidate image fixture artifact registry schema and fixture define deterministic fixture bytes with immutable descriptors. The registry validates expected sha256, byte count, and signature-based media type before exposing bytes through the existing in-memory adapter.
+
+The candidate image byte-loading minimal CLI exposes the helper through `cos-graphics-byte-loader minimal` using the deterministic fixture artifact registry by default, or explicit fixture hex bytes for focused tests. It does not open local image files, download artifacts, fetch network resources, decode images, inspect pixels, score candidates, mutate reports, or approve candidates.
 
 The candidate image byte-loading minimal CLI review packet exposes the same helper-only path through `cos-graphics-byte-loader review-packet`, adding review sections and approval blockers without expanding byte-source permissions.
 
@@ -99,103 +104,6 @@ Candidate image byte-loading discovery lists and shows static byte-loading recor
 Candidate image byte-loading review packets summarize record identity, intake binding, reference metadata, byte-loading policy, not-run results, post-load boundaries, and approval blockers for human review.
 
 Candidate intake manifests and review packets summarize intake metadata only. Manual observations, observation binding, evidence merge, and review packets remain fixture-only and cannot approve candidates.
-
-## Real candidate image intake design
-
-```text
-accepted_reference_types:
-  artifact_uri
-  local_file_path
-  file_uri
-forbidden_reference_behaviors:
-  http_image_fetch
-  https_image_fetch
-  arbitrary_network_retrieval
-  redirect_following
-  implicit_cloud_provider_download
-  shell_open_file
-  path_traversal_outside_allowed_roots
-accepted_media_types:
-  image/png
-  image/jpeg
-  image/webp
-next_gate:
-  Candidate Intake Manifest Contract v1
-```
-
-Successful intake will not approve a candidate. Image byte loading, image decoding, pixel inspection, CV/OCR provider integration, scoring, and approval automation remain blocked except for the narrow helper-only byte-loading path documented below.
-
-## Candidate image byte-loading design
-
-```text
-candidate_image_byte_loading.design.json:
-  status: design_only
-  allowed_local_roots:
-    ./external-candidates/
-    ./runs/manual-candidates/
-  allowed_file_uri_roots:
-    file:///workspace/external-candidates/
-    file:///workspace/runs/manual-candidates/
-  max_candidate_image_bytes: 25000000
-  checksum_required_before_decoding: true
-  media_type_sniffing_required_after_future_loading: true
-  byte_loading_success_can_approve: false
-  next_gate: Candidate Image Byte Loading Contract v1
-```
-
-Candidate image byte-loading design does not open files, download artifacts, fetch network resources, load bytes, decode images, inspect pixels, score candidates, mutate reports, or approve candidates.
-
-## Candidate image byte-loading implementation design
-
-```text
-candidate_image_byte_loading_implementation.design.json:
-  status: design_only
-  entry_point_name: load_candidate_image_bytes
-  allowed_inputs:
-    validated_candidate_image_byte_loading_record_fixture
-    repository_local_candidate_directory_path
-    explicit_artifact_registry_adapter
-    explicit_allowed_root_policy
-  forbidden_inputs:
-    arbitrary_url
-    arbitrary_absolute_path
-    implicit_cloud_storage_pointer
-    shell_expanded_path
-    unvalidated_manifest_data
-  max_candidate_image_bytes: 25000000
-  artifact_registry_adapter_required: true
-  checksum_match_cannot_approve_candidate: true
-  media_type_match_cannot_approve_candidate: true
-  next_gate: Candidate Image Byte Loading Implementation Contract v1
-```
-
-Candidate image byte-loading implementation design does not implement file opening, artifact download, network fetch, byte loading, image decoding, pixel inspection, scoring, report mutation, or approval.
-
-## Candidate image byte-loading implementation contract
-
-```text
-candidate_image_byte_loading_implementation_contract.schema.json:
-  status: contract_only
-  required_sections:
-    candidate_image_byte_loading_implementation_contract
-    input_binding
-    policy_enforcement_result_contract
-    reference_resolution_result_contract
-    byte_loading_result_contract
-    validation_result_contract
-    safe_failure_contract
-    post_contract_boundary
-
-candidate_image_byte_loading_implementation_contract.fixture.json:
-  contract_state: not_implemented
-  implementation_allowed: false
-  artifact_downloaded: false
-  network_fetch_ran: false
-  approval_allowed: false
-  next_gate: Candidate Image Byte Loading Pre-Implementation Exit Review v1
-```
-
-Candidate image byte-loading implementation contract fixtures do not open files, download artifacts, fetch network resources, load bytes, decode images, inspect pixels, score candidates, mutate reports, or approve candidates.
 
 ## Candidate image byte-loading minimal implementation
 
@@ -214,25 +122,55 @@ approval_allowed: false
 
 The minimal implementation helper can load fixture-controlled artifact bytes and validate byte count, checksum, and signature-based media type. It does not open local files, download artifacts, fetch network resources, decode images, inspect pixels, score candidates, mutate reports, or approve candidates.
 
+## Candidate image fixture artifact registry
+
+```text
+candidate_image_fixture_artifact_registry.schema.json:
+  status: fixture_only
+  registry_state: deterministic_fixture_bytes
+  required_artifact_fields:
+    artifact_id
+    artifact_uri
+    media_type
+    sha256
+    byte_count
+    data_encoding
+    data_hex
+    descriptor_immutable
+
+candidate_image_fixture_artifact_registry.fixture.json:
+  artifact_count: 2
+  byte_source: inline deterministic fixture hex bytes
+  local_file_opening_allowed: false
+  artifact_download_allowed: false
+  network_fetch_allowed: false
+  image_decoding_allowed: false
+  approval_allowed: false
+```
+
+The fixture artifact registry validates descriptor metadata before exposing bytes to `InMemoryArtifactRegistry`. It does not open local image files, download artifacts, fetch network resources, decode images, inspect pixels, score candidates, mutate reports, or approve candidates.
+
 ## Candidate image byte-loading minimal CLI
 
 ```powershell
+cos-graphics-byte-loader minimal perseverance
+cos-graphics-byte-loader --format json minimal perseverance
+cos-graphics-byte-loader --format json --output reports/perseverance-byte-loader.json minimal perseverance
 cos-graphics-byte-loader minimal perseverance --fixture-artifact-uri artifact://external-candidates/perseverance/candidate-0001.png --fixture-artifact-hex 89504e470d0a1a0a
-cos-graphics-byte-loader --format json minimal perseverance --fixture-artifact-uri artifact://external-candidates/perseverance/candidate-0001.png --fixture-artifact-hex 89504e470d0a1a0a
-cos-graphics-byte-loader --format json --output reports/perseverance-byte-loader.json minimal perseverance --fixture-artifact-uri artifact://external-candidates/perseverance/candidate-0001.png --fixture-artifact-hex 89504e470d0a1a0a
 ```
 
-The minimal CLI is helper-only. It accepts fixture bytes as explicit hex input and binds them to an explicit `artifact://` URI. It does not open local image files, download artifacts, fetch network resources, decode images, inspect pixels, score candidates, mutate reports, or approve candidates.
+The minimal CLI is helper-only. By default it reads deterministic fixture bytes from `candidate_image_fixture_artifact_registry.fixture.json`. Explicit fixture hex remains available for focused tests. The CLI does not open local image files, download artifacts, fetch network resources, decode images, inspect pixels, score candidates, mutate reports, or approve candidates.
 
 ## Candidate image byte-loading minimal CLI review packet
 
 ```powershell
+cos-graphics-byte-loader review-packet perseverance
+cos-graphics-byte-loader --format json review-packet perseverance
+cos-graphics-byte-loader --format json --output reports/perseverance-byte-loader-review-packet.json review-packet perseverance
 cos-graphics-byte-loader review-packet perseverance --fixture-artifact-uri artifact://external-candidates/perseverance/candidate-0001.png --fixture-artifact-hex 89504e470d0a1a0a
-cos-graphics-byte-loader --format json review-packet perseverance --fixture-artifact-uri artifact://external-candidates/perseverance/candidate-0001.png --fixture-artifact-hex 89504e470d0a1a0a
-cos-graphics-byte-loader --format json --output reports/perseverance-byte-loader-review-packet.json review-packet perseverance --fixture-artifact-uri artifact://external-candidates/perseverance/candidate-0001.png --fixture-artifact-hex 89504e470d0a1a0a
 ```
 
-The minimal CLI review packet is helper-only. It accepts fixture bytes as explicit hex input, binds them to an explicit `artifact://` URI, and reports CLI invocation boundaries, byte-loading result, safety boundaries, and decision guardrails. It does not open local image files, download artifacts, fetch network resources, decode images, inspect pixels, score candidates, mutate reports, or approve candidates.
+The minimal CLI review packet is helper-only. It uses the same deterministic fixture registry by default and reports CLI invocation boundaries, byte-loading result, safety boundaries, and decision guardrails. It does not open local image files, download artifacts, fetch network resources, decode images, inspect pixels, score candidates, mutate reports, or approve candidates.
 
 ## Candidate image byte-loading contract
 
@@ -260,7 +198,7 @@ supra_2jz_gte_candidate_image_byte_loading_record.fixture.json:
   approval_allowed: false
 ```
 
-Candidate image byte-loading contract fixtures do not open files, download artifacts, fetch network resources, load bytes, decode images, inspect pixels, score candidates, mutate reports, or approve candidates.
+Candidate image byte-loading contract fixtures do not open files, download artifacts, fetch network resources, load bytes, decode images, inspect pixels, score candidates, mutate reports, or approve candidates. Their reference metadata is aligned to the deterministic fixture artifact registry.
 
 ## Candidate image byte-loading discovery commands
 
@@ -363,6 +301,8 @@ pytest tests/test_candidate_image_byte_loading_pre_implementation_exit_review.py
 pytest tests/test_candidate_image_byte_loading_minimal_implementation.py
 pytest tests/test_candidate_image_byte_loading_minimal_cli.py
 pytest tests/test_candidate_image_byte_loading_minimal_cli_review_packet.py
+pytest tests/test_candidate_image_byte_loading_minimal_cli_exit_review.py
+pytest tests/test_candidate_image_byte_loading_fixture_artifact_registry.py
 pytest tests/test_candidate_image_byte_loading_contract.py
 pytest tests/test_candidate_image_byte_loading_discovery_cli.py
 pytest tests/test_candidate_image_byte_loading_review_packet.py
@@ -382,4 +322,4 @@ pytest tests/test_candidate_review_packet.py
 
 ## Guardrail
 
-Candidate graphics are external inputs. ConstraintOS does not generate, edit, inspect, score, or approve images in these milestones. Candidate image byte-loading minimal implementation, minimal CLI, and minimal CLI review packet are helper-only and limited to explicit in-memory artifact registry / fixture hex bytes; they do not enable local image file opening, artifact download, network fetch, image decoding, pixel inspection, scoring, report mutation, or approval.
+Candidate graphics are external inputs. ConstraintOS does not generate, edit, inspect, score, or approve images in these milestones. Candidate image byte-loading minimal implementation, minimal CLI, minimal CLI review packet, and fixture artifact registry are helper-only and limited to deterministic fixture bytes; they do not enable local image file opening, artifact download, network fetch, image decoding, pixel inspection, scoring, report mutation, or approval.
