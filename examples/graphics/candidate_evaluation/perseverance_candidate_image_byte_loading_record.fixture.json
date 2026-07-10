@@ -7,7 +7,7 @@
     "candidate_id": "GRAPHICS-CANDIDATE-PERSEVERANCE-0001",
     "byte_loading_state": "not_run_contract_only",
     "recorded_at": "2026-07-09T00:00:00Z",
-    "notes": "Static byte-loading contract fixture. No image bytes are loaded."
+    "notes": "Static byte-loading contract fixture. No image bytes are loaded. Reference metadata is aligned to deterministic fixture artifact registry bytes."
   },
   "contract_binding": {
     "contract_key": "perseverance",
@@ -19,8 +19,8 @@
     "reference_type": "artifact_uri",
     "reference": "artifact://external-candidates/perseverance/candidate-0001.png",
     "media_type": "image/png",
-    "image_sha256": "1111111111111111111111111111111111111111111111111111111111111111",
-    "expected_byte_count": 1
+    "image_sha256": "4c4b6a3be1314ab86138bef4314dde022e600960d8689a2c8f8631802d20dab6",
+    "expected_byte_count": 8
   },
   "byte_loading_policy_snapshot": {
     "allowed_local_roots": [
@@ -31,7 +31,7 @@
       "file:///workspace/external-candidates/",
       "file:///workspace/runs/manual-candidates/"
     ],
-    "artifact_uri_resolution": "internal_artifact_registry_required_later",
+    "artifact_uri_resolution": "deterministic_fixture_artifact_registry_only",
     "max_candidate_image_bytes": 25000000,
     "network_fetch_allowed": false,
     "implicit_cloud_download_allowed": false,
