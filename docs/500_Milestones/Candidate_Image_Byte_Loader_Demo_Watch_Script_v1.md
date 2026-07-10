@@ -4,7 +4,7 @@
 
 ```text
 milestone: Candidate Image Byte Loader Demo Watch Script v1
-status: active
+status: implementation-complete-pending-test
 started_on: 2026-07-10
 previous_gate: Candidate Image Byte Loading Fixture Registry Failure Matrix v1 complete
 track: Business Demo Visibility Track
@@ -70,6 +70,15 @@ business_demo_goal: Make effort visible as auditable evidence, not hidden test o
 - No approval automation change.
 ```
 
+## Implemented files
+
+```text
+docs/500_Milestones/Candidate_Image_Byte_Loader_Demo_Watch_Script_v1.md
+scripts/watch-candidate-byte-loader.ps1
+tests/test_candidate_image_byte_loader_demo_watch_script.py
+docs/700_Use_Cases/Graphics_Validation_Command_Reference.md
+```
+
 ## Demo command
 
 ```powershell
@@ -87,6 +96,18 @@ business_demo_goal: Make effort visible as auditable evidence, not hidden test o
 4. Review fixture registry failure matrix.
 5. Capture JSON evidence files.
 6. Record final non-approval guardrails.
+```
+
+## Demo outputs
+
+```text
+runs/candidate-byte-loader/<record>/<timestamp>/terminal-transcript.txt
+runs/candidate-byte-loader/<record>/<timestamp>/watch-output.txt
+runs/candidate-byte-loader/<record>/<timestamp>/minimal-byte-loading.json
+runs/candidate-byte-loader/<record>/<timestamp>/minimal-review-packet.json
+runs/candidate-byte-loader/<record>/<timestamp>/fixture-registry-review-packet.json
+runs/candidate-byte-loader/<record>/<timestamp>/fixture-registry-failure-review-packet.json
+runs/candidate-byte-loader/<record>/<timestamp>/run-metadata.json
 ```
 
 ## Demo boundary
@@ -128,4 +149,30 @@ pytest tests/test_candidate_image_byte_loader_demo_watch_script.py
 - No report mutation.
 - No approval automation change.
 - Do not claim tests passed unless actually run.
+```
+
+## Done criteria
+
+```text
+[x] Demo watch script exists.
+[x] Demo watch script defaults to perseverance.
+[x] Demo watch script supports alternate records.
+[x] Demo watch script shows staged terminal output.
+[x] Demo watch script runs minimal byte loading.
+[x] Demo watch script runs minimal review packet.
+[x] Demo watch script runs registry review packet.
+[x] Demo watch script runs failure review packet.
+[x] Demo watch script captures terminal transcript.
+[x] Demo watch script captures watch output.
+[x] Demo watch script captures JSON evidence outputs.
+[x] Demo watch script writes run metadata.
+[x] Demo watch script preserves no local image file opening.
+[x] Demo watch script preserves no artifact download.
+[x] Demo watch script preserves no network fetch.
+[x] Demo watch script preserves no image decoding.
+[x] Demo watch script preserves no candidate scoring.
+[x] Demo watch script preserves no source report mutation.
+[x] Demo watch script preserves no approval automation.
+[x] Command reference updated.
+[ ] Verification test result recorded.
 ```
