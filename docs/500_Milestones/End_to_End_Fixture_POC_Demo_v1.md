@@ -9,13 +9,29 @@ started_on: 2026-07-10
 previous_demo_outline: docs/800_Demos/End_to_End_Fixture_POC_Demo_Outline.md
 track: Business Demo Visibility Track
 baseline: 487 passed
+product_correction_recorded_on: 2026-07-10
+corrected_next_demo_target: Constraint-Driven Graphic Output Permutation POC v1
 ```
 
 ## Purpose
 
-Implement a one-command fixture-based POC demo that shows ConstraintOS processing a named scenario through the current deterministic graphics validation and candidate evidence pipeline.
+Implement a one-command fixture-based POC demo harness that shows ConstraintOS processing a named scenario through the current deterministic graphics validation and candidate evidence pipeline.
 
-This milestone exists so friends, reviewers, and early stakeholders can see the product workflow in motion: scenario selection, contract/specification loading, candidate intake review, deterministic byte-loading evidence, registry review, failure-matrix review, observation evidence, evidence merge, candidate evaluation, final review packet, and demo summary.
+This milestone exists so friends, reviewers, and early stakeholders can see the current product workflow in motion: scenario selection, contract/specification loading, candidate intake review, deterministic byte-loading evidence, registry review, failure-matrix review, observation evidence, evidence merge, candidate evaluation, final review packet, and demo summary.
+
+## Product correction
+
+A product correction was recorded after implementation: the full POC should not stop at evidence and review packets.
+
+The corrected POC target is:
+
+```text
+input_constraints + scenario instructions -> graphic output permutations -> validation evidence -> reviewable result
+```
+
+The intended product output should be a series of graphic outputs, or fixture-safe graphic-output specifications/placeholders, derived from loaded constraints. The evidence and review packets should explain whether each output satisfies, fails, or needs review against the loaded requirements.
+
+This milestone remains useful as an evidence-harness demo, but it is not the full corrected product-shaped demo. The next demo milestone should add constraint-driven output permutations.
 
 ## Product charter alignment
 
@@ -23,14 +39,14 @@ This milestone exists so friends, reviewers, and early stakeholders can see the 
 product_charter_seed: ConstraintOS is an open architecture for deterministic, auditable, specification-driven publishing using probabilistic AI systems.
 mission_seed: Structured specifications, validation, and traceability — not AI model behavior — are the source of truth.
 demo_principle: Show the validation path in motion without weakening constraints.
-business_demo_goal: Make the current POC feel like an input-to-result product workflow.
+business_demo_goal: Make the current POC feel like an input-to-result product workflow while identifying the next missing output-permutation layer.
 ```
 
 ## Scope
 
 ```text
 - Add scripts/watch-constraintos-poc.ps1.
-- Provide one command that demos the fixture-based end-to-end POC path.
+- Provide one command that demos the fixture-based end-to-end POC evidence path.
 - Support -Scenario perseverance by default.
 - Support alternate scenarios such as supra_2jz_gte_twin_turbo.
 - Show stage-by-stage terminal output.
@@ -74,8 +90,8 @@ business_demo_goal: Make the current POC feel like an input-to-result product wo
 - No pixel inspection.
 - No computer-vision provider integration.
 - No OCR provider integration.
-- No image generation.
-- No image editing.
+- No unrestricted image generation.
+- No unrestricted image editing.
 - No automatic candidate approval.
 ```
 
@@ -134,12 +150,32 @@ runs/poc-demo/<scenario>/<timestamp>/demo-summary.json
 runs/poc-demo/<scenario>/<timestamp>/run-metadata.json
 ```
 
-## Intended POC result
+## Intended result for this evidence-harness POC
 
 ```text
 final_decision: needs_review
 approval_allowed: false
 reason: The system produced traceable evidence and review packets, but automatic approval remains intentionally blocked in the POC.
+```
+
+## Corrected intended result for the next product-shaped POC
+
+```text
+graphic_outputs_created: true
+graphic_output_type: fixture-safe graphic-output specifications or controlled placeholder artifacts
+permutation_count: scenario-defined
+final_decision: needs_review
+approval_allowed: false
+reason: The system produced constraint-derived output permutations and traceable validation evidence, but automatic approval remains intentionally blocked in the POC.
+```
+
+## Required next milestone
+
+```text
+recommended_next_milestone: Constraint-Driven Graphic Output Permutation POC v1
+primary_output: scripts/watch-constraintos-output-poc.ps1
+supporting_output: graphic-output-manifest.json
+verification: pytest tests/test_constraint_driven_graphic_output_permutation_poc.py
 ```
 
 ## Verification command
@@ -160,8 +196,8 @@ pytest tests/test_end_to_end_fixture_poc_demo.py
 - No network fetch.
 - No image decoding.
 - No CV/OCR provider choice.
-- No image generation.
-- No image editing.
+- No unrestricted image generation.
+- No unrestricted image editing.
 - No automatic candidate approval.
 - Do not claim tests passed unless actually run.
 ```
@@ -190,6 +226,8 @@ pytest tests/test_end_to_end_fixture_poc_demo.py
 [x] Demo preserves no network fetch.
 [x] Demo preserves no image decoding.
 [x] Demo preserves no automatic candidate approval.
+[x] Product correction recorded: corrected POC should output constraint-driven graphic permutations.
+[x] Corrected next demo milestone identified.
 [x] Command reference updated.
 [ ] Verification test result recorded.
 ```
