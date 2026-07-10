@@ -4,7 +4,7 @@
 
 ```text
 milestone: End-to-End Fixture POC Demo v1
-status: active
+status: implementation-complete-pending-test
 started_on: 2026-07-10
 previous_demo_outline: docs/800_Demos/End_to_End_Fixture_POC_Demo_Outline.md
 track: Business Demo Visibility Track
@@ -79,12 +79,22 @@ business_demo_goal: Make the current POC feel like an input-to-result product wo
 - No automatic candidate approval.
 ```
 
+## Implemented files
+
+```text
+docs/500_Milestones/End_to_End_Fixture_POC_Demo_v1.md
+scripts/watch-constraintos-poc.ps1
+tests/test_end_to_end_fixture_poc_demo.py
+docs/700_Use_Cases/Graphics_Validation_Command_Reference.md
+```
+
 ## Demo command
 
 ```powershell
 .\scripts\watch-constraintos-poc.ps1
 .\scripts\watch-constraintos-poc.ps1 -Scenario perseverance
 .\scripts\watch-constraintos-poc.ps1 -Scenario supra_2jz_gte_twin_turbo -WatchDelayMs 750
+.\scripts\watch-constraintos-poc.ps1 -Scenario perseverance -OpenRunFolder
 ```
 
 ## Demo stages
@@ -154,4 +164,32 @@ pytest tests/test_end_to_end_fixture_poc_demo.py
 - No image editing.
 - No automatic candidate approval.
 - Do not claim tests passed unless actually run.
+```
+
+## Done criteria
+
+```text
+[x] End-to-end fixture POC demo script exists.
+[x] Demo defaults to perseverance.
+[x] Demo supports alternate scenarios.
+[x] Demo shows stage-by-stage terminal output.
+[x] Demo loads contract/specification evidence.
+[x] Demo loads candidate manifest/intake evidence.
+[x] Demo generates intake review evidence.
+[x] Demo loads deterministic fixture bytes.
+[x] Demo generates byte-loading and registry evidence.
+[x] Demo reviews fixture registry failure matrix evidence.
+[x] Demo loads and binds observation evidence.
+[x] Demo merges evidence and evaluates candidate fixture report.
+[x] Demo produces final review packet and demo summary.
+[x] Demo captures terminal transcript and watch output.
+[x] Demo captures JSON evidence files.
+[x] Demo writes run metadata.
+[x] Demo preserves no local image file opening.
+[x] Demo preserves no artifact download.
+[x] Demo preserves no network fetch.
+[x] Demo preserves no image decoding.
+[x] Demo preserves no automatic candidate approval.
+[x] Command reference updated.
+[ ] Verification test result recorded.
 ```
