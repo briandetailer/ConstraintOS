@@ -11,6 +11,7 @@ SUPRA = CANDIDATE_DIR / "supra_2jz_gte_candidate_image_byte_loading_record.fixtu
 MILESTONE = ROOT / "docs" / "500_Milestones" / "Candidate_Image_Byte_Loading_Contract_v1.md"
 README = CANDIDATE_DIR / "README.md"
 COMMAND_REFERENCE = ROOT / "docs" / "700_Use_Cases" / "Graphics_Validation_Command_Reference.md"
+FIXTURE_PNG_SHA256 = "4c4b6a3be1314ab86138bef4314dde022e600960d8689a2c8f8631802d20dab6"
 
 
 def load_json(path: Path) -> dict:
@@ -67,8 +68,8 @@ def test_candidate_image_byte_loading_records_preserve_reference_metadata() -> N
 
         assert reference["reference_type"] == "artifact_uri"
         assert reference["media_type"] == "image/png"
-        assert len(reference["image_sha256"]) == 64
-        assert reference["expected_byte_count"] == 1
+        assert reference["image_sha256"] == FIXTURE_PNG_SHA256
+        assert reference["expected_byte_count"] == 8
 
 
 def test_candidate_image_byte_loading_policy_snapshot_blocks_fetch_and_approval() -> None:
@@ -81,7 +82,7 @@ def test_candidate_image_byte_loading_policy_snapshot_blocks_fetch_and_approval(
             "file:///workspace/external-candidates/",
             "file:///workspace/runs/manual-candidates/",
         ]
-        assert policy["artifact_uri_resolution"] == "internal_artifact_registry_required_later"
+        assert policy["artifact_uri_resolution"] == "deterministic_fixture_artifact_registry_only"
         assert policy["max_candidate_image_bytes"] == 25000000
         assert policy["network_fetch_allowed"] is False
         assert policy["implicit_cloud_download_allowed"] is False
@@ -134,7 +135,7 @@ def test_candidate_image_byte_loading_contract_milestone_records_boundaries() ->
     content = MILESTONE.read_text(encoding="utf-8")
 
     assert "milestone: Candidate Image Byte Loading Contract v1" in content
-    assert "status: implementation-complete-pending-test" in content
+    assert "status: complete" in content
     assert "No image bytes loaded." in content
     assert "No local file opening." in content
     assert "No artifact download." in content
