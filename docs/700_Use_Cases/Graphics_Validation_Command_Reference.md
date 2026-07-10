@@ -2,7 +2,7 @@
 
 ## Purpose
 
-This document gathers the commands introduced across the recent graphics-validation milestones.
+This document gathers user-facing commands and local verification commands introduced across the graphics-validation milestones.
 
 It covers:
 
@@ -32,6 +32,7 @@ It covers:
 - candidate image byte loading implementation contract
 - candidate image byte loading pre-implementation exit review
 - candidate image byte loading minimal implementation
+- Candidate image byte loading minimal CLI
 - candidate image byte loading contract
 - candidate image byte loading discovery
 - candidate image byte loading review packet
@@ -52,14 +53,12 @@ Include:
 ```text
 - the exact command
 - what the command does
-- whether it is plan-only, dry-run, fixture-only, or writes files
+- whether it is plan-only, dry-run, fixture-only, helper-only, or writes files
 - any relevant output path
 - any related verification command
 ```
 
 ## Branch sync
-
-Use this before running newly added commands locally:
 
 ```powershell
 git pull --rebase origin phase-1-cli-tooling
@@ -262,8 +261,6 @@ This is a design-only verification command. It does not load image bytes, decode
 
 ## Candidate image byte loading design
 
-Validate future byte-loading policy boundaries before any byte loading implementation:
-
 ```powershell
 pytest tests/test_candidate_image_byte_loading_design.py
 ```
@@ -271,8 +268,6 @@ pytest tests/test_candidate_image_byte_loading_design.py
 This is a design-only verification command. It does not open files, download artifacts, fetch network resources, load image bytes, decode images, inspect pixels, score candidates, mutate reports, choose providers, or approve candidates.
 
 ## Candidate image byte loading implementation design
-
-Validate future implementation behavior before any byte loading code is written:
 
 ```powershell
 pytest tests/test_candidate_image_byte_loading_implementation_design.py
@@ -282,8 +277,6 @@ This is a design-only verification command. It does not open files, download art
 
 ## Candidate image byte loading implementation contract
 
-Validate the future byte-loading result contract before any byte loading code is written:
-
 ```powershell
 pytest tests/test_candidate_image_byte_loading_implementation_contract.py
 ```
@@ -291,8 +284,6 @@ pytest tests/test_candidate_image_byte_loading_implementation_contract.py
 This is a contract-only verification command. It does not open files, download artifacts, fetch network resources, load image bytes, decode images, inspect pixels, score candidates, mutate reports, choose providers, or approve candidates.
 
 ## Candidate image byte loading pre-implementation exit review
-
-Validate readiness before any real byte-loading implementation begins:
 
 ```powershell
 pytest tests/test_candidate_image_byte_loading_pre_implementation_exit_review.py
@@ -302,17 +293,41 @@ This is a documentation and guardrail verification command. It does not open fil
 
 ## Candidate image byte loading minimal implementation
 
-Validate the helper-only minimal byte-loading implementation:
-
 ```powershell
 pytest tests/test_candidate_image_byte_loading_minimal_implementation.py
 ```
 
 This is a helper-only implementation test. It loads bytes only from an explicit in-memory artifact registry adapter and verifies byte count, sha256, and signature-based media type. It does not open local files, download artifacts, fetch network resources, decode images, inspect pixels, score candidates, mutate reports, choose providers, or approve candidates.
 
-## Candidate image byte loading contract
+## Candidate image byte loading minimal CLI
 
-Validate the static byte-loading record schema and fixture records:
+Run helper-only minimal byte loading with explicit fixture bytes:
+
+```powershell
+cos-graphics-byte-loader minimal perseverance --fixture-artifact-uri artifact://external-candidates/perseverance/candidate-0001.png --fixture-artifact-hex 89504e470d0a1a0a
+```
+
+Run the same command as JSON:
+
+```powershell
+cos-graphics-byte-loader --format json minimal perseverance --fixture-artifact-uri artifact://external-candidates/perseverance/candidate-0001.png --fixture-artifact-hex 89504e470d0a1a0a
+```
+
+Write the JSON report to a file:
+
+```powershell
+cos-graphics-byte-loader --format json --output reports/perseverance-byte-loader.json minimal perseverance --fixture-artifact-uri artifact://external-candidates/perseverance/candidate-0001.png --fixture-artifact-hex 89504e470d0a1a0a
+```
+
+Run the minimal CLI tests:
+
+```powershell
+pytest tests/test_candidate_image_byte_loading_minimal_cli.py
+```
+
+This is a helper-only CLI. It accepts fixture bytes as explicit hex input and binds them to an explicit `artifact://` URI. It does not open local image files, download artifacts, fetch network resources, decode images, inspect pixels, score candidates, mutate reports, choose providers, or approve candidates.
+
+## Candidate image byte loading contract
 
 ```powershell
 pytest tests/test_candidate_image_byte_loading_contract.py
@@ -322,28 +337,11 @@ This is a contract-only verification command. It does not open files, download a
 
 ## Candidate image byte loading discovery
 
-List available static candidate image byte-loading records:
-
 ```powershell
 cos-graphics-candidates byte-loading-list
-```
-
-Show individual candidate image byte-loading record summaries:
-
-```powershell
 cos-graphics-candidates byte-loading-show perseverance
 cos-graphics-candidates byte-loading-show supra_2jz_gte_twin_turbo
-```
-
-Write a JSON report of static candidate image byte-loading records:
-
-```powershell
 cos-graphics-candidates --format json --output reports/candidate-byte-loading-records.json byte-loading-list
-```
-
-Run the candidate image byte-loading discovery CLI tests:
-
-```powershell
 pytest tests/test_candidate_image_byte_loading_discovery_cli.py
 ```
 
@@ -351,30 +349,16 @@ This is a read-only discovery command. It does not open files, download artifact
 
 ## Candidate image byte loading review packet
 
-Create a human-facing fixture-only byte-loading review packet:
-
 ```powershell
 cos-graphics-candidates byte-loading-review-packet perseverance
 cos-graphics-candidates byte-loading-review-packet supra_2jz_gte_twin_turbo
-```
-
-Write a fixture-only byte-loading review packet as JSON:
-
-```powershell
 cos-graphics-candidates --format json --output reports/perseverance-byte-loading-review-packet.json byte-loading-review-packet perseverance
-```
-
-Run the candidate image byte-loading review packet tests:
-
-```powershell
 pytest tests/test_candidate_image_byte_loading_review_packet.py
 ```
 
 This is a fixture-only command. It summarizes byte-loading record identity, intake binding, reference metadata, policy snapshot, not-run byte-loading result fields, post-load boundaries, and approval blockers, but it does not open files, download artifacts, fetch network resources, load image bytes, decode images, inspect pixels, score candidates, mutate reports, choose providers, or approve candidates.
 
 ## Byte loading foundation exit review
-
-Validate the fixture-only byte-loading metadata foundation exit checkpoint before implementation design:
 
 ```powershell
 pytest tests/test_byte_loading_foundation_exit_review.py
@@ -404,30 +388,16 @@ This is a read-only discovery command. It does not load image bytes, decode imag
 
 ## Candidate intake review packet
 
-Create a human-facing fixture-only intake review packet:
-
 ```powershell
 cos-graphics-candidates intake-review-packet perseverance
 cos-graphics-candidates intake-review-packet supra_2jz_gte_twin_turbo
-```
-
-Write a fixture-only candidate intake review packet as JSON:
-
-```powershell
 cos-graphics-candidates --format json --output reports/perseverance-intake-review-packet.json intake-review-packet perseverance
-```
-
-Run the candidate intake review packet tests:
-
-```powershell
 pytest tests/test_candidate_intake_review_packet.py
 ```
 
 This is a fixture-only command. It summarizes intake candidate identity, reference metadata, policy snapshot, intake boundaries, and approval blockers, but it does not load image bytes, decode images, fetch network images, inspect pixels, score candidates, mutate reports, or approve candidates.
 
 ## Intake foundation exit review
-
-Validate the fixture-only intake metadata foundation exit checkpoint before byte-loading design:
 
 ```powershell
 pytest tests/test_intake_foundation_exit_review.py
@@ -436,8 +406,6 @@ pytest tests/test_intake_foundation_exit_review.py
 This is a documentation and guardrail verification command. It does not load image bytes, decode images, fetch network images, inspect pixels, score candidates, mutate reports, choose providers, or approve candidates.
 
 ## Full recent graphics-validation verification set
-
-Run all recent graphics-validation and contract-focused test suites:
 
 ```powershell
 pytest runtime/tests/test_graphics_perseverance_example.py
@@ -464,6 +432,7 @@ pytest tests/test_candidate_image_byte_loading_implementation_design.py
 pytest tests/test_candidate_image_byte_loading_implementation_contract.py
 pytest tests/test_candidate_image_byte_loading_pre_implementation_exit_review.py
 pytest tests/test_candidate_image_byte_loading_minimal_implementation.py
+pytest tests/test_candidate_image_byte_loading_minimal_cli.py
 pytest tests/test_candidate_image_byte_loading_contract.py
 pytest tests/test_candidate_image_byte_loading_discovery_cli.py
 pytest tests/test_candidate_image_byte_loading_review_packet.py
@@ -476,8 +445,6 @@ pytest tests/test_intake_foundation_exit_review.py
 
 ## Current contract keys
 
-Use these keys with `cos-graphics-contracts show`, `cos-graphics-contracts run`, and `scripts/watch-graphics-contract.ps1 -Contract`:
-
 ```text
 perseverance
 wind_turbine_nacelle
@@ -485,15 +452,17 @@ hydroelectric_dam_powerhouse
 supra_2jz_gte_twin_turbo
 ```
 
-## Current candidate manifest keys
+Use these keys with `cos-graphics-contracts show`, `cos-graphics-contracts run`, and `scripts/watch-graphics-contract.ps1 -Contract`.
 
-Use these keys with `cos-graphics-candidates show`, `cos-graphics-candidates evaluate`, `cos-graphics-candidates observe`, `cos-graphics-candidates bind-observations`, `cos-graphics-candidates merge-evidence`, `cos-graphics-candidates review-packet`, `cos-graphics-candidates intake-show`, `cos-graphics-candidates intake-review-packet`, `cos-graphics-candidates byte-loading-show`, and `cos-graphics-candidates byte-loading-review-packet`:
+## Current candidate manifest keys
 
 ```text
 perseverance
 supra_2jz_gte
 supra_2jz_gte_twin_turbo
 ```
+
+Use these keys with `cos-graphics-candidates show`, `cos-graphics-candidates evaluate`, `cos-graphics-candidates observe`, `cos-graphics-candidates bind-observations`, `cos-graphics-candidates merge-evidence`, `cos-graphics-candidates review-packet`, `cos-graphics-candidates intake-show`, `cos-graphics-candidates intake-review-packet`, `cos-graphics-candidates byte-loading-show`, and `cos-graphics-candidates byte-loading-review-packet`.
 
 ## Guardrails
 
@@ -502,6 +471,7 @@ supra_2jz_gte_twin_turbo
 - These commands do not generate images.
 - These commands do not evaluate real generated candidates yet.
 - Candidate image byte-loading minimal implementation is limited to explicit in-memory artifact registry bytes.
+- Candidate image byte-loading minimal CLI is limited to explicit fixture hex bytes bound to artifact:// URIs.
 - Real candidate image intake design, candidate image byte-loading design, implementation design/contract, pre-implementation exit review, byte-loading contract/discovery/review-packet fixtures, intake manifests, and intake review packets do not decode images.
 - Approval expectations remain contract-driven and default uncertainty to needs_review.
 ```
