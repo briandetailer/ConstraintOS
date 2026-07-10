@@ -4,11 +4,14 @@
 
 ```text
 milestone: Candidate Image Byte Loading Fixture Artifact Registry v1
-status: implementation-complete-pending-test
+status: complete
 started_on: 2026-07-09
+completed_on: 2026-07-09
 previous_gate: Candidate Image Byte Loading Minimal CLI Exit Review v1 complete
 track: Real Candidate Intake Track
 baseline: 487 passed
+latest_user_reported_candidate_image_byte_loading_fixture_artifact_registry_test_result: 9 passed
+latest_user_reported_candidate_image_byte_loading_fixture_artifact_registry_test_result_on: 2026-07-09
 ```
 
 ## Purpose
@@ -32,6 +35,7 @@ This milestone replaces ad hoc fixture hex arguments as the default byte source 
 - Validate fixture bytes against byte count, sha256, and signature-based media type before exposing bytes.
 - Convert validated fixture registry entries into the existing InMemoryArtifactRegistry adapter.
 - Update byte-loading record fixtures to align with deterministic fixture artifact metadata.
+- Update byte-loading record schema to allow deterministic fixture registry metadata.
 - Update dedicated byte-loader CLI to use the default fixture artifact registry when explicit fixture hex is not supplied.
 - Preserve explicit fixture hex override for focused tests.
 - Update tests.
@@ -68,6 +72,7 @@ examples/graphics/candidate_evaluation/candidate_image_fixture_artifact_registry
 src/constraintos/candidate_image_fixture_artifact_registry.py
 examples/graphics/candidate_evaluation/perseverance_candidate_image_byte_loading_record.fixture.json
 examples/graphics/candidate_evaluation/supra_2jz_gte_candidate_image_byte_loading_record.fixture.json
+examples/graphics/candidate_evaluation/candidate_image_byte_loading_record.schema.json
 src/constraintos/candidate_image_byte_loader_cli.py
 tests/test_candidate_image_byte_loading_contract.py
 tests/test_candidate_image_byte_loading_fixture_artifact_registry.py
@@ -140,6 +145,16 @@ blocked_until_later:
 pytest tests/test_candidate_image_byte_loading_fixture_artifact_registry.py
 ```
 
+## Verification record
+
+```text
+source: user-reported local test run
+command: pytest tests/test_candidate_image_byte_loading_fixture_artifact_registry.py
+result: 9 passed
+reported_on: 2026-07-09
+assistant_ran_tests: false
+```
+
 ## Guardrails
 
 ```text
@@ -177,9 +192,22 @@ pytest tests/test_candidate_image_byte_loading_fixture_artifact_registry.py
 [x] Fixture bytes are validated against byte count, sha256, and signature-based media type before exposure.
 [x] Validated fixture registry entries convert into InMemoryArtifactRegistry.
 [x] Byte-loading record fixtures align with deterministic fixture artifact metadata.
+[x] Byte-loading record schema allows deterministic fixture registry metadata.
 [x] Dedicated byte-loader CLI uses the default fixture artifact registry when explicit fixture hex is not supplied.
 [x] Explicit fixture hex override remains available.
 [x] README updated.
 [x] Command reference updated.
-[ ] Verification test result recorded.
+[x] Verification test result recorded.
+```
+
+## Handoff notes
+
+```text
+- Candidate Image Byte Loading Fixture Artifact Registry v1 is complete.
+- The default byte source for cos-graphics-byte-loader minimal and review-packet is candidate_image_fixture_artifact_registry.fixture.json.
+- The registry remains fixture-only and exposes bytes only after descriptor validation.
+- Registry descriptors require deterministic artifact IDs, artifact:// URIs, immutable descriptors, expected sha256, expected byte count, declared media type, no local file opening, no artifact download, no network fetch, no image decoding, and no approval from byte-loading success.
+- Explicit fixture hex override remains available for focused tests.
+- The next milestone should be Candidate Image Byte Loading Fixture Registry Review Packet v1.
+- local_file_path byte loading, file_uri byte loading, artifact download, network fetch, image decoding, pixel inspection, CV/OCR integration, image generation, image editing, candidate scoring, source report mutation, and approval automation remain blocked until later milestones.
 ```
