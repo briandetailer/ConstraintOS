@@ -4,7 +4,7 @@
 
 ```text
 milestone: Candidate Image Byte Loading Fixture Registry Failure Matrix v1
-status: active
+status: implementation-complete-pending-test
 started_on: 2026-07-10
 previous_gate: Candidate Image Byte Loading Fixture Registry Exit Review v1 complete
 track: Real Candidate Intake Track
@@ -57,6 +57,16 @@ This milestone confirms that invalid registry descriptors fail closed and do not
 - No candidate scoring.
 - No report mutation.
 - No approval automation change.
+```
+
+## Implemented files
+
+```text
+docs/500_Milestones/Candidate_Image_Byte_Loading_Fixture_Registry_Failure_Matrix_v1.md
+examples/graphics/candidate_evaluation/candidate_image_fixture_artifact_registry_failure_matrix.fixture.json
+tests/test_candidate_image_byte_loading_fixture_registry_failure_matrix.py
+examples/graphics/candidate_evaluation/README.md
+docs/700_Use_Cases/Graphics_Validation_Command_Reference.md
 ```
 
 ## Failure matrix boundary
@@ -134,4 +144,26 @@ pytest tests/test_candidate_image_byte_loading_fixture_registry_failure_matrix.p
 - No report mutation.
 - No approval automation change.
 - Do not claim tests passed unless actually run.
+```
+
+## Done criteria
+
+```text
+[x] Fixture registry failure matrix fixture exists.
+[x] Invalid sha256 is covered.
+[x] Invalid byte count is covered.
+[x] Invalid media type is covered.
+[x] Invalid artifact URI is covered.
+[x] Duplicate artifact ID is covered.
+[x] Duplicate artifact URI is covered.
+[x] Descriptor mutability violation is covered.
+[x] Local file opening guardrail violation is covered.
+[x] Network fetch guardrail violation is covered.
+[x] Image decoding guardrail violation is covered.
+[x] Approval guardrail violation is covered.
+[x] Failure cases do not expose bytes through InMemoryArtifactRegistry.
+[x] Success case still cannot approve candidates.
+[x] README updated.
+[x] Command reference updated.
+[ ] Verification test result recorded.
 ```
