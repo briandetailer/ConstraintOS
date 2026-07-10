@@ -113,7 +113,7 @@ def test_end_to_end_fixture_poc_demo_milestone_records_scope_and_verification() 
     content = MILESTONE.read_text(encoding="utf-8")
 
     assert "milestone: End-to-End Fixture POC Demo v1" in content
-    assert "status: active" in content
+    assert "status: implementation-complete-pending-test" in content
     assert "Business Demo Visibility Track" in content
     assert "watch-constraintos-poc.ps1" in content
     assert "Load the graphics validation contract/specification." in content
