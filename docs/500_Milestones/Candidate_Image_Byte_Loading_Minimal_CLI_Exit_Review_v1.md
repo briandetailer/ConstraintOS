@@ -4,7 +4,7 @@
 
 ```text
 milestone: Candidate Image Byte Loading Minimal CLI Exit Review v1
-status: active
+status: implementation-complete-pending-test
 started_on: 2026-07-09
 previous_gate: Candidate Image Byte Loading Minimal CLI Review Packet v1 complete
 track: Real Candidate Intake Track
@@ -138,4 +138,19 @@ pytest tests/test_candidate_image_byte_loading_minimal_cli_exit_review.py
 - No report mutation.
 - No approval automation change.
 - Do not claim tests passed unless actually run.
+```
+
+## Done criteria
+
+```text
+[x] Minimal CLI exit review doc exists.
+[x] Minimal CLI track status is recorded.
+[x] Minimal CLI review packet status is recorded.
+[x] Broader loading paths remain blocked.
+[x] Completed prerequisites are listed.
+[x] Minimum next expansion constraints are listed.
+[x] Required guardrails for next milestone are listed.
+[x] Next allowed milestone is Candidate Image Byte Loading Fixture Artifact Registry v1.
+[x] Command reference updated with verification command.
+[ ] Verification test result recorded.
 ```
