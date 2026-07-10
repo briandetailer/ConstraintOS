@@ -4,7 +4,7 @@
 
 ```text
 milestone: Candidate Image Byte Loading Fixture Registry Exit Review v1
-status: active
+status: implementation-complete-pending-test
 started_on: 2026-07-09
 previous_gate: Candidate Image Byte Loading Fixture Registry Review Packet v1 complete
 track: Real Candidate Intake Track
@@ -144,4 +144,27 @@ pytest tests/test_candidate_image_byte_loading_fixture_registry_exit_review.py
 - No report mutation.
 - No approval automation change.
 - Do not claim tests passed unless actually run.
+```
+
+## Implemented files
+
+```text
+docs/500_Milestones/Candidate_Image_Byte_Loading_Fixture_Registry_Exit_Review_v1.md
+tests/test_candidate_image_byte_loading_fixture_registry_exit_review.py
+docs/700_Use_Cases/Graphics_Validation_Command_Reference.md
+```
+
+## Done criteria
+
+```text
+[x] Fixture registry exit review doc exists.
+[x] Fixture registry track status is recorded.
+[x] Fixture registry review packet status is recorded.
+[x] Broader loading paths remain blocked.
+[x] Completed prerequisites are listed.
+[x] Minimum next expansion constraints are listed.
+[x] Required guardrails for next milestone are listed.
+[x] Next allowed milestone is Candidate Image Byte Loading Fixture Registry Failure Matrix v1.
+[x] Command reference updated with verification command.
+[ ] Verification test result recorded.
 ```
