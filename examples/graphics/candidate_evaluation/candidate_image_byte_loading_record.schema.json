@@ -72,7 +72,13 @@
           "minItems": 2,
           "uniqueItems": true
         },
-        "artifact_uri_resolution": {"type": "string", "const": "internal_artifact_registry_required_later"},
+        "artifact_uri_resolution": {
+          "type": "string",
+          "enum": [
+            "internal_artifact_registry_required_later",
+            "deterministic_fixture_artifact_registry_only"
+          ]
+        },
         "max_candidate_image_bytes": {"type": "integer", "minimum": 1, "maximum": 25000000},
         "network_fetch_allowed": {"type": "boolean", "const": false},
         "implicit_cloud_download_allowed": {"type": "boolean", "const": false},
