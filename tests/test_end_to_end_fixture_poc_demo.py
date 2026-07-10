@@ -120,18 +120,22 @@ def test_end_to_end_fixture_poc_demo_milestone_records_scope_and_verification() 
     assert "Generate final candidate review packet." in content
     assert "runs/poc-demo/<scenario>/<timestamp>/demo-summary.json" in content
     assert "pytest tests/test_end_to_end_fixture_poc_demo.py" in content
+    assert "Product correction recorded" in content
+    assert "Constraint-Driven Graphic Output Permutation POC v1" in content
     assert "No local image file opening." in content
     assert "No network fetch." in content
     assert "No image decoding." in content
     assert "No automatic candidate approval." in content
 
 
-def test_demo_outline_points_to_end_to_end_fixture_poc_demo() -> None:
+def test_demo_outline_points_to_corrected_graphic_output_poc_demo() -> None:
     content = DEMO_OUTLINE.read_text(encoding="utf-8")
 
-    assert "recommended_next_milestone: End-to-End Fixture POC Demo v1" in content
-    assert "primary_output: scripts/watch-constraintos-poc.ps1" in content
-    assert "verification: pytest tests/test_end_to_end_fixture_poc_demo.py" in content
+    assert "recommended_next_milestone: Constraint-Driven Graphic Output Permutation POC v1" in content
+    assert "primary_output: scripts/watch-constraintos-output-poc.ps1" in content
+    assert "verification: pytest tests/test_constraint_driven_graphic_output_permutation_poc.py" in content
+    assert "graphic output permutations" in content
+    assert "input_constraints + scenario instructions -> graphic output permutations -> validation evidence -> reviewable result" in content
 
 
 def test_command_reference_includes_end_to_end_fixture_poc_demo() -> None:
