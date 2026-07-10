@@ -4,7 +4,7 @@
 
 ```text
 milestone: Candidate Image Byte Loading Fixture Registry Failure Review Packet v1
-status: active
+status: implementation-complete-pending-test
 started_on: 2026-07-10
 previous_gate: Candidate Image Byte Loading Fixture Registry Failure Matrix v1 complete
 track: Real Candidate Intake Track
@@ -58,6 +58,16 @@ This milestone makes the fixture-only failure matrix visible through the dedicat
 - No candidate scoring.
 - No report mutation.
 - No approval automation change.
+```
+
+## Implemented files
+
+```text
+docs/500_Milestones/Candidate_Image_Byte_Loading_Fixture_Registry_Failure_Review_Packet_v1.md
+src/constraintos/candidate_image_byte_loader_cli.py
+tests/test_candidate_image_byte_loading_fixture_registry_failure_review_packet.py
+examples/graphics/candidate_evaluation/README.md
+docs/700_Use_Cases/Graphics_Validation_Command_Reference.md
 ```
 
 ## CLI boundary
@@ -137,4 +147,29 @@ pytest tests/test_candidate_image_byte_loading_fixture_registry_failure_review_p
 - No report mutation.
 - No approval automation change.
 - Do not claim tests passed unless actually run.
+```
+
+## Done criteria
+
+```text
+[x] Dedicated byte-loader CLI has failure-review-packet mode.
+[x] Failure-review-packet reads the fixture registry failure matrix fixture.
+[x] Failure-review-packet reports failure_matrix_identity section.
+[x] Failure-review-packet reports failure_cases section.
+[x] Failure-review-packet reports failure_boundaries section.
+[x] Failure-review-packet reports decision_guardrails section.
+[x] Failure-review-packet does not execute failure mutations.
+[x] Failure-review-packet does not expose image bytes in the packet.
+[x] Failure-review-packet emits JSON and text output.
+[x] Failure-review-packet supports --output file writing for review packets.
+[x] Failure-review-packet preserves no local image file opening.
+[x] Failure-review-packet preserves no artifact download.
+[x] Failure-review-packet preserves no network fetch.
+[x] Failure-review-packet preserves no image decoding.
+[x] Failure-review-packet preserves no candidate scoring.
+[x] Failure-review-packet preserves no source report mutation.
+[x] Failure-review-packet preserves no approval automation.
+[x] README updated.
+[x] Command reference updated.
+[ ] Verification test result recorded.
 ```
