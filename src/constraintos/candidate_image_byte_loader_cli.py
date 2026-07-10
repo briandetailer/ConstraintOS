@@ -16,6 +16,8 @@ from constraintos.candidate_image_fixture_artifact_registry import (
 )
 from constraintos.candidate_manifests import CandidateManifestError, discover_project_root, resolve_candidate_manifests_dir
 
+DEFAULT_FIXTURE_REGISTRY_FAILURE_MATRIX = "candidate_image_fixture_artifact_registry_failure_matrix.fixture.json"
+
 
 def parse_fixture_hex(value: str) -> bytes:
     normalized = "".join(value.split()).lower()
@@ -35,6 +37,56 @@ def resolve_candidate_dir(args: argparse.Namespace) -> Path:
 def load_default_fixture_registry(candidate_dir: Path, fixture_registry: str | None) -> tuple[Path, dict[str, Any]]:
     registry_path = resolve_fixture_artifact_registry_path(candidate_dir, fixture_registry)
     return registry_path, dict(load_fixture_artifact_registry(registry_path))
+
+
+def resolve_fixture_registry_failure_matrix_path(candidate_dir: Path, failure_matrix: str | None) -> Path:
+    if failure_matrix:
+        return Path(failure_matrix).resolve()
+    return candidate_dir / DEFAULT_FIXTURE_REGISTRY_FAILURE_MATRIX
+
+
+def load_fixture_registry_failure_matrix(path: Path) -> dict[str, Any]:
+    matrix = json.loads(path.read_text(encoding="utf-8"))
+    if not isinstance(matrix, dict):
+        raise CandidateManifestError("Fixture registry failure matrix must be a JSON object")
+    header = matrix.get("candidate_image_fixture_artifact_registry_failure_matrix")
+    cases = matrix.get("failure_cases")
+    guardrails = matrix.get("guardrails")
+    if not isinstance(header, dict):
+        raise CandidateManifestError("Fixture registry failure matrix requires header")
+    if header.get("status") != "fixture_only":
+        raise CandidateManifestError("Fixture registry failure matrix status must be fixture_only")
+    if header.get("matrix_state") != "in_memory_mutation_cases":
+        raise CandidateManifestError("Fixture registry failure matrix must use in_memory_mutation_cases")
+    if not isinstance(cases, list) or not cases:
+        raise CandidateManifestError("Fixture registry failure matrix requires failure_cases")
+    if header.get("case_count") != len(cases):
+        raise CandidateManifestError("Fixture registry failure matrix case_count must match failure_cases")
+    if not isinstance(guardrails, dict):
+        raise CandidateManifestError("Fixture registry failure matrix requires guardrails")
+    for flag in [
+        "local_file_opening_allowed",
+        "artifact_download_allowed",
+        "network_fetch_allowed",
+        "image_decoding_allowed",
+        "approval_allowed",
+    ]:
+        if header.get(flag) is not False:
+            raise CandidateManifestError(f"Fixture registry failure matrix header must keep {flag} false")
+    for flag in [
+        "local_file_opening_allowed",
+        "artifact_download_allowed",
+        "network_fetch_allowed",
+        "image_decoding_allowed",
+        "failure_can_approve",
+    ]:
+        if guardrails.get(flag) is not False:
+            raise CandidateManifestError(f"Fixture registry failure matrix guardrail must keep {flag} false")
+    if guardrails.get("failure_cases_are_in_memory_mutations_only") is not True:
+        raise CandidateManifestError("Fixture registry failure matrix guardrail must keep failure cases in-memory only")
+    if guardrails.get("byte_loading_success_can_approve") is not False:
+        raise CandidateManifestError("Fixture registry failure matrix guardrail must keep byte_loading_success_can_approve false")
+    return matrix
 
 
 def build_fixture_artifact_registry(
@@ -282,6 +334,100 @@ def build_fixture_registry_review_packet_payload(args: argparse.Namespace) -> tu
     }
 
 
+def build_fixture_registry_failure_review_packet_payload(args: argparse.Namespace) -> tuple[int, dict[str, Any]]:
+    candidate_dir = resolve_candidate_dir(args)
+    registry_path, registry = load_default_fixture_registry(candidate_dir, args.fixture_registry)
+    matrix_path = resolve_fixture_registry_failure_matrix_path(candidate_dir, args.failure_matrix)
+    matrix = load_fixture_registry_failure_matrix(matrix_path)
+    matrix_header = matrix.get("candidate_image_fixture_artifact_registry_failure_matrix", {})
+    registry_header = registry.get("candidate_image_fixture_artifact_registry", {}) if isinstance(registry.get("candidate_image_fixture_artifact_registry", {}), dict) else {}
+    cases = matrix.get("failure_cases", []) if isinstance(matrix.get("failure_cases", []), list) else []
+    guardrails = matrix.get("guardrails", {}) if isinstance(matrix.get("guardrails", {}), dict) else {}
+    case_summaries = [
+        {
+            "case_id": case.get("case_id"),
+            "mutation_path": case.get("mutation_path"),
+            "expected_error_contains": case.get("expected_error_contains"),
+            "bytes_exposed_on_failure": case.get("bytes_exposed_on_failure"),
+        }
+        for case in cases
+        if isinstance(case, dict)
+    ]
+    return 0, {
+        "candidate_image_fixture_registry_failure_review_packet": {
+            "mode": "fixture_registry_failure_review_packet",
+            "review_packet_ready": True,
+            "failure_matrix_path": str(matrix_path),
+            "base_registry_path": str(registry_path),
+            "failure_case_count": matrix_header.get("case_count"),
+            "local_image_file_opening": "not_run",
+            "artifact_download": "not_run",
+            "network_fetch": "not_run",
+            "image_decoding": "not_run",
+            "candidate_scoring": "not_run",
+            "source_report_mutation": "not_run",
+            "approval_automation": "not_run",
+        },
+        "summary": {
+            "failure_matrix_id": matrix_header.get("id"),
+            "status": matrix_header.get("status"),
+            "matrix_state": matrix_header.get("matrix_state"),
+            "base_registry_fixture": matrix_header.get("base_registry_fixture"),
+            "base_registry_state": registry_header.get("registry_state"),
+            "failure_case_count": matrix_header.get("case_count"),
+            "failure_case_ids": [case.get("case_id") for case in case_summaries],
+            "bytes_exposed_on_failure": False,
+            "local_file_opening_allowed": matrix_header.get("local_file_opening_allowed"),
+            "artifact_download_allowed": matrix_header.get("artifact_download_allowed"),
+            "network_fetch_allowed": matrix_header.get("network_fetch_allowed"),
+            "image_decoding_allowed": matrix_header.get("image_decoding_allowed"),
+            "approval_allowed": matrix_header.get("approval_allowed"),
+        },
+        "review_sections": {
+            "failure_matrix_identity": {
+                "failure_matrix_id": matrix_header.get("id"),
+                "version": matrix_header.get("version"),
+                "domain": matrix_header.get("domain"),
+                "status": matrix_header.get("status"),
+                "matrix_state": matrix_header.get("matrix_state"),
+                "failure_matrix_path": str(matrix_path),
+                "base_registry_path": str(registry_path),
+                "base_registry_fixture": matrix_header.get("base_registry_fixture"),
+                "failure_case_count": matrix_header.get("case_count"),
+            },
+            "failure_cases": case_summaries,
+            "failure_boundaries": {
+                "failure_execution": "not_run_review_only",
+                "failure_cases_are_in_memory_mutations_only": guardrails.get("failure_cases_are_in_memory_mutations_only"),
+                "bytes_exposed_in_packet": False,
+                "bytes_exposed_on_failure": False,
+                "local_file_opening": "not_run",
+                "artifact_download": "not_run",
+                "network_fetch": "not_run",
+                "image_decoding": "not_run",
+                "candidate_scoring": "not_run",
+                "source_report_mutation": "not_run",
+                "approval_automation": "not_run",
+            },
+            "decision_guardrails": {
+                "approval_allowed": False,
+                "failure_can_approve": guardrails.get("failure_can_approve"),
+                "byte_loading_success_can_approve": guardrails.get("byte_loading_success_can_approve"),
+                "initial_decision": "needs_review",
+                "approval_blockers": [
+                    "Failure matrix review alone cannot approve a candidate.",
+                    "Failure cases are not executed by the review packet command.",
+                    "Invalid registry cases must fail closed before byte exposure.",
+                    "Image decoding has not run.",
+                    "Candidate scoring has not run.",
+                    "Approval automation has not run.",
+                ],
+            },
+        },
+        "candidate_image_fixture_artifact_registry_failure_matrix": matrix,
+    }
+
+
 def format_minimal_byte_loading_text(payload: dict[str, Any]) -> str:
     summary = payload.get("summary", {})
     cli = payload.get("candidate_image_byte_loading_minimal_cli", {})
@@ -404,6 +550,48 @@ def format_fixture_registry_review_packet_text(payload: dict[str, Any]) -> str:
     return "\n".join(lines) + "\n"
 
 
+def format_fixture_registry_failure_review_packet_text(payload: dict[str, Any]) -> str:
+    summary = payload.get("summary", {})
+    sections = payload.get("review_sections", {})
+    if not isinstance(summary, dict):
+        summary = {}
+    if not isinstance(sections, dict):
+        sections = {}
+    cases = sections.get("failure_cases", []) if isinstance(sections.get("failure_cases", []), list) else []
+    guardrails = sections.get("decision_guardrails", {}) if isinstance(sections.get("decision_guardrails", {}), dict) else {}
+    blockers = guardrails.get("approval_blockers", [])
+    lines = [
+        "Candidate image fixture registry failure review packet",
+        f"failure_matrix_id: {summary.get('failure_matrix_id', 'unknown')}",
+        f"status: {summary.get('status', 'unknown')}",
+        f"matrix_state: {summary.get('matrix_state', 'unknown')}",
+        f"base_registry_fixture: {summary.get('base_registry_fixture', 'unknown')}",
+        f"failure_case_count: {summary.get('failure_case_count', 'unknown')}",
+        f"bytes_exposed_on_failure: {summary.get('bytes_exposed_on_failure', 'unknown')}",
+        f"local_file_opening_allowed: {summary.get('local_file_opening_allowed', 'unknown')}",
+        f"artifact_download_allowed: {summary.get('artifact_download_allowed', 'unknown')}",
+        f"network_fetch_allowed: {summary.get('network_fetch_allowed', 'unknown')}",
+        f"image_decoding_allowed: {summary.get('image_decoding_allowed', 'unknown')}",
+        f"approval_allowed: {summary.get('approval_allowed', 'unknown')}",
+        "failure_cases:",
+    ]
+    lines.extend(f"- {case.get('case_id', 'unknown')}: {case.get('expected_error_contains', 'unknown')}" for case in cases if isinstance(case, dict))
+    lines.append("approval_blockers:")
+    if isinstance(blockers, list):
+        lines.extend(f"- {blocker}" for blocker in blockers)
+    lines.extend([
+        "failure_execution: not run",
+        "local_image_file_opening: not run",
+        "artifact_download: not run",
+        "network_fetch: not run",
+        "image_decoding: not run",
+        "candidate_scoring: not run",
+        "source_report_mutation: not run",
+        "approval_automation: not run",
+    ])
+    return "\n".join(lines) + "\n"
+
+
 def format_payload(payload: dict[str, Any], output_format: str, command: str) -> str:
     if output_format == "json":
         return json.dumps(payload, indent=2, sort_keys=True) + "\n"
@@ -411,6 +599,8 @@ def format_payload(payload: dict[str, Any], output_format: str, command: str) ->
         return format_minimal_byte_loading_review_packet_text(payload)
     if command == "registry-review-packet":
         return format_fixture_registry_review_packet_text(payload)
+    if command == "failure-review-packet":
+        return format_fixture_registry_failure_review_packet_text(payload)
     return format_minimal_byte_loading_text(payload)
 
 
@@ -435,6 +625,10 @@ def add_fixture_registry_argument(parser: argparse.ArgumentParser) -> None:
     parser.add_argument("--fixture-registry", help="Path to deterministic fixture artifact registry JSON. Defaults to the candidate fixture directory registry.")
 
 
+def add_failure_matrix_argument(parser: argparse.ArgumentParser) -> None:
+    parser.add_argument("--failure-matrix", help="Path to fixture registry failure matrix JSON. Defaults to the candidate fixture directory matrix.")
+
+
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(prog="cos-graphics-byte-loader")
     parser.add_argument("--project-root", help="Repository root for resolving default candidate fixtures.")
@@ -451,6 +645,10 @@ def build_parser() -> argparse.ArgumentParser:
 
     registry_review_packet_parser = subparsers.add_parser("registry-review-packet", help="Build a helper-only review packet for the fixture artifact registry.")
     add_fixture_registry_argument(registry_review_packet_parser)
+
+    failure_review_packet_parser = subparsers.add_parser("failure-review-packet", help="Build a helper-only review packet for the fixture registry failure matrix.")
+    add_fixture_registry_argument(failure_review_packet_parser)
+    add_failure_matrix_argument(failure_review_packet_parser)
     return parser
 
 
@@ -469,6 +667,10 @@ def main(argv: list[str] | None = None) -> int:
         if args.command == "registry-review-packet":
             exit_code, payload = build_fixture_registry_review_packet_payload(args)
             write_output(format_payload(payload, args.format, args.command), args.output, label="fixture registry review packet")
+            return exit_code
+        if args.command == "failure-review-packet":
+            exit_code, payload = build_fixture_registry_failure_review_packet_payload(args)
+            write_output(format_payload(payload, args.format, args.command), args.output, label="fixture registry failure review packet")
             return exit_code
         raise CandidateManifestError(f"Unsupported command: {args.command}")
     except SystemExit:
