@@ -21,13 +21,13 @@ This milestone confirms that invalid registry descriptors fail closed and do not
 
 ```text
 - Add fixture registry failure matrix fixture.
-- Cover invalid sha256.
-- Cover invalid byte count.
-- Cover invalid media type.
-- Cover invalid artifact URI.
-- Cover duplicate artifact ID.
-- Cover duplicate artifact URI.
-- Cover descriptor mutability violation.
+- Cover invalid sha256 fixture case.
+- Cover invalid byte count fixture case.
+- Cover invalid media type fixture case.
+- Cover invalid artifact URI fixture case.
+- Cover duplicate artifact ID fixture case.
+- Cover duplicate artifact URI fixture case.
+- Cover descriptor mutability violation fixture case.
 - Cover local file opening guardrail violation.
 - Cover network fetch guardrail violation.
 - Cover image decoding guardrail violation.
@@ -150,13 +150,13 @@ pytest tests/test_candidate_image_byte_loading_fixture_registry_failure_matrix.p
 
 ```text
 [x] Fixture registry failure matrix fixture exists.
-[x] Invalid sha256 is covered.
-[x] Invalid byte count is covered.
-[x] Invalid media type is covered.
-[x] Invalid artifact URI is covered.
-[x] Duplicate artifact ID is covered.
-[x] Duplicate artifact URI is covered.
-[x] Descriptor mutability violation is covered.
+[x] Invalid sha256 fixture case is covered.
+[x] Invalid byte count fixture case is covered.
+[x] Invalid media type fixture case is covered.
+[x] Invalid artifact URI fixture case is covered.
+[x] Duplicate artifact ID fixture case is covered.
+[x] Duplicate artifact URI fixture case is covered.
+[x] Descriptor mutability violation fixture case is covered.
 [x] Local file opening guardrail violation is covered.
 [x] Network fetch guardrail violation is covered.
 [x] Image decoding guardrail violation is covered.
