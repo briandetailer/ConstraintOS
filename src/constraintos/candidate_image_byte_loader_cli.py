@@ -8,6 +8,11 @@ from typing import Any
 
 from constraintos.candidate_image_byte_loader import InMemoryArtifactRegistry, load_candidate_image_bytes_minimal
 from constraintos.candidate_image_byte_loading_records import load_candidate_image_byte_loading_record_report
+from constraintos.candidate_image_fixture_artifact_registry import (
+    build_in_memory_artifact_registry_from_fixture,
+    load_fixture_artifact_registry,
+    resolve_fixture_artifact_registry_path,
+)
 from constraintos.candidate_manifests import CandidateManifestError, discover_project_root, resolve_candidate_manifests_dir
 
 
@@ -21,21 +26,49 @@ def parse_fixture_hex(value: str) -> bytes:
         raise CandidateManifestError("--fixture-artifact-hex must be valid hexadecimal bytes") from error
 
 
-def build_fixture_artifact_registry(fixture_artifact_uri: str | None, fixture_artifact_hex: str | None) -> InMemoryArtifactRegistry:
-    if fixture_artifact_uri is None and fixture_artifact_hex is None:
-        return InMemoryArtifactRegistry({})
-    if not fixture_artifact_uri or fixture_artifact_hex is None:
-        raise CandidateManifestError("--fixture-artifact-uri and --fixture-artifact-hex must be provided together")
-    if not fixture_artifact_uri.startswith("artifact://"):
-        raise CandidateManifestError("--fixture-artifact-uri must use artifact://")
-    return InMemoryArtifactRegistry({fixture_artifact_uri: parse_fixture_hex(fixture_artifact_hex)})
+def build_fixture_artifact_registry(
+    candidate_dir: Path,
+    fixture_registry: str | None,
+    fixture_artifact_uri: str | None,
+    fixture_artifact_hex: str | None,
+) -> tuple[InMemoryArtifactRegistry, dict[str, Any]]:
+    if fixture_artifact_uri is not None or fixture_artifact_hex is not None:
+        if not fixture_artifact_uri or fixture_artifact_hex is None:
+            raise CandidateManifestError("--fixture-artifact-uri and --fixture-artifact-hex must be provided together")
+        if not fixture_artifact_uri.startswith("artifact://"):
+            raise CandidateManifestError("--fixture-artifact-uri must use artifact://")
+        return InMemoryArtifactRegistry({fixture_artifact_uri: parse_fixture_hex(fixture_artifact_hex)}), {
+            "byte_source": "explicit fixture hex argument",
+            "fixture_artifact_registry_used": False,
+            "fixture_artifact_registry_path": None,
+            "fixture_artifact_registry_artifact_count": None,
+            "fixture_artifact_uri_provided": True,
+            "fixture_artifact_hex_provided": True,
+        }
+
+    registry_path = resolve_fixture_artifact_registry_path(candidate_dir, fixture_registry)
+    registry = load_fixture_artifact_registry(registry_path)
+    header = registry.get("candidate_image_fixture_artifact_registry", {})
+    return build_in_memory_artifact_registry_from_fixture(registry), {
+        "byte_source": "fixture artifact registry",
+        "fixture_artifact_registry_used": True,
+        "fixture_artifact_registry_path": str(registry_path),
+        "fixture_artifact_registry_artifact_count": header.get("artifact_count") if isinstance(header, dict) else None,
+        "fixture_artifact_uri_provided": False,
+        "fixture_artifact_hex_provided": False,
+    }
 
 
 def build_minimal_byte_loading_cli_payload(args: argparse.Namespace) -> tuple[int, dict[str, Any]]:
     project_root = Path(args.project_root).resolve() if args.project_root else discover_project_root()
     candidate_dir = resolve_candidate_manifests_dir(project_root, args.candidate_dir)
     report = load_candidate_image_byte_loading_record_report(args.record, candidate_dir)
-    registry = build_fixture_artifact_registry(args.fixture_artifact_uri, args.fixture_artifact_hex)
+    registry, registry_metadata = build_fixture_artifact_registry(
+        candidate_dir,
+        args.fixture_registry,
+        args.fixture_artifact_uri,
+        args.fixture_artifact_hex,
+    )
     result = dict(load_candidate_image_bytes_minimal(report["candidate_image_byte_loading_record"], registry))
     summary = report.get("summary", {}) if isinstance(report.get("summary", {}), dict) else {}
     return 0, {
@@ -43,8 +76,12 @@ def build_minimal_byte_loading_cli_payload(args: argparse.Namespace) -> tuple[in
             "mode": "helper_only",
             "candidate_dir": str(candidate_dir),
             "selected": summary.get("key"),
-            "fixture_artifact_uri_provided": args.fixture_artifact_uri is not None,
-            "fixture_artifact_hex_provided": args.fixture_artifact_hex is not None,
+            "byte_source": registry_metadata["byte_source"],
+            "fixture_artifact_registry_used": registry_metadata["fixture_artifact_registry_used"],
+            "fixture_artifact_registry_path": registry_metadata["fixture_artifact_registry_path"],
+            "fixture_artifact_registry_artifact_count": registry_metadata["fixture_artifact_registry_artifact_count"],
+            "fixture_artifact_uri_provided": registry_metadata["fixture_artifact_uri_provided"],
+            "fixture_artifact_hex_provided": registry_metadata["fixture_artifact_hex_provided"],
             "local_image_file_opening": "not_run",
             "artifact_download": "not_run",
             "network_fetch": "not_run",
@@ -91,6 +128,9 @@ def build_minimal_byte_loading_cli_review_packet_payload(args: argparse.Namespac
             "mode": "helper_only_review_packet",
             "review_packet_ready": True,
             "selected": summary.get("record_key"),
+            "byte_source": cli.get("byte_source"),
+            "fixture_artifact_registry_used": cli.get("fixture_artifact_registry_used"),
+            "fixture_artifact_registry_path": cli.get("fixture_artifact_registry_path"),
             "local_image_file_opening": "not_run",
             "artifact_download": "not_run",
             "network_fetch": "not_run",
@@ -117,8 +157,10 @@ def build_minimal_byte_loading_cli_review_packet_payload(args: argparse.Namespac
         "review_sections": {
             "cli_invocation_boundary": {
                 "command": "cos-graphics-byte-loader review-packet",
-                "byte_source": "explicit fixture hex argument",
-                "artifact_binding": "explicit --fixture-artifact-uri",
+                "byte_source": cli.get("byte_source"),
+                "artifact_binding": "fixture artifact registry or explicit --fixture-artifact-uri",
+                "fixture_artifact_registry_used": cli.get("fixture_artifact_registry_used"),
+                "fixture_artifact_registry_path": cli.get("fixture_artifact_registry_path"),
                 "fixture_artifact_uri_provided": cli.get("fixture_artifact_uri_provided"),
                 "fixture_artifact_hex_provided": cli.get("fixture_artifact_hex_provided"),
                 "local_image_file_opening": "not_run",
@@ -165,10 +207,15 @@ def build_minimal_byte_loading_cli_review_packet_payload(args: argparse.Namespac
 
 def format_minimal_byte_loading_text(payload: dict[str, Any]) -> str:
     summary = payload.get("summary", {})
+    cli = payload.get("candidate_image_byte_loading_minimal_cli", {})
     if not isinstance(summary, dict):
         summary = {}
+    if not isinstance(cli, dict):
+        cli = {}
     lines = [
         f"Candidate image byte-loading minimal CLI: {summary.get('record_key', 'unknown')}",
+        f"byte_source: {cli.get('byte_source', 'unknown')}",
+        f"fixture_artifact_registry_used: {cli.get('fixture_artifact_registry_used', 'unknown')}",
         f"candidate_id: {summary.get('candidate_id', 'unknown')}",
         f"contract_key: {summary.get('contract_key', 'unknown')}",
         f"reference_type: {summary.get('reference_type', 'unknown')}",
@@ -208,10 +255,13 @@ def format_minimal_byte_loading_review_packet_text(payload: dict[str, Any]) -> s
         summary = {}
     if not isinstance(sections, dict):
         sections = {}
+    boundary = sections.get("cli_invocation_boundary", {}) if isinstance(sections.get("cli_invocation_boundary", {}), dict) else {}
     guardrails = sections.get("decision_guardrails", {}) if isinstance(sections.get("decision_guardrails", {}), dict) else {}
     blockers = guardrails.get("approval_blockers", [])
     lines = [
         f"Candidate image byte-loading minimal CLI review packet: {summary.get('record_key', 'unknown')}",
+        f"byte_source: {boundary.get('byte_source', 'unknown')}",
+        f"fixture_artifact_registry_used: {boundary.get('fixture_artifact_registry_used', 'unknown')}",
         f"candidate_id: {summary.get('candidate_id', 'unknown')}",
         f"contract_key: {summary.get('contract_key', 'unknown')}",
         f"reference_type: {summary.get('reference_type', 'unknown')}",
@@ -260,6 +310,7 @@ def write_output(output: str, output_path: str | None, label: str = "report") ->
 
 def add_fixture_artifact_arguments(parser: argparse.ArgumentParser) -> None:
     parser.add_argument("record", help="Record key, contract key, candidate id, record id, intake manifest id, filename, or path.")
+    parser.add_argument("--fixture-registry", help="Path to deterministic fixture artifact registry JSON. Defaults to the candidate fixture directory registry.")
     parser.add_argument("--fixture-artifact-uri", help="Explicit artifact:// URI to bind to the provided fixture bytes.")
     parser.add_argument("--fixture-artifact-hex", help="Hex-encoded fixture bytes for the explicit artifact URI.")
 
@@ -272,7 +323,7 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--output")
     subparsers = parser.add_subparsers(dest="command", required=True)
 
-    minimal_parser = subparsers.add_parser("minimal", help="Run helper-only minimal byte loading from explicit fixture bytes.")
+    minimal_parser = subparsers.add_parser("minimal", help="Run helper-only minimal byte loading from the fixture registry or explicit fixture bytes.")
     add_fixture_artifact_arguments(minimal_parser)
 
     review_packet_parser = subparsers.add_parser("review-packet", help="Build a helper-only review packet for minimal byte loading.")
