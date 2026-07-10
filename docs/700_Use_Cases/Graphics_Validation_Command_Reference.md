@@ -40,6 +40,22 @@ pytest tests/test_end_to_end_fixture_poc_demo.py
 
 This is a fixture-based, business-demo-friendly dry run. It shows scenario selection, contract/specification loading, candidate manifest/intake evidence, intake review, deterministic fixture byte loading, byte-loading review, fixture registry review, failure-matrix review, manual observation evidence, observation binding, evidence merge, fixture-only evaluation, final review packet, and demo summary. It writes run artifacts under `runs/poc-demo/<scenario>/<timestamp>/` and preserves no local image file opening, artifact download, network fetch, image decoding, CV/OCR provider integration, image generation/editing, source report mutation, or automatic approval.
 
+### Current evidence-harness POC demo guide
+
+Use this guide to explain the current evidence-harness demo separately from the later constraint-driven graphic output permutation target:
+
+```powershell
+pytest tests/test_current_evidence_harness_poc_demo_guide.py
+```
+
+Guide path:
+
+```text
+docs/800_Demos/Current_Evidence_Harness_POC_Demo_Guide.md
+```
+
+This guide is documentation-only. It explains that `scripts/watch-constraintos-poc.ps1` is the current evidence-harness demo and that the future output-permutation demo is intentionally banked for a later milestone.
+
 ### Candidate image byte loader demo watch script
 
 Run a visible staged demo of the current candidate image byte-loading evidence path:
@@ -257,6 +273,7 @@ pytest tests/test_graphics_contract_runtime_bridge.py
 pytest tests/test_graphics_contract_watch_capture_script.py
 pytest tests/test_candidate_image_byte_loader_demo_watch_script.py
 pytest tests/test_end_to_end_fixture_poc_demo.py
+pytest tests/test_current_evidence_harness_poc_demo_guide.py
 pytest tests/test_candidate_evaluation_adapter_design.py
 pytest tests/test_candidate_manifest_schema.py
 pytest tests/test_candidate_manifest_discovery_cli.py
@@ -318,7 +335,7 @@ supra_2jz_gte_twin_turbo
 - These commands are dry-run / fixture-only / design-only / contract-only / read-only / helper-only for graphics validation.
 - These commands do not generate images.
 - These commands do not evaluate real generated candidates yet.
-- The end-to-end fixture POC demo, candidate byte-loader demo watch script, candidate image byte-loading minimal implementation, minimal CLI, minimal CLI review packet, fixture artifact registry, fixture registry review packet, fixture registry failure matrix, and fixture registry failure review packet are limited to explicit in-memory artifact registry / deterministic fixture bytes and descriptor-only/failure-matrix review.
+- The end-to-end fixture POC demo, current evidence-harness POC demo guide, candidate byte-loader demo watch script, candidate image byte-loading minimal implementation, minimal CLI, minimal CLI review packet, fixture artifact registry, fixture registry review packet, fixture registry failure matrix, and fixture registry failure review packet are limited to explicit in-memory artifact registry / deterministic fixture bytes and descriptor-only/failure-matrix review.
 - Real candidate image intake design, candidate image byte-loading design, implementation design/contract, pre-implementation exit review, byte-loading contract/discovery/review-packet fixtures, intake manifests, and intake review packets do not decode images.
 - Approval expectations remain contract-driven and default uncertainty to needs_review.
 ```
