@@ -4,7 +4,7 @@
 
 ```text
 milestone: Candidate Image Byte Loading Minimal CLI Review Packet v1
-status: active
+status: implementation-complete-pending-test
 started_on: 2026-07-09
 previous_gate: Candidate Image Byte Loading Minimal CLI v1 complete
 track: Real Candidate Intake Track
@@ -59,6 +59,16 @@ This milestone adds a review-packet subcommand to the dedicated `cos-graphics-by
 - No candidate scoring.
 - No report mutation.
 - No approval automation change.
+```
+
+## Implemented files
+
+```text
+docs/500_Milestones/Candidate_Image_Byte_Loading_Minimal_CLI_Review_Packet_v1.md
+src/constraintos/candidate_image_byte_loader_cli.py
+tests/test_candidate_image_byte_loading_minimal_cli_review_packet.py
+examples/graphics/candidate_evaluation/README.md
+docs/700_Use_Cases/Graphics_Validation_Command_Reference.md
 ```
 
 ## CLI boundary
@@ -135,4 +145,29 @@ pytest tests/test_candidate_image_byte_loading_minimal_cli_review_packet.py
 - No report mutation.
 - No approval automation change.
 - Do not claim tests passed unless actually run.
+```
+
+## Done criteria
+
+```text
+[x] Dedicated minimal byte-loader CLI has review-packet mode.
+[x] Review-packet mode reuses the minimal CLI payload path.
+[x] Review-packet mode accepts fixture artifact bytes only through explicit hex input.
+[x] Review-packet mode binds fixture bytes only to an explicit artifact URI.
+[x] Review-packet mode emits JSON and text output.
+[x] Review-packet mode supports --output file writing for review packets.
+[x] Review-packet includes cli_invocation_boundary section.
+[x] Review-packet includes byte_loading_result section.
+[x] Review-packet includes safety_boundaries section.
+[x] Review-packet includes decision_guardrails section.
+[x] Review-packet preserves no local image file opening.
+[x] Review-packet preserves no artifact download.
+[x] Review-packet preserves no network fetch.
+[x] Review-packet preserves no image decoding.
+[x] Review-packet preserves no candidate scoring.
+[x] Review-packet preserves no source report mutation.
+[x] Review-packet preserves no approval automation.
+[x] README updated.
+[x] Command reference updated.
+[ ] Verification test result recorded.
 ```
