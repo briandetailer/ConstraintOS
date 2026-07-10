@@ -17,6 +17,7 @@ ROOT = Path(__file__).resolve().parents[1]
 CANDIDATE_DIR = ROOT / "examples" / "graphics" / "candidate_evaluation"
 SCHEMA = CANDIDATE_DIR / "candidate_image_fixture_artifact_registry.schema.json"
 REGISTRY = CANDIDATE_DIR / "candidate_image_fixture_artifact_registry.fixture.json"
+BYTE_LOADING_RECORD_SCHEMA = CANDIDATE_DIR / "candidate_image_byte_loading_record.schema.json"
 PERSEVERANCE_RECORD = CANDIDATE_DIR / "perseverance_candidate_image_byte_loading_record.fixture.json"
 SUPRA_RECORD = CANDIDATE_DIR / "supra_2jz_gte_candidate_image_byte_loading_record.fixture.json"
 MILESTONE = ROOT / "docs" / "500_Milestones" / "Candidate_Image_Byte_Loading_Fixture_Artifact_Registry_v1.md"
@@ -28,6 +29,15 @@ PNG_HEX = "89504e470d0a1a0a"
 
 def load_json(path: Path) -> dict:
     return json.loads(path.read_text(encoding="utf-8"))
+
+
+def validate_against_schema(instance_path: Path, schema_path: Path) -> dict:
+    schema = load_json(schema_path)
+    instance = load_json(instance_path)
+    validator = Draft202012Validator(schema)
+    errors = sorted(validator.iter_errors(instance), key=lambda error: list(error.path))
+    assert errors == []
+    return instance
 
 
 def test_fixture_artifact_registry_schema_and_fixture_validate() -> None:
@@ -85,7 +95,7 @@ def test_fixture_artifact_registry_rejects_bad_sha_before_byte_exposure() -> Non
 
 def test_byte_loading_records_align_with_fixture_registry_metadata_but_remain_not_loaded() -> None:
     for path in [PERSEVERANCE_RECORD, SUPRA_RECORD]:
-        record = load_json(path)
+        record = validate_against_schema(path, BYTE_LOADING_RECORD_SCHEMA)
         reference = record["reference_snapshot"]
         result = record["byte_loading_result"]
 
@@ -101,10 +111,11 @@ def test_byte_loading_records_align_with_fixture_registry_metadata_but_remain_no
 def test_minimal_cli_uses_default_fixture_registry_without_explicit_hex(capsys) -> None:
     exit_code = main(["--format", "json", "minimal", "perseverance"])
 
-    payload = json.loads(capsys.readouterr().out)
+    captured = capsys.readouterr()
+    assert exit_code == 0, captured.err
+    payload = json.loads(captured.out)
     cli = payload["candidate_image_byte_loading_minimal_cli"]
     summary = payload["summary"]
-    assert exit_code == 0
     assert cli["byte_source"] == "fixture artifact registry"
     assert cli["fixture_artifact_registry_used"] is True
     assert cli["fixture_artifact_registry_artifact_count"] == 2
@@ -125,11 +136,12 @@ def test_minimal_cli_uses_default_fixture_registry_without_explicit_hex(capsys) 
 def test_review_packet_uses_default_fixture_registry_without_explicit_hex(capsys) -> None:
     exit_code = main(["--format", "json", "review-packet", "perseverance"])
 
-    payload = json.loads(capsys.readouterr().out)
+    captured = capsys.readouterr()
+    assert exit_code == 0, captured.err
+    payload = json.loads(captured.out)
     boundary = payload["review_sections"]["cli_invocation_boundary"]
     safety = payload["review_sections"]["safety_boundaries"]
     guardrails = payload["review_sections"]["decision_guardrails"]
-    assert exit_code == 0
     assert boundary["byte_source"] == "fixture artifact registry"
     assert boundary["fixture_artifact_registry_used"] is True
     assert safety["local_file_opened"] is False
