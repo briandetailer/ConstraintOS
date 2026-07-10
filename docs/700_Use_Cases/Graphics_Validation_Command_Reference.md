@@ -4,53 +4,6 @@
 
 This document gathers user-facing commands and local verification commands introduced across the graphics-validation milestones.
 
-It covers:
-
-```text
-- Perseverance graphics-validation fixture runs
-- Perseverance watch-mode capture
-- reusable graphics contract tests
-- graphics contract discovery
-- graphics contract runtime bridge runs
-- graphics contract runtime watch runs
-- graphics contract watch capture
-- candidate evaluation adapter design verification
-- candidate manifest schema verification
-- candidate manifest discovery
-- candidate evaluation report contract verification
-- fixture-only candidate evaluation
-- foundation readiness review
-- observation adapter design verification
-- manual observation fixture adapter
-- observation-to-report binding
-- fixture-only observation evidence merge
-- fixture-only candidate review packet
-- foundation exit review
-- real candidate image intake design
-- candidate image byte loading design
-- candidate image byte loading implementation design
-- candidate image byte loading implementation contract
-- candidate image byte loading pre-implementation exit review
-- candidate image byte loading minimal implementation
-- Candidate image byte loading minimal CLI
-- Candidate image byte loading minimal CLI review packet
-- Candidate image byte loading minimal CLI exit review
-- Candidate image byte loading fixture artifact registry
-- Candidate image byte loading fixture registry review packet
-- Candidate image byte loading fixture registry exit review
-- Candidate image byte loading fixture registry failure matrix
-- Candidate image byte loading fixture registry failure review packet
-- candidate image byte loading contract
-- candidate image byte loading discovery
-- candidate image byte loading review packet
-- byte loading foundation exit review
-- candidate intake manifest contract
-- candidate intake manifest discovery
-- candidate intake review packet
-- intake foundation exit review
-- local verification commands
-```
-
 ## Maintenance rule
 
 Whenever a future milestone, script, CLI entry point, or workflow makes new user-facing commands available, update this document in the same implementation slice.
@@ -70,6 +23,33 @@ Include:
 ```powershell
 git pull --rebase origin phase-1-cli-tooling
 ```
+
+## Business demo watch commands
+
+### Candidate image byte loader demo watch script
+
+Run a visible staged demo of the current candidate image byte-loading evidence path:
+
+```powershell
+.\scripts\watch-candidate-byte-loader.ps1
+.\scripts\watch-candidate-byte-loader.ps1 -Record perseverance
+.\scripts\watch-candidate-byte-loader.ps1 -Record supra_2jz_gte_twin_turbo -WatchDelayMs 750
+pytest tests/test_candidate_image_byte_loader_demo_watch_script.py
+```
+
+This is a staged dry-run demonstration. It runs `cos-graphics-byte-loader minimal`, `review-packet`, `registry-review-packet`, and `failure-review-packet`; captures terminal transcript, watch output, JSON evidence files, and metadata under `runs/candidate-byte-loader/<record>/<timestamp>/`; and preserves no local file opening, artifact download, network fetch, image decoding, candidate scoring, source report mutation, or approval automation.
+
+### Graphics contract watch script
+
+```powershell
+.\scripts\watch-graphics-contract.ps1
+.\scripts\watch-graphics-contract.ps1 -Contract supra_2jz_gte_twin_turbo
+.\scripts\watch-graphics-contract.ps1 -Contract perseverance -PlanOnly
+.\scripts\watch-graphics-contract.ps1 -Contract hydroelectric_dam_powerhouse -WatchDelayMs 500
+pytest tests/test_graphics_contract_watch_capture_script.py
+```
+
+This records the reusable graphics-contract runtime watch path and writes run artifacts under `runs/graphics-contracts/<contract>/<timestamp>/`.
 
 ## Perseverance graphics-validation fixture
 
@@ -105,14 +85,7 @@ cos-graphics-contracts run wind_turbine_nacelle --watch
 cos-graphics-contracts run hydroelectric_dam_powerhouse --watch
 cos-graphics-contracts run supra_2jz_gte_twin_turbo --watch
 cos-graphics-contracts run supra_2jz_gte_twin_turbo --watch --watch-delay-ms 250
-.\scripts\watch-graphics-contract.ps1
-.\scripts\watch-graphics-contract.ps1 -Contract supra_2jz_gte_twin_turbo
-.\scripts\watch-graphics-contract.ps1 -Contract perseverance -PlanOnly
-.\scripts\watch-graphics-contract.ps1 -Contract hydroelectric_dam_powerhouse -WatchDelayMs 500
-pytest tests/test_graphics_contract_watch_capture_script.py
 ```
-
-These are the watch-style dry-run commands. They exercise the reusable graphics contract runtime path and can march through the contract/runtime flow with `--watch`.
 
 ## Candidate evaluation and observation commands
 
@@ -150,7 +123,7 @@ pytest tests/test_candidate_review_packet.py
 pytest tests/test_foundation_exit_review.py
 ```
 
-## Candidate image byte loading design
+## Candidate image byte loading design and contract verification
 
 ```powershell
 pytest tests/test_real_candidate_image_intake_design.py
@@ -161,11 +134,9 @@ pytest tests/test_candidate_image_byte_loading_pre_implementation_exit_review.py
 pytest tests/test_candidate_image_byte_loading_minimal_implementation.py
 ```
 
-These are design-only / contract-only / helper-only verification commands. They do not open files, download artifacts, fetch network resources, decode images, inspect pixels, score candidates, mutate reports, choose providers, or approve candidates.
+These commands are design-only, contract-only, or helper-only. They do not open files, download artifacts, fetch network resources, decode images, inspect pixels, score candidates, mutate reports, choose providers, or approve candidates.
 
 ## Candidate image byte loading minimal CLI
-
-Validate the helper-only minimal byte-loading CLI:
 
 ```powershell
 cos-graphics-byte-loader minimal perseverance
@@ -179,8 +150,6 @@ This is a helper-only CLI. It uses the deterministic fixture artifact registry b
 
 ## Candidate image byte loading minimal CLI review packet
 
-Create a human-facing review packet for the helper-only minimal byte-loading CLI result:
-
 ```powershell
 cos-graphics-byte-loader review-packet perseverance
 cos-graphics-byte-loader --format json review-packet perseverance
@@ -190,11 +159,7 @@ pytest tests/test_candidate_image_byte_loading_minimal_cli_review_packet.py
 pytest tests/test_candidate_image_byte_loading_minimal_cli_exit_review.py
 ```
 
-This is a helper-only review packet command. It uses the deterministic fixture artifact registry by default and reports CLI invocation boundaries, byte-loading result, safety boundaries, and decision guardrails. It does not open local files, download artifacts, fetch network resources, decode images, inspect pixels, score candidates, mutate reports, choose providers, or approve candidates.
-
 ## Candidate image byte loading fixture artifact registry
-
-Validate the deterministic fixture artifact registry and default registry-backed CLI path:
 
 ```powershell
 cos-graphics-byte-loader minimal perseverance
@@ -202,11 +167,9 @@ cos-graphics-byte-loader review-packet perseverance
 pytest tests/test_candidate_image_byte_loading_fixture_artifact_registry.py
 ```
 
-This is a fixture-only registry and helper-only CLI path. The registry validates expected sha256, expected byte count, and declared media type before exposing deterministic fixture bytes to the in-memory artifact registry adapter. It does not open local files, download artifacts, fetch network resources, decode images, inspect pixels, score candidates, mutate reports, choose providers, or approve candidates.
+The registry validates expected sha256, expected byte count, and declared media type before exposing deterministic fixture bytes to the in-memory artifact registry adapter.
 
 ## Candidate image byte loading fixture registry review packet
-
-Create a descriptor-only review packet for the deterministic fixture artifact registry:
 
 ```powershell
 cos-graphics-byte-loader registry-review-packet
@@ -216,21 +179,17 @@ pytest tests/test_candidate_image_byte_loading_fixture_registry_review_packet.py
 pytest tests/test_candidate_image_byte_loading_fixture_registry_exit_review.py
 ```
 
-This is a fixture-only review packet command. It reports registry identity, artifact descriptors, validation boundaries, and decision guardrails without exposing image bytes. It does not open local files, download artifacts, fetch network resources, decode images, inspect pixels, score candidates, mutate reports, choose providers, or approve candidates.
+This is a fixture-only review packet command. It reports registry identity, artifact descriptors, validation boundaries, and decision guardrails without exposing image bytes.
 
 ## Candidate image byte loading fixture registry failure matrix
-
-Validate fixture-only fail-closed registry mutation cases:
 
 ```powershell
 pytest tests/test_candidate_image_byte_loading_fixture_registry_failure_matrix.py
 ```
 
-This is a fixture-only failure matrix. It covers invalid sha256, invalid byte count, invalid media type, invalid artifact URI, duplicate artifact ID, duplicate artifact URI, descriptor mutability violations, local file opening guardrail violations, network fetch guardrail violations, image decoding guardrail violations, and approval guardrail violations. It does not open local files, download artifacts, fetch network resources, decode images, inspect pixels, score candidates, mutate reports, choose providers, or approve candidates.
+This is a fixture-only failure matrix. It covers invalid sha256, invalid byte count, invalid media type, invalid artifact URI, duplicate artifact ID, duplicate artifact URI, descriptor mutability violations, local file opening guardrail violations, network fetch guardrail violations, image decoding guardrail violations, and approval guardrail violations.
 
 ## Candidate image byte loading fixture registry failure review packet
-
-Create a review-only packet for the fixture registry failure matrix:
 
 ```powershell
 cos-graphics-byte-loader failure-review-packet
@@ -239,9 +198,9 @@ cos-graphics-byte-loader --format json --output reports/candidate-image-fixture-
 pytest tests/test_candidate_image_byte_loading_fixture_registry_failure_review_packet.py
 ```
 
-This is a fixture-only review packet command. It reports failure matrix identity, fixture-only failure cases, fail-closed boundaries, and decision guardrails without executing failure mutations, exposing image bytes, opening local files, downloading artifacts, fetching network resources, decoding images, inspecting pixels, scoring candidates, mutating reports, choosing providers, or approving candidates.
+This is a fixture-only review packet command. It summarizes failure matrix identity, failure cases, fail-closed boundaries, and decision guardrails without executing failure mutations, exposing bytes, opening local files, downloading artifacts, fetching network resources, decoding images, scoring candidates, mutating reports, choosing providers, or approving candidates.
 
-## Candidate image byte loading contract and discovery
+## Candidate image byte loading contract, discovery, and review packet
 
 ```powershell
 pytest tests/test_candidate_image_byte_loading_contract.py
@@ -256,8 +215,6 @@ cos-graphics-candidates --format json --output reports/perseverance-byte-loading
 pytest tests/test_candidate_image_byte_loading_review_packet.py
 pytest tests/test_byte_loading_foundation_exit_review.py
 ```
-
-This is read-only / fixture-only. It discovers and summarizes static byte-loading record metadata only and does not open files, download artifacts, fetch network resources, load image bytes, decode images, inspect pixels, score candidates, mutate reports, choose providers, or approve candidates.
 
 ## Candidate intake manifest commands
 
@@ -284,6 +241,7 @@ pytest tests/test_graphics_contracts.py
 pytest tests/test_graphics_contracts_cli.py
 pytest tests/test_graphics_contract_runtime_bridge.py
 pytest tests/test_graphics_contract_watch_capture_script.py
+pytest tests/test_candidate_image_byte_loader_demo_watch_script.py
 pytest tests/test_candidate_evaluation_adapter_design.py
 pytest tests/test_candidate_manifest_schema.py
 pytest tests/test_candidate_manifest_discovery_cli.py
@@ -345,7 +303,7 @@ supra_2jz_gte_twin_turbo
 - These commands are dry-run / fixture-only / design-only / contract-only / read-only / helper-only for graphics validation.
 - These commands do not generate images.
 - These commands do not evaluate real generated candidates yet.
-- Candidate image byte-loading minimal implementation, minimal CLI, minimal CLI review packet, fixture artifact registry, fixture registry review packet, fixture registry exit review, fixture registry failure matrix, and fixture registry failure review packet are limited to explicit in-memory artifact registry / deterministic fixture bytes, in-memory fixture mutations, descriptor-only review, and failure-matrix review.
+- Candidate image byte-loading minimal implementation, minimal CLI, minimal CLI review packet, fixture artifact registry, fixture registry review packet, fixture registry failure matrix, fixture registry failure review packet, and candidate byte-loader demo watch script are limited to explicit in-memory artifact registry / deterministic fixture bytes and descriptor-only/failure-matrix review.
 - Real candidate image intake design, candidate image byte-loading design, implementation design/contract, pre-implementation exit review, byte-loading contract/discovery/review-packet fixtures, intake manifests, and intake review packets do not decode images.
 - Approval expectations remain contract-driven and default uncertainty to needs_review.
 ```
