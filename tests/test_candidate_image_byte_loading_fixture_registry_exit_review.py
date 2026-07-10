@@ -11,7 +11,7 @@ def test_fixture_registry_exit_review_exists_and_is_pending_verification() -> No
     content = EXIT_REVIEW.read_text(encoding="utf-8")
 
     assert "milestone: Candidate Image Byte Loading Fixture Registry Exit Review v1" in content
-    assert "status: active" in content
+    assert "status: implementation-complete-pending-test" in content
     assert "previous_gate: Candidate Image Byte Loading Fixture Registry Review Packet v1 complete" in content
     assert "baseline: 487 passed" in content
 
