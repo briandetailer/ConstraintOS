@@ -40,6 +40,7 @@ candidate_image_byte_loading_implementation_design_status: design_only
 candidate_image_byte_loading_implementation_contract_status: contract_only
 candidate_image_byte_loading_minimal_implementation_status: helper_only
 candidate_image_byte_loading_minimal_cli_status: helper_only
+candidate_image_byte_loading_minimal_cli_review_packet_status: helper_only
 candidate_image_byte_loading_contract_status: static_fixture_only
 candidate_image_byte_loading_discovery_status: read_only
 candidate_image_byte_loading_review_packet_status: fixture_only
@@ -54,7 +55,7 @@ manual_observation_status: fixture_only
 observation_report_binding_status: fixture_only
 observation_evidence_merge_status: fixture_only
 candidate_review_packet_status: fixture_only
-implementation_status: byte_loading_minimal_cli_helper_only
+implementation_status: byte_loading_minimal_cli_review_packet_helper_only
 image_generation_allowed: false
 image_editing_allowed: false
 real_candidate_image_ingestion_allowed: false
@@ -88,6 +89,8 @@ The candidate image byte-loading implementation contract schema and fixture defi
 The candidate image byte-loading minimal implementation helper loads bytes only from an explicit in-memory artifact registry adapter, computes checksum, compares byte count and media type, and never decodes, scores, mutates, or approves candidates.
 
 The candidate image byte-loading minimal CLI exposes that helper through `cos-graphics-byte-loader minimal` using explicit fixture hex bytes bound to an explicit `artifact://` URI. It does not open local image files, download artifacts, fetch network resources, decode images, inspect pixels, score candidates, mutate reports, or approve candidates.
+
+The candidate image byte-loading minimal CLI review packet exposes the same helper-only path through `cos-graphics-byte-loader review-packet`, adding review sections and approval blockers without expanding byte-source permissions.
 
 The candidate image byte-loading contract defines the future byte-loading record shape with reference metadata, policy snapshot, not-run byte-loading result fields, post-load boundaries, and non-approval expectations.
 
@@ -221,6 +224,16 @@ cos-graphics-byte-loader --format json --output reports/perseverance-byte-loader
 
 The minimal CLI is helper-only. It accepts fixture bytes as explicit hex input and binds them to an explicit `artifact://` URI. It does not open local image files, download artifacts, fetch network resources, decode images, inspect pixels, score candidates, mutate reports, or approve candidates.
 
+## Candidate image byte-loading minimal CLI review packet
+
+```powershell
+cos-graphics-byte-loader review-packet perseverance --fixture-artifact-uri artifact://external-candidates/perseverance/candidate-0001.png --fixture-artifact-hex 89504e470d0a1a0a
+cos-graphics-byte-loader --format json review-packet perseverance --fixture-artifact-uri artifact://external-candidates/perseverance/candidate-0001.png --fixture-artifact-hex 89504e470d0a1a0a
+cos-graphics-byte-loader --format json --output reports/perseverance-byte-loader-review-packet.json review-packet perseverance --fixture-artifact-uri artifact://external-candidates/perseverance/candidate-0001.png --fixture-artifact-hex 89504e470d0a1a0a
+```
+
+The minimal CLI review packet is helper-only. It accepts fixture bytes as explicit hex input, binds them to an explicit `artifact://` URI, and reports CLI invocation boundaries, byte-loading result, safety boundaries, and decision guardrails. It does not open local image files, download artifacts, fetch network resources, decode images, inspect pixels, score candidates, mutate reports, or approve candidates.
+
 ## Candidate image byte-loading contract
 
 ```text
@@ -349,6 +362,7 @@ pytest tests/test_candidate_image_byte_loading_implementation_contract.py
 pytest tests/test_candidate_image_byte_loading_pre_implementation_exit_review.py
 pytest tests/test_candidate_image_byte_loading_minimal_implementation.py
 pytest tests/test_candidate_image_byte_loading_minimal_cli.py
+pytest tests/test_candidate_image_byte_loading_minimal_cli_review_packet.py
 pytest tests/test_candidate_image_byte_loading_contract.py
 pytest tests/test_candidate_image_byte_loading_discovery_cli.py
 pytest tests/test_candidate_image_byte_loading_review_packet.py
@@ -368,4 +382,4 @@ pytest tests/test_candidate_review_packet.py
 
 ## Guardrail
 
-Candidate graphics are external inputs. ConstraintOS does not generate, edit, inspect, score, or approve images in these milestones. Candidate image byte-loading minimal implementation and minimal CLI are helper-only and limited to explicit in-memory artifact registry / fixture hex bytes; they do not enable local image file opening, artifact download, network fetch, image decoding, pixel inspection, scoring, report mutation, or approval.
+Candidate graphics are external inputs. ConstraintOS does not generate, edit, inspect, score, or approve images in these milestones. Candidate image byte-loading minimal implementation, minimal CLI, and minimal CLI review packet are helper-only and limited to explicit in-memory artifact registry / fixture hex bytes; they do not enable local image file opening, artifact download, network fetch, image decoding, pixel inspection, scoring, report mutation, or approval.
