@@ -4,11 +4,14 @@
 
 ```text
 milestone: Candidate Image Byte Loading Minimal CLI v1
-status: implementation-complete-pending-test
+status: complete
 started_on: 2026-07-09
+completed_on: 2026-07-09
 previous_gate: Candidate Image Byte Loading Minimal Implementation v1 complete
 track: Real Candidate Intake Track
 baseline: 487 passed
+latest_user_reported_candidate_image_byte_loading_minimal_cli_test_result: 8 passed
+latest_user_reported_candidate_image_byte_loading_minimal_cli_test_result_on: 2026-07-09
 ```
 
 ## Purpose
@@ -118,6 +121,16 @@ blocked_until_later:
 pytest tests/test_candidate_image_byte_loading_minimal_cli.py
 ```
 
+## Verification record
+
+```text
+source: user-reported local test run
+command: pytest tests/test_candidate_image_byte_loading_minimal_cli.py
+result: 8 passed
+reported_on: 2026-07-09
+assistant_ran_tests: false
+```
+
 ## Guardrails
 
 ```text
@@ -157,5 +170,16 @@ pytest tests/test_candidate_image_byte_loading_minimal_cli.py
 [x] CLI preserves no approval automation.
 [x] README updated.
 [x] Command reference updated.
-[ ] Verification test result recorded.
+[x] Verification test result recorded.
+```
+
+## Handoff notes
+
+```text
+- Candidate Image Byte Loading Minimal CLI v1 is complete.
+- The dedicated CLI command is cos-graphics-byte-loader minimal.
+- The CLI accepts fixture bytes only through explicit --fixture-artifact-uri and --fixture-artifact-hex arguments.
+- The CLI reuses load_candidate_image_bytes_minimal and preserves helper-only behavior.
+- This milestone did not implement local image file opening, artifact download, network fetch, file_uri loading, local_file_path loading, image decoding, pixel inspection, CV/OCR integration, image generation, image editing, candidate scoring, report mutation, or approval automation.
+- The next milestone should be Candidate Image Byte Loading Minimal CLI Review Packet v1.
 ```
