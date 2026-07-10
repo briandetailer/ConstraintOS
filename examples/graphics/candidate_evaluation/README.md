@@ -44,6 +44,7 @@ candidate_image_byte_loading_minimal_implementation_status: helper_only
 candidate_image_byte_loading_minimal_cli_status: helper_only
 candidate_image_byte_loading_minimal_cli_review_packet_status: helper_only
 candidate_image_byte_loading_fixture_artifact_registry_status: fixture_only
+candidate_image_byte_loading_fixture_registry_review_packet_status: fixture_only
 candidate_image_byte_loading_contract_status: static_fixture_only
 candidate_image_byte_loading_discovery_status: read_only
 candidate_image_byte_loading_review_packet_status: fixture_only
@@ -58,7 +59,7 @@ manual_observation_status: fixture_only
 observation_report_binding_status: fixture_only
 observation_evidence_merge_status: fixture_only
 candidate_review_packet_status: fixture_only
-implementation_status: byte_loading_fixture_artifact_registry_helper_only
+implementation_status: byte_loading_fixture_registry_review_packet_helper_only
 image_generation_allowed: false
 image_editing_allowed: false
 real_candidate_image_ingestion_allowed: false
@@ -92,6 +93,8 @@ The candidate image byte-loading implementation contract schema and fixture defi
 The candidate image byte-loading minimal implementation helper loads bytes only from an explicit in-memory artifact registry adapter, computes checksum, compares byte count and media type, and never decodes, scores, mutates, or approves candidates.
 
 The candidate image fixture artifact registry schema and fixture define deterministic fixture bytes with immutable descriptors. The registry validates expected sha256, byte count, and signature-based media type before exposing bytes through the existing in-memory adapter.
+
+The candidate image fixture registry review packet exposes registry identity, descriptor metadata, validation boundaries, and decision guardrails through `cos-graphics-byte-loader registry-review-packet` without exposing image bytes.
 
 The candidate image byte-loading minimal CLI exposes the helper through `cos-graphics-byte-loader minimal` using the deterministic fixture artifact registry by default, or explicit fixture hex bytes for focused tests. It does not open local image files, download artifacts, fetch network resources, decode images, inspect pixels, score candidates, mutate reports, or approve candidates.
 
@@ -149,6 +152,16 @@ candidate_image_fixture_artifact_registry.fixture.json:
 ```
 
 The fixture artifact registry validates descriptor metadata before exposing bytes to `InMemoryArtifactRegistry`. It does not open local image files, download artifacts, fetch network resources, decode images, inspect pixels, score candidates, mutate reports, or approve candidates.
+
+## Candidate image fixture registry review packet
+
+```powershell
+cos-graphics-byte-loader registry-review-packet
+cos-graphics-byte-loader --format json registry-review-packet
+cos-graphics-byte-loader --format json --output reports/candidate-image-fixture-registry-review-packet.json registry-review-packet
+```
+
+The fixture registry review packet is descriptor-only. It reports registry identity, artifact descriptors, validation boundaries, and decision guardrails without exposing image bytes. It does not open local image files, download artifacts, fetch network resources, decode images, inspect pixels, score candidates, mutate reports, or approve candidates.
 
 ## Candidate image byte-loading minimal CLI
 
@@ -303,6 +316,7 @@ pytest tests/test_candidate_image_byte_loading_minimal_cli.py
 pytest tests/test_candidate_image_byte_loading_minimal_cli_review_packet.py
 pytest tests/test_candidate_image_byte_loading_minimal_cli_exit_review.py
 pytest tests/test_candidate_image_byte_loading_fixture_artifact_registry.py
+pytest tests/test_candidate_image_byte_loading_fixture_registry_review_packet.py
 pytest tests/test_candidate_image_byte_loading_contract.py
 pytest tests/test_candidate_image_byte_loading_discovery_cli.py
 pytest tests/test_candidate_image_byte_loading_review_packet.py
@@ -322,4 +336,4 @@ pytest tests/test_candidate_review_packet.py
 
 ## Guardrail
 
-Candidate graphics are external inputs. ConstraintOS does not generate, edit, inspect, score, or approve images in these milestones. Candidate image byte-loading minimal implementation, minimal CLI, minimal CLI review packet, and fixture artifact registry are helper-only and limited to deterministic fixture bytes; they do not enable local image file opening, artifact download, network fetch, image decoding, pixel inspection, scoring, report mutation, or approval.
+Candidate graphics are external inputs. ConstraintOS does not generate, edit, inspect, score, or approve images in these milestones. Candidate image byte-loading minimal implementation, minimal CLI, minimal CLI review packet, fixture artifact registry, and fixture registry review packet are helper-only and limited to deterministic fixture bytes and descriptor-only review; they do not enable local image file opening, artifact download, network fetch, image decoding, pixel inspection, scoring, report mutation, or approval.
