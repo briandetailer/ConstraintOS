@@ -4,11 +4,14 @@
 
 ```text
 milestone: Candidate Image Byte Loading Minimal Implementation v1
-status: implementation-complete-pending-test
+status: complete
 started_on: 2026-07-09
+completed_on: 2026-07-09
 previous_gate: Candidate Image Byte Loading Pre-Implementation Exit Review v1 complete
 track: Real Candidate Intake Track
 baseline: 487 passed
+latest_user_reported_candidate_image_byte_loading_minimal_implementation_test_result: 10 passed
+latest_user_reported_candidate_image_byte_loading_minimal_implementation_test_result_on: 2026-07-09
 ```
 
 ## Purpose
@@ -150,6 +153,16 @@ blocked_until_later:
 pytest tests/test_candidate_image_byte_loading_minimal_implementation.py
 ```
 
+## Verification record
+
+```text
+source: user-reported local test run
+command: pytest tests/test_candidate_image_byte_loading_minimal_implementation.py
+result: 10 passed
+reported_on: 2026-07-09
+assistant_ran_tests: false
+```
+
 ## Guardrails
 
 ```text
@@ -187,5 +200,16 @@ pytest tests/test_candidate_image_byte_loading_minimal_implementation.py
 [x] Minimal helper keeps approval_allowed false.
 [x] README updated.
 [x] Command reference updated with verification command.
-[ ] Verification test result recorded.
+[x] Verification test result recorded.
+```
+
+## Handoff notes
+
+```text
+- Candidate Image Byte Loading Minimal Implementation v1 is complete.
+- The minimal byte-loading helper can load fixture-controlled artifact bytes through an explicit in-memory artifact registry adapter.
+- The helper validates byte count, max byte limit, sha256, and signature-based media type without decoding the image.
+- The helper rejects network references, non-artifact references, missing artifacts, checksum mismatches, media-type mismatches, and oversize candidates with safe failure records.
+- This milestone did not implement local file opening, artifact download, network fetch, file_uri loading, local_file_path loading, image decoding, pixel inspection, CV/OCR integration, image generation, image editing, candidate scoring, report mutation, or approval automation.
+- The next milestone should be Candidate Image Byte Loading Minimal CLI v1.
 ```
