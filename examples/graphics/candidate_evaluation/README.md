@@ -1,8 +1,8 @@
 # Candidate Evaluation Fixtures
 
-This directory contains design-only, schema-only, read-only discovery, fixture-only report contract, fixture-only evaluation, observation-adapter design, manual-observation fixture, observation-to-report binding, fixture-only evidence merge, fixture-only candidate review packet, real-candidate-image intake design, candidate-intake manifest contract, candidate-intake manifest discovery, candidate-intake review packet, candidate-image byte-loading design, candidate-image byte-loading implementation design, candidate-image byte-loading implementation contract, candidate-image byte-loading minimal helper implementation, candidate-image byte-loading contract, candidate-image byte-loading discovery, and candidate-image byte-loading review packet artifacts for future candidate graphics evaluation.
+This directory contains design-only, contract-only, read-only, fixture-only, helper-only, and review artifacts for future graphics candidate evaluation.
 
-## Current fixtures
+## Current fixtures and artifacts
 
 ```text
 candidate_evaluation_adapter.design.json
@@ -39,6 +39,7 @@ candidate_image_byte_loading_status: design_only
 candidate_image_byte_loading_implementation_design_status: design_only
 candidate_image_byte_loading_implementation_contract_status: contract_only
 candidate_image_byte_loading_minimal_implementation_status: helper_only
+candidate_image_byte_loading_minimal_cli_status: helper_only
 candidate_image_byte_loading_contract_status: static_fixture_only
 candidate_image_byte_loading_discovery_status: read_only
 candidate_image_byte_loading_review_packet_status: fixture_only
@@ -53,7 +54,7 @@ manual_observation_status: fixture_only
 observation_report_binding_status: fixture_only
 observation_evidence_merge_status: fixture_only
 candidate_review_packet_status: fixture_only
-implementation_status: byte_loading_minimal_helper_only
+implementation_status: byte_loading_minimal_cli_helper_only
 image_generation_allowed: false
 image_editing_allowed: false
 real_candidate_image_ingestion_allowed: false
@@ -86,33 +87,15 @@ The candidate image byte-loading implementation contract schema and fixture defi
 
 The candidate image byte-loading minimal implementation helper loads bytes only from an explicit in-memory artifact registry adapter, computes checksum, compares byte count and media type, and never decodes, scores, mutates, or approves candidates.
 
+The candidate image byte-loading minimal CLI exposes that helper through `cos-graphics-byte-loader minimal` using explicit fixture hex bytes bound to an explicit `artifact://` URI. It does not open local image files, download artifacts, fetch network resources, decode images, inspect pixels, score candidates, mutate reports, or approve candidates.
+
 The candidate image byte-loading contract defines the future byte-loading record shape with reference metadata, policy snapshot, not-run byte-loading result fields, post-load boundaries, and non-approval expectations.
 
 Candidate image byte-loading discovery lists and shows static byte-loading record fixtures without opening files, downloading artifacts, fetching network resources, loading bytes, decoding images, inspecting pixels, scoring candidates, mutating reports, or approving candidates.
 
 Candidate image byte-loading review packets summarize record identity, intake binding, reference metadata, byte-loading policy, not-run results, post-load boundaries, and approval blockers for human review.
 
-The candidate intake manifest contract defines a future intake-ready manifest shape with accepted reference type, reference URI, media type, checksum, policy snapshot, and non-approval intake boundary.
-
-Candidate intake manifest discovery lists and shows intake-ready metadata fixtures without loading, opening, downloading, decoding, inspecting, scoring, mutating, or approving candidate images.
-
-Candidate intake review packets summarize intake candidate identity, reference metadata, policy snapshot, intake boundaries, and approval blockers for human review.
-
-The manual observation fixtures define the first allowed observation source path, but they remain fixture-only and do not inspect images.
-
-Observation-to-report binding compares candidate manifests, manual observation fixtures, and fixture-only evaluation reports for the same candidate before any real image ingestion work begins.
-
-Fixture-only evidence merge creates a derived view of manual observations aligned to report evidence items without mutating source reports or scoring candidates.
-
-Fixture-only candidate review packets summarize candidate identity, manual observations, report binding, merged evidence, and approval blockers for human review.
-
-The candidate manifest schema defines the static manifest shape required before any future candidate-evaluation command can exist.
-
-The candidate manifest discovery CLI lists and shows static manifest summaries without evaluating candidate images.
-
-The candidate evaluation report contract defines the future report shape before any real candidate evaluation behavior is implemented.
-
-The fixture-only candidate evaluation command loads a static manifest fixture and its matching static report fixture, validates their binding, and reports the fixture recommendation.
+Candidate intake manifests and review packets summarize intake metadata only. Manual observations, observation binding, evidence merge, and review packets remain fixture-only and cannot approve candidates.
 
 ## Real candidate image intake design
 
@@ -121,7 +104,6 @@ accepted_reference_types:
   artifact_uri
   local_file_path
   file_uri
-
 forbidden_reference_behaviors:
   http_image_fetch
   https_image_fetch
@@ -130,17 +112,15 @@ forbidden_reference_behaviors:
   implicit_cloud_provider_download
   shell_open_file
   path_traversal_outside_allowed_roots
-
 accepted_media_types:
   image/png
   image/jpeg
   image/webp
-
 next_gate:
   Candidate Intake Manifest Contract v1
 ```
 
-Successful intake will not approve a candidate. Image byte loading, image decoding, pixel inspection, CV/OCR provider integration, scoring, and approval automation remain blocked.
+Successful intake will not approve a candidate. Image byte loading, image decoding, pixel inspection, CV/OCR provider integration, scoring, and approval automation remain blocked except for the narrow helper-only byte-loading path documented below.
 
 ## Candidate image byte-loading design
 
@@ -231,6 +211,16 @@ approval_allowed: false
 
 The minimal implementation helper can load fixture-controlled artifact bytes and validate byte count, checksum, and signature-based media type. It does not open local files, download artifacts, fetch network resources, decode images, inspect pixels, score candidates, mutate reports, or approve candidates.
 
+## Candidate image byte-loading minimal CLI
+
+```powershell
+cos-graphics-byte-loader minimal perseverance --fixture-artifact-uri artifact://external-candidates/perseverance/candidate-0001.png --fixture-artifact-hex 89504e470d0a1a0a
+cos-graphics-byte-loader --format json minimal perseverance --fixture-artifact-uri artifact://external-candidates/perseverance/candidate-0001.png --fixture-artifact-hex 89504e470d0a1a0a
+cos-graphics-byte-loader --format json --output reports/perseverance-byte-loader.json minimal perseverance --fixture-artifact-uri artifact://external-candidates/perseverance/candidate-0001.png --fixture-artifact-hex 89504e470d0a1a0a
+```
+
+The minimal CLI is helper-only. It accepts fixture bytes as explicit hex input and binds them to an explicit `artifact://` URI. It does not open local image files, download artifacts, fetch network resources, decode images, inspect pixels, score candidates, mutate reports, or approve candidates.
+
 ## Candidate image byte-loading contract
 
 ```text
@@ -319,8 +309,6 @@ cos-graphics-candidates intake-show supra_2jz_gte_twin_turbo
 cos-graphics-candidates --format json --output reports/candidate-intake-manifests.json intake-list
 ```
 
-These commands are read-only. They discover intake manifest metadata only and do not load, open, download, decode, inspect, score, mutate, or approve candidate images.
-
 ## Candidate intake review packet commands
 
 ```powershell
@@ -329,192 +317,25 @@ cos-graphics-candidates intake-review-packet supra_2jz_gte_twin_turbo
 cos-graphics-candidates --format json --output reports/perseverance-intake-review-packet.json intake-review-packet perseverance
 ```
 
-These commands produce human-facing intake review packets from fixture-only intake manifest metadata. They do not load, open, download, decode, inspect, score, mutate, or approve candidate images.
-
-## Observation adapter design
-
-```text
-source_types:
-  manual_human_review
-  metadata_only
-  machine_assisted_placeholder
-  external_claim
-
-next_gate:
-  Manual Observation Fixture Adapter v1
-
-blocked_until_later:
-  real_image_ingestion
-  computer_vision_provider_integration
-  ocr_provider_integration
-  image_generation_integration
-  approval_automation_change
-```
-
-No observation source can approve alone. Low-confidence or incomplete observations default to `needs_review`.
-
-## Manual observation fixtures
-
-```text
-perseverance_manual_observation.fixture.json:
-  candidate_manifest_key: perseverance
-  contract_key: perseverance
-  source_type: manual_human_review
-  recommended_decision: needs_review
-  approval_allowed: false
-
-supra_2jz_gte_manual_observation.fixture.json:
-  candidate_manifest_key: supra_2jz_gte
-  contract_key: supra_2jz_gte_twin_turbo
-  source_type: manual_human_review
-  recommended_decision: needs_review
-  approval_allowed: false
-```
-
-The manual observation fixtures do not claim that any real image was loaded, decoded, inspected, or evaluated.
-
-## Observation-to-report binding
-
-```text
-binding_inputs:
-  candidate_manifest.fixture.json
-  manual_observation.fixture.json
-  candidate_evaluation_report.fixture.json
-
-binding_output:
-  fixture_only binding report
-  recommended_decision: needs_review
-  approval_allowed: false
-```
-
-Binding does not mutate report fixtures, score candidates, inspect image bytes, or approve candidates.
-
-## Fixture-only observation evidence merge
-
-```text
-merge_inputs:
-  manual_observation.fixture.json
-  candidate_evaluation_report.fixture.json
-
-merge_output:
-  matched_constraint_count
-  manual_only_constraint_count
-  report_only_constraint_count
-  merged_evidence_items
-  recommended_decision: needs_review
-  approval_allowed: false
-```
-
-Merged evidence is derived output only. It does not mutate report fixtures, score candidates, inspect image bytes, or approve candidates.
-
-## Fixture-only candidate review packet
-
-```text
-review_packet_sections:
-  candidate_identity
-  manual_observations
-  candidate_evaluation_report
-  merged_evidence
-  decision_guardrails
-
-review_packet_output:
-  review_packet_ready: true
-  recommended_decision: needs_review
-  approval_allowed: false
-```
-
-Review packets do not inspect images, score candidates, mutate report fixtures, or approve candidates.
-
-## Candidate manifest fixtures
-
-```text
-perseverance_candidate_manifest.fixture.json:
-  manifest_key: perseverance
-  contract_key: perseverance
-
-supra_2jz_gte_candidate_manifest.fixture.json:
-  manifest_key: supra_2jz_gte
-  contract_key: supra_2jz_gte_twin_turbo
-```
-
-The fixture references are placeholders only. They do not load, decode, inspect, or evaluate image bytes.
-
-## Candidate evaluation report fixtures
-
-```text
-perseverance_candidate_evaluation_report.fixture.json:
-  candidate_manifest_key: perseverance
-  contract_key: perseverance
-  recommended_decision: needs_review
-  evidence_status: not_observed
-
-supra_2jz_gte_candidate_evaluation_report.fixture.json:
-  candidate_manifest_key: supra_2jz_gte
-  contract_key: supra_2jz_gte_twin_turbo
-  recommended_decision: needs_review
-  evidence_status: not_observed
-```
-
-The report fixtures do not claim that real candidate evaluation has run. They exist to lock the report contract before real image ingestion.
-
-## Read-only discovery commands
+## Manual observation and review commands
 
 ```powershell
 cos-graphics-candidates list
 cos-graphics-candidates show perseverance
 cos-graphics-candidates show supra_2jz_gte_twin_turbo
-cos-graphics-candidates --format json --output reports/candidate-manifests.json list
-```
-
-## Fixture-only evaluation commands
-
-```powershell
 cos-graphics-candidates evaluate perseverance
 cos-graphics-candidates evaluate supra_2jz_gte_twin_turbo
-cos-graphics-candidates --format json --output reports/perseverance-candidate-evaluation.json evaluate perseverance
-```
-
-These commands load static manifest and report fixtures only. They do not load, decode, inspect, or evaluate image bytes.
-
-## Manual observation fixture commands
-
-```powershell
 cos-graphics-candidates observe perseverance
 cos-graphics-candidates observe supra_2jz_gte_twin_turbo
-cos-graphics-candidates --format json --output reports/perseverance-observations.json observe perseverance
-```
-
-These commands load static manifest and manual observation fixtures only. They do not load, decode, inspect, or evaluate image bytes.
-
-## Observation-to-report binding commands
-
-```powershell
 cos-graphics-candidates bind-observations perseverance
 cos-graphics-candidates bind-observations supra_2jz_gte_twin_turbo
-cos-graphics-candidates --format json --output reports/perseverance-observation-binding.json bind-observations perseverance
-```
-
-These commands bind static manifest, manual observation, and candidate evaluation report fixtures only. They do not mutate report fixtures, score candidates, or inspect image bytes.
-
-## Fixture-only evidence merge commands
-
-```powershell
 cos-graphics-candidates merge-evidence perseverance
 cos-graphics-candidates merge-evidence supra_2jz_gte_twin_turbo
-cos-graphics-candidates --format json --output reports/perseverance-merged-evidence.json merge-evidence perseverance
-```
-
-These commands merge static manual observation and candidate evaluation report evidence only. They do not mutate report fixtures, score candidates, or inspect image bytes.
-
-## Fixture-only candidate review packet commands
-
-```powershell
 cos-graphics-candidates review-packet perseverance
 cos-graphics-candidates review-packet supra_2jz_gte_twin_turbo
-cos-graphics-candidates --format json --output reports/perseverance-review-packet.json review-packet perseverance
 ```
 
-These commands produce human-facing fixture-only review packets. They do not mutate report fixtures, score candidates, inspect image bytes, or approve candidates.
+These commands remain fixture-only/read-only and cannot approve candidates.
 
 ## Verification
 
@@ -527,6 +348,7 @@ pytest tests/test_candidate_image_byte_loading_implementation_design.py
 pytest tests/test_candidate_image_byte_loading_implementation_contract.py
 pytest tests/test_candidate_image_byte_loading_pre_implementation_exit_review.py
 pytest tests/test_candidate_image_byte_loading_minimal_implementation.py
+pytest tests/test_candidate_image_byte_loading_minimal_cli.py
 pytest tests/test_candidate_image_byte_loading_contract.py
 pytest tests/test_candidate_image_byte_loading_discovery_cli.py
 pytest tests/test_candidate_image_byte_loading_review_packet.py
@@ -546,4 +368,4 @@ pytest tests/test_candidate_review_packet.py
 
 ## Guardrail
 
-Candidate graphics are external inputs. ConstraintOS does not generate, edit, inspect, score, or approve images in these milestones. Candidate image byte-loading minimal implementation is helper-only and limited to explicit in-memory artifact registry bytes; it does not enable local file opening, artifact download, network fetch, image decoding, pixel inspection, scoring, report mutation, or approval.
+Candidate graphics are external inputs. ConstraintOS does not generate, edit, inspect, score, or approve images in these milestones. Candidate image byte-loading minimal implementation and minimal CLI are helper-only and limited to explicit in-memory artifact registry / fixture hex bytes; they do not enable local image file opening, artifact download, network fetch, image decoding, pixel inspection, scoring, report mutation, or approval.
