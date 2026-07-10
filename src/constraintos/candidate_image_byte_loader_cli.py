@@ -9,6 +9,7 @@ from typing import Any
 from constraintos.candidate_image_byte_loader import InMemoryArtifactRegistry, load_candidate_image_bytes_minimal
 from constraintos.candidate_image_byte_loading_records import load_candidate_image_byte_loading_record_report
 from constraintos.candidate_image_fixture_artifact_registry import (
+    build_fixture_artifact_registry_report,
     build_in_memory_artifact_registry_from_fixture,
     load_fixture_artifact_registry,
     resolve_fixture_artifact_registry_path,
@@ -24,6 +25,16 @@ def parse_fixture_hex(value: str) -> bytes:
         return bytes.fromhex(normalized)
     except ValueError as error:
         raise CandidateManifestError("--fixture-artifact-hex must be valid hexadecimal bytes") from error
+
+
+def resolve_candidate_dir(args: argparse.Namespace) -> Path:
+    project_root = Path(args.project_root).resolve() if args.project_root else discover_project_root()
+    return resolve_candidate_manifests_dir(project_root, args.candidate_dir)
+
+
+def load_default_fixture_registry(candidate_dir: Path, fixture_registry: str | None) -> tuple[Path, dict[str, Any]]:
+    registry_path = resolve_fixture_artifact_registry_path(candidate_dir, fixture_registry)
+    return registry_path, dict(load_fixture_artifact_registry(registry_path))
 
 
 def build_fixture_artifact_registry(
@@ -46,8 +57,7 @@ def build_fixture_artifact_registry(
             "fixture_artifact_hex_provided": True,
         }
 
-    registry_path = resolve_fixture_artifact_registry_path(candidate_dir, fixture_registry)
-    registry = load_fixture_artifact_registry(registry_path)
+    registry_path, registry = load_default_fixture_registry(candidate_dir, fixture_registry)
     header = registry.get("candidate_image_fixture_artifact_registry", {})
     return build_in_memory_artifact_registry_from_fixture(registry), {
         "byte_source": "fixture artifact registry",
@@ -60,8 +70,7 @@ def build_fixture_artifact_registry(
 
 
 def build_minimal_byte_loading_cli_payload(args: argparse.Namespace) -> tuple[int, dict[str, Any]]:
-    project_root = Path(args.project_root).resolve() if args.project_root else discover_project_root()
-    candidate_dir = resolve_candidate_manifests_dir(project_root, args.candidate_dir)
+    candidate_dir = resolve_candidate_dir(args)
     report = load_candidate_image_byte_loading_record_report(args.record, candidate_dir)
     registry, registry_metadata = build_fixture_artifact_registry(
         candidate_dir,
@@ -205,6 +214,74 @@ def build_minimal_byte_loading_cli_review_packet_payload(args: argparse.Namespac
     return exit_code, review_packet
 
 
+def build_fixture_registry_review_packet_payload(args: argparse.Namespace) -> tuple[int, dict[str, Any]]:
+    candidate_dir = resolve_candidate_dir(args)
+    registry_path, registry = load_default_fixture_registry(candidate_dir, args.fixture_registry)
+    registry_report = dict(build_fixture_artifact_registry_report(registry, registry_path))
+    header = registry.get("candidate_image_fixture_artifact_registry", {}) if isinstance(registry.get("candidate_image_fixture_artifact_registry", {}), dict) else {}
+    artifacts = registry_report.get("artifacts", []) if isinstance(registry_report.get("artifacts", []), list) else []
+    return 0, {
+        "candidate_image_fixture_registry_review_packet": {
+            "mode": "fixture_registry_review_packet",
+            "review_packet_ready": True,
+            "registry_path": str(registry_path),
+            "artifact_count": header.get("artifact_count"),
+            "local_image_file_opening": "not_run",
+            "artifact_download": "not_run",
+            "network_fetch": "not_run",
+            "image_decoding": "not_run",
+            "candidate_scoring": "not_run",
+            "source_report_mutation": "not_run",
+            "approval_automation": "not_run",
+        },
+        "summary": {
+            "registry_id": header.get("id"),
+            "status": header.get("status"),
+            "registry_state": header.get("registry_state"),
+            "artifact_count": header.get("artifact_count"),
+            "local_file_opening_allowed": header.get("local_file_opening_allowed"),
+            "artifact_download_allowed": header.get("artifact_download_allowed"),
+            "network_fetch_allowed": header.get("network_fetch_allowed"),
+            "image_decoding_allowed": header.get("image_decoding_allowed"),
+            "approval_allowed": header.get("approval_allowed"),
+        },
+        "review_sections": {
+            "registry_identity": {
+                "registry_id": header.get("id"),
+                "version": header.get("version"),
+                "domain": header.get("domain"),
+                "status": header.get("status"),
+                "registry_state": header.get("registry_state"),
+                "registry_path": str(registry_path),
+                "artifact_count": header.get("artifact_count"),
+            },
+            "artifact_descriptors": artifacts,
+            "validation_boundaries": {
+                "artifact_bytes_exposed_in_packet": False,
+                "expected_sha256_required_before_byte_exposure": True,
+                "expected_byte_count_required_before_byte_exposure": True,
+                "declared_media_type_required_before_byte_exposure": True,
+                "local_file_opening": "not_run",
+                "artifact_download": "not_run",
+                "network_fetch": "not_run",
+                "image_decoding": "not_run",
+            },
+            "decision_guardrails": {
+                "approval_allowed": False,
+                "initial_decision": "needs_review",
+                "approval_blockers": [
+                    "Registry validation alone cannot approve a candidate.",
+                    "The review packet exposes descriptors only, not image bytes.",
+                    "Image decoding has not run.",
+                    "Candidate scoring has not run.",
+                    "Approval automation has not run.",
+                ],
+            },
+        },
+        "candidate_image_fixture_artifact_registry_report": registry_report,
+    }
+
+
 def format_minimal_byte_loading_text(payload: dict[str, Any]) -> str:
     summary = payload.get("summary", {})
     cli = payload.get("candidate_image_byte_loading_minimal_cli", {})
@@ -290,11 +367,50 @@ def format_minimal_byte_loading_review_packet_text(payload: dict[str, Any]) -> s
     return "\n".join(lines) + "\n"
 
 
+def format_fixture_registry_review_packet_text(payload: dict[str, Any]) -> str:
+    summary = payload.get("summary", {})
+    sections = payload.get("review_sections", {})
+    if not isinstance(summary, dict):
+        summary = {}
+    if not isinstance(sections, dict):
+        sections = {}
+    guardrails = sections.get("decision_guardrails", {}) if isinstance(sections.get("decision_guardrails", {}), dict) else {}
+    blockers = guardrails.get("approval_blockers", [])
+    lines = [
+        "Candidate image fixture registry review packet",
+        f"registry_id: {summary.get('registry_id', 'unknown')}",
+        f"status: {summary.get('status', 'unknown')}",
+        f"registry_state: {summary.get('registry_state', 'unknown')}",
+        f"artifact_count: {summary.get('artifact_count', 'unknown')}",
+        f"local_file_opening_allowed: {summary.get('local_file_opening_allowed', 'unknown')}",
+        f"artifact_download_allowed: {summary.get('artifact_download_allowed', 'unknown')}",
+        f"network_fetch_allowed: {summary.get('network_fetch_allowed', 'unknown')}",
+        f"image_decoding_allowed: {summary.get('image_decoding_allowed', 'unknown')}",
+        f"approval_allowed: {summary.get('approval_allowed', 'unknown')}",
+        "artifact_bytes_exposed_in_packet: False",
+        "approval_blockers:",
+    ]
+    if isinstance(blockers, list):
+        lines.extend(f"- {blocker}" for blocker in blockers)
+    lines.extend([
+        "local_image_file_opening: not run",
+        "artifact_download: not run",
+        "network_fetch: not run",
+        "image_decoding: not run",
+        "candidate_scoring: not run",
+        "source_report_mutation: not run",
+        "approval_automation: not run",
+    ])
+    return "\n".join(lines) + "\n"
+
+
 def format_payload(payload: dict[str, Any], output_format: str, command: str) -> str:
     if output_format == "json":
         return json.dumps(payload, indent=2, sort_keys=True) + "\n"
     if command == "review-packet":
         return format_minimal_byte_loading_review_packet_text(payload)
+    if command == "registry-review-packet":
+        return format_fixture_registry_review_packet_text(payload)
     return format_minimal_byte_loading_text(payload)
 
 
@@ -315,6 +431,10 @@ def add_fixture_artifact_arguments(parser: argparse.ArgumentParser) -> None:
     parser.add_argument("--fixture-artifact-hex", help="Hex-encoded fixture bytes for the explicit artifact URI.")
 
 
+def add_fixture_registry_argument(parser: argparse.ArgumentParser) -> None:
+    parser.add_argument("--fixture-registry", help="Path to deterministic fixture artifact registry JSON. Defaults to the candidate fixture directory registry.")
+
+
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(prog="cos-graphics-byte-loader")
     parser.add_argument("--project-root", help="Repository root for resolving default candidate fixtures.")
@@ -328,6 +448,9 @@ def build_parser() -> argparse.ArgumentParser:
 
     review_packet_parser = subparsers.add_parser("review-packet", help="Build a helper-only review packet for minimal byte loading.")
     add_fixture_artifact_arguments(review_packet_parser)
+
+    registry_review_packet_parser = subparsers.add_parser("registry-review-packet", help="Build a helper-only review packet for the fixture artifact registry.")
+    add_fixture_registry_argument(registry_review_packet_parser)
     return parser
 
 
@@ -342,6 +465,10 @@ def main(argv: list[str] | None = None) -> int:
         if args.command == "review-packet":
             exit_code, payload = build_minimal_byte_loading_cli_review_packet_payload(args)
             write_output(format_payload(payload, args.format, args.command), args.output, label="review packet")
+            return exit_code
+        if args.command == "registry-review-packet":
+            exit_code, payload = build_fixture_registry_review_packet_payload(args)
+            write_output(format_payload(payload, args.format, args.command), args.output, label="fixture registry review packet")
             return exit_code
         raise CandidateManifestError(f"Unsupported command: {args.command}")
     except SystemExit:
