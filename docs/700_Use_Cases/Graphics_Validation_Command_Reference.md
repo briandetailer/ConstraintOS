@@ -271,7 +271,6 @@ pytest tests/test_candidate_intake_manifest_discovery_cli.py
 cos-graphics-candidates intake-review-packet perseverance
 cos-graphics-candidates intake-review-packet supra_2jz_gte_twin_turbo
 cos-graphics-candidates --format json --output reports/perseverance-intake-review-packet.json intake-review-packet perseverance
-pytest tests/test_candidate_intake_review.py
 pytest tests/test_candidate_intake_review_packet.py
 pytest tests/test_intake_foundation_exit_review.py
 ```
