@@ -4,11 +4,14 @@
 
 ```text
 milestone: Candidate Image Byte Loading Fixture Registry Failure Matrix v1
-status: implementation-complete-pending-test
+status: complete
 started_on: 2026-07-10
+completed_on: 2026-07-10
 previous_gate: Candidate Image Byte Loading Fixture Registry Exit Review v1 complete
 track: Real Candidate Intake Track
 baseline: 487 passed
+latest_user_reported_candidate_image_byte_loading_fixture_registry_failure_matrix_test_result: 16 passed
+latest_user_reported_candidate_image_byte_loading_fixture_registry_failure_matrix_test_result_on: 2026-07-10
 ```
 
 ## Purpose
@@ -125,6 +128,16 @@ blocked_until_later:
 pytest tests/test_candidate_image_byte_loading_fixture_registry_failure_matrix.py
 ```
 
+## Verification record
+
+```text
+source: user-reported local test run
+command: pytest tests/test_candidate_image_byte_loading_fixture_registry_failure_matrix.py
+result: 16 passed
+reported_on: 2026-07-10
+assistant_ran_tests: false
+```
+
 ## Guardrails
 
 ```text
@@ -165,5 +178,17 @@ pytest tests/test_candidate_image_byte_loading_fixture_registry_failure_matrix.p
 [x] Success case still cannot approve candidates.
 [x] README updated.
 [x] Command reference updated.
-[ ] Verification test result recorded.
+[x] Verification test result recorded.
+```
+
+## Handoff notes
+
+```text
+- Candidate Image Byte Loading Fixture Registry Failure Matrix v1 is complete.
+- The fixture registry failure matrix covers invalid sha256, invalid byte count, invalid media type, invalid artifact URI, duplicate artifact ID, duplicate artifact URI, descriptor mutability violation, local file opening guardrail violation, network fetch guardrail violation, image decoding guardrail violation, and approval guardrail violation.
+- Failure cases are in-memory mutations only.
+- Invalid cases fail closed and do not expose bytes through InMemoryArtifactRegistry.
+- Success cases still cannot approve candidates.
+- The next milestone should be Candidate Image Byte Loading Fixture Registry Failure Review Packet v1.
+- local_file_path byte loading, file_uri byte loading, artifact download, network fetch, image decoding, pixel inspection, CV/OCR integration, image generation, image editing, candidate scoring, source report mutation, and approval automation remain blocked until later milestones.
 ```
