@@ -1,0 +1,61 @@
+{
+  "candidate_image_fixture_artifact_registry": {
+    "id": "GRAPHICS-CANDIDATE-IMAGE-FIXTURE-ARTIFACT-REGISTRY-0001",
+    "version": "v1",
+    "domain": "graphics_validation",
+    "status": "fixture_only",
+    "registry_state": "deterministic_fixture_bytes",
+    "artifact_count": 2,
+    "local_file_opening_allowed": false,
+    "artifact_download_allowed": false,
+    "network_fetch_allowed": false,
+    "image_decoding_allowed": false,
+    "approval_allowed": false
+  },
+  "artifacts": [
+    {
+      "artifact_id": "fixture-artifact-perseverance-candidate-0001-png-signature",
+      "candidate_key": "perseverance",
+      "artifact_uri": "artifact://external-candidates/perseverance/candidate-0001.png",
+      "reference_type": "artifact_uri",
+      "media_type": "image/png",
+      "sha256": "4c4b6a3be1314ab86138bef4314dde022e600960d8689a2c8f8631802d20dab6",
+      "byte_count": 8,
+      "data_encoding": "hex",
+      "data_hex": "89504e470d0a1a0a",
+      "descriptor_immutable": true,
+      "local_file_opened": false,
+      "artifact_downloaded": false,
+      "network_fetch_ran": false,
+      "image_decoded": false,
+      "approval_allowed": false
+    },
+    {
+      "artifact_id": "fixture-artifact-supra-2jz-gte-candidate-0001-png-signature",
+      "candidate_key": "supra_2jz_gte_twin_turbo",
+      "artifact_uri": "artifact://external-candidates/supra-2jz-gte/candidate-0001.png",
+      "reference_type": "artifact_uri",
+      "media_type": "image/png",
+      "sha256": "4c4b6a3be1314ab86138bef4314dde022e600960d8689a2c8f8631802d20dab6",
+      "byte_count": 8,
+      "data_encoding": "hex",
+      "data_hex": "89504e470d0a1a0a",
+      "descriptor_immutable": true,
+      "local_file_opened": false,
+      "artifact_downloaded": false,
+      "network_fetch_ran": false,
+      "image_decoded": false,
+      "approval_allowed": false
+    }
+  ],
+  "guardrails": {
+    "expected_sha256_required_before_byte_exposure": true,
+    "expected_byte_count_required_before_byte_exposure": true,
+    "declared_media_type_required_before_byte_exposure": true,
+    "local_file_opening_allowed": false,
+    "artifact_download_allowed": false,
+    "network_fetch_allowed": false,
+    "image_decoding_allowed": false,
+    "byte_loading_success_can_approve": false
+  }
+}
