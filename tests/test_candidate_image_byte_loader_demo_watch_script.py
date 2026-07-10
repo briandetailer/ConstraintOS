@@ -77,7 +77,7 @@ def test_candidate_byte_loader_demo_watch_milestone_records_business_demo_scope(
     content = MILESTONE.read_text(encoding="utf-8")
 
     assert 'milestone: Candidate Image Byte Loader Demo Watch Script v1' in content
-    assert 'status: active' in content
+    assert 'status: implementation-complete-pending-test' in content
     assert 'Business Demo Visibility Track' in content
     assert 'business-demo-friendly watch script' in content
     assert 'Structured specifications, validation, and traceability' in content
