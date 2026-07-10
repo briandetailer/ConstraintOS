@@ -4,11 +4,14 @@
 
 ```text
 milestone: Candidate Image Byte Loading Minimal CLI Exit Review v1
-status: implementation-complete-pending-test
+status: complete
 started_on: 2026-07-09
+completed_on: 2026-07-09
 previous_gate: Candidate Image Byte Loading Minimal CLI Review Packet v1 complete
 track: Real Candidate Intake Track
 baseline: 487 passed
+latest_user_reported_candidate_image_byte_loading_minimal_cli_exit_review_test_result: 9 passed
+latest_user_reported_candidate_image_byte_loading_minimal_cli_exit_review_test_result_on: 2026-07-09
 ```
 
 ## Purpose
@@ -121,6 +124,16 @@ rationale: Minimal helper, dedicated CLI, and CLI review packet are complete. Th
 pytest tests/test_candidate_image_byte_loading_minimal_cli_exit_review.py
 ```
 
+## Verification record
+
+```text
+source: user-reported local test run
+command: pytest tests/test_candidate_image_byte_loading_minimal_cli_exit_review.py
+result: 9 passed
+reported_on: 2026-07-09
+assistant_ran_tests: false
+```
+
 ## Guardrails
 
 ```text
@@ -152,5 +165,16 @@ pytest tests/test_candidate_image_byte_loading_minimal_cli_exit_review.py
 [x] Required guardrails for next milestone are listed.
 [x] Next allowed milestone is Candidate Image Byte Loading Fixture Artifact Registry v1.
 [x] Command reference updated with verification command.
-[ ] Verification test result recorded.
+[x] Verification test result recorded.
+```
+
+## Handoff notes
+
+```text
+- Candidate Image Byte Loading Minimal CLI Exit Review v1 is complete.
+- The helper-only minimal byte-loading CLI track is verified complete.
+- The dedicated minimal CLI and CLI review packet remain limited to explicit fixture hex bytes bound to explicit artifact:// URIs.
+- The next milestone may be Candidate Image Byte Loading Fixture Artifact Registry v1.
+- The next milestone must keep byte sources fixture-controlled and use deterministic fixture artifact IDs, immutable fixture byte descriptors, expected sha256, expected byte count, declared media type, no local file opening, no network fetch, no image decoding, and no approval from byte-loading success.
+- local_file_path byte loading, file_uri byte loading, artifact download, network fetch, image decoding, pixel inspection, CV/OCR integration, image generation, image editing, candidate scoring, source report mutation, and approval automation remain blocked until later milestones.
 ```
