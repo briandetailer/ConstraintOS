@@ -1,0 +1,110 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://constraintos.local/schemas/graphics/candidate_image_fixture_artifact_registry.schema.json",
+  "title": "ConstraintOS Graphics Candidate Image Fixture Artifact Registry",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "candidate_image_fixture_artifact_registry",
+    "artifacts",
+    "guardrails"
+  ],
+  "properties": {
+    "candidate_image_fixture_artifact_registry": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "version",
+        "domain",
+        "status",
+        "registry_state",
+        "artifact_count",
+        "local_file_opening_allowed",
+        "artifact_download_allowed",
+        "network_fetch_allowed",
+        "image_decoding_allowed",
+        "approval_allowed"
+      ],
+      "properties": {
+        "id": {"type": "string", "const": "GRAPHICS-CANDIDATE-IMAGE-FIXTURE-ARTIFACT-REGISTRY-0001"},
+        "version": {"type": "string", "const": "v1"},
+        "domain": {"type": "string", "const": "graphics_validation"},
+        "status": {"type": "string", "const": "fixture_only"},
+        "registry_state": {"type": "string", "const": "deterministic_fixture_bytes"},
+        "artifact_count": {"type": "integer", "minimum": 1},
+        "local_file_opening_allowed": {"type": "boolean", "const": false},
+        "artifact_download_allowed": {"type": "boolean", "const": false},
+        "network_fetch_allowed": {"type": "boolean", "const": false},
+        "image_decoding_allowed": {"type": "boolean", "const": false},
+        "approval_allowed": {"type": "boolean", "const": false}
+      }
+    },
+    "artifacts": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "artifact_id",
+          "candidate_key",
+          "artifact_uri",
+          "reference_type",
+          "media_type",
+          "sha256",
+          "byte_count",
+          "data_encoding",
+          "data_hex",
+          "descriptor_immutable",
+          "local_file_opened",
+          "artifact_downloaded",
+          "network_fetch_ran",
+          "image_decoded",
+          "approval_allowed"
+        ],
+        "properties": {
+          "artifact_id": {"type": "string", "minLength": 1},
+          "candidate_key": {"type": "string", "minLength": 1},
+          "artifact_uri": {"type": "string", "pattern": "^artifact://"},
+          "reference_type": {"type": "string", "const": "artifact_uri"},
+          "media_type": {"type": "string", "enum": ["image/png", "image/jpeg", "image/webp"]},
+          "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+          "byte_count": {"type": "integer", "minimum": 1},
+          "data_encoding": {"type": "string", "const": "hex"},
+          "data_hex": {"type": "string", "pattern": "^[0-9a-fA-F]+$"},
+          "descriptor_immutable": {"type": "boolean", "const": true},
+          "local_file_opened": {"type": "boolean", "const": false},
+          "artifact_downloaded": {"type": "boolean", "const": false},
+          "network_fetch_ran": {"type": "boolean", "const": false},
+          "image_decoded": {"type": "boolean", "const": false},
+          "approval_allowed": {"type": "boolean", "const": false}
+        }
+      }
+    },
+    "guardrails": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "expected_sha256_required_before_byte_exposure",
+        "expected_byte_count_required_before_byte_exposure",
+        "declared_media_type_required_before_byte_exposure",
+        "local_file_opening_allowed",
+        "artifact_download_allowed",
+        "network_fetch_allowed",
+        "image_decoding_allowed",
+        "byte_loading_success_can_approve"
+      ],
+      "properties": {
+        "expected_sha256_required_before_byte_exposure": {"type": "boolean", "const": true},
+        "expected_byte_count_required_before_byte_exposure": {"type": "boolean", "const": true},
+        "declared_media_type_required_before_byte_exposure": {"type": "boolean", "const": true},
+        "local_file_opening_allowed": {"type": "boolean", "const": false},
+        "artifact_download_allowed": {"type": "boolean", "const": false},
+        "network_fetch_allowed": {"type": "boolean", "const": false},
+        "image_decoding_allowed": {"type": "boolean", "const": false},
+        "byte_loading_success_can_approve": {"type": "boolean", "const": false}
+      }
+    }
+  }
+}
