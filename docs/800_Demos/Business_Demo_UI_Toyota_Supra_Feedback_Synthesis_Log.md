@@ -4,13 +4,15 @@
 
 ```text
 demo: Business Demo UI Toyota Supra
-status: implementation-complete-pending-test
+status: complete
 track: Business Demo Visibility Track
 milestone: docs/500_Milestones/Business_Demo_UI_Toyota_Supra_v1.md
 presenter_runbook: docs/800_Demos/Business_Demo_UI_Toyota_Supra_Presenter_Runbook.md
 viewer_feedback_card: docs/800_Demos/Business_Demo_UI_Toyota_Supra_Viewer_Feedback_Card.md
 scenario_key: supra_2jz_gte_twin_turbo
 primary_audience: business reviewers
+latest_user_reported_business_demo_ui_toyota_supra_feedback_synthesis_log_test_result: 4 passed
+latest_user_reported_business_demo_ui_toyota_supra_feedback_synthesis_log_test_result_on: 2026-07-10
 ```
 
 ## Purpose
@@ -87,6 +89,16 @@ If reviewers understand the value but want a concrete output example, prioritize
 
 ```text
 pending_viewer_feedback
+```
+
+## Verification record
+
+```text
+source: user-reported local test run
+command: pytest tests/test_business_demo_ui_toyota_supra_feedback_synthesis_log.py
+result: 4 passed
+reported_on: 2026-07-10
+assistant_ran_tests: false
 ```
 
 ## Guardrails
