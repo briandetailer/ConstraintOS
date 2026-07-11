@@ -8,6 +8,8 @@ status: progress-snapshot
 track: Business Demo Visibility Track
 snapshot_type: deadline-progress-rollup
 future_target_bank: Constraint-Driven Graphic Output Permutation POC v1
+latest_user_reported_current_evidence_harness_poc_demo_progress_snapshot_test_result: 4 passed
+latest_user_reported_current_evidence_harness_poc_demo_progress_snapshot_test_result_on: 2026-07-10
 ```
 
 ## Total progress figure
@@ -77,6 +79,16 @@ Formula:
 ```text
 [ ] Core end-to-end evidence-harness demo verification result needs explicit closure if not already reported separately:
     pytest tests/test_end_to_end_fixture_poc_demo.py
+```
+
+## Verification record
+
+```text
+source: user-reported local test run
+command: pytest tests/test_current_evidence_harness_poc_demo_progress_snapshot.py
+result: 4 passed
+reported_on: 2026-07-10
+assistant_ran_tests: false
 ```
 
 ## Deadline interpretation
