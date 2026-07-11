@@ -4,11 +4,13 @@
 
 ```text
 demo: Current Evidence-Harness POC Demo
-status: feedback-packet
+status: complete
 track: Business Demo Visibility Track
 current_script: scripts/watch-constraintos-poc.ps1
 current_readiness_packet: docs/800_Demos/Current_Evidence_Harness_POC_Demo_Readiness_Packet.md
 future_target_bank: Constraint-Driven Graphic Output Permutation POC v1
+latest_user_reported_current_evidence_harness_poc_demo_feedback_packet_test_result: 7 passed
+latest_user_reported_current_evidence_harness_poc_demo_feedback_packet_test_result_on: 2026-07-10
 ```
 
 ## Purpose
@@ -119,6 +121,16 @@ future_output_expectations: reviewer commented on graphic-output permutations
 ux_readability: reviewer commented on non-technical readability
 risk_or_gap: reviewer identified a missing capability or risk
 next_step: reviewer suggested what to build next
+```
+
+## Verification record
+
+```text
+source: user-reported local test run
+command: pytest tests/test_current_evidence_harness_poc_demo_feedback_packet.py
+result: 7 passed
+reported_on: 2026-07-10
+assistant_ran_tests: false
 ```
 
 ## What not to over-interpret
