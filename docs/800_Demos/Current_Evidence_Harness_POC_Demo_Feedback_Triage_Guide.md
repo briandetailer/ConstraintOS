@@ -4,11 +4,13 @@
 
 ```text
 demo: Current Evidence-Harness POC Demo
-status: triage-guide
+status: complete
 track: Business Demo Visibility Track
 feedback_packet: docs/800_Demos/Current_Evidence_Harness_POC_Demo_Feedback_Packet.md
 issue_template: .github/ISSUE_TEMPLATE/demo-feedback.md
 future_target_bank: Constraint-Driven Graphic Output Permutation POC v1
+latest_user_reported_current_evidence_harness_poc_demo_feedback_triage_guide_test_result: 5 passed
+latest_user_reported_current_evidence_harness_poc_demo_feedback_triage_guide_test_result_on: 2026-07-10
 ```
 
 ## Purpose
@@ -94,6 +96,16 @@ These should be banked for later gated milestones:
 - unrestricted image editing
 - automatic scoring
 - automatic approval
+```
+
+## Verification record
+
+```text
+source: user-reported local test run
+command: pytest tests/test_current_evidence_harness_poc_demo_feedback_triage_guide.py
+result: 5 passed
+reported_on: 2026-07-10
+assistant_ran_tests: false
 ```
 
 ## Do not over-correct
