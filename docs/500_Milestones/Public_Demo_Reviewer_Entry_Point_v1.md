@@ -4,11 +4,16 @@
 
 ```text
 milestone: Public Demo Reviewer Entry Point v1
-status: implementation-complete-pending-test
+status: complete
 started_on: 2026-07-10
+completed_on: 2026-07-10
 track: Business Demo Visibility Track
 previous_context: Current Evidence-Harness POC Demo Readiness Packet exists
 baseline: 487 passed
+latest_user_reported_public_demo_reviewer_entry_point_test_result: 7 passed
+latest_user_reported_public_demo_reviewer_entry_point_test_result_on: 2026-07-10
+latest_user_reported_demo_recording_status: recording completed
+latest_user_reported_demo_recording_status_on: 2026-07-10
 ```
 
 ## Purpose
@@ -63,6 +68,26 @@ not_currently_supported:
 pytest tests/test_public_demo_reviewer_entry_point.py
 ```
 
+## Verification record
+
+```text
+source: user-reported local test run
+command: pytest tests/test_public_demo_reviewer_entry_point.py
+result: 7 passed
+reported_on: 2026-07-10
+assistant_ran_tests: false
+```
+
+## Demo recording record
+
+```text
+source: user-reported local demo run
+command: .\scripts\watch-constraintos-poc.ps1 -Scenario perseverance
+result: recording completed
+reported_on: 2026-07-10
+assistant_ran_demo: false
+```
+
 ## Guardrails
 
 ```text
@@ -94,5 +119,17 @@ pytest tests/test_public_demo_reviewer_entry_point.py
 [x] Root README preserves banked output-permutation target.
 [x] Tests added.
 [x] Command reference updated.
-[ ] Verification test result recorded.
+[x] Verification test result recorded.
+[x] Demo recording status recorded.
+```
+
+## Handoff notes
+
+```text
+- Public Demo Reviewer Entry Point v1 is complete.
+- Root README now exposes the current evidence-harness POC demo.
+- The current evidence-harness POC demo recording has been reported complete by the user.
+- The reviewer-facing docs are available under docs/800_Demos/.
+- The next public-demo support step should focus on collecting structured reviewer feedback.
+- Constraint-Driven Graphic Output Permutation POC v1 remains banked for later.
 ```
