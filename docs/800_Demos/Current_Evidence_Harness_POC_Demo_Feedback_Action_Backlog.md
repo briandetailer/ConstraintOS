@@ -4,11 +4,13 @@
 
 ```text
 demo: Current Evidence-Harness POC Demo
-status: action-backlog
+status: complete
 track: Business Demo Visibility Track
 synthesis_log: docs/800_Demos/Current_Evidence_Harness_POC_Demo_Feedback_Synthesis_Log.md
 triage_guide: docs/800_Demos/Current_Evidence_Harness_POC_Demo_Feedback_Triage_Guide.md
 future_target_bank: Constraint-Driven Graphic Output Permutation POC v1
+latest_user_reported_current_evidence_harness_poc_demo_feedback_action_backlog_test_result: 5 passed
+latest_user_reported_current_evidence_harness_poc_demo_feedback_action_backlog_test_result_on: 2026-07-10
 ```
 
 ## Purpose
@@ -84,6 +86,16 @@ closed: not actionable, duplicate, or outside current direction
 - unrestricted image editing
 - automatic scoring
 - automatic approval
+```
+
+## Verification record
+
+```text
+source: user-reported local test run
+command: pytest tests/test_current_evidence_harness_poc_demo_feedback_action_backlog.py
+result: 5 passed
+reported_on: 2026-07-10
+assistant_ran_tests: false
 ```
 
 ## Prioritization rule
