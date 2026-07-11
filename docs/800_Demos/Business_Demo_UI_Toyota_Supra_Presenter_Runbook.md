@@ -4,11 +4,13 @@
 
 ```text
 demo: Business Demo UI Toyota Supra
-status: presenter-runbook
+status: complete
 track: Business Demo Visibility Track
 milestone: docs/500_Milestones/Business_Demo_UI_Toyota_Supra_v1.md
 scenario_key: supra_2jz_gte_twin_turbo
 primary_audience: business reviewers
+latest_user_reported_business_demo_ui_toyota_supra_presenter_runbook_test_result: 5 passed
+latest_user_reported_business_demo_ui_toyota_supra_presenter_runbook_test_result_on: 2026-07-10
 ```
 
 ## Purpose
@@ -155,4 +157,20 @@ The system gives teams a repeatable way to check whether generated or proposed o
 
 ```text
 The demo shows the trust layer. The next milestone should show the controlled output layer.
+```
+
+## Verification command
+
+```powershell
+pytest tests/test_business_demo_ui_toyota_supra_presenter_runbook.py
+```
+
+## Verification record
+
+```text
+source: user-reported local test run
+command: pytest tests/test_business_demo_ui_toyota_supra_presenter_runbook.py
+result: 5 passed
+reported_on: 2026-07-10
+assistant_ran_tests: false
 ```
