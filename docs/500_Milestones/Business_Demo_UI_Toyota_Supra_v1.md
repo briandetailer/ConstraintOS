@@ -4,13 +4,17 @@
 
 ```text
 milestone: Business Demo UI Toyota Supra v1
-status: implementation-complete-pending-test
+status: complete
 started_on: 2026-07-10
+completed_on: 2026-07-10
 track: Business Demo Visibility Track
 previous_track_status: Current Evidence-Harness POC Demo package complete
 previous_progress_snapshot: docs/800_Demos/Current_Evidence_Harness_POC_Demo_Progress_Snapshot.md
 primary_use_case: Toyota Supra A80 2JZ-GTE Twin-Turbo Technical Graphic
 scenario_key: supra_2jz_gte_twin_turbo
+browser_demo_opened_successfully: true
+latest_user_reported_business_demo_ui_toyota_supra_test_result: 8 passed
+latest_user_reported_business_demo_ui_toyota_supra_test_result_on: 2026-07-10
 ```
 
 ## Purpose
@@ -122,6 +126,26 @@ next_product_track: Constraint-Driven Graphic Output Permutation POC v1
 pytest tests/test_business_demo_ui_toyota_supra.py
 ```
 
+## Verification record
+
+```text
+source: user-reported local test run
+command: pytest tests/test_business_demo_ui_toyota_supra.py
+result: 8 passed
+reported_on: 2026-07-10
+assistant_ran_tests: false
+```
+
+## Demo-open record
+
+```text
+source: user-reported local demo run
+command: .\scripts\watch-business-demo-ui.ps1 -Scenario supra_2jz_gte_twin_turbo -OpenBrowser
+result: browser demo opened
+reported_on: 2026-07-10
+assistant_ran_demo: false
+```
+
 ## Guardrails
 
 ```text
@@ -152,5 +176,6 @@ pytest tests/test_business_demo_ui_toyota_supra.py
 [x] Guardrails are preserved.
 [x] Tests added.
 [x] Command reference updated.
-[ ] Verification test result recorded.
+[x] Browser demo opened successfully from local command.
+[x] Verification test result recorded.
 ```
