@@ -168,7 +168,7 @@ docs/800_Demos/Current_Evidence_Harness_POC_Demo_Feedback_Action_Backlog.md
 
 This backlog is documentation-only. It records scoped current-demo polish actions and banked later work without authorizing new processing capability.
 
-### Current evidence-harness POC demo progress snapshot
+### Current Evidence-Harness POC demo progress snapshot
 
 Use this snapshot for the current total progress figure and deadline-facing rollup:
 
@@ -184,19 +184,21 @@ docs/800_Demos/Current_Evidence_Harness_POC_Demo_Progress_Snapshot.md
 
 This snapshot is documentation-only. It records the current public evidence-harness demo package progress as 92%, the reviewer-feedback operating loop as 100%, and the remaining explicit core harness verification closure item.
 
-### Current Evidence-Harness POC demo progress snapshot
+### Current evidence-harness POC demo final verification gate
 
-Use this heading as the exact test-protected command-reference label for the progress snapshot.
+Use this gate to close the remaining current-demo completion gap:
 
 ```powershell
-pytest tests/test_current_evidence_harness_poc_demo_progress_snapshot.py
+pytest tests/test_current_evidence_harness_poc_demo_final_verification_gate.py
 ```
 
-Snapshot path:
+Gate path:
 
 ```text
-docs/800_Demos/Current_Evidence_Harness_POC_Demo_Progress_Snapshot.md
+docs/800_Demos/Current_Evidence_Harness_POC_Demo_Final_Verification_Gate.md
 ```
+
+This gate is documentation-only. It records that the final completion command is `pytest tests/test_end_to_end_fixture_poc_demo.py` and that a passing local result should move the current public evidence-harness demo package from 92% to 100%.
 
 ### Candidate image byte loader demo watch script
 
@@ -424,6 +426,7 @@ pytest tests/test_current_evidence_harness_poc_demo_feedback_triage_guide.py
 pytest tests/test_current_evidence_harness_poc_demo_feedback_synthesis_log.py
 pytest tests/test_current_evidence_harness_poc_demo_feedback_action_backlog.py
 pytest tests/test_current_evidence_harness_poc_demo_progress_snapshot.py
+pytest tests/test_current_evidence_harness_poc_demo_final_verification_gate.py
 pytest tests/test_candidate_evaluation_adapter_design.py
 pytest tests/test_candidate_manifest_schema.py
 pytest tests/test_candidate_manifest_discovery_cli.py
@@ -485,7 +488,7 @@ supra_2jz_gte_twin_turbo
 - These commands are dry-run / fixture-only / design-only / contract-only / read-only / helper-only for graphics validation.
 - These commands do not generate images.
 - These commands do not evaluate real generated candidates yet.
-- The end-to-end fixture POC demo, public demo reviewer entry point, current evidence-harness POC demo guide, current evidence-harness POC demo readiness packet, current evidence-harness POC demo feedback packet, demo feedback issue template, current evidence-harness POC demo feedback triage guide, current evidence-harness POC demo feedback synthesis log, current evidence-harness POC demo feedback action backlog, current evidence-harness POC demo progress snapshot, candidate byte-loader demo watch script, candidate image-byte loading minimal implementation, minimal CLI, minimal CLI review packet, fixture artifact registry, fixture registry review packet, fixture registry failure matrix, and fixture registry failure review packet are limited to explicit in-memory artifact registry / deterministic fixture bytes and descriptor-only/failure-matrix review.
+- The end-to-end fixture POC demo, public demo reviewer entry point, current evidence-harness POC demo guide, current evidence-harness POC demo readiness packet, current evidence-harness POC demo feedback packet, demo feedback issue template, current evidence-harness POC demo feedback triage guide, current evidence-harness POC demo feedback synthesis log, current evidence-harness POC demo feedback action backlog, current evidence-harness POC demo progress snapshot, current evidence-harness POC demo final verification gate, candidate byte-loader demo watch script, candidate image-byte loading minimal implementation, minimal CLI, minimal CLI review packet, fixture artifact registry, fixture registry review packet, fixture registry failure matrix, and fixture registry failure review packet are limited to explicit in-memory artifact registry / deterministic fixture bytes and descriptor-only/failure-matrix review.
 - Real candidate image intake design, candidate image byte-loading design, implementation design/contract, pre-implementation exit review, byte-loading contract/discovery/review-packet fixtures, intake manifests, and intake review packets do not decode images.
 - Approval expectations remain contract-driven and default uncertainty to needs_review.
 ```
