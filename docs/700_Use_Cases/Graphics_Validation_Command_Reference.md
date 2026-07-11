@@ -88,6 +88,22 @@ docs/800_Demos/Current_Evidence_Harness_POC_Demo_Readiness_Packet.md
 
 This packet is documentation-only. It records what to run, what reviewers should see, which run artifacts to inspect first, what is intentionally not included yet, and how the future constraint-driven graphic output permutation demo is banked for later.
 
+### Current evidence-harness POC demo feedback packet
+
+Use this packet to collect structured critique after reviewers watch the current evidence-harness demo:
+
+```powershell
+pytest tests/test_current_evidence_harness_poc_demo_feedback_packet.py
+```
+
+Packet path:
+
+```text
+docs/800_Demos/Current_Evidence_Harness_POC_Demo_Feedback_Packet.md
+```
+
+This packet is documentation-only. It provides a copyable feedback form, evidence-file inspection prompts, feedback classification labels, current limitations, and the banked future constraint-driven graphic output permutation target.
+
 ### Candidate image byte loader demo watch script
 
 Run a visible staged demo of the current candidate image byte-loading evidence path:
@@ -307,6 +323,7 @@ pytest tests/test_candidate_image_byte_loader_demo_watch_script.py
 pytest tests/test_end_to_end_fixture_poc_demo.py
 pytest tests/test_current_evidence_harness_poc_demo_guide.py
 pytest tests/test_current_evidence_harness_poc_demo_readiness_packet.py
+pytest tests/test_current_evidence_harness_poc_demo_feedback_packet.py
 pytest tests/test_public_demo_reviewer_entry_point.py
 pytest tests/test_candidate_evaluation_adapter_design.py
 pytest tests/test_candidate_manifest_schema.py
@@ -369,7 +386,7 @@ supra_2jz_gte_twin_turbo
 - These commands are dry-run / fixture-only / design-only / contract-only / read-only / helper-only for graphics validation.
 - These commands do not generate images.
 - These commands do not evaluate real generated candidates yet.
-- The end-to-end fixture POC demo, public demo reviewer entry point, current evidence-harness POC demo guide, current evidence-harness POC demo readiness packet, candidate byte-loader demo watch script, candidate image byte-loading minimal implementation, minimal CLI, minimal CLI review packet, fixture artifact registry, fixture registry review packet, fixture registry failure matrix, and fixture registry failure review packet are limited to explicit in-memory artifact registry / deterministic fixture bytes and descriptor-only/failure-matrix review.
+- The end-to-end fixture POC demo, public demo reviewer entry point, current evidence-harness POC demo guide, current evidence-harness POC demo readiness packet, current evidence-harness POC demo feedback packet, candidate byte-loader demo watch script, candidate image byte-loading minimal implementation, minimal CLI, minimal CLI review packet, fixture artifact registry, fixture registry review packet, fixture registry failure matrix, and fixture registry failure review packet are limited to explicit in-memory artifact registry / deterministic fixture bytes and descriptor-only/failure-matrix review.
 - Real candidate image intake design, candidate image byte-loading design, implementation design/contract, pre-implementation exit review, byte-loading contract/discovery/review-packet fixtures, intake manifests, and intake review packets do not decode images.
 - Approval expectations remain contract-driven and default uncertainty to needs_review.
 ```
