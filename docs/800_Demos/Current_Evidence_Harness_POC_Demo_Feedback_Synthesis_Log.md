@@ -4,11 +4,13 @@
 
 ```text
 demo: Current Evidence-Harness POC Demo
-status: synthesis-log
+status: complete
 track: Business Demo Visibility Track
 triage_guide: docs/800_Demos/Current_Evidence_Harness_POC_Demo_Feedback_Triage_Guide.md
 issue_template: .github/ISSUE_TEMPLATE/demo-feedback.md
 future_target_bank: Constraint-Driven Graphic Output Permutation POC v1
+latest_user_reported_current_evidence_harness_poc_demo_feedback_synthesis_log_test_result: 5 passed
+latest_user_reported_current_evidence_harness_poc_demo_feedback_synthesis_log_test_result_on: 2026-07-10
 ```
 
 ## Purpose
@@ -90,6 +92,16 @@ accepted_current_demo_polish:
 banked_later_work:
 rejected_or_closed:
 recommended_next_step:
+```
+
+## Verification record
+
+```text
+source: user-reported local test run
+command: pytest tests/test_current_evidence_harness_poc_demo_feedback_synthesis_log.py
+result: 5 passed
+reported_on: 2026-07-10
+assistant_ran_tests: false
 ```
 
 ## Guardrails
