@@ -56,6 +56,27 @@ pytest tests/test_end_to_end_fixture_poc_demo.py
 
 This is a fixture-based, business-demo-friendly dry run. It shows scenario selection, contract/specification loading, candidate manifest/intake evidence, intake review, deterministic fixture byte loading, byte-loading review, fixture registry review, failure-matrix review, manual observation evidence, observation binding, evidence merge, fixture-only evaluation, final review packet, and demo summary. It writes run artifacts under `runs/poc-demo/<scenario>/<timestamp>/` and preserves no local image file opening, artifact download, network fetch, image decoding, CV/OCR provider integration, image generation/editing, source report mutation, or automatic approval.
 
+### Business demo UI - Toyota Supra
+
+Use this browser-based UI when the audience is business-focused and should not need to inspect terminal output, JSON files, or internal milestone documents:
+
+```powershell
+.\scripts\watch-business-demo-ui.ps1
+.\scripts\watch-business-demo-ui.ps1 -Scenario supra_2jz_gte_twin_turbo
+.\scripts\watch-business-demo-ui.ps1 -Scenario supra_2jz_gte_twin_turbo -OpenBrowser
+pytest tests/test_business_demo_ui_toyota_supra.py
+```
+
+Output paths:
+
+```text
+runs/business-demo-ui/<scenario>/<timestamp>/index.html
+runs/business-demo-ui/<scenario>/<timestamp>/demo-data.json
+runs/business-demo-ui/<scenario>/<timestamp>/run-metadata.json
+```
+
+This is a static fixture-only browser walkthrough for the Toyota Supra A80 2JZ-GTE twin-turbo use case. It shows a business-friendly staged flow from request, to loaded constraints, to candidate evidence, to deterministic review, to `needs_review`. It does not generate final graphics, decode images, fetch network resources, run CV/OCR, or approve candidates automatically.
+
 ### Current evidence-harness POC demo guide
 
 Use this guide to explain the current evidence-harness demo separately from the later constraint-driven graphic output permutation target:
@@ -182,11 +203,11 @@ Snapshot path:
 docs/800_Demos/Current_Evidence_Harness_POC_Demo_Progress_Snapshot.md
 ```
 
-This snapshot is documentation-only. It records the current public evidence-harness demo package progress as 92%, the reviewer-feedback operating loop as 100%, and the remaining explicit core harness verification closure item.
+This snapshot is documentation-only. It records the current public evidence-harness demo package progress as 100%, the reviewer-feedback operating loop as 100%, and the core harness verification as 100%.
 
 ### Current evidence-harness POC demo final verification gate
 
-Use this gate to close the remaining current-demo completion gap:
+Use this gate to preserve the completed final verification record:
 
 ```powershell
 pytest tests/test_current_evidence_harness_poc_demo_final_verification_gate.py
@@ -198,7 +219,7 @@ Gate path:
 docs/800_Demos/Current_Evidence_Harness_POC_Demo_Final_Verification_Gate.md
 ```
 
-This gate is documentation-only. It records that the final completion command is `pytest tests/test_end_to_end_fixture_poc_demo.py` and that a passing local result should move the current public evidence-harness demo package from 92% to 100%.
+This gate is documentation-only. It records that `pytest tests/test_end_to_end_fixture_poc_demo.py` passed locally according to user report and moved the current public evidence-harness demo package from 92% to 100%.
 
 ### Candidate image byte loader demo watch script
 
@@ -417,6 +438,7 @@ pytest tests/test_graphics_contract_runtime_bridge.py
 pytest tests/test_graphics_contract_watch_capture_script.py
 pytest tests/test_candidate_image_byte_loader_demo_watch_script.py
 pytest tests/test_end_to_end_fixture_poc_demo.py
+pytest tests/test_business_demo_ui_toyota_supra.py
 pytest tests/test_current_evidence_harness_poc_demo_guide.py
 pytest tests/test_current_evidence_harness_poc_demo_readiness_packet.py
 pytest tests/test_public_demo_reviewer_entry_point.py
@@ -488,7 +510,7 @@ supra_2jz_gte_twin_turbo
 - These commands are dry-run / fixture-only / design-only / contract-only / read-only / helper-only for graphics validation.
 - These commands do not generate images.
 - These commands do not evaluate real generated candidates yet.
-- The end-to-end fixture POC demo, public demo reviewer entry point, current evidence-harness POC demo guide, current evidence-harness POC demo readiness packet, current evidence-harness POC demo feedback packet, demo feedback issue template, current evidence-harness POC demo feedback triage guide, current evidence-harness POC demo feedback synthesis log, current evidence-harness POC demo feedback action backlog, current evidence-harness POC demo progress snapshot, current evidence-harness POC demo final verification gate, candidate byte-loader demo watch script, candidate image-byte loading minimal implementation, minimal CLI, minimal CLI review packet, fixture artifact registry, fixture registry review packet, fixture registry failure matrix, and fixture registry failure review packet are limited to explicit in-memory artifact registry / deterministic fixture bytes and descriptor-only/failure-matrix review.
+- The end-to-end fixture POC demo, Toyota Supra business demo UI, public demo reviewer entry point, current evidence-harness POC demo guide, current evidence-harness POC demo readiness packet, current evidence-harness POC demo feedback packet, demo feedback issue template, current evidence-harness POC demo feedback triage guide, current evidence-harness POC demo feedback synthesis log, current evidence-harness POC demo feedback action backlog, current evidence-harness POC demo progress snapshot, current evidence-harness POC demo final verification gate, candidate byte-loader demo watch script, candidate image-byte loading minimal implementation, minimal CLI, minimal CLI review packet, fixture artifact registry, fixture registry review packet, fixture registry failure matrix, and fixture registry failure review packet are limited to explicit in-memory artifact registry / deterministic fixture bytes and descriptor-only/failure-matrix review.
 - Real candidate image intake design, candidate image byte-loading design, implementation design/contract, pre-implementation exit review, byte-loading contract/discovery/review-packet fixtures, intake manifests, and intake review packets do not decode images.
 - Approval expectations remain contract-driven and default uncertainty to needs_review.
 ```
