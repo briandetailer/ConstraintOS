@@ -74,19 +74,19 @@ $DemoData = [ordered]@{
     stage_delay_ms = $StageDelayMs
     stages = $Stages
     guardrails = @(
-        "no_generated_final_graphics",
-        "no_constraint_derived_graphic_output_permutations_yet",
-        "no_real_local_image_input",
-        "no_local_file_path_loading",
-        "no_file_uri_loading",
-        "no_artifact_download",
-        "no_network_fetch",
-        "no_image_decoding",
-        "no_pixel_inspection",
-        "no_cv_ocr_provider_integration",
-        "no_unrestricted_image_generation",
-        "no_unrestricted_image_editing",
-        "no_automatic_approval"
+        "No generated final graphics",
+        "No constraint-derived graphic output permutations yet",
+        "No real local image input",
+        "No local_file_path loading",
+        "No file_uri loading",
+        "No artifact download",
+        "No network fetch",
+        "No image decoding",
+        "No pixel inspection",
+        "No CV/OCR provider integration",
+        "No unrestricted image generation",
+        "No unrestricted image editing",
+        "No automatic approval"
     )
 }
 
@@ -118,40 +118,12 @@ $Html = @"
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>$BusinessTitle - Toyota Supra Demo</title>
   <style>
-    :root {
-      color-scheme: light;
-      --bg: #f5f7fb;
-      --panel: #ffffff;
-      --ink: #172033;
-      --muted: #5d6a7f;
-      --line: #d9e1ef;
-      --accent: #2458d3;
-      --warning: #b7791f;
-      --good: #1f7a4d;
-      --shadow: 0 18px 45px rgba(20, 34, 66, 0.12);
-    }
+    :root { color-scheme: light; --bg: #f5f7fb; --panel: #ffffff; --ink: #172033; --muted: #5d6a7f; --line: #d9e1ef; --accent: #2458d3; --warning: #b7791f; --good: #1f7a4d; --shadow: 0 18px 45px rgba(20, 34, 66, 0.12); }
     * { box-sizing: border-box; }
-    body {
-      margin: 0;
-      font-family: Inter, Segoe UI, Roboto, Arial, sans-serif;
-      background: radial-gradient(circle at top left, #e9f0ff 0, #f5f7fb 36%, #eef3f9 100%);
-      color: var(--ink);
-    }
+    body { margin: 0; font-family: Inter, Segoe UI, Roboto, Arial, sans-serif; background: radial-gradient(circle at top left, #e9f0ff 0, #f5f7fb 36%, #eef3f9 100%); color: var(--ink); }
     .shell { max-width: 1180px; margin: 0 auto; padding: 34px; }
-    .hero {
-      display: grid;
-      grid-template-columns: 1.2fr 0.8fr;
-      gap: 24px;
-      align-items: stretch;
-      margin-bottom: 24px;
-    }
-    .card {
-      background: var(--panel);
-      border: 1px solid var(--line);
-      border-radius: 24px;
-      box-shadow: var(--shadow);
-      padding: 28px;
-    }
+    .hero { display: grid; grid-template-columns: 1.2fr 0.8fr; gap: 24px; align-items: stretch; margin-bottom: 24px; }
+    .card { background: var(--panel); border: 1px solid var(--line); border-radius: 24px; box-shadow: var(--shadow); padding: 28px; }
     .eyebrow { color: var(--accent); font-weight: 800; letter-spacing: 0.08em; text-transform: uppercase; font-size: 12px; }
     h1 { font-size: 42px; line-height: 1.05; margin: 12px 0; }
     h2 { font-size: 24px; margin: 0 0 12px; }
@@ -162,14 +134,7 @@ $Html = @"
     .badge.good { background: #eaf8f0; color: var(--good); }
     .dashboard { display: grid; grid-template-columns: 310px 1fr; gap: 24px; }
     .timeline { display: flex; flex-direction: column; gap: 12px; }
-    .step {
-      border: 1px solid var(--line);
-      background: #fbfcff;
-      border-radius: 16px;
-      padding: 14px 16px;
-      cursor: pointer;
-      transition: 150ms ease;
-    }
+    .step { border: 1px solid var(--line); background: #fbfcff; border-radius: 16px; padding: 14px 16px; cursor: pointer; transition: 150ms ease; }
     .step.active { border-color: var(--accent); background: #eef4ff; transform: translateX(4px); }
     .step.done { border-color: #b7dfca; background: #f1fbf5; }
     .step .label { font-weight: 800; }
@@ -179,17 +144,7 @@ $Html = @"
     .stage-label { color: var(--accent); font-weight: 800; text-transform: uppercase; letter-spacing: 0.06em; font-size: 13px; }
     .stage-headline { font-size: 32px; line-height: 1.12; margin: 12px 0; font-weight: 850; }
     .stage-detail { font-size: 18px; }
-    .engine-card {
-      margin-top: 22px;
-      border-radius: 22px;
-      border: 1px solid var(--line);
-      background: #111827;
-      color: #fff;
-      padding: 20px;
-      overflow: hidden;
-      position: relative;
-      min-height: 158px;
-    }
+    .engine-card { margin-top: 22px; border-radius: 22px; border: 1px solid var(--line); background: #111827; color: #fff; padding: 20px; overflow: hidden; min-height: 158px; }
     .engine-title { font-weight: 800; margin-bottom: 14px; }
     .engine-graphic { display: grid; grid-template-columns: repeat(6, 1fr); gap: 8px; align-items: center; }
     .cylinder, .turbo, .pipe { border-radius: 10px; height: 44px; background: rgba(255,255,255,0.18); border: 1px solid rgba(255,255,255,0.28); }
@@ -269,8 +224,8 @@ $Html = @"
 
     function renderTimeline() {
       timeline.innerHTML = '<h2>Workflow</h2>' + stages.map((stage, index) => {
-        const state = index === current ? 'active' : index < current ? 'done' : '';
-        return `<div class="step ${state}" data-index="${index}"><div class="label">${index + 1}. ${stage.label}</div><div class="id">${stage.id}</div></div>`;
+        const stateClass = index === current ? 'active' : index < current ? 'done' : '';
+        return '<div class="step ' + stateClass + '" data-index="' + index + '"><div class="label">' + (index + 1) + '. ' + stage.label + '</div><div class="id">' + stage.id + '</div></div>';
       }).join('');
       document.querySelectorAll('.step').forEach(el => {
         el.addEventListener('click', () => showStage(Number(el.dataset.index), false));
