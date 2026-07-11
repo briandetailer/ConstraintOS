@@ -58,6 +58,22 @@ def test_business_demo_ui_script_autoplays_workflow_in_browser() -> None:
         assert item in content
 
 
+def test_business_demo_ui_avoids_powershell_interpolation_bug() -> None:
+    content = SCRIPT.read_text(encoding="utf-8")
+
+    forbidden = [
+        "${state}",
+        "${index}",
+        "${stage.label}",
+        "${stage.id}",
+    ]
+    for item in forbidden:
+        assert item not in content
+
+    assert "stateClass" in content
+    assert "'<div class=\"step ' + stateClass" in content
+
+
 def test_business_demo_ui_script_shows_business_workflow_and_decision() -> None:
     content = SCRIPT.read_text(encoding="utf-8")
 
