@@ -38,7 +38,21 @@ def test_business_demo_ui_script_writes_browser_artifacts() -> None:
         "demo-data.json",
         "run-metadata.json",
         "Start-Process $IndexPath",
-        "auto-playing business workflow",
+    ]
+    for item in expected:
+        assert item in content
+
+
+def test_business_demo_ui_script_autoplays_workflow_in_browser() -> None:
+    content = SCRIPT.read_text(encoding="utf-8")
+
+    expected = [
+        "function play()",
+        "setInterval",
+        "play();",
+        "Replay demo",
+        "Next stage",
+        "showStage(current + 1",
     ]
     for item in expected:
         assert item in content
