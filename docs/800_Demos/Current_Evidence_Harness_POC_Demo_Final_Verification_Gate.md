@@ -8,6 +8,8 @@ status: final-verification-gate
 track: Business Demo Visibility Track
 progress_snapshot: docs/800_Demos/Current_Evidence_Harness_POC_Demo_Progress_Snapshot.md
 future_target_bank: Constraint-Driven Graphic Output Permutation POC v1
+latest_user_reported_current_evidence_harness_poc_demo_final_verification_gate_test_result: 4 passed
+latest_user_reported_current_evidence_harness_poc_demo_final_verification_gate_test_result_on: 2026-07-10
 ```
 
 ## Purpose
@@ -41,6 +43,16 @@ If pytest tests/test_end_to_end_fixture_poc_demo.py passes locally, record the e
 - docs/800_Demos/Current_Evidence_Harness_POC_Demo_Progress_Snapshot.md
 
 Then update the progress snapshot from 92% to 100% for the current public evidence-harness demo package.
+```
+
+## Verification record for this gate document
+
+```text
+source: user-reported local test run
+command: pytest tests/test_current_evidence_harness_poc_demo_final_verification_gate.py
+result: 4 passed
+reported_on: 2026-07-10
+assistant_ran_tests: false
 ```
 
 ## What this gate does not authorize
