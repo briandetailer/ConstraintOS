@@ -77,6 +77,30 @@ runs/business-demo-ui/<scenario>/<timestamp>/run-metadata.json
 
 This is a static fixture-only browser walkthrough for the Toyota Supra A80 2JZ-GTE twin-turbo use case. It shows a business-friendly staged flow from request, to loaded constraints, to candidate evidence, to deterministic review, to `needs_review`. It does not generate final graphics, decode images, fetch network resources, run CV/OCR, or approve candidates automatically.
 
+### Constraint-driven output permutation POC - Toyota Supra
+
+Use this fixture-safe watch script when the audience needs to see the next product-shaped demo: constraints define controlled output permutations, each permutation gets deterministic validation evidence, and approval remains blocked:
+
+```powershell
+.\scripts\watch-constraintos-output-poc.ps1
+.\scripts\watch-constraintos-output-poc.ps1 -Scenario supra_2jz_gte_twin_turbo
+.\scripts\watch-constraintos-output-poc.ps1 -Scenario supra_2jz_gte_twin_turbo -OpenBrowser
+pytest tests/test_constraint_driven_graphic_output_permutation_watch_script.py
+```
+
+Output paths:
+
+```text
+runs/output-poc/<scenario>/<timestamp>/graphic-output-manifest.json
+runs/output-poc/<scenario>/<timestamp>/graphic-output-permutations.json
+runs/output-poc/<scenario>/<timestamp>/graphic-output-validation.json
+runs/output-poc/<scenario>/<timestamp>/graphic-output-review-packet.json
+runs/output-poc/<scenario>/<timestamp>/index.html
+runs/output-poc/<scenario>/<timestamp>/run-metadata.json
+```
+
+This is a static fixture-safe output-specification demo for the Toyota Supra A80 2JZ-GTE twin-turbo use case. It writes controlled permutation specs for `turbo_system_focus`, `inline_six_engine_identity_focus`, `technical_label_density_focus`, and `reviewer_safe_minimal_focus`; validates each as `needs_review`; and preserves `approval_allowed: false`. It does not generate final graphics, load local images, decode images, inspect pixels, fetch network resources, run CV/OCR, or approve automatically.
+
 ### Business demo UI - Toyota Supra presenter and feedback workflow
 
 Use these documents after opening the browser UI with business reviewers:
@@ -85,6 +109,7 @@ Use these documents after opening the browser UI with business reviewers:
 pytest tests/test_business_demo_ui_toyota_supra_presenter_runbook.py
 pytest tests/test_business_demo_ui_toyota_supra_viewer_feedback_card.py
 pytest tests/test_business_demo_ui_toyota_supra_feedback_synthesis_log.py
+pytest tests/test_business_demo_ui_toyota_supra_readiness_handoff.py
 ```
 
 Document paths:
@@ -93,9 +118,30 @@ Document paths:
 docs/800_Demos/Business_Demo_UI_Toyota_Supra_Presenter_Runbook.md
 docs/800_Demos/Business_Demo_UI_Toyota_Supra_Viewer_Feedback_Card.md
 docs/800_Demos/Business_Demo_UI_Toyota_Supra_Feedback_Synthesis_Log.md
+docs/800_Demos/Business_Demo_UI_Toyota_Supra_Readiness_Handoff.md
 ```
 
-This workflow is documentation-only. It provides a presenter talk track, a business-viewer feedback card, and a synthesis log for deciding whether reviewer feedback supports moving to Constraint-Driven Graphic Output Permutation POC v1. It does not authorize generated final graphics, real local image input, image decoding, CV/OCR, or automatic approval.
+This workflow is documentation-only. It provides a presenter talk track, a business-viewer feedback card, a synthesis log, and a readiness handoff for deciding whether reviewer feedback supports moving to Constraint-Driven Graphic Output Permutation POC v1. It does not authorize generated final graphics, real local image input, image decoding, CV/OCR, or automatic approval.
+
+### Constraint-driven output permutation POC contract and fixture data
+
+Use these verification commands to check the gated output-permutation milestone, contract, and Toyota fixture data:
+
+```powershell
+pytest tests/test_constraint_driven_graphic_output_permutation_poc.py
+pytest tests/test_constraint_driven_graphic_output_permutation_contract.py
+pytest tests/test_constraint_driven_graphic_output_permutation_toyota_fixtures.py
+```
+
+Document paths:
+
+```text
+docs/500_Milestones/Constraint_Driven_Graphic_Output_Permutation_POC_v1.md
+docs/800_Demos/Constraint_Driven_Graphic_Output_Permutation_POC_Contract.md
+docs/800_Demos/Constraint_Driven_Graphic_Output_Permutation_POC_Toyota_Fixtures.md
+```
+
+These documents define the fixture-safe output contract and deterministic Toyota Supra A80 / 2JZ-GTE permutation data. They do not authorize generated final graphics, production artwork, real local image input, image decoding, pixel inspection, CV/OCR, or automatic approval.
 
 ### Current evidence-harness POC demo guide
 
@@ -462,6 +508,11 @@ pytest tests/test_business_demo_ui_toyota_supra.py
 pytest tests/test_business_demo_ui_toyota_supra_presenter_runbook.py
 pytest tests/test_business_demo_ui_toyota_supra_viewer_feedback_card.py
 pytest tests/test_business_demo_ui_toyota_supra_feedback_synthesis_log.py
+pytest tests/test_business_demo_ui_toyota_supra_readiness_handoff.py
+pytest tests/test_constraint_driven_graphic_output_permutation_poc.py
+pytest tests/test_constraint_driven_graphic_output_permutation_contract.py
+pytest tests/test_constraint_driven_graphic_output_permutation_toyota_fixtures.py
+pytest tests/test_constraint_driven_graphic_output_permutation_watch_script.py
 pytest tests/test_current_evidence_harness_poc_demo_guide.py
 pytest tests/test_current_evidence_harness_poc_demo_readiness_packet.py
 pytest tests/test_public_demo_reviewer_entry_point.py
@@ -533,7 +584,7 @@ supra_2jz_gte_twin_turbo
 - These commands are dry-run / fixture-only / design-only / contract-only / read-only / helper-only for graphics validation.
 - These commands do not generate images.
 - These commands do not evaluate real generated candidates yet.
-- The end-to-end fixture POC demo, business demo UI, public demo reviewer entry point, current evidence-harness POC demo guide, current evidence-harness POC demo readiness packet, current evidence-harness POC demo feedback packet, demo feedback issue template, current evidence-harness POC demo feedback triage guide, current evidence-harness POC demo feedback synthesis log, current evidence-harness POC demo feedback action backlog, current evidence-harness POC demo progress snapshot, current evidence-harness POC demo final verification gate, candidate byte-loader demo watch script, candidate image-byte loading minimal implementation, minimal CLI, minimal CLI review packet, fixture artifact registry, fixture registry review packet, fixture registry failure matrix, and fixture registry failure review packet are limited to explicit in-memory artifact registry / deterministic fixture bytes and descriptor-only/failure-matrix review.
+- The end-to-end fixture POC demo, business demo UI, output permutation POC watch script, public demo reviewer entry point, current evidence-harness POC demo guide, current evidence-harness POC demo readiness packet, current evidence-harness POC demo feedback packet, demo feedback issue template, current evidence-harness POC demo feedback triage guide, current evidence-harness POC demo feedback synthesis log, current evidence-harness POC demo feedback action backlog, current evidence-harness POC demo progress snapshot, current evidence-harness POC demo final verification gate, candidate byte-loader demo watch script, candidate image-byte loading minimal implementation, minimal CLI, minimal CLI review packet, fixture artifact registry, fixture registry review packet, fixture registry failure matrix, and fixture registry failure review packet are limited to explicit in-memory artifact registry / deterministic fixture bytes and descriptor-only/failure-matrix review.
 - Real candidate image intake design, candidate image byte-loading design, implementation design/contract, pre-implementation exit review, byte-loading contract/discovery/review-packet fixtures, intake manifests, and intake review packets do not decode images.
 - Approval expectations remain contract-driven and default uncertainty to needs_review.
 ```
