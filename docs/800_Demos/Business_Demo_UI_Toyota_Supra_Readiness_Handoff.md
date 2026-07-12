@@ -15,6 +15,8 @@ viewer_feedback_card: docs/800_Demos/Business_Demo_UI_Toyota_Supra_Viewer_Feedba
 feedback_synthesis_log: docs/800_Demos/Business_Demo_UI_Toyota_Supra_Feedback_Synthesis_Log.md
 latest_user_reported_business_demo_ui_toyota_supra_readiness_handoff_test_result: 4 passed
 latest_user_reported_business_demo_ui_toyota_supra_readiness_handoff_test_result_on: 2026-07-10
+latest_user_reported_business_demo_ui_toyota_supra_readiness_handoff_status_fix_rerun_result: 4 passed
+latest_user_reported_business_demo_ui_toyota_supra_readiness_handoff_status_fix_rerun_on: 2026-07-10
 ```
 
 ## Purpose
@@ -77,6 +79,7 @@ presenter_runbook_test: 5 passed
 viewer_feedback_card_test: 5 passed
 feedback_synthesis_log_test: 4 passed
 readiness_handoff_test: 4 passed
+readiness_handoff_status_fix_rerun: 4 passed
 assistant_ran_tests: false
 ```
 
@@ -84,6 +87,16 @@ assistant_ran_tests: false
 
 ```text
 source: user-reported local test run
+command: pytest tests/test_business_demo_ui_toyota_supra_readiness_handoff.py
+result: 4 passed
+reported_on: 2026-07-10
+assistant_ran_tests: false
+```
+
+## Post-fix verification record
+
+```text
+source: user-reported local test run after ready-to-show status correction
 command: pytest tests/test_business_demo_ui_toyota_supra_readiness_handoff.py
 result: 4 passed
 reported_on: 2026-07-10
