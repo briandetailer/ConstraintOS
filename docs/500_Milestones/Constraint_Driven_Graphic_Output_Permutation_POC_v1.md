@@ -6,6 +6,10 @@
 milestone: Constraint-Driven Graphic Output Permutation POC v1
 status: kickoff-ready
 kickoff_status: complete
+phase_1_contract_status: complete
+phase_2_toyota_fixture_data_status: complete
+phase_3_watch_script_status: complete
+phase_4_browser_demo_status: active
 started_on: 2026-07-10
 track: Business Demo Visibility Track
 previous_demo_package: Business Demo UI Toyota Supra
@@ -15,6 +19,9 @@ scenario_key: supra_2jz_gte_twin_turbo
 implementation_authority: gated-fixture-safe-only
 latest_user_reported_constraint_driven_graphic_output_permutation_poc_test_result: 4 passed
 latest_user_reported_constraint_driven_graphic_output_permutation_poc_test_result_on: 2026-07-10
+latest_user_reported_constraint_driven_graphic_output_permutation_watch_script_test_result: 8 passed
+latest_user_reported_constraint_driven_graphic_output_permutation_watch_script_test_result_on: 2026-07-10
+assistant_ran_tests: false
 ```
 
 ## Purpose
@@ -88,13 +95,13 @@ graphic-output-review-packet.json
    Business intent: show a conservative output specification that exposes only validated requirements and leaves uncertain elements in needs_review.
 ```
 
-## Proposed demo command
+## Demo command
 
 ```powershell
 .\scripts\watch-constraintos-output-poc.ps1 -Scenario supra_2jz_gte_twin_turbo -OpenBrowser
 ```
 
-## Proposed run folder
+## Run folder
 
 ```text
 runs/output-poc/<scenario>/<timestamp>/graphic-output-manifest.json
@@ -160,12 +167,33 @@ Phase 5: feedback loop
 - Connect output demo feedback to the existing Toyota business demo feedback synthesis workflow.
 ```
 
+## Phase status summary
+
+```text
+kickoff: complete
+phase_1_contract_and_data_model: complete
+phase_2_deterministic_toyota_fixture_data: complete
+phase_3_watch_script: complete
+phase_4_browser_business_demo: active
+phase_5_feedback_loop: pending
+```
+
 ## Verification record
 
 ```text
 source: user-reported local test run
 command: pytest tests/test_constraint_driven_graphic_output_permutation_poc.py
 result: 4 passed
+reported_on: 2026-07-10
+assistant_ran_tests: false
+```
+
+## Phase 3 verification record
+
+```text
+source: user-reported local test run
+command: pytest tests/test_constraint_driven_graphic_output_permutation_watch_script.py
+result: 8 passed
 reported_on: 2026-07-10
 assistant_ran_tests: false
 ```
@@ -189,4 +217,5 @@ assistant_ran_tests: false
 
 ```powershell
 pytest tests/test_constraint_driven_graphic_output_permutation_poc.py
+pytest tests/test_constraint_driven_graphic_output_permutation_watch_script.py
 ```
