@@ -163,7 +163,7 @@ $ReviewPacket = [ordered]@{
     final_decision = $FinalDecision
     approval_allowed = $ApprovalAllowed
     why_approval_is_blocked = "The current POC defines controlled output specifications only; it does not generate production artwork or inspect real images."
-    next_recommended_action = "Review business feedback and continue toward the browser output-permutation demo if the trust-layer story is understood."
+    next_recommended_action = "Review business feedback and continue toward the output-permutation feedback loop if the trust-layer story is understood."
 }
 
 $Metadata = [ordered]@{
@@ -179,6 +179,7 @@ $Metadata = [ordered]@{
     created_at_local = (Get-Date).ToString("o")
     final_decision = $FinalDecision
     approval_allowed = $ApprovalAllowed
+    browser_walkthrough = "constraints -> permutations -> validation -> needs_review"
     guardrails = @(
         "No generated final graphics",
         "No production artwork generation",
@@ -206,19 +207,28 @@ $Html = @'
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>ConstraintOS Output Permutation POC - Toyota Supra</title>
   <style>
-    body { margin: 0; font-family: Segoe UI, Roboto, Arial, sans-serif; background: #f5f7fb; color: #172033; }
-    main { max-width: 1120px; margin: 0 auto; padding: 36px; }
-    .card { background: white; border: 1px solid #d9e1ef; border-radius: 22px; padding: 24px; box-shadow: 0 18px 45px rgba(20, 34, 66, 0.10); margin-bottom: 18px; }
-    .eyebrow { color: #2458d3; font-size: 12px; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; }
-    h1 { font-size: 40px; margin: 12px 0; }
+    :root { color-scheme: light; --bg: #f5f7fb; --panel: #ffffff; --ink: #172033; --muted: #5d6a7f; --line: #d9e1ef; --accent: #2458d3; --warn: #a16207; --dark: #111827; }
+    * { box-sizing: border-box; }
+    body { margin: 0; font-family: Segoe UI, Roboto, Arial, sans-serif; background: radial-gradient(circle at top left, #e9f0ff 0, var(--bg) 38%, #eef3f9 100%); color: var(--ink); }
+    main { max-width: 1180px; margin: 0 auto; padding: 36px; }
+    .card { background: var(--panel); border: 1px solid var(--line); border-radius: 22px; padding: 24px; box-shadow: 0 18px 45px rgba(20, 34, 66, 0.10); margin-bottom: 18px; }
+    .eyebrow { color: var(--accent); font-size: 12px; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; }
+    h1 { font-size: 42px; line-height: 1.05; margin: 12px 0; }
     h2 { margin: 0 0 10px; }
-    p { color: #5d6a7f; line-height: 1.55; }
+    h3 { margin: 0 0 8px; }
+    p { color: var(--muted); line-height: 1.55; }
+    .flow { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 14px; margin-top: 18px; }
+    .flow-step { border: 1px solid var(--line); border-radius: 18px; background: #fbfcff; padding: 16px; }
+    .flow-step strong { display: block; margin-bottom: 6px; }
     .grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px; }
-    .variant { border: 1px solid #d9e1ef; border-radius: 18px; padding: 18px; background: #fbfcff; }
-    .tag { display: inline-block; border-radius: 999px; padding: 7px 10px; background: #fff6df; color: #995f00; font-weight: 800; font-size: 12px; }
-    .artifact { font-family: Consolas, monospace; background: #111827; color: #dbeafe; border-radius: 12px; padding: 10px; font-size: 13px; }
-    ul { color: #5d6a7f; }
-    @media (max-width: 900px) { .grid { grid-template-columns: 1fr; } }
+    .variant { border: 1px solid var(--line); border-radius: 18px; padding: 18px; background: #fbfcff; }
+    .tag { display: inline-block; border-radius: 999px; padding: 7px 10px; background: #fff6df; color: var(--warn); font-weight: 800; font-size: 12px; margin-bottom: 10px; }
+    .artifact { font-family: Consolas, monospace; background: var(--dark); color: #dbeafe; border-radius: 12px; padding: 10px; font-size: 13px; overflow-wrap: anywhere; }
+    .decision { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; }
+    .metric { border: 1px solid var(--line); border-radius: 18px; background: #fbfcff; padding: 18px; }
+    .metric .value { font-size: 24px; font-weight: 900; }
+    ul { color: var(--muted); }
+    @media (max-width: 900px) { .grid, .flow, .decision { grid-template-columns: 1fr; } }
   </style>
 </head>
 <body>
@@ -226,15 +236,33 @@ $Html = @'
     <section class="card">
       <div class="eyebrow">ConstraintOS output permutation POC</div>
       <h1>Toyota Supra / 2JZ-GTE fixture-safe output permutations</h1>
-      <p>This static page shows the controlled output layer: constraints define multiple output specifications, each specification is validated, and approval remains blocked.</p>
+      <p>This browser walkthrough shows the controlled output layer: loaded constraints define multiple output specifications, each specification gets deterministic validation evidence, and approval remains blocked.</p>
       <p><strong>Final decision:</strong> needs_review. <strong>Approval allowed:</strong> false.</p>
+      <div class="flow" aria-label="demo walkthrough flow">
+        <div class="flow-step"><strong>1. Constraints loaded</strong><span>Toyota Supra A80, 2JZ-GTE inline-six, sequential twin-turbo, and wrong-engine exclusions.</span></div>
+        <div class="flow-step"><strong>2. Output permutations</strong><span>Four fixture-safe output specifications are defined from the same requirement set.</span></div>
+        <div class="flow-step"><strong>3. Deterministic validation</strong><span>Each permutation is checked against explicit constraints and uncertainty is surfaced.</span></div>
+        <div class="flow-step"><strong>4. needs_review</strong><span>Approval stays blocked because this is not final generated artwork or image inspection.</span></div>
+      </div>
     </section>
 
-    <section class="grid">
-      <article class="variant"><span class="tag">needs_review</span><h2>turbo_system_focus</h2><p>Emphasizes the sequential twin-turbo system without claiming final artwork or image verification.</p><div class="artifact">fixture-placeholder://output-poc/supra/turbo-system-focus</div></article>
-      <article class="variant"><span class="tag">needs_review</span><h2>inline_six_engine_identity_focus</h2><p>Emphasizes Toyota Supra A80 / 2JZ-GTE inline-six identity and wrong-engine exclusions.</p><div class="artifact">fixture-placeholder://output-poc/supra/inline-six-identity-focus</div></article>
-      <article class="variant"><span class="tag">needs_review</span><h2>technical_label_density_focus</h2><p>Emphasizes dense technical publishing callouts while keeping uncertainty visible.</p><div class="artifact">fixture-placeholder://output-poc/supra/technical-label-density-focus</div></article>
-      <article class="variant"><span class="tag">needs_review</span><h2>reviewer_safe_minimal_focus</h2><p>Emphasizes a conservative reviewer-safe specification that only exposes validated claims.</p><div class="artifact">fixture-placeholder://output-poc/supra/reviewer-safe-minimal-focus</div></article>
+    <section class="card">
+      <h2>Controlled output permutations</h2>
+      <div class="grid">
+        <article class="variant"><span class="tag">needs_review</span><h3>turbo_system_focus</h3><p>Emphasizes the sequential twin-turbo system without claiming final artwork or image verification.</p><div class="artifact">fixture-placeholder://output-poc/supra/turbo-system-focus</div></article>
+        <article class="variant"><span class="tag">needs_review</span><h3>inline_six_engine_identity_focus</h3><p>Emphasizes Toyota Supra A80 / 2JZ-GTE inline-six identity and wrong-engine exclusions.</p><div class="artifact">fixture-placeholder://output-poc/supra/inline-six-identity-focus</div></article>
+        <article class="variant"><span class="tag">needs_review</span><h3>technical_label_density_focus</h3><p>Emphasizes dense technical publishing callouts while keeping uncertainty visible.</p><div class="artifact">fixture-placeholder://output-poc/supra/technical-label-density-focus</div></article>
+        <article class="variant"><span class="tag">needs_review</span><h3>reviewer_safe_minimal_focus</h3><p>Emphasizes a conservative reviewer-safe specification that only exposes validated claims.</p><div class="artifact">fixture-placeholder://output-poc/supra/reviewer-safe-minimal-focus</div></article>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>Validation outcome</h2>
+      <div class="decision">
+        <div class="metric"><div class="value">4</div><p>fixture-safe permutations</p></div>
+        <div class="metric"><div class="value">needs_review</div><p>final_decision</p></div>
+        <div class="metric"><div class="value">false</div><p>approval_allowed</p></div>
+      </div>
     </section>
 
     <section class="card">
