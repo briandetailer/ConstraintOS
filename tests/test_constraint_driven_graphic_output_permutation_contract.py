@@ -12,6 +12,7 @@ def test_output_permutation_contract_exists_and_is_fixture_safe() -> None:
         "# Constraint-Driven Graphic Output Permutation POC Contract",
         "status: contract-defined",
         "phase: Phase 1 - contract and data model",
+        "phase_status: complete",
         "scenario_key: supra_2jz_gte_twin_turbo",
         "implementation_authority: fixture-safe-output-specifications-only",
         "The POC may define output specifications.",
@@ -125,6 +126,21 @@ def test_output_permutation_contract_blocks_real_image_and_auto_approval_fields(
         "No pixel inspection.",
         "No CV/OCR provider integration.",
         "No automatic approval.",
+    ]
+    for item in expected:
+        assert item in content
+
+
+def test_output_permutation_contract_records_phase_1_verification() -> None:
+    content = CONTRACT.read_text(encoding="utf-8")
+
+    expected = [
+        "latest_user_reported_constraint_driven_graphic_output_permutation_contract_test_result: 7 passed",
+        "source: user-reported local test run",
+        "command: pytest tests/test_constraint_driven_graphic_output_permutation_contract.py",
+        "result: 7 passed",
+        "assistant_ran_tests: false",
+        "[x] Verification test result recorded.",
     ]
     for item in expected:
         assert item in content
