@@ -12,11 +12,15 @@ fixture_data: docs/800_Demos/Constraint_Driven_Graphic_Output_Permutation_POC_To
 watch_script: scripts/watch-constraintos-output-poc.ps1
 scenario_key: supra_2jz_gte_twin_turbo
 primary_use_case: Toyota Supra A80 2JZ-GTE Twin-Turbo Technical Graphic
-latest_user_reported_constraint_driven_graphic_output_permutation_watch_script_test_result: 8 passed
-latest_user_reported_constraint_driven_graphic_output_permutation_watch_script_test_result_on: 2026-07-10
+latest_user_reported_constraint_driven_graphic_output_permutation_watch_script_test_result: 9 passed
+latest_user_reported_constraint_driven_graphic_output_permutation_watch_script_test_result_on: 2026-07-12
 latest_user_reported_constraint_driven_graphic_output_permutation_reviewer_handoff_test_result: 5 passed
 latest_user_reported_constraint_driven_graphic_output_permutation_reviewer_handoff_test_result_on: 2026-07-12
+latest_user_reported_constraint_driven_graphic_output_permutation_browser_demo_run_created: true
+latest_user_reported_constraint_driven_graphic_output_permutation_browser_demo_run_created_on: 2026-07-12
+latest_user_reported_constraint_driven_graphic_output_permutation_browser_demo_index_html: D:\Code\ConstraintOS\runs\output-poc\supra_2jz_gte_twin_turbo\20260712-151228\index.html
 assistant_ran_tests: false
+assistant_ran_demo: false
 ```
 
 ## The file to show a reviewer
@@ -25,6 +29,12 @@ The reviewer-facing file is the generated browser page:
 
 ```text
 runs/output-poc/supra_2jz_gte_twin_turbo/<timestamp>/index.html
+```
+
+For the latest user-reported run, the generated page is:
+
+```text
+D:\Code\ConstraintOS\runs\output-poc\supra_2jz_gte_twin_turbo\20260712-151228\index.html
 ```
 
 Do not point a non-technical reviewer directly at the PowerShell script, JSON files, or source documents unless they specifically want implementation details.
@@ -90,8 +100,8 @@ The `index.html` is the business-viewable page. The JSON files are supporting ev
 ```text
 source: user-reported local test run
 command: pytest tests/test_constraint_driven_graphic_output_permutation_watch_script.py
-result: 8 passed
-reported_on: 2026-07-10
+result: 9 passed
+reported_on: 2026-07-12
 assistant_ran_tests: false
 ```
 
@@ -103,6 +113,20 @@ command: pytest tests/test_constraint_driven_graphic_output_permutation_reviewer
 result: 5 passed
 reported_on: 2026-07-12
 assistant_ran_tests: false
+```
+
+## Latest user-reported browser demo run
+
+```text
+source: user-reported local script run
+command: .\scripts\watch-constraintos-output-poc.ps1 -Scenario supra_2jz_gte_twin_turbo -OpenBrowser
+result: browser run created
+run_dir: D:\Code\ConstraintOS\runs\output-poc\supra_2jz_gte_twin_turbo\20260712-151228
+index_html: D:\Code\ConstraintOS\runs\output-poc\supra_2jz_gte_twin_turbo\20260712-151228\index.html
+final_decision: needs_review
+approval_allowed: false
+reported_on: 2026-07-12
+assistant_ran_demo: false
 ```
 
 ## Guardrails
