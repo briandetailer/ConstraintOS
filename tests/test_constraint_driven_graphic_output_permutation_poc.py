@@ -10,6 +10,8 @@ def test_constraint_driven_output_permutation_poc_milestone_exists() -> None:
     assert "# Constraint-Driven Graphic Output Permutation POC v1" in content
     assert "status: kickoff-ready" in content
     assert "kickoff_status: complete" in content
+    assert "phase_3_watch_script_status: complete" in content
+    assert "phase_4_browser_demo_status: active" in content
     assert "Business Demo UI Toyota Supra" in content
     assert "Toyota Supra A80 2JZ-GTE Twin-Turbo Technical Graphic" in content
     assert "scenario_key: supra_2jz_gte_twin_turbo" in content
@@ -112,6 +114,34 @@ def test_constraint_driven_output_permutation_records_user_reported_verification
         "source: user-reported local test run",
         "command: pytest tests/test_constraint_driven_graphic_output_permutation_poc.py",
         "result: 4 passed",
+        "assistant_ran_tests: false",
+    ]
+    for item in expected:
+        assert item in content
+
+
+def test_constraint_driven_output_permutation_records_phase_status_summary() -> None:
+    content = MILESTONE.read_text(encoding="utf-8")
+
+    expected = [
+        "phase_1_contract_and_data_model: complete",
+        "phase_2_deterministic_toyota_fixture_data: complete",
+        "phase_3_watch_script: complete",
+        "phase_4_browser_business_demo: active",
+        "phase_5_feedback_loop: pending",
+    ]
+    for item in expected:
+        assert item in content
+
+
+def test_constraint_driven_output_permutation_records_watch_script_verification() -> None:
+    content = MILESTONE.read_text(encoding="utf-8")
+
+    expected = [
+        "latest_user_reported_constraint_driven_graphic_output_permutation_watch_script_test_result: 8 passed",
+        "command: pytest tests/test_constraint_driven_graphic_output_permutation_watch_script.py",
+        "result: 8 passed",
+        "reported_on: 2026-07-10",
         "assistant_ran_tests: false",
     ]
     for item in expected:
