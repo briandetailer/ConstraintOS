@@ -5,13 +5,16 @@
 ```text
 demo: Constraint-Driven Graphic Output Permutation POC
 status: fixture-data-defined
+phase: Phase 2 - deterministic Toyota fixture data
+phase_status: complete
 track: Business Demo Visibility Track
 milestone: docs/500_Milestones/Constraint_Driven_Graphic_Output_Permutation_POC_v1.md
 contract: docs/800_Demos/Constraint_Driven_Graphic_Output_Permutation_POC_Contract.md
-phase: Phase 2 - deterministic Toyota fixture data
 scenario_key: supra_2jz_gte_twin_turbo
 primary_use_case: Toyota Supra A80 2JZ-GTE Twin-Turbo Technical Graphic
 implementation_authority: deterministic-fixture-data-only
+latest_user_reported_constraint_driven_graphic_output_permutation_toyota_fixtures_test_result: 8 passed
+latest_user_reported_constraint_driven_graphic_output_permutation_toyota_fixtures_test_result_on: 2026-07-10
 ```
 
 ## Purpose
@@ -233,6 +236,16 @@ cv_provider
 auto_approved
 ```
 
+## Verification record
+
+```text
+source: user-reported local test run
+command: pytest tests/test_constraint_driven_graphic_output_permutation_toyota_fixtures.py
+result: 8 passed
+reported_on: 2026-07-10
+assistant_ran_tests: false
+```
+
 ## Guardrails
 
 ```text
@@ -262,7 +275,7 @@ auto_approved
 [x] Each permutation defaults to needs_review.
 [x] approval_allowed remains false.
 [x] Guardrails are preserved.
-[ ] Verification test result recorded.
+[x] Verification test result recorded.
 ```
 
 ## Verification command
