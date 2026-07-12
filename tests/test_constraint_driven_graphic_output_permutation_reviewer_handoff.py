@@ -52,14 +52,16 @@ def test_output_permutation_reviewer_handoff_keeps_json_as_supporting_evidence()
         assert item in content
 
 
-def test_output_permutation_reviewer_handoff_records_watch_script_verification() -> None:
+def test_output_permutation_reviewer_handoff_records_watch_script_and_handoff_verification() -> None:
     content = HANDOFF.read_text(encoding="utf-8")
 
     expected = [
         "latest_user_reported_constraint_driven_graphic_output_permutation_watch_script_test_result: 8 passed",
-        "source: user-reported local test run",
         "command: pytest tests/test_constraint_driven_graphic_output_permutation_watch_script.py",
         "result: 8 passed",
+        "latest_user_reported_constraint_driven_graphic_output_permutation_reviewer_handoff_test_result: 5 passed",
+        "command: pytest tests/test_constraint_driven_graphic_output_permutation_reviewer_handoff.py",
+        "result: 5 passed",
         "assistant_ran_tests: false",
     ]
     for item in expected:
