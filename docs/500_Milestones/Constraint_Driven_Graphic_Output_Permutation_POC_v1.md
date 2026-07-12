@@ -9,7 +9,7 @@ kickoff_status: complete
 phase_1_contract_status: complete
 phase_2_toyota_fixture_data_status: complete
 phase_3_watch_script_status: complete
-phase_4_browser_demo_status: active
+phase_4_browser_demo_status: ready-to-show
 started_on: 2026-07-10
 track: Business Demo Visibility Track
 previous_demo_package: Business Demo UI Toyota Supra
@@ -17,11 +17,20 @@ previous_handoff: docs/800_Demos/Business_Demo_UI_Toyota_Supra_Readiness_Handoff
 primary_use_case: Toyota Supra A80 2JZ-GTE Twin-Turbo Technical Graphic
 scenario_key: supra_2jz_gte_twin_turbo
 implementation_authority: gated-fixture-safe-only
-latest_user_reported_constraint_driven_graphic_output_permutation_poc_test_result: 4 passed
-latest_user_reported_constraint_driven_graphic_output_permutation_poc_test_result_on: 2026-07-10
-latest_user_reported_constraint_driven_graphic_output_permutation_watch_script_test_result: 8 passed
-latest_user_reported_constraint_driven_graphic_output_permutation_watch_script_test_result_on: 2026-07-10
+latest_user_reported_constraint_driven_graphic_output_permutation_poc_test_result: 9 passed
+latest_user_reported_constraint_driven_graphic_output_permutation_poc_test_result_on: 2026-07-12
+latest_user_reported_constraint_driven_graphic_output_permutation_watch_script_test_result: 9 passed
+latest_user_reported_constraint_driven_graphic_output_permutation_watch_script_test_result_on: 2026-07-12
+latest_user_reported_constraint_driven_graphic_output_permutation_reviewer_handoff_test_result: 5 passed
+latest_user_reported_constraint_driven_graphic_output_permutation_reviewer_handoff_test_result_on: 2026-07-12
+latest_user_reported_constraint_driven_graphic_output_permutation_browser_demo_run_created: true
+latest_user_reported_constraint_driven_graphic_output_permutation_browser_demo_run_created_on: 2026-07-12
+latest_user_reported_constraint_driven_graphic_output_permutation_browser_demo_run_dir: D:\Code\ConstraintOS\runs\output-poc\supra_2jz_gte_twin_turbo\20260712-151228
+latest_user_reported_constraint_driven_graphic_output_permutation_browser_demo_index_html: D:\Code\ConstraintOS\runs\output-poc\supra_2jz_gte_twin_turbo\20260712-151228\index.html
+latest_user_reported_constraint_driven_graphic_output_permutation_browser_demo_final_decision: needs_review
+latest_user_reported_constraint_driven_graphic_output_permutation_browser_demo_approval_allowed: false
 assistant_ran_tests: false
+assistant_ran_demo: false
 ```
 
 ## Purpose
@@ -112,6 +121,24 @@ runs/output-poc/<scenario>/<timestamp>/index.html
 runs/output-poc/<scenario>/<timestamp>/run-metadata.json
 ```
 
+## Latest user-reported browser demo run
+
+```text
+source: user-reported local script run
+command: .\scripts\watch-constraintos-output-poc.ps1 -Scenario supra_2jz_gte_twin_turbo -OpenBrowser
+result: browser run created
+run_dir: D:\Code\ConstraintOS\runs\output-poc\supra_2jz_gte_twin_turbo\20260712-151228
+index_html: D:\Code\ConstraintOS\runs\output-poc\supra_2jz_gte_twin_turbo\20260712-151228\index.html
+manifest: D:\Code\ConstraintOS\runs\output-poc\supra_2jz_gte_twin_turbo\20260712-151228\graphic-output-manifest.json
+permutations: D:\Code\ConstraintOS\runs\output-poc\supra_2jz_gte_twin_turbo\20260712-151228\graphic-output-permutations.json
+validation: D:\Code\ConstraintOS\runs\output-poc\supra_2jz_gte_twin_turbo\20260712-151228\graphic-output-validation.json
+review_packet: D:\Code\ConstraintOS\runs\output-poc\supra_2jz_gte_twin_turbo\20260712-151228\graphic-output-review-packet.json
+final_decision: needs_review
+approval_allowed: false
+reported_on: 2026-07-12
+assistant_ran_demo: false
+```
+
 ## Out of scope until separately authorized
 
 ```text
@@ -174,7 +201,7 @@ kickoff: complete
 phase_1_contract_and_data_model: complete
 phase_2_deterministic_toyota_fixture_data: complete
 phase_3_watch_script: complete
-phase_4_browser_business_demo: active
+phase_4_browser_business_demo: ready-to-show
 phase_5_feedback_loop: pending
 ```
 
@@ -183,18 +210,28 @@ phase_5_feedback_loop: pending
 ```text
 source: user-reported local test run
 command: pytest tests/test_constraint_driven_graphic_output_permutation_poc.py
-result: 4 passed
-reported_on: 2026-07-10
+result: 9 passed
+reported_on: 2026-07-12
 assistant_ran_tests: false
 ```
 
-## Phase 3 verification record
+## Phase 3 / Phase 4 watch-script verification record
 
 ```text
 source: user-reported local test run
 command: pytest tests/test_constraint_driven_graphic_output_permutation_watch_script.py
-result: 8 passed
-reported_on: 2026-07-10
+result: 9 passed
+reported_on: 2026-07-12
+assistant_ran_tests: false
+```
+
+## Reviewer handoff verification record
+
+```text
+source: user-reported local test run
+command: pytest tests/test_constraint_driven_graphic_output_permutation_reviewer_handoff.py
+result: 5 passed
+reported_on: 2026-07-12
 assistant_ran_tests: false
 ```
 
@@ -218,4 +255,5 @@ assistant_ran_tests: false
 ```powershell
 pytest tests/test_constraint_driven_graphic_output_permutation_poc.py
 pytest tests/test_constraint_driven_graphic_output_permutation_watch_script.py
+pytest tests/test_constraint_driven_graphic_output_permutation_reviewer_handoff.py
 ```
