@@ -12,6 +12,7 @@ def test_output_permutation_reviewer_handoff_identifies_generated_index_html() -
         "status: ready-to-show",
         "scripts/watch-constraintos-output-poc.ps1",
         "runs/output-poc/supra_2jz_gte_twin_turbo/<timestamp>/index.html",
+        "D:\\Code\\ConstraintOS\\runs\\output-poc\\supra_2jz_gte_twin_turbo\\20260712-151228\\index.html",
         "The `-OpenBrowser` flag opens the generated `index.html` automatically.",
         "Do not point a non-technical reviewer directly at the PowerShell script, JSON files, or source documents",
     ]
@@ -61,14 +62,18 @@ def test_output_permutation_reviewer_handoff_records_watch_script_verification()
     content = HANDOFF.read_text(encoding="utf-8")
 
     expected = [
-        "latest_user_reported_constraint_driven_graphic_output_permutation_watch_script_test_result: 8 passed",
+        "latest_user_reported_constraint_driven_graphic_output_permutation_watch_script_test_result: 9 passed",
         "source: user-reported local test run",
         "command: pytest tests/test_constraint_driven_graphic_output_permutation_watch_script.py",
-        "result: 8 passed",
+        "result: 9 passed",
         "latest_user_reported_constraint_driven_graphic_output_permutation_reviewer_handoff_test_result: 5 passed",
         "command: pytest tests/test_constraint_driven_graphic_output_permutation_reviewer_handoff.py",
         "result: 5 passed",
+        "latest_user_reported_constraint_driven_graphic_output_permutation_browser_demo_run_created: true",
+        "source: user-reported local script run",
+        "result: browser run created",
         "assistant_ran_tests: false",
+        "assistant_ran_demo: false",
     ]
     for item in expected:
         assert item in content
