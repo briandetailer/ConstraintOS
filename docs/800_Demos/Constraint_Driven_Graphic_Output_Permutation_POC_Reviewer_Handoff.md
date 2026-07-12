@@ -45,6 +45,11 @@ The `-OpenBrowser` flag opens the generated `index.html` automatically.
 ```text
 - A browser page titled around the ConstraintOS output permutation POC.
 - The Toyota Supra A80 / 2JZ-GTE twin-turbo use case.
+- A visible four-step walkthrough:
+  1. Constraints loaded
+  2. Output permutations
+  3. Deterministic validation
+  4. needs_review
 - Four fixture-safe output permutations:
   - turbo_system_focus
   - inline_six_engine_identity_focus
@@ -74,9 +79,10 @@ The `index.html` is the business-viewable page. The JSON files are supporting ev
 1. Run the watch script with -OpenBrowser.
 2. Let the reviewer look at the generated index.html page.
 3. Explain that this is the controlled output layer: constraints define multiple output specifications.
-4. Point out that all variants remain needs_review.
-5. Explain that approval stays blocked because this is still fixture-safe and not final generated artwork.
-6. Use the JSON files only if the reviewer asks how the page is grounded.
+4. Walk the reviewer through constraints loaded -> output permutations -> deterministic validation -> needs_review.
+5. Point out that all variants remain needs_review.
+6. Explain that approval stays blocked because this is still fixture-safe and not final generated artwork.
+7. Use the JSON files only if the reviewer asks how the page is grounded.
 ```
 
 ## Verification record
