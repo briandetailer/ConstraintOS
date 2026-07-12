@@ -136,6 +136,24 @@ def test_output_permutation_watch_script_can_open_browser_when_requested() -> No
     assert "Start-Process $IndexPath" in content
 
 
+def test_output_permutation_watch_script_browser_page_shows_phase_4_walkthrough() -> None:
+    content = SCRIPT.read_text(encoding="utf-8")
+
+    expected = [
+        "browser_walkthrough = \"constraints -> permutations -> validation -> needs_review\"",
+        "1. Constraints loaded",
+        "2. Output permutations",
+        "3. Deterministic validation",
+        "4. needs_review",
+        "Validation outcome",
+        "fixture-safe output permutations",
+        "Final decision:</strong> needs_review",
+        "Approval allowed:</strong> false",
+    ]
+    for item in expected:
+        assert item in content
+
+
 def test_output_permutation_watch_script_is_in_command_reference() -> None:
     content = COMMAND_REFERENCE.read_text(encoding="utf-8")
 
