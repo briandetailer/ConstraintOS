@@ -5,6 +5,7 @@
 ```text
 milestone: Constraint-Driven Graphic Output Permutation POC v1
 status: kickoff-ready
+kickoff_status: complete
 started_on: 2026-07-10
 track: Business Demo Visibility Track
 previous_demo_package: Business Demo UI Toyota Supra
@@ -12,6 +13,8 @@ previous_handoff: docs/800_Demos/Business_Demo_UI_Toyota_Supra_Readiness_Handoff
 primary_use_case: Toyota Supra A80 2JZ-GTE Twin-Turbo Technical Graphic
 scenario_key: supra_2jz_gte_twin_turbo
 implementation_authority: gated-fixture-safe-only
+latest_user_reported_constraint_driven_graphic_output_permutation_poc_test_result: 4 passed
+latest_user_reported_constraint_driven_graphic_output_permutation_poc_test_result_on: 2026-07-10
 ```
 
 ## Purpose
@@ -157,6 +160,16 @@ Phase 5: feedback loop
 - Connect output demo feedback to the existing Toyota business demo feedback synthesis workflow.
 ```
 
+## Verification record
+
+```text
+source: user-reported local test run
+command: pytest tests/test_constraint_driven_graphic_output_permutation_poc.py
+result: 4 passed
+reported_on: 2026-07-10
+assistant_ran_tests: false
+```
+
 ## Done criteria for this kickoff slice
 
 ```text
@@ -169,7 +182,7 @@ Phase 5: feedback loop
 [x] Proposed run-folder outputs are recorded.
 [x] Implementation phases are defined.
 [x] Guardrails are preserved.
-[ ] Verification test result recorded.
+[x] Verification test result recorded.
 ```
 
 ## Verification command
