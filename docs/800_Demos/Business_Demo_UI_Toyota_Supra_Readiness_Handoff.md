@@ -4,7 +4,7 @@
 
 ```text
 demo: Business Demo UI Toyota Supra
-status: ready-to-show
+status: complete
 track: Business Demo Visibility Track
 scenario_key: supra_2jz_gte_twin_turbo
 primary_audience: business reviewers
@@ -12,6 +12,8 @@ business_demo_ui_milestone: docs/500_Milestones/Business_Demo_UI_Toyota_Supra_v1
 presenter_runbook: docs/800_Demos/Business_Demo_UI_Toyota_Supra_Presenter_Runbook.md
 viewer_feedback_card: docs/800_Demos/Business_Demo_UI_Toyota_Supra_Viewer_Feedback_Card.md
 feedback_synthesis_log: docs/800_Demos/Business_Demo_UI_Toyota_Supra_Feedback_Synthesis_Log.md
+latest_user_reported_business_demo_ui_toyota_supra_readiness_handoff_test_result: 4 passed
+latest_user_reported_business_demo_ui_toyota_supra_readiness_handoff_test_result_on: 2026-07-10
 ```
 
 ## Purpose
@@ -73,6 +75,17 @@ business_demo_ui_test: 8 passed
 presenter_runbook_test: 5 passed
 viewer_feedback_card_test: 5 passed
 feedback_synthesis_log_test: 4 passed
+readiness_handoff_test: 4 passed
+assistant_ran_tests: false
+```
+
+## Verification record
+
+```text
+source: user-reported local test run
+command: pytest tests/test_business_demo_ui_toyota_supra_readiness_handoff.py
+result: 4 passed
+reported_on: 2026-07-10
 assistant_ran_tests: false
 ```
 
@@ -83,6 +96,7 @@ pytest tests/test_business_demo_ui_toyota_supra.py
 pytest tests/test_business_demo_ui_toyota_supra_presenter_runbook.py
 pytest tests/test_business_demo_ui_toyota_supra_viewer_feedback_card.py
 pytest tests/test_business_demo_ui_toyota_supra_feedback_synthesis_log.py
+pytest tests/test_business_demo_ui_toyota_supra_readiness_handoff.py
 ```
 
 ## Guardrails
