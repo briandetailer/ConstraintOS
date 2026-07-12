@@ -4,7 +4,8 @@
 
 ```text
 demo: Business Demo UI Toyota Supra
-status: complete
+status: ready-to-show
+completion_status: complete
 track: Business Demo Visibility Track
 scenario_key: supra_2jz_gte_twin_turbo
 primary_audience: business reviewers
