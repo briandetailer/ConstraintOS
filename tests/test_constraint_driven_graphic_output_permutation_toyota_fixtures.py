@@ -12,6 +12,7 @@ def test_toyota_output_permutation_fixture_doc_exists() -> None:
         "# Constraint-Driven Graphic Output Permutation POC Toyota Fixtures",
         "status: fixture-data-defined",
         "phase: Phase 2 - deterministic Toyota fixture data",
+        "phase_status: complete",
         "scenario_key: supra_2jz_gte_twin_turbo",
         "implementation_authority: deterministic-fixture-data-only",
     ]
@@ -135,7 +136,21 @@ def test_toyota_output_permutation_phase_2_done_criteria_are_defined() -> None:
         "[x] Each permutation defaults to needs_review.",
         "[x] approval_allowed remains false.",
         "[x] Guardrails are preserved.",
-        "[ ] Verification test result recorded.",
+        "[x] Verification test result recorded.",
+    ]
+    for item in expected:
+        assert item in content
+
+
+def test_toyota_output_permutation_fixture_data_records_verification() -> None:
+    content = FIXTURES.read_text(encoding="utf-8")
+
+    expected = [
+        "latest_user_reported_constraint_driven_graphic_output_permutation_toyota_fixtures_test_result: 8 passed",
+        "source: user-reported local test run",
+        "command: pytest tests/test_constraint_driven_graphic_output_permutation_toyota_fixtures.py",
+        "result: 8 passed",
+        "assistant_ran_tests: false",
     ]
     for item in expected:
         assert item in content
