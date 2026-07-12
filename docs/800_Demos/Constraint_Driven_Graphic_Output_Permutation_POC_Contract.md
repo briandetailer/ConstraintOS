@@ -5,12 +5,15 @@
 ```text
 demo: Constraint-Driven Graphic Output Permutation POC
 status: contract-defined
+phase: Phase 1 - contract and data model
+phase_status: complete
 track: Business Demo Visibility Track
 milestone: docs/500_Milestones/Constraint_Driven_Graphic_Output_Permutation_POC_v1.md
-phase: Phase 1 - contract and data model
 scenario_key: supra_2jz_gte_twin_turbo
 primary_use_case: Toyota Supra A80 2JZ-GTE Twin-Turbo Technical Graphic
 implementation_authority: fixture-safe-output-specifications-only
+latest_user_reported_constraint_driven_graphic_output_permutation_contract_test_result: 7 passed
+latest_user_reported_constraint_driven_graphic_output_permutation_contract_test_result_on: 2026-07-10
 ```
 
 ## Purpose
@@ -250,6 +253,16 @@ cv_provider
 auto_approved
 ```
 
+## Verification record
+
+```text
+source: user-reported local test run
+command: pytest tests/test_constraint_driven_graphic_output_permutation_contract.py
+result: 7 passed
+reported_on: 2026-07-10
+assistant_ran_tests: false
+```
+
 ## Guardrails
 
 ```text
@@ -280,7 +293,7 @@ auto_approved
 [x] Decision semantics are defined.
 [x] Forbidden fields are documented.
 [x] Guardrails are preserved.
-[ ] Verification test result recorded.
+[x] Verification test result recorded.
 ```
 
 ## Verification command
