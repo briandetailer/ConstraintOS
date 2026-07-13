@@ -4,10 +4,11 @@
 
 ```text
 milestone: Fixture-Safe Placeholder Browser Implementation v1
-status: active
+status: complete
 kickoff_status: complete
 phase_1_browser_placeholder_contract_activation_status: complete
-phase_2_watch_script_browser_update_status: ready-for-verification
+phase_2_watch_script_browser_update_status: complete
+completed_on: 2026-07-13
 started_on: 2026-07-13
 track: Business Demo Visibility Track
 previous_milestone: docs/500_Milestones/Fixture_Safe_Visual_Placeholder_Refinement_v1.md
@@ -21,6 +22,11 @@ primary_use_case: Toyota Supra A80 2JZ-GTE Twin-Turbo Technical Graphic
 implementation_authority: deterministic-browser-placeholders-only
 latest_user_reported_fixture_safe_placeholder_browser_implementation_milestone_test_result: 6 passed
 latest_user_reported_fixture_safe_placeholder_browser_implementation_milestone_test_result_on: 2026-07-13
+latest_user_reported_fixture_safe_placeholder_browser_watch_script_test_result: 12 passed
+latest_user_reported_fixture_safe_placeholder_browser_watch_script_test_result_on: 2026-07-13
+latest_user_reported_fixture_safe_placeholder_browser_display_opened: true
+latest_user_reported_fixture_safe_placeholder_browser_display_result: proper display
+latest_user_reported_fixture_safe_placeholder_browser_display_result_on: 2026-07-13
 assistant_ran_tests: false
 assistant_ran_demo: false
 ```
@@ -61,7 +67,7 @@ supporting_json_artifacts:
 command_reference: docs/700_Use_Cases/Graphics_Validation_Command_Reference.md
 ```
 
-## Required browser additions
+## Implemented browser additions
 
 ```text
 1. Placeholder panel section
@@ -92,16 +98,48 @@ command_reference: docs/700_Use_Cases/Graphics_Validation_Command_Reference.md
    - no automatic approval
 ```
 
-## Implementation changes now under verification
+## Implementation completed
 
 ```text
 script_update: scripts/watch-constraintos-output-poc.ps1
 command_reference_update: docs/700_Use_Cases/Graphics_Validation_Command_Reference.md
 verification: pytest tests/test_constraint_driven_graphic_output_permutation_watch_script.py
-status: ready-for-verification
+result: 12 passed
+browser_opened: true
+browser_display_result: proper display
+status: complete
+assistant_ran_tests: false
+assistant_ran_demo: false
 ```
 
 The watch script now writes browser-visible deterministic placeholder panels and evidence summary cards into `index.html`, and records placeholder/evidence metadata in `run-metadata.json`.
+
+## Usable command
+
+```powershell
+.\scripts\watch-constraintos-output-poc.ps1 -Scenario supra_2jz_gte_twin_turbo -OpenBrowser
+```
+
+This command creates a new run under `runs/output-poc/supra_2jz_gte_twin_turbo/<timestamp>/`, writes the JSON artifacts, writes `index.html`, and opens the browser-facing demo.
+
+## Current usability boundary
+
+```text
+usable_now:
+- browser-facing fixture-safe output permutation demo
+- deterministic placeholder panels
+- deterministic evidence summary cards
+- traceability labels
+- generated JSON evidence artifacts
+- reviewer-facing needs_review workflow
+
+not_yet_usable:
+- real generated production graphics
+- real graphics passing through validation
+- image ingestion for generated candidates
+- pixel/CV/OCR validation
+- automatic approval
+```
 
 ## Explicitly blocked scope
 
@@ -152,6 +190,21 @@ reported_on: 2026-07-13
 assistant_ran_tests: false
 ```
 
+## Final verification record
+
+```text
+source: user-reported local verification
+commands:
+- pytest tests/test_constraint_driven_graphic_output_permutation_watch_script.py
+- .\scripts\watch-constraintos-output-poc.ps1 -Scenario supra_2jz_gte_twin_turbo -OpenBrowser
+results:
+- fixture_safe_placeholder_browser_watch_script: 12 passed
+- browser_opened_with_proper_display: true
+reported_on: 2026-07-13
+assistant_ran_tests: false
+assistant_ran_demo: false
+```
+
 ## Done criteria for kickoff slice
 
 ```text
@@ -166,9 +219,23 @@ assistant_ran_tests: false
 [x] Verification test result recorded.
 ```
 
+## Done criteria for milestone
+
+```text
+[x] Kickoff verified.
+[x] Browser placeholder panels implemented.
+[x] Evidence summary cards implemented.
+[x] Metadata records placeholder/evidence structures.
+[x] Command reference updated.
+[x] Watch-script verification recorded.
+[x] Browser opened with proper display.
+[x] Usable command documented.
+```
+
 ## Verification command
 
 ```powershell
 pytest tests/test_fixture_safe_placeholder_browser_implementation_milestone.py
 pytest tests/test_constraint_driven_graphic_output_permutation_watch_script.py
+.\scripts\watch-constraintos-output-poc.ps1 -Scenario supra_2jz_gte_twin_turbo -OpenBrowser
 ```
