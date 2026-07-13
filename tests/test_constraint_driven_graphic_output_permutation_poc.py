@@ -12,7 +12,7 @@ def test_constraint_driven_output_permutation_poc_milestone_exists() -> None:
     assert "kickoff_status: complete" in content
     assert "phase_3_watch_script_status: complete" in content
     assert "phase_4_browser_demo_status: ready-to-show" in content
-    assert "phase_5_feedback_loop_status: active" in content
+    assert "phase_5_feedback_loop_status: complete" in content
     assert "Business Demo UI Toyota Supra" in content
     assert "Toyota Supra A80 2JZ-GTE Twin-Turbo Technical Graphic" in content
     assert "scenario_key: supra_2jz_gte_twin_turbo" in content
@@ -131,9 +131,7 @@ def test_constraint_driven_output_permutation_records_phase_status_summary() -> 
         "phase_2_deterministic_toyota_fixture_data: complete",
         "phase_3_watch_script: complete",
         "phase_4_browser_business_demo: ready-to-show",
-        "phase_5_feedback_loop: active",
-        "feedback_loop: docs/800_Demos/Constraint_Driven_Graphic_Output_Permutation_POC_Feedback_Loop.md",
-        "verification: pytest tests/test_constraint_driven_graphic_output_permutation_feedback_loop.py",
+        "phase_5_feedback_loop: complete",
     ]
     for item in expected:
         assert item in content
@@ -167,6 +165,22 @@ def test_constraint_driven_output_permutation_records_latest_browser_demo_run() 
         "final_decision: needs_review",
         "approval_allowed: false",
         "assistant_ran_demo: false",
+    ]
+    for item in expected:
+        assert item in content
+
+
+def test_constraint_driven_output_permutation_records_feedback_loop_verification() -> None:
+    content = MILESTONE.read_text(encoding="utf-8")
+
+    expected = [
+        "feedback_loop: docs/800_Demos/Constraint_Driven_Graphic_Output_Permutation_POC_Feedback_Loop.md",
+        "latest_user_reported_constraint_driven_graphic_output_permutation_feedback_loop_test_result: 6 passed",
+        "command: pytest tests/test_constraint_driven_graphic_output_permutation_feedback_loop.py",
+        "result: 6 passed",
+        "reported_on: 2026-07-13",
+        "phase_5_feedback_loop: complete",
+        "assistant_ran_tests: false",
     ]
     for item in expected:
         assert item in content
