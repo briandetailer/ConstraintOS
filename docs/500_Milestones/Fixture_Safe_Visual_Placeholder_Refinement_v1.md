@@ -18,6 +18,8 @@ latest_user_reported_fixture_safe_visual_placeholder_refinement_milestone_test_r
 latest_user_reported_fixture_safe_visual_placeholder_refinement_milestone_test_result_on: 2026-07-13
 latest_user_reported_fixture_safe_visual_placeholder_refinement_milestone_rerun_test_result: 6 passed
 latest_user_reported_fixture_safe_visual_placeholder_refinement_milestone_rerun_test_result_on: 2026-07-13
+latest_user_reported_fixture_safe_visual_placeholder_refinement_milestone_second_rerun_test_result: 6 passed
+latest_user_reported_fixture_safe_visual_placeholder_refinement_milestone_second_rerun_test_result_on: 2026-07-13
 assistant_ran_tests: false
 assistant_ran_demo: false
 ```
@@ -130,6 +132,16 @@ assistant_ran_tests: false
 ```
 
 ## Verification rerun record
+
+```text
+source: user-reported local test rerun
+command: pytest tests/test_fixture_safe_visual_placeholder_refinement_milestone.py
+result: 6 passed
+reported_on: 2026-07-13
+assistant_ran_tests: false
+```
+
+## Second verification rerun record
 
 ```text
 source: user-reported local test rerun
