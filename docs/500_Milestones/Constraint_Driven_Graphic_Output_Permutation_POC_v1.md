@@ -30,6 +30,8 @@ latest_user_reported_constraint_driven_graphic_output_permutation_reviewer_hando
 latest_user_reported_constraint_driven_graphic_output_permutation_reviewer_handoff_rerun_test_result_on: 2026-07-13
 latest_user_reported_constraint_driven_graphic_output_permutation_feedback_loop_test_result: 6 passed
 latest_user_reported_constraint_driven_graphic_output_permutation_feedback_loop_test_result_on: 2026-07-13
+latest_user_reported_constraint_driven_graphic_output_permutation_final_verification_rerun_result: 11 passed / 9 passed / 5 passed / 6 passed
+latest_user_reported_constraint_driven_graphic_output_permutation_final_verification_rerun_result_on: 2026-07-13
 latest_user_reported_constraint_driven_graphic_output_permutation_browser_demo_run_created: true
 latest_user_reported_constraint_driven_graphic_output_permutation_browser_demo_run_created_on: 2026-07-12
 latest_user_reported_constraint_driven_graphic_output_permutation_browser_demo_run_dir: D:\Code\ConstraintOS\runs\output-poc\supra_2jz_gte_twin_turbo\20260712-151228
@@ -218,6 +220,24 @@ phase_5_feedback_loop: complete
 
 ```text
 source: user-reported local verification run
+commands:
+- pytest tests/test_constraint_driven_graphic_output_permutation_poc.py
+- pytest tests/test_constraint_driven_graphic_output_permutation_watch_script.py
+- pytest tests/test_constraint_driven_graphic_output_permutation_reviewer_handoff.py
+- pytest tests/test_constraint_driven_graphic_output_permutation_feedback_loop.py
+results:
+- constraint_driven_graphic_output_permutation_poc: 11 passed
+- constraint_driven_graphic_output_permutation_watch_script: 9 passed
+- constraint_driven_graphic_output_permutation_reviewer_handoff: 5 passed
+- constraint_driven_graphic_output_permutation_feedback_loop: 6 passed
+reported_on: 2026-07-13
+assistant_ran_tests: false
+```
+
+## Final verification rerun record
+
+```text
+source: user-reported local verification rerun
 commands:
 - pytest tests/test_constraint_driven_graphic_output_permutation_poc.py
 - pytest tests/test_constraint_driven_graphic_output_permutation_watch_script.py
