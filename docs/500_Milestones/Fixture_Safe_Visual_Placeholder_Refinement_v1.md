@@ -4,13 +4,15 @@
 
 ```text
 milestone: Fixture-Safe Visual Placeholder Refinement v1
-status: kickoff-ready
+status: active
 kickoff_status: complete
+phase_1_contract_status: ready-for-verification
 started_on: 2026-07-13
 track: Business Demo Visibility Track
 previous_milestone: docs/500_Milestones/Constraint_Driven_Graphic_Output_Permutation_POC_v1.md
 previous_feedback_loop: docs/800_Demos/Constraint_Driven_Graphic_Output_Permutation_POC_Feedback_Loop.md
 previous_reviewer_handoff: docs/800_Demos/Constraint_Driven_Graphic_Output_Permutation_POC_Reviewer_Handoff.md
+phase_1_contract: docs/800_Demos/Fixture_Safe_Visual_Placeholder_Refinement_Contract.md
 scenario_key: supra_2jz_gte_twin_turbo
 primary_use_case: Toyota Supra A80 2JZ-GTE Twin-Turbo Technical Graphic
 implementation_authority: fixture-safe-visual-placeholders-only
@@ -121,6 +123,17 @@ Phase 5: verification and closeout
 - Complete the milestone only after tests pass.
 ```
 
+## Phase status summary
+
+```text
+kickoff: complete
+phase_1_placeholder_refinement_contract: ready-for-verification
+phase_2_browser_placeholder_panel_design: pending
+phase_3_evidence_summary_cards: pending
+phase_4_reviewer_handoff_update: pending
+phase_5_verification_and_closeout: pending
+```
+
 ## Verification record
 
 ```text
@@ -151,6 +164,14 @@ reported_on: 2026-07-13
 assistant_ran_tests: false
 ```
 
+## Phase 1 contract
+
+```text
+contract: docs/800_Demos/Fixture_Safe_Visual_Placeholder_Refinement_Contract.md
+verification: pytest tests/test_fixture_safe_visual_placeholder_refinement_contract.py
+status: ready-for-verification
+```
+
 ## Done criteria for kickoff slice
 
 ```text
@@ -169,4 +190,5 @@ assistant_ran_tests: false
 
 ```powershell
 pytest tests/test_fixture_safe_visual_placeholder_refinement_milestone.py
+pytest tests/test_fixture_safe_visual_placeholder_refinement_contract.py
 ```
