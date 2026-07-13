@@ -10,6 +10,7 @@ def test_fixture_safe_visual_placeholder_refinement_milestone_exists() -> None:
     expected = [
         "# Fixture-Safe Visual Placeholder Refinement v1",
         "status: kickoff-ready",
+        "kickoff_status: complete",
         "track: Business Demo Visibility Track",
         "previous_milestone: docs/500_Milestones/Constraint_Driven_Graphic_Output_Permutation_POC_v1.md",
         "previous_feedback_loop: docs/800_Demos/Constraint_Driven_Graphic_Output_Permutation_POC_Feedback_Loop.md",
@@ -89,7 +90,7 @@ def test_fixture_safe_visual_placeholder_refinement_preserves_blocked_scope() ->
         assert item in content
 
 
-def test_fixture_safe_visual_placeholder_refinement_defines_phases_and_kickoff_done_criteria() -> None:
+def test_fixture_safe_visual_placeholder_refinement_defines_phases_and_kickoff_verification() -> None:
     content = MILESTONE.read_text(encoding="utf-8")
 
     expected = [
@@ -98,12 +99,18 @@ def test_fixture_safe_visual_placeholder_refinement_defines_phases_and_kickoff_d
         "Phase 3: evidence summary cards",
         "Phase 4: reviewer handoff update",
         "Phase 5: verification and closeout",
+        "latest_user_reported_fixture_safe_visual_placeholder_refinement_milestone_test_result: 6 passed",
+        "source: user-reported local test run",
+        "command: pytest tests/test_fixture_safe_visual_placeholder_refinement_milestone.py",
+        "result: 6 passed",
+        "reported_on: 2026-07-13",
+        "assistant_ran_tests: false",
         "[x] Milestone exists.",
         "[x] Previous output-permutation POC is referenced.",
         "[x] Feedback-loop authority is referenced.",
         "[x] Fixture-safe visual placeholder scope is defined.",
         "[x] Blocked outputs are preserved.",
-        "[ ] Verification test result recorded.",
+        "[x] Verification test result recorded.",
         "pytest tests/test_fixture_safe_visual_placeholder_refinement_milestone.py",
     ]
     for item in expected:
