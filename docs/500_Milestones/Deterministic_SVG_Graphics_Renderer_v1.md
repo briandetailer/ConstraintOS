@@ -5,6 +5,7 @@
 ```text
 milestone: Deterministic SVG Graphics Renderer v1
 status: active
+phase_1_svg_renderer_status: ready-for-verification
 started_on: 2026-07-13
 track: Business Demo Visibility Track
 previous_milestone: docs/500_Milestones/Fixture_Safe_Placeholder_Browser_Implementation_v1.md
@@ -84,8 +85,10 @@ blocked:
 script_update: scripts/watch-constraintos-output-poc.ps1
 command_reference_update: docs/700_Use_Cases/Graphics_Validation_Command_Reference.md
 verification: pytest tests/test_constraint_driven_graphic_output_permutation_watch_script.py
-status: ready-for-implementation
+status: ready-for-verification
 ```
+
+The watch script now creates a `graphics/` directory, writes four deterministic SVG graphics, records them in `svg_graphics` metadata, and links them from the generated browser page.
 
 ## Explicitly blocked scope
 
@@ -113,7 +116,7 @@ status: ready-for-implementation
 [x] Renderer boundary is defined.
 [x] Structural validation target is defined.
 [x] Blocked scope is preserved.
-[ ] SVG output implemented.
+[x] SVG output implemented.
 [ ] Verification result recorded.
 ```
 
@@ -122,4 +125,5 @@ status: ready-for-implementation
 ```powershell
 pytest tests/test_deterministic_svg_graphics_renderer_milestone.py
 pytest tests/test_constraint_driven_graphic_output_permutation_watch_script.py
+.\scripts\watch-constraintos-output-poc.ps1 -Scenario supra_2jz_gte_twin_turbo -OpenBrowser
 ```
