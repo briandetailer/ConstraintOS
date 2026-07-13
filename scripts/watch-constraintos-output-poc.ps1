@@ -194,9 +194,9 @@ function ConvertTo-SvgText {
 
 function New-DeterministicSvgGraphic {
     param(
-        [hashtable]$Permutation,
-        [hashtable]$Panel,
-        [hashtable]$Evidence,
+        $Permutation,
+        $Panel,
+        $Evidence,
         [string]$OutputPath
     )
 
@@ -477,7 +477,7 @@ $Html = @'
       <h2>Fixture evidence summaries, not scoring cards</h2>
       <p>Each evidence_summary_card summarizes fixture evidence only. These cards do not inspect or grade final artwork, do not score pixels, and do not approve output.</p>
       <div class="evidence-grid">
-        <article class="evidence-summary-card" data-permutation-id="turbo_system_focus"><h3>Turbo System Evidence</h3><p><strong>Satisfied:</strong> Toyota Supra A80, 2J-GTE, sequential twin-turbo.</p><p><strong>Visible uncertainty:</strong> schematic layout is placeholder-only.</p><p><strong>Blocked claims:</strong> final artwork, physical accuracy approval, image-derived verification.</p><div class="review-footer">needs_review / approval_allowed: false</div></article>
+        <article class="evidence-summary-card" data-permutation-id="turbo_system_focus"><h3>Turbo System Evidence</h3><p><strong>Satisfied:</strong> Toyota Supra A80, 2JZ-GTE, sequential twin-turbo.</p><p><strong>Visible uncertainty:</strong> schematic layout is placeholder-only.</p><p><strong>Blocked claims:</strong> final artwork, physical accuracy approval, image-derived verification.</p><div class="review-footer">needs_review / approval_allowed: false</div></article>
         <article class="evidence-summary-card" data-permutation-id="inline_six_engine_identity_focus"><h3>Inline-Six Identity Evidence</h3><p><strong>Satisfied:</strong> Toyota Supra A80, 2JZ-GTE inline-six, wrong-engine exclusions.</p><p><strong>Visible uncertainty:</strong> identity emphasis is placeholder-only.</p><p><strong>Blocked claims:</strong> final artwork, hidden mechanical correctness approval, image-derived verification.</p><div class="review-footer">needs_review / approval_allowed: false</div></article>
         <article class="evidence-summary-card" data-permutation-id="technical_label_density_focus"><h3>Label Density Evidence</h3><p><strong>Satisfied:</strong> technical graphic context, label comparison, fixture-defined tokens.</p><p><strong>Visible uncertainty:</strong> label density requires reviewer judgment.</p><p><strong>Blocked claims:</strong> final label placement, production-ready diagram approval, image-derived verification.</p><div class="review-footer">needs_review / approval_allowed: false</div></article>
         <article class="evidence-summary-card" data-permutation-id="reviewer_safe_minimal_focus"><h3>Reviewer-Safe Evidence</h3><p><strong>Satisfied:</strong> validated claims only, visible uncertainty, approval blocked.</p><p><strong>Visible uncertainty:</strong> withheld details remain unverified.</p><p><strong>Blocked claims:</strong> final artwork, automatic approval, unstated mechanical claims.</p><div class="review-footer">needs_review / approval_allowed: false</div></article>
