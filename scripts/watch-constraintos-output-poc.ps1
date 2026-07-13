@@ -99,6 +99,88 @@ $Permutations = @(
     }
 )
 
+$PlaceholderPanels = @(
+    [ordered]@{
+        permutation_id = "turbo_system_focus"
+        panel_title = "Turbo System Focus"
+        visual_placeholder_type = "schematic_block_panel"
+        deterministic_tokens = @("panel_shell", "title_band", "schematic_block", "constraint_chip", "uncertainty_banner", "review_footer")
+        traceability_labels = @("engine_identity", "vehicle_identity", "turbo_identity", "review_safety")
+        reviewer_message = "Sequential twin-turbo intent is visible without claiming final artwork."
+        review_decision = "needs_review"
+        approval_allowed = $false
+    },
+    [ordered]@{
+        permutation_id = "inline_six_engine_identity_focus"
+        panel_title = "Inline-Six Identity Focus"
+        visual_placeholder_type = "text_first_panel"
+        deterministic_tokens = @("panel_shell", "title_band", "identity_block", "exclusion_chip", "constraint_chip", "uncertainty_banner", "review_footer")
+        traceability_labels = @("engine_identity", "vehicle_identity", "wrong_engine_exclusion", "review_safety")
+        reviewer_message = "2JZ-GTE inline-six identity and wrong-engine exclusions are emphasized before artwork exists."
+        review_decision = "needs_review"
+        approval_allowed = $false
+    },
+    [ordered]@{
+        permutation_id = "technical_label_density_focus"
+        panel_title = "Technical Label Density Focus"
+        visual_placeholder_type = "label_density_panel"
+        deterministic_tokens = @("panel_shell", "title_band", "density_indicator", "constraint_chip", "evidence_chip", "uncertainty_banner", "review_footer")
+        traceability_labels = @("engine_identity", "turbo_identity", "review_safety")
+        reviewer_message = "Dense callout intent is visible for comparison, while label placement remains unresolved."
+        review_decision = "needs_review"
+        approval_allowed = $false
+    },
+    [ordered]@{
+        permutation_id = "reviewer_safe_minimal_focus"
+        panel_title = "Reviewer-Safe Minimal Focus"
+        visual_placeholder_type = "reviewer_safe_minimal_panel"
+        deterministic_tokens = @("panel_shell", "title_band", "identity_block", "constraint_chip", "uncertainty_banner", "review_footer")
+        traceability_labels = @("engine_identity", "vehicle_identity", "turbo_identity", "review_safety")
+        reviewer_message = "Only validated claims are surfaced; uncertain details are intentionally withheld."
+        review_decision = "needs_review"
+        approval_allowed = $false
+    }
+)
+
+$EvidenceSummaryCards = @(
+    [ordered]@{
+        permutation_id = "turbo_system_focus"
+        evidence_card_title = "Turbo System Evidence"
+        satisfied_constraints = @("Toyota Supra A80", "2JZ-GTE", "sequential twin-turbo")
+        visible_uncertainty = "schematic layout is placeholder-only"
+        blocked_claims = @("final artwork", "physical accuracy approval", "image-derived verification")
+        review_decision = "needs_review"
+        approval_allowed = $false
+    },
+    [ordered]@{
+        permutation_id = "inline_six_engine_identity_focus"
+        evidence_card_title = "Inline-Six Identity Evidence"
+        satisfied_constraints = @("Toyota Supra A80", "2JZ-GTE inline-six", "wrong-engine exclusions")
+        visible_uncertainty = "identity emphasis is placeholder-only"
+        blocked_claims = @("final artwork", "hidden mechanical correctness approval", "image-derived verification")
+        review_decision = "needs_review"
+        approval_allowed = $false
+    },
+    [ordered]@{
+        permutation_id = "technical_label_density_focus"
+        evidence_card_title = "Label Density Evidence"
+        satisfied_constraints = @("technical graphic context", "label comparison", "fixture-defined tokens")
+        visible_uncertainty = "label density requires reviewer judgment"
+        blocked_claims = @("final label placement", "production-ready diagram approval", "image-derived verification")
+        review_decision = "needs_review"
+        approval_allowed = $false
+    },
+    [ordered]@{
+        permutation_id = "reviewer_safe_minimal_focus"
+        evidence_card_title = "Reviewer-Safe Evidence"
+        satisfied_constraints = @("validated claims only", "visible uncertainty", "approval blocked")
+        visible_uncertainty = "withheld details remain unverified"
+        blocked_claims = @("final artwork", "automatic approval", "unstated mechanical claims")
+        review_decision = "needs_review"
+        approval_allowed = $false
+    }
+)
+
 $PermutationIds = @($Permutations | ForEach-Object { $_.permutation_id })
 
 $Manifest = [ordered]@{
@@ -154,16 +236,16 @@ $Validation = [ordered]@{
 $ReviewPacket = [ordered]@{
     demo = $DemoName
     scenario_key = $Scenario
-    viewer_summary = "ConstraintOS defined four fixture-safe Toyota Supra / 2JZ-GTE output permutations and kept each one in needs_review."
+    viewer_summary = "ConstraintOS defined four fixture-safe Toyota Supra / 2JZ-GTE output permutations and displays deterministic placeholder panels and evidence cards for each one."
     recommended_reviewer_path = @(
+        "Open index.html for the business-facing placeholder panels and evidence cards.",
         "Review graphic-output-manifest.json to see the controlled variants.",
-        "Review graphic-output-validation.json to see why approval remains blocked.",
-        "Open index.html for the business-facing walkthrough."
+        "Review graphic-output-validation.json to see why approval remains blocked."
     )
     final_decision = $FinalDecision
     approval_allowed = $ApprovalAllowed
-    why_approval_is_blocked = "The current POC defines controlled output specifications only; it does not generate production artwork or inspect real images."
-    next_recommended_action = "Review business feedback and continue toward the output-permutation feedback loop if the trust-layer story is understood."
+    why_approval_is_blocked = "The current POC defines controlled output specifications and deterministic placeholder panels only; it does not generate production artwork or inspect real images."
+    next_recommended_action = "Review whether the browser placeholder panels make the four output intents clear enough for business feedback."
 }
 
 $Metadata = [ordered]@{
@@ -180,6 +262,10 @@ $Metadata = [ordered]@{
     final_decision = $FinalDecision
     approval_allowed = $ApprovalAllowed
     browser_walkthrough = "constraints -> permutations -> validation -> needs_review"
+    browser_placeholder_walkthrough = "output permutations -> deterministic placeholder panels -> evidence summary cards -> needs_review"
+    placeholder_panels = $PlaceholderPanels
+    evidence_summary_cards = $EvidenceSummaryCards
+    traceability_labels = @("engine_identity", "vehicle_identity", "turbo_identity", "wrong_engine_exclusion", "review_safety")
     guardrails = @(
         "No generated final graphics",
         "No production artwork generation",
@@ -197,7 +283,7 @@ $Manifest | ConvertTo-Json -Depth 8 | Set-Content -Path $ManifestPath -Encoding 
 $PermutationSet | ConvertTo-Json -Depth 10 | Set-Content -Path $PermutationsPath -Encoding UTF8
 $Validation | ConvertTo-Json -Depth 10 | Set-Content -Path $ValidationPath -Encoding UTF8
 $ReviewPacket | ConvertTo-Json -Depth 8 | Set-Content -Path $ReviewPacketPath -Encoding UTF8
-$Metadata | ConvertTo-Json -Depth 8 | Set-Content -Path $MetadataPath -Encoding UTF8
+$Metadata | ConvertTo-Json -Depth 12 | Set-Content -Path $MetadataPath -Encoding UTF8
 
 $Html = @'
 <!doctype html>
@@ -207,7 +293,7 @@ $Html = @'
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>ConstraintOS Output Permutation POC - Toyota Supra</title>
   <style>
-    :root { color-scheme: light; --bg: #f5f7fb; --panel: #ffffff; --ink: #172033; --muted: #5d6a7f; --line: #d9e1ef; --accent: #2458d3; --warn: #a16207; --dark: #111827; }
+    :root { color-scheme: light; --bg: #f5f7fb; --panel: #ffffff; --ink: #172033; --muted: #5d6a7f; --line: #d9e1ef; --accent: #2458d3; --warn: #a16207; --dark: #111827; --safe: #166534; --soft: #eef4ff; }
     * { box-sizing: border-box; }
     body { margin: 0; font-family: Segoe UI, Roboto, Arial, sans-serif; background: radial-gradient(circle at top left, #e9f0ff 0, var(--bg) 38%, #eef3f9 100%); color: var(--ink); }
     main { max-width: 1180px; margin: 0 auto; padding: 36px; }
@@ -220,15 +306,24 @@ $Html = @'
     .flow { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 14px; margin-top: 18px; }
     .flow-step { border: 1px solid var(--line); border-radius: 18px; background: #fbfcff; padding: 16px; }
     .flow-step strong { display: block; margin-bottom: 6px; }
-    .grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px; }
-    .variant { border: 1px solid var(--line); border-radius: 18px; padding: 18px; background: #fbfcff; }
-    .tag { display: inline-block; border-radius: 999px; padding: 7px 10px; background: #fff6df; color: var(--warn); font-weight: 800; font-size: 12px; margin-bottom: 10px; }
+    .grid, .placeholder-grid, .evidence-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px; }
+    .variant, .placeholder-panel, .evidence-summary-card { border: 1px solid var(--line); border-radius: 18px; padding: 18px; background: #fbfcff; }
+    .placeholder-panel { border-top: 5px solid var(--accent); }
+    .evidence-summary-card { border-top: 5px solid var(--safe); }
+    .tag, .chip { display: inline-block; border-radius: 999px; padding: 7px 10px; background: #fff6df; color: var(--warn); font-weight: 800; font-size: 12px; margin: 0 6px 8px 0; }
+    .chip { background: var(--soft); color: var(--accent); }
     .artifact { font-family: Consolas, monospace; background: var(--dark); color: #dbeafe; border-radius: 12px; padding: 10px; font-size: 13px; overflow-wrap: anywhere; }
     .decision { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; }
     .metric { border: 1px solid var(--line); border-radius: 18px; background: #fbfcff; padding: 18px; }
     .metric .value { font-size: 24px; font-weight: 900; }
+    .placeholder-visual { border: 1px dashed var(--line); border-radius: 16px; padding: 14px; margin: 14px 0; background: #ffffff; }
+    .visual-row { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; margin-bottom: 10px; }
+    .schematic-block, .identity-block, .density-indicator { border: 1px solid var(--line); border-radius: 12px; padding: 10px 12px; background: #f8fbff; font-weight: 800; }
+    .density-indicator { min-width: 72px; text-align: center; }
+    .uncertainty-banner { border-left: 4px solid var(--warn); background: #fff8e8; border-radius: 12px; padding: 10px 12px; color: #6b4e00; font-weight: 700; }
+    .review-footer { margin-top: 12px; font-weight: 900; color: var(--ink); }
     ul { color: var(--muted); }
-    @media (max-width: 900px) { .grid, .flow, .decision { grid-template-columns: 1fr; } }
+    @media (max-width: 900px) { .grid, .flow, .decision, .placeholder-grid, .evidence-grid { grid-template-columns: 1fr; } }
   </style>
 </head>
 <body>
@@ -253,6 +348,75 @@ $Html = @'
         <article class="variant"><span class="tag">needs_review</span><h3>inline_six_engine_identity_focus</h3><p>Emphasizes Toyota Supra A80 / 2JZ-GTE inline-six identity and wrong-engine exclusions.</p><div class="artifact">fixture-placeholder://output-poc/supra/inline-six-identity-focus</div></article>
         <article class="variant"><span class="tag">needs_review</span><h3>technical_label_density_focus</h3><p>Emphasizes dense technical publishing callouts while keeping uncertainty visible.</p><div class="artifact">fixture-placeholder://output-poc/supra/technical-label-density-focus</div></article>
         <article class="variant"><span class="tag">needs_review</span><h3>reviewer_safe_minimal_focus</h3><p>Emphasizes a conservative reviewer-safe specification that only exposes validated claims.</p><div class="artifact">fixture-placeholder://output-poc/supra/reviewer-safe-minimal-focus</div></article>
+      </div>
+    </section>
+
+    <section class="card" id="fixture-safe-placeholder-panels">
+      <div class="eyebrow">Fixture-safe placeholder panels</div>
+      <h2>Browser-visible deterministic placeholder panels</h2>
+      <p>These panels are deterministic browser placeholders, not generated final artwork. They make the four output intents visible while every variant remains needs_review and approval_allowed remains false.</p>
+      <div class="placeholder-grid">
+        <article class="placeholder-panel" data-permutation-id="turbo_system_focus" data-visual-placeholder-type="schematic_block_panel">
+          <div class="eyebrow">panel_shell / title_band</div>
+          <h3>Turbo System Focus</h3>
+          <p>Sequential twin-turbo intent is visible without implying final artwork.</p>
+          <div class="placeholder-visual" aria-label="deterministic schematic block panel">
+            <div class="visual-row"><span class="schematic-block">engine core</span><span class="schematic-block">twin turbo A</span><span class="schematic-block">twin turbo B</span></div>
+            <div class="visual-row"><span class="schematic-block">charge path</span><span class="schematic-block">exhaust path</span></div>
+            <span class="chip">engine_identity</span><span class="chip">vehicle_identity</span><span class="chip">turbo_identity</span><span class="chip">review_safety</span>
+          </div>
+          <div class="uncertainty-banner">This is a deterministic placeholder, not final artwork.</div>
+          <div class="review-footer">review_decision: needs_review / approval_allowed: false</div>
+        </article>
+
+        <article class="placeholder-panel" data-permutation-id="inline_six_engine_identity_focus" data-visual-placeholder-type="text_first_panel">
+          <div class="eyebrow">panel_shell / title_band</div>
+          <h3>Inline-Six Identity Focus</h3>
+          <p>2JZ-GTE inline-six identity and wrong-engine exclusions are emphasized before artwork exists.</p>
+          <div class="placeholder-visual" aria-label="deterministic identity text panel">
+            <div class="visual-row"><span class="identity-block">inline-six</span><span class="identity-block">2JZ-GTE</span><span class="identity-block">Mk IV Supra</span></div>
+            <span class="chip">not V6</span><span class="chip">not V8</span><span class="chip">not rotary</span><span class="chip">not RB26</span><span class="chip">not LF4</span><span class="chip">not B58</span>
+            <div><span class="chip">engine_identity</span><span class="chip">vehicle_identity</span><span class="chip">wrong_engine_exclusion</span><span class="chip">review_safety</span></div>
+          </div>
+          <div class="uncertainty-banner">This panel is derived from fixture constraints, not image inspection.</div>
+          <div class="review-footer">review_decision: needs_review / approval_allowed: false</div>
+        </article>
+
+        <article class="placeholder-panel" data-permutation-id="technical_label_density_focus" data-visual-placeholder-type="label_density_panel">
+          <div class="eyebrow">panel_shell / title_band</div>
+          <h3>Technical Label Density Focus</h3>
+          <p>Dense callout intent is visible for comparison, while label placement remains unresolved.</p>
+          <div class="placeholder-visual" aria-label="deterministic label density panel">
+            <div class="visual-row"><span class="density-indicator">core labels</span><span class="density-indicator">turbo labels</span><span class="density-indicator">flow labels</span><span class="density-indicator">warning labels</span></div>
+            <span class="chip">engine_identity</span><span class="chip">turbo_identity</span><span class="chip">review_safety</span><span class="chip">evidence_chip</span>
+          </div>
+          <div class="uncertainty-banner">Uncertainty remains needs_review.</div>
+          <div class="review-footer">review_decision: needs_review / approval_allowed: false</div>
+        </article>
+
+        <article class="placeholder-panel" data-permutation-id="reviewer_safe_minimal_focus" data-visual-placeholder-type="reviewer_safe_minimal_panel">
+          <div class="eyebrow">panel_shell / title_band</div>
+          <h3>Reviewer-Safe Minimal Focus</h3>
+          <p>Only validated claims are surfaced; uncertain details are intentionally withheld.</p>
+          <div class="placeholder-visual" aria-label="deterministic reviewer-safe minimal panel">
+            <div class="visual-row"><span class="identity-block">Toyota Supra A80</span><span class="identity-block">2JZ-GTE</span><span class="identity-block">sequential twin-turbo</span></div>
+            <span class="chip">engine_identity</span><span class="chip">vehicle_identity</span><span class="chip">turbo_identity</span><span class="chip">review_safety</span>
+          </div>
+          <div class="uncertainty-banner">approval_allowed remains false.</div>
+          <div class="review-footer">review_decision: needs_review / approval_allowed: false</div>
+        </article>
+      </div>
+    </section>
+
+    <section class="card" id="fixture-safe-evidence-summary-cards">
+      <div class="eyebrow">Evidence summary cards</div>
+      <h2>Fixture evidence summaries, not scoring cards</h2>
+      <p>Each evidence_summary_card summarizes fixture evidence only. These cards do not inspect or grade final artwork, do not score pixels, and do not approve output.</p>
+      <div class="evidence-grid">
+        <article class="evidence-summary-card" data-permutation-id="turbo_system_focus"><h3>Turbo System Evidence</h3><p><strong>Satisfied:</strong> Toyota Supra A80, 2JZ-GTE, sequential twin-turbo.</p><p><strong>Visible uncertainty:</strong> schematic layout is placeholder-only.</p><p><strong>Blocked claims:</strong> final artwork, physical accuracy approval, image-derived verification.</p><div class="review-footer">needs_review / approval_allowed: false</div></article>
+        <article class="evidence-summary-card" data-permutation-id="inline_six_engine_identity_focus"><h3>Inline-Six Identity Evidence</h3><p><strong>Satisfied:</strong> Toyota Supra A80, 2JZ-GTE inline-six, wrong-engine exclusions.</p><p><strong>Visible uncertainty:</strong> identity emphasis is placeholder-only.</p><p><strong>Blocked claims:</strong> final artwork, hidden mechanical correctness approval, image-derived verification.</p><div class="review-footer">needs_review / approval_allowed: false</div></article>
+        <article class="evidence-summary-card" data-permutation-id="technical_label_density_focus"><h3>Label Density Evidence</h3><p><strong>Satisfied:</strong> technical graphic context, label comparison, fixture-defined tokens.</p><p><strong>Visible uncertainty:</strong> label density requires reviewer judgment.</p><p><strong>Blocked claims:</strong> final label placement, production-ready diagram approval, image-derived verification.</p><div class="review-footer">needs_review / approval_allowed: false</div></article>
+        <article class="evidence-summary-card" data-permutation-id="reviewer_safe_minimal_focus"><h3>Reviewer-Safe Evidence</h3><p><strong>Satisfied:</strong> validated claims only, visible uncertainty, approval blocked.</p><p><strong>Visible uncertainty:</strong> withheld details remain unverified.</p><p><strong>Blocked claims:</strong> final artwork, automatic approval, unstated mechanical claims.</p><div class="review-footer">needs_review / approval_allowed: false</div></article>
       </div>
     </section>
 
