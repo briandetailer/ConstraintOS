@@ -10,6 +10,7 @@ def test_output_permutation_feedback_loop_exists_and_targets_phase_5() -> None:
     expected = [
         "# Constraint-Driven Graphic Output Permutation POC Feedback Loop",
         "status: feedback-loop-defined",
+        "phase_status: complete",
         "phase: Phase 5 - feedback loop",
         "scenario_key: supra_2jz_gte_twin_turbo",
         "implementation_authority: documentation-only-feedback-loop",
@@ -108,12 +109,18 @@ def test_output_permutation_feedback_loop_defines_synthesis_format_and_done_crit
         "recommended_decision:",
         "recommended_next_milestone:",
         "approval_allowed: false",
+        "latest_user_reported_constraint_driven_graphic_output_permutation_feedback_loop_test_result: 6 passed",
+        "source: user-reported local test run",
+        "command: pytest tests/test_constraint_driven_graphic_output_permutation_feedback_loop.py",
+        "result: 6 passed",
+        "reported_on: 2026-07-13",
+        "assistant_ran_tests: false",
         "[x] Feedback loop document exists.",
         "[x] Reviewer feedback questions are defined.",
         "[x] Feedback classification labels are defined.",
         "[x] Decision rules are defined.",
         "[x] Guardrails are preserved.",
-        "[ ] Verification test result recorded.",
+        "[x] Verification test result recorded.",
         "pytest tests/test_constraint_driven_graphic_output_permutation_feedback_loop.py",
     ]
     for item in expected:
