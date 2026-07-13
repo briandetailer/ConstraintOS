@@ -6,7 +6,7 @@
 milestone: Fixture-Safe Visual Placeholder Refinement v1
 status: active
 kickoff_status: complete
-phase_1_contract_status: ready-for-verification
+phase_1_contract_status: complete
 started_on: 2026-07-13
 track: Business Demo Visibility Track
 previous_milestone: docs/500_Milestones/Constraint_Driven_Graphic_Output_Permutation_POC_v1.md
@@ -22,6 +22,8 @@ latest_user_reported_fixture_safe_visual_placeholder_refinement_milestone_rerun_
 latest_user_reported_fixture_safe_visual_placeholder_refinement_milestone_rerun_test_result_on: 2026-07-13
 latest_user_reported_fixture_safe_visual_placeholder_refinement_milestone_second_rerun_test_result: 6 passed
 latest_user_reported_fixture_safe_visual_placeholder_refinement_milestone_second_rerun_test_result_on: 2026-07-13
+latest_user_reported_fixture_safe_visual_placeholder_refinement_contract_test_result: 9 passed
+latest_user_reported_fixture_safe_visual_placeholder_refinement_contract_test_result_on: 2026-07-13
 assistant_ran_tests: false
 assistant_ran_demo: false
 ```
@@ -127,7 +129,7 @@ Phase 5: verification and closeout
 
 ```text
 kickoff: complete
-phase_1_placeholder_refinement_contract: ready-for-verification
+phase_1_placeholder_refinement_contract: complete
 phase_2_browser_placeholder_panel_design: pending
 phase_3_evidence_summary_cards: pending
 phase_4_reviewer_handoff_update: pending
@@ -169,7 +171,10 @@ assistant_ran_tests: false
 ```text
 contract: docs/800_Demos/Fixture_Safe_Visual_Placeholder_Refinement_Contract.md
 verification: pytest tests/test_fixture_safe_visual_placeholder_refinement_contract.py
-status: ready-for-verification
+result: 9 passed
+reported_on: 2026-07-13
+status: complete
+assistant_ran_tests: false
 ```
 
 ## Done criteria for kickoff slice
