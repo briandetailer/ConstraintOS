@@ -79,7 +79,7 @@ This is a static fixture-only browser walkthrough for the Toyota Supra A80 2JZ-G
 
 ### Constraint-driven output permutation POC - Toyota Supra
 
-Use this fixture-safe watch script when the audience needs to see the next product-shaped demo: constraints define controlled output permutations, each permutation gets deterministic validation evidence, deterministic fixture-safe placeholder panels, evidence summary cards, traceability labels, and approval remains blocked:
+Use this fixture-safe watch script when the audience needs to see the next product-shaped demo: constraints define controlled output permutations, each permutation gets deterministic validation evidence, deterministic fixture-safe placeholder panels, evidence summary cards, traceability labels, deterministic SVG graphics, and approval remains blocked:
 
 ```powershell
 .\scripts\watch-constraintos-output-poc.ps1
@@ -97,9 +97,13 @@ runs/output-poc/<scenario>/<timestamp>/graphic-output-validation.json
 runs/output-poc/<scenario>/<timestamp>/graphic-output-review-packet.json
 runs/output-poc/<scenario>/<timestamp>/index.html
 runs/output-poc/<scenario>/<timestamp>/run-metadata.json
+runs/output-poc/<scenario>/<timestamp>/graphics/turbo_system_focus.svg
+runs/output-poc/<scenario>/<timestamp>/graphics/inline_six_engine_identity_focus.svg
+runs/output-poc/<scenario>/<timestamp>/graphics/technical_label_density_focus.svg
+runs/output-poc/<scenario>/<timestamp>/graphics/reviewer_safe_minimal_focus.svg
 ```
 
-This is a static fixture-safe output-specification demo for the Toyota Supra A80 2JZ-GTE twin-turbo use case. It writes controlled permutation specs for `turbo_system_focus`, `inline_six_engine_identity_focus`, `technical_label_density_focus`, and `reviewer_safe_minimal_focus`; validates each as `needs_review`; and preserves `approval_allowed: false`. The generated `index.html` now includes browser-visible deterministic placeholder panels, evidence summary cards, and traceability labels so reviewers can compare output intent without treating the page as final artwork. The generated `run-metadata.json` records `placeholder_panels`, `evidence_summary_cards`, and `traceability_labels`. It does not generate final graphics, load local images, decode images, inspect pixels, fetch network resources, run CV/OCR, or approve automatically.
+This is a static fixture-safe output-specification demo for the Toyota Supra A80 2JZ-GTE twin-turbo use case. It writes controlled permutation specs for `turbo_system_focus`, `inline_six_engine_identity_focus`, `technical_label_density_focus`, and `reviewer_safe_minimal_focus`; writes deterministic SVG graphics for each permutation; validates each as `needs_review`; and preserves `approval_allowed: false`. The generated `index.html` now includes browser-visible deterministic SVG graphics, deterministic fixture-safe placeholder panels, evidence summary cards, and traceability labels so reviewers can compare output intent without treating the page as final artwork. The generated `run-metadata.json` records `placeholder_panels`, `evidence_summary_cards`, `traceability_labels`, and `svg_graphics`. It does not generate final production graphics, load local images, decode images, inspect pixels, fetch network resources, run CV/OCR, or approve automatically.
 
 ### Business demo UI - Toyota Supra presenter and feedback workflow
 
