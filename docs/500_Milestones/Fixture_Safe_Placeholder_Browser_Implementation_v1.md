@@ -4,7 +4,10 @@
 
 ```text
 milestone: Fixture-Safe Placeholder Browser Implementation v1
-status: kickoff-ready
+status: active
+kickoff_status: complete
+phase_1_browser_placeholder_contract_activation_status: complete
+phase_2_watch_script_browser_update_status: ready-for-verification
 started_on: 2026-07-13
 track: Business Demo Visibility Track
 previous_milestone: docs/500_Milestones/Fixture_Safe_Visual_Placeholder_Refinement_v1.md
@@ -16,6 +19,8 @@ previous_closeout: docs/800_Demos/Fixture_Safe_Visual_Placeholder_Closeout.md
 scenario_key: supra_2jz_gte_twin_turbo
 primary_use_case: Toyota Supra A80 2JZ-GTE Twin-Turbo Technical Graphic
 implementation_authority: deterministic-browser-placeholders-only
+latest_user_reported_fixture_safe_placeholder_browser_implementation_milestone_test_result: 6 passed
+latest_user_reported_fixture_safe_placeholder_browser_implementation_milestone_test_result_on: 2026-07-13
 assistant_ran_tests: false
 assistant_ran_demo: false
 ```
@@ -87,6 +92,17 @@ command_reference: docs/700_Use_Cases/Graphics_Validation_Command_Reference.md
    - no automatic approval
 ```
 
+## Implementation changes now under verification
+
+```text
+script_update: scripts/watch-constraintos-output-poc.ps1
+command_reference_update: docs/700_Use_Cases/Graphics_Validation_Command_Reference.md
+verification: pytest tests/test_constraint_driven_graphic_output_permutation_watch_script.py
+status: ready-for-verification
+```
+
+The watch script now writes browser-visible deterministic placeholder panels and evidence summary cards into `index.html`, and records placeholder/evidence metadata in `run-metadata.json`.
+
 ## Explicitly blocked scope
 
 ```text
@@ -126,6 +142,16 @@ Phase 5: verification and closeout
 - Complete the milestone only after tests pass.
 ```
 
+## Kickoff verification record
+
+```text
+source: user-reported local test run
+command: pytest tests/test_fixture_safe_placeholder_browser_implementation_milestone.py
+result: 6 passed
+reported_on: 2026-07-13
+assistant_ran_tests: false
+```
+
 ## Done criteria for kickoff slice
 
 ```text
@@ -137,11 +163,12 @@ Phase 5: verification and closeout
 [x] Command reference maintenance is called out.
 [x] Blocked scope is preserved.
 [x] Proposed implementation phases are defined.
-[ ] Verification test result recorded.
+[x] Verification test result recorded.
 ```
 
 ## Verification command
 
 ```powershell
 pytest tests/test_fixture_safe_placeholder_browser_implementation_milestone.py
+pytest tests/test_constraint_driven_graphic_output_permutation_watch_script.py
 ```
