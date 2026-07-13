@@ -4,13 +4,14 @@
 
 ```text
 milestone: Constraint-Driven Graphic Output Permutation POC v1
-status: kickoff-ready
+status: complete
 kickoff_status: complete
 phase_1_contract_status: complete
 phase_2_toyota_fixture_data_status: complete
 phase_3_watch_script_status: complete
 phase_4_browser_demo_status: ready-to-show
 phase_5_feedback_loop_status: complete
+completed_on: 2026-07-13
 started_on: 2026-07-10
 track: Business Demo Visibility Track
 previous_demo_package: Business Demo UI Toyota Supra
@@ -19,12 +20,12 @@ primary_use_case: Toyota Supra A80 2JZ-GTE Twin-Turbo Technical Graphic
 scenario_key: supra_2jz_gte_twin_turbo
 implementation_authority: gated-fixture-safe-only
 feedback_loop: docs/800_Demos/Constraint_Driven_Graphic_Output_Permutation_POC_Feedback_Loop.md
-latest_user_reported_constraint_driven_graphic_output_permutation_poc_test_result: 9 passed
-latest_user_reported_constraint_driven_graphic_output_permutation_poc_test_result_on: 2026-07-12
+latest_user_reported_constraint_driven_graphic_output_permutation_poc_test_result: 11 passed
+latest_user_reported_constraint_driven_graphic_output_permutation_poc_test_result_on: 2026-07-13
 latest_user_reported_constraint_driven_graphic_output_permutation_watch_script_test_result: 9 passed
-latest_user_reported_constraint_driven_graphic_output_permutation_watch_script_test_result_on: 2026-07-12
+latest_user_reported_constraint_driven_graphic_output_permutation_watch_script_test_result_on: 2026-07-13
 latest_user_reported_constraint_driven_graphic_output_permutation_reviewer_handoff_test_result: 5 passed
-latest_user_reported_constraint_driven_graphic_output_permutation_reviewer_handoff_test_result_on: 2026-07-12
+latest_user_reported_constraint_driven_graphic_output_permutation_reviewer_handoff_test_result_on: 2026-07-13
 latest_user_reported_constraint_driven_graphic_output_permutation_reviewer_handoff_rerun_test_result: 5 passed
 latest_user_reported_constraint_driven_graphic_output_permutation_reviewer_handoff_rerun_test_result_on: 2026-07-13
 latest_user_reported_constraint_driven_graphic_output_permutation_feedback_loop_test_result: 6 passed
@@ -213,13 +214,31 @@ phase_4_browser_business_demo: ready-to-show
 phase_5_feedback_loop: complete
 ```
 
+## Final verification record
+
+```text
+source: user-reported local verification run
+commands:
+- pytest tests/test_constraint_driven_graphic_output_permutation_poc.py
+- pytest tests/test_constraint_driven_graphic_output_permutation_watch_script.py
+- pytest tests/test_constraint_driven_graphic_output_permutation_reviewer_handoff.py
+- pytest tests/test_constraint_driven_graphic_output_permutation_feedback_loop.py
+results:
+- constraint_driven_graphic_output_permutation_poc: 11 passed
+- constraint_driven_graphic_output_permutation_watch_script: 9 passed
+- constraint_driven_graphic_output_permutation_reviewer_handoff: 5 passed
+- constraint_driven_graphic_output_permutation_feedback_loop: 6 passed
+reported_on: 2026-07-13
+assistant_ran_tests: false
+```
+
 ## Verification record
 
 ```text
 source: user-reported local test run
 command: pytest tests/test_constraint_driven_graphic_output_permutation_poc.py
-result: 9 passed
-reported_on: 2026-07-12
+result: 11 passed
+reported_on: 2026-07-13
 assistant_ran_tests: false
 ```
 
@@ -229,21 +248,11 @@ assistant_ran_tests: false
 source: user-reported local test run
 command: pytest tests/test_constraint_driven_graphic_output_permutation_watch_script.py
 result: 9 passed
-reported_on: 2026-07-12
+reported_on: 2026-07-13
 assistant_ran_tests: false
 ```
 
 ## Reviewer handoff verification record
-
-```text
-source: user-reported local test run
-command: pytest tests/test_constraint_driven_graphic_output_permutation_reviewer_handoff.py
-result: 5 passed
-reported_on: 2026-07-12
-assistant_ran_tests: false
-```
-
-## Reviewer handoff rerun verification record
 
 ```text
 source: user-reported local test run
@@ -263,7 +272,7 @@ reported_on: 2026-07-13
 assistant_ran_tests: false
 ```
 
-## Done criteria for this kickoff slice
+## Done criteria for this milestone
 
 ```text
 [x] Milestone exists.
@@ -271,11 +280,13 @@ assistant_ran_tests: false
 [x] Corrected product-shaped POC target is recorded.
 [x] Fixture-safe output permutations are explicitly allowed.
 [x] Production generated graphics remain out of scope.
-[x] Proposed command is recorded.
-[x] Proposed run-folder outputs are recorded.
-[x] Implementation phases are defined.
+[x] Demo command is recorded.
+[x] Run-folder outputs are recorded.
+[x] Implementation phases are complete.
+[x] Browser demo is ready to show.
+[x] Feedback loop is complete.
 [x] Guardrails are preserved.
-[x] Verification test result recorded.
+[x] Final verification result recorded.
 ```
 
 ## Verification command
