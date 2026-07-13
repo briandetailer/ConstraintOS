@@ -17,8 +17,10 @@ $RunRoot = Join-Path $RepoRoot "runs"
 $DemoRoot = Join-Path $RunRoot "output-poc"
 $ScenarioRoot = Join-Path $DemoRoot $Scenario
 $RunDir = Join-Path $ScenarioRoot $Timestamp
+$GraphicsDir = Join-Path $RunDir "graphics"
 
 New-Item -ItemType Directory -Force -Path $RunDir | Out-Null
+New-Item -ItemType Directory -Force -Path $GraphicsDir | Out-Null
 
 $ManifestPath = Join-Path $RunDir "graphic-output-manifest.json"
 $PermutationsPath = Join-Path $RunDir "graphic-output-permutations.json"
@@ -59,6 +61,7 @@ $Permutations = @(
         known_risks = @("turbo routing may be over-implied before real artwork evidence exists", "visual simplification may hide sequential system nuance")
         explicit_non_goals = @("do not claim production artwork was generated", "do not claim pixel-level validation", "do not claim exact factory routing verification")
         placeholder_artifact = "fixture-placeholder://output-poc/supra/turbo-system-focus"
+        svg_artifact = "graphics/turbo_system_focus.svg"
         expected_review_state = "needs_review"
     },
     [ordered]@{
@@ -71,6 +74,7 @@ $Permutations = @(
         known_risks = @("identity focus may under-explain the sequential twin-turbo system", "viewers may expect actual engine artwork in this phase")
         explicit_non_goals = @("do not claim production artwork was generated", "do not use real local image input", "do not represent this as image generation")
         placeholder_artifact = "fixture-placeholder://output-poc/supra/inline-six-identity-focus"
+        svg_artifact = "graphics/inline_six_engine_identity_focus.svg"
         expected_review_state = "needs_review"
     },
     [ordered]@{
@@ -83,6 +87,7 @@ $Permutations = @(
         known_risks = @("too much label density may reduce business readability", "dense specification may look more authoritative than evidence supports")
         explicit_non_goals = @("do not claim automatic approval", "do not claim CV/OCR inspection", "do not claim production artwork was generated")
         placeholder_artifact = "fixture-placeholder://output-poc/supra/technical-label-density-focus"
+        svg_artifact = "graphics/technical_label_density_focus.svg"
         expected_review_state = "needs_review"
     },
     [ordered]@{
@@ -95,6 +100,7 @@ $Permutations = @(
         known_risks = @("conservative output may feel less impressive to business reviewers", "minimal display may not satisfy viewers asking for concrete generated output")
         explicit_non_goals = @("do not claim production artwork was generated", "do not imply final approval", "do not imply all technical details are verified")
         placeholder_artifact = "fixture-placeholder://output-poc/supra/reviewer-safe-minimal-focus"
+        svg_artifact = "graphics/reviewer_safe_minimal_focus.svg"
         expected_review_state = "needs_review"
     }
 )
@@ -181,7 +187,91 @@ $EvidenceSummaryCards = @(
     }
 )
 
+function ConvertTo-SvgText {
+    param([string]$Value)
+    return [System.Security.SecurityElement]::Escape($Value)
+}
+
+function New-DeterministicSvgGraphic {
+    param(
+        [hashtable]$Permutation,
+        [hashtable]$Panel,
+        [hashtable]$Evidence,
+        [string]$OutputPath
+    )
+
+    $Title = ConvertTo-SvgText $Panel.panel_title
+    $PermutationId = ConvertTo-SvgText $Panel.permutation_id
+    $PlaceholderType = ConvertTo-SvgText $Panel.visual_placeholder_type
+    $ReviewerMessage = ConvertTo-SvgText $Panel.reviewer_message
+    $Satisfied = ConvertTo-SvgText (($Evidence.satisfied_constraints -join " | "))
+    $Uncertainty = ConvertTo-SvgText $Evidence.visible_uncertainty
+    $TraceLabels = ConvertTo-SvgText (($Panel.traceability_labels -join " | "))
+    $ArtifactId = ConvertTo-SvgText $Permutation.svg_artifact
+
+    $Svg = @"
+<svg xmlns="http://www.w3.org/2000/svg" width="960" height="540" viewBox="0 0 960 540" role="img" aria-labelledby="title desc">
+  <title id="title">ConstraintOS deterministic SVG graphic - $Title</title>
+  <desc id="desc">Fixture-safe deterministic SVG output for $PermutationId. This is not final production artwork.</desc>
+  <metadata>
+    permutation_id: $PermutationId
+    svg_artifact: $ArtifactId
+    visual_placeholder_type: $PlaceholderType
+    review_decision: needs_review
+    approval_allowed: false
+    renderer: deterministic-svg-output-only
+  </metadata>
+  <rect x="0" y="0" width="960" height="540" fill="#f8fbff"/>
+  <rect x="28" y="28" width="904" height="484" rx="28" fill="#ffffff" stroke="#d9e1ef" stroke-width="2"/>
+  <text x="56" y="78" font-family="Segoe UI, Arial, sans-serif" font-size="28" font-weight="700" fill="#172033">$Title</text>
+  <text x="56" y="112" font-family="Segoe UI, Arial, sans-serif" font-size="15" fill="#5d6a7f">permutation_id: $PermutationId</text>
+  <text x="56" y="140" font-family="Segoe UI, Arial, sans-serif" font-size="15" fill="#5d6a7f">visual_placeholder_type: $PlaceholderType</text>
+  <g id="deterministic-graphic-core" data-permutation-id="$PermutationId" data-review-decision="needs_review" data-approval-allowed="false">
+    <rect x="70" y="185" width="210" height="80" rx="18" fill="#eef4ff" stroke="#2458d3" stroke-width="2"/>
+    <text x="94" y="232" font-family="Segoe UI, Arial, sans-serif" font-size="18" font-weight="700" fill="#172033">Toyota Supra A80</text>
+    <rect x="370" y="185" width="210" height="80" rx="18" fill="#eef4ff" stroke="#2458d3" stroke-width="2"/>
+    <text x="428" y="232" font-family="Segoe UI, Arial, sans-serif" font-size="18" font-weight="700" fill="#172033">2JZ-GTE</text>
+    <rect x="680" y="185" width="170" height="80" rx="18" fill="#eef4ff" stroke="#2458d3" stroke-width="2"/>
+    <text x="711" y="219" font-family="Segoe UI, Arial, sans-serif" font-size="16" font-weight="700" fill="#172033">Sequential</text>
+    <text x="714" y="242" font-family="Segoe UI, Arial, sans-serif" font-size="16" font-weight="700" fill="#172033">Twin Turbo</text>
+    <line x1="280" y1="225" x2="370" y2="225" stroke="#2458d3" stroke-width="4" stroke-linecap="round"/>
+    <line x1="580" y1="225" x2="680" y2="225" stroke="#2458d3" stroke-width="4" stroke-linecap="round"/>
+  </g>
+  <g id="traceability-labels">
+    <rect x="70" y="300" width="820" height="58" rx="16" fill="#f8fbff" stroke="#d9e1ef"/>
+    <text x="94" y="335" font-family="Segoe UI, Arial, sans-serif" font-size="16" fill="#172033">traceability: $TraceLabels</text>
+  </g>
+  <g id="evidence-summary">
+    <rect x="70" y="378" width="820" height="78" rx="16" fill="#f7fff8" stroke="#166534"/>
+    <text x="94" y="410" font-family="Segoe UI, Arial, sans-serif" font-size="16" font-weight="700" fill="#166534">satisfied fixture constraints:</text>
+    <text x="94" y="436" font-family="Segoe UI, Arial, sans-serif" font-size="14" fill="#172033">$Satisfied</text>
+  </g>
+  <text x="70" y="478" font-family="Segoe UI, Arial, sans-serif" font-size="15" fill="#a16207">uncertainty: $Uncertainty</text>
+  <text x="70" y="504" font-family="Segoe UI, Arial, sans-serif" font-size="15" font-weight="700" fill="#172033">review_decision: needs_review / approval_allowed: false</text>
+  <text x="610" y="504" font-family="Segoe UI, Arial, sans-serif" font-size="13" fill="#5d6a7f">$ReviewerMessage</text>
+</svg>
+"@
+
+    $Svg | Set-Content -Path $OutputPath -Encoding UTF8
+}
+
 $PermutationIds = @($Permutations | ForEach-Object { $_.permutation_id })
+
+$SvgArtifacts = @(
+    foreach ($Permutation in $Permutations) {
+        $Panel = $PlaceholderPanels | Where-Object { $_.permutation_id -eq $Permutation.permutation_id } | Select-Object -First 1
+        $Evidence = $EvidenceSummaryCards | Where-Object { $_.permutation_id -eq $Permutation.permutation_id } | Select-Object -First 1
+        $SvgPath = Join-Path $RunDir $Permutation.svg_artifact
+        New-DeterministicSvgGraphic -Permutation $Permutation -Panel $Panel -Evidence $Evidence -OutputPath $SvgPath
+        [ordered]@{
+            permutation_id = $Permutation.permutation_id
+            svg_artifact = $Permutation.svg_artifact
+            svg_path = $SvgPath
+            review_decision = "needs_review"
+            approval_allowed = $false
+        }
+    }
+)
 
 $Manifest = [ordered]@{
     demo = $DemoName
@@ -201,7 +291,9 @@ $Manifest = [ordered]@{
         review_packet = "graphic-output-review-packet.json"
         browser = "index.html"
         metadata = "run-metadata.json"
+        graphics = "graphics/"
     }
+    svg_graphics = $SvgArtifacts
 }
 
 $PermutationSet = [ordered]@{
@@ -220,6 +312,7 @@ $PermutationResults = @(
             blocked_claims = $Permutation.explicit_non_goals
             review_decision = "needs_review"
             approval_allowed = $false
+            svg_artifact = $Permutation.svg_artifact
         }
     }
 )
@@ -236,22 +329,23 @@ $Validation = [ordered]@{
 $ReviewPacket = [ordered]@{
     demo = $DemoName
     scenario_key = $Scenario
-    viewer_summary = "ConstraintOS defined four fixture-safe Toyota Supra / 2JZ-GTE output permutations and displays deterministic placeholder panels and evidence cards for each one."
+    viewer_summary = "ConstraintOS defined four fixture-safe Toyota Supra / 2JZ-GTE output permutations and generated deterministic SVG graphics for each one."
     recommended_reviewer_path = @(
-        "Open index.html for the business-facing placeholder panels and evidence cards.",
-        "Review graphic-output-manifest.json to see the controlled variants.",
+        "Open index.html for the business-facing SVG graphics, placeholder panels, and evidence cards.",
+        "Review the graphics/*.svg artifacts as deterministic output files.",
         "Review graphic-output-validation.json to see why approval remains blocked."
     )
     final_decision = $FinalDecision
     approval_allowed = $ApprovalAllowed
-    why_approval_is_blocked = "The current POC defines controlled output specifications and deterministic placeholder panels only; it does not generate production artwork or inspect real images."
-    next_recommended_action = "Review whether the browser placeholder panels make the four output intents clear enough for business feedback."
+    why_approval_is_blocked = "The current POC generates deterministic SVG graphics only; it does not generate production artwork or inspect real images."
+    next_recommended_action = "Review whether deterministic SVG graphics make the four output intents clear enough for business feedback."
 }
 
 $Metadata = [ordered]@{
     demo = $DemoName
     scenario_key = $Scenario
     run_dir = $RunDir
+    graphics_dir = $GraphicsDir
     manifest = $ManifestPath
     permutations = $PermutationsPath
     validation = $ValidationPath
@@ -263,8 +357,10 @@ $Metadata = [ordered]@{
     approval_allowed = $ApprovalAllowed
     browser_walkthrough = "constraints -> permutations -> validation -> needs_review"
     browser_placeholder_walkthrough = "output permutations -> deterministic placeholder panels -> evidence summary cards -> needs_review"
+    svg_graphics_walkthrough = "output permutations -> deterministic SVG graphics -> browser display -> structural evidence -> needs_review"
     placeholder_panels = $PlaceholderPanels
     evidence_summary_cards = $EvidenceSummaryCards
+    svg_graphics = $SvgArtifacts
     traceability_labels = @("engine_identity", "vehicle_identity", "turbo_identity", "wrong_engine_exclusion", "review_safety")
     guardrails = @(
         "No generated final graphics",
@@ -279,7 +375,7 @@ $Metadata = [ordered]@{
     )
 }
 
-$Manifest | ConvertTo-Json -Depth 8 | Set-Content -Path $ManifestPath -Encoding UTF8
+$Manifest | ConvertTo-Json -Depth 12 | Set-Content -Path $ManifestPath -Encoding UTF8
 $PermutationSet | ConvertTo-Json -Depth 10 | Set-Content -Path $PermutationsPath -Encoding UTF8
 $Validation | ConvertTo-Json -Depth 10 | Set-Content -Path $ValidationPath -Encoding UTF8
 $ReviewPacket | ConvertTo-Json -Depth 8 | Set-Content -Path $ReviewPacketPath -Encoding UTF8
@@ -306,13 +402,14 @@ $Html = @'
     .flow { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 14px; margin-top: 18px; }
     .flow-step { border: 1px solid var(--line); border-radius: 18px; background: #fbfcff; padding: 16px; }
     .flow-step strong { display: block; margin-bottom: 6px; }
-    .grid, .placeholder-grid, .evidence-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px; }
-    .variant, .placeholder-panel, .evidence-summary-card { border: 1px solid var(--line); border-radius: 18px; padding: 18px; background: #fbfcff; }
+    .grid, .placeholder-grid, .evidence-grid, .svg-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px; }
+    .variant, .placeholder-panel, .evidence-summary-card, .svg-graphic-card { border: 1px solid var(--line); border-radius: 18px; padding: 18px; background: #fbfcff; }
     .placeholder-panel { border-top: 5px solid var(--accent); }
-    .evidence-summary-card { border-top: 5px solid var(--safe); }
+    .evidence-summary-card, .svg-graphic-card { border-top: 5px solid var(--safe); }
     .tag, .chip { display: inline-block; border-radius: 999px; padding: 7px 10px; background: #fff6df; color: var(--warn); font-weight: 800; font-size: 12px; margin: 0 6px 8px 0; }
     .chip { background: var(--soft); color: var(--accent); }
     .artifact { font-family: Consolas, monospace; background: var(--dark); color: #dbeafe; border-radius: 12px; padding: 10px; font-size: 13px; overflow-wrap: anywhere; }
+    .svg-graphic-card img { width: 100%; height: auto; border: 1px solid var(--line); border-radius: 16px; background: #fff; margin-top: 12px; }
     .decision { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; }
     .metric { border: 1px solid var(--line); border-radius: 18px; background: #fbfcff; padding: 18px; }
     .metric .value { font-size: 24px; font-weight: 900; }
@@ -323,7 +420,7 @@ $Html = @'
     .uncertainty-banner { border-left: 4px solid var(--warn); background: #fff8e8; border-radius: 12px; padding: 10px 12px; color: #6b4e00; font-weight: 700; }
     .review-footer { margin-top: 12px; font-weight: 900; color: var(--ink); }
     ul { color: var(--muted); }
-    @media (max-width: 900px) { .grid, .flow, .decision, .placeholder-grid, .evidence-grid { grid-template-columns: 1fr; } }
+    @media (max-width: 900px) { .grid, .flow, .decision, .placeholder-grid, .evidence-grid, .svg-grid { grid-template-columns: 1fr; } }
   </style>
 </head>
 <body>
@@ -336,8 +433,20 @@ $Html = @'
       <div class="flow" aria-label="demo walkthrough flow">
         <div class="flow-step"><strong>1. Constraints loaded</strong><span>Toyota Supra A80, 2JZ-GTE inline-six, sequential twin-turbo, and wrong-engine exclusions.</span></div>
         <div class="flow-step"><strong>2. Output permutations</strong><span>Four fixture-safe output specifications are defined from the same requirement set.</span></div>
-        <div class="flow-step"><strong>3. Deterministic validation</strong><span>Each permutation is checked against explicit constraints and uncertainty is surfaced.</span></div>
+        <div class="flow-step"><strong>3. Deterministic SVG graphics</strong><span>Each permutation now writes a real SVG artifact under graphics/.</span></div>
         <div class="flow-step"><strong>4. needs_review</strong><span>Approval stays blocked because this is not final generated artwork or image inspection.</span></div>
+      </div>
+    </section>
+
+    <section class="card" id="deterministic-svg-graphics">
+      <div class="eyebrow">Deterministic SVG graphics</div>
+      <h2>Generated SVG artifacts</h2>
+      <p>These SVG files are real generated vector artifacts created from fixture-safe output specs. They are deterministic, non-image-derived, and still require human review.</p>
+      <div class="svg-grid">
+        <article class="svg-graphic-card" data-permutation-id="turbo_system_focus"><h3>turbo_system_focus.svg</h3><div class="artifact">graphics/turbo_system_focus.svg</div><img src="graphics/turbo_system_focus.svg" alt="Deterministic SVG graphic for turbo_system_focus" /></article>
+        <article class="svg-graphic-card" data-permutation-id="inline_six_engine_identity_focus"><h3>inline_six_engine_identity_focus.svg</h3><div class="artifact">graphics/inline_six_engine_identity_focus.svg</div><img src="graphics/inline_six_engine_identity_focus.svg" alt="Deterministic SVG graphic for inline_six_engine_identity_focus" /></article>
+        <article class="svg-graphic-card" data-permutation-id="technical_label_density_focus"><h3>technical_label_density_focus.svg</h3><div class="artifact">graphics/technical_label_density_focus.svg</div><img src="graphics/technical_label_density_focus.svg" alt="Deterministic SVG graphic for technical_label_density_focus" /></article>
+        <article class="svg-graphic-card" data-permutation-id="reviewer_safe_minimal_focus"><h3>reviewer_safe_minimal_focus.svg</h3><div class="artifact">graphics/reviewer_safe_minimal_focus.svg</div><img src="graphics/reviewer_safe_minimal_focus.svg" alt="Deterministic SVG graphic for reviewer_safe_minimal_focus" /></article>
       </div>
     </section>
 
@@ -356,55 +465,10 @@ $Html = @'
       <h2>Browser-visible deterministic placeholder panels</h2>
       <p>These panels are deterministic browser placeholders, not generated final artwork. They make the four output intents visible while every variant remains needs_review and approval_allowed remains false.</p>
       <div class="placeholder-grid">
-        <article class="placeholder-panel" data-permutation-id="turbo_system_focus" data-visual-placeholder-type="schematic_block_panel">
-          <div class="eyebrow">panel_shell / title_band</div>
-          <h3>Turbo System Focus</h3>
-          <p>Sequential twin-turbo intent is visible without implying final artwork.</p>
-          <div class="placeholder-visual" aria-label="deterministic schematic block panel">
-            <div class="visual-row"><span class="schematic-block">engine core</span><span class="schematic-block">twin turbo A</span><span class="schematic-block">twin turbo B</span></div>
-            <div class="visual-row"><span class="schematic-block">charge path</span><span class="schematic-block">exhaust path</span></div>
-            <span class="chip">engine_identity</span><span class="chip">vehicle_identity</span><span class="chip">turbo_identity</span><span class="chip">review_safety</span>
-          </div>
-          <div class="uncertainty-banner">This is a deterministic placeholder, not final artwork.</div>
-          <div class="review-footer">review_decision: needs_review / approval_allowed: false</div>
-        </article>
-
-        <article class="placeholder-panel" data-permutation-id="inline_six_engine_identity_focus" data-visual-placeholder-type="text_first_panel">
-          <div class="eyebrow">panel_shell / title_band</div>
-          <h3>Inline-Six Identity Focus</h3>
-          <p>2JZ-GTE inline-six identity and wrong-engine exclusions are emphasized before artwork exists.</p>
-          <div class="placeholder-visual" aria-label="deterministic identity text panel">
-            <div class="visual-row"><span class="identity-block">inline-six</span><span class="identity-block">2JZ-GTE</span><span class="identity-block">Mk IV Supra</span></div>
-            <span class="chip">not V6</span><span class="chip">not V8</span><span class="chip">not rotary</span><span class="chip">not RB26</span><span class="chip">not LF4</span><span class="chip">not B58</span>
-            <div><span class="chip">engine_identity</span><span class="chip">vehicle_identity</span><span class="chip">wrong_engine_exclusion</span><span class="chip">review_safety</span></div>
-          </div>
-          <div class="uncertainty-banner">This panel is derived from fixture constraints, not image inspection.</div>
-          <div class="review-footer">review_decision: needs_review / approval_allowed: false</div>
-        </article>
-
-        <article class="placeholder-panel" data-permutation-id="technical_label_density_focus" data-visual-placeholder-type="label_density_panel">
-          <div class="eyebrow">panel_shell / title_band</div>
-          <h3>Technical Label Density Focus</h3>
-          <p>Dense callout intent is visible for comparison, while label placement remains unresolved.</p>
-          <div class="placeholder-visual" aria-label="deterministic label density panel">
-            <div class="visual-row"><span class="density-indicator">core labels</span><span class="density-indicator">turbo labels</span><span class="density-indicator">flow labels</span><span class="density-indicator">warning labels</span></div>
-            <span class="chip">engine_identity</span><span class="chip">turbo_identity</span><span class="chip">review_safety</span><span class="chip">evidence_chip</span>
-          </div>
-          <div class="uncertainty-banner">Uncertainty remains needs_review.</div>
-          <div class="review-footer">review_decision: needs_review / approval_allowed: false</div>
-        </article>
-
-        <article class="placeholder-panel" data-permutation-id="reviewer_safe_minimal_focus" data-visual-placeholder-type="reviewer_safe_minimal_panel">
-          <div class="eyebrow">panel_shell / title_band</div>
-          <h3>Reviewer-Safe Minimal Focus</h3>
-          <p>Only validated claims are surfaced; uncertain details are intentionally withheld.</p>
-          <div class="placeholder-visual" aria-label="deterministic reviewer-safe minimal panel">
-            <div class="visual-row"><span class="identity-block">Toyota Supra A80</span><span class="identity-block">2JZ-GTE</span><span class="identity-block">sequential twin-turbo</span></div>
-            <span class="chip">engine_identity</span><span class="chip">vehicle_identity</span><span class="chip">turbo_identity</span><span class="chip">review_safety</span>
-          </div>
-          <div class="uncertainty-banner">approval_allowed remains false.</div>
-          <div class="review-footer">review_decision: needs_review / approval_allowed: false</div>
-        </article>
+        <article class="placeholder-panel" data-permutation-id="turbo_system_focus" data-visual-placeholder-type="schematic_block_panel"><div class="eyebrow">panel_shell / title_band</div><h3>Turbo System Focus</h3><p>Sequential twin-turbo intent is visible without implying final artwork.</p><div class="placeholder-visual" aria-label="deterministic schematic block panel"><div class="visual-row"><span class="schematic-block">engine core</span><span class="schematic-block">twin turbo A</span><span class="schematic-block">twin turbo B</span></div><div class="visual-row"><span class="schematic-block">charge path</span><span class="schematic-block">exhaust path</span></div><span class="chip">engine_identity</span><span class="chip">vehicle_identity</span><span class="chip">turbo_identity</span><span class="chip">review_safety</span></div><div class="uncertainty-banner">This is a deterministic placeholder, not final artwork.</div><div class="review-footer">review_decision: needs_review / approval_allowed: false</div></article>
+        <article class="placeholder-panel" data-permutation-id="inline_six_engine_identity_focus" data-visual-placeholder-type="text_first_panel"><div class="eyebrow">panel_shell / title_band</div><h3>Inline-Six Identity Focus</h3><p>2JZ-GTE inline-six identity and wrong-engine exclusions are emphasized before artwork exists.</p><div class="placeholder-visual" aria-label="deterministic identity text panel"><div class="visual-row"><span class="identity-block">inline-six</span><span class="identity-block">2JZ-GTE</span><span class="identity-block">Mk IV Supra</span></div><span class="chip">not V6</span><span class="chip">not V8</span><span class="chip">not rotary</span><span class="chip">not RB26</span><span class="chip">not LF4</span><span class="chip">not B58</span><div><span class="chip">engine_identity</span><span class="chip">vehicle_identity</span><span class="chip">wrong_engine_exclusion</span><span class="chip">review_safety</span></div></div><div class="uncertainty-banner">This panel is derived from fixture constraints, not image inspection.</div><div class="review-footer">review_decision: needs_review / approval_allowed: false</div></article>
+        <article class="placeholder-panel" data-permutation-id="technical_label_density_focus" data-visual-placeholder-type="label_density_panel"><div class="eyebrow">panel_shell / title_band</div><h3>Technical Label Density Focus</h3><p>Dense callout intent is visible for comparison, while label placement remains unresolved.</p><div class="placeholder-visual" aria-label="deterministic label density panel"><div class="visual-row"><span class="density-indicator">core labels</span><span class="density-indicator">turbo labels</span><span class="density-indicator">flow labels</span><span class="density-indicator">warning labels</span></div><span class="chip">engine_identity</span><span class="chip">turbo_identity</span><span class="chip">review_safety</span><span class="chip">evidence_chip</span></div><div class="uncertainty-banner">Uncertainty remains needs_review.</div><div class="review-footer">review_decision: needs_review / approval_allowed: false</div></article>
+        <article class="placeholder-panel" data-permutation-id="reviewer_safe_minimal_focus" data-visual-placeholder-type="reviewer_safe_minimal_panel"><div class="eyebrow">panel_shell / title_band</div><h3>Reviewer-Safe Minimal Focus</h3><p>Only validated claims are surfaced; uncertain details are intentionally withheld.</p><div class="placeholder-visual" aria-label="deterministic reviewer-safe minimal panel"><div class="visual-row"><span class="identity-block">Toyota Supra A80</span><span class="identity-block">2JZ-GTE</span><span class="identity-block">sequential twin-turbo</span></div><span class="chip">engine_identity</span><span class="chip">vehicle_identity</span><span class="chip">turbo_identity</span><span class="chip">review_safety</span></div><div class="uncertainty-banner">approval_allowed remains false.</div><div class="review-footer">review_decision: needs_review / approval_allowed: false</div></article>
       </div>
     </section>
 
@@ -413,7 +477,7 @@ $Html = @'
       <h2>Fixture evidence summaries, not scoring cards</h2>
       <p>Each evidence_summary_card summarizes fixture evidence only. These cards do not inspect or grade final artwork, do not score pixels, and do not approve output.</p>
       <div class="evidence-grid">
-        <article class="evidence-summary-card" data-permutation-id="turbo_system_focus"><h3>Turbo System Evidence</h3><p><strong>Satisfied:</strong> Toyota Supra A80, 2JZ-GTE, sequential twin-turbo.</p><p><strong>Visible uncertainty:</strong> schematic layout is placeholder-only.</p><p><strong>Blocked claims:</strong> final artwork, physical accuracy approval, image-derived verification.</p><div class="review-footer">needs_review / approval_allowed: false</div></article>
+        <article class="evidence-summary-card" data-permutation-id="turbo_system_focus"><h3>Turbo System Evidence</h3><p><strong>Satisfied:</strong> Toyota Supra A80, 2J-GTE, sequential twin-turbo.</p><p><strong>Visible uncertainty:</strong> schematic layout is placeholder-only.</p><p><strong>Blocked claims:</strong> final artwork, physical accuracy approval, image-derived verification.</p><div class="review-footer">needs_review / approval_allowed: false</div></article>
         <article class="evidence-summary-card" data-permutation-id="inline_six_engine_identity_focus"><h3>Inline-Six Identity Evidence</h3><p><strong>Satisfied:</strong> Toyota Supra A80, 2JZ-GTE inline-six, wrong-engine exclusions.</p><p><strong>Visible uncertainty:</strong> identity emphasis is placeholder-only.</p><p><strong>Blocked claims:</strong> final artwork, hidden mechanical correctness approval, image-derived verification.</p><div class="review-footer">needs_review / approval_allowed: false</div></article>
         <article class="evidence-summary-card" data-permutation-id="technical_label_density_focus"><h3>Label Density Evidence</h3><p><strong>Satisfied:</strong> technical graphic context, label comparison, fixture-defined tokens.</p><p><strong>Visible uncertainty:</strong> label density requires reviewer judgment.</p><p><strong>Blocked claims:</strong> final label placement, production-ready diagram approval, image-derived verification.</p><div class="review-footer">needs_review / approval_allowed: false</div></article>
         <article class="evidence-summary-card" data-permutation-id="reviewer_safe_minimal_focus"><h3>Reviewer-Safe Evidence</h3><p><strong>Satisfied:</strong> validated claims only, visible uncertainty, approval blocked.</p><p><strong>Visible uncertainty:</strong> withheld details remain unverified.</p><p><strong>Blocked claims:</strong> final artwork, automatic approval, unstated mechanical claims.</p><div class="review-footer">needs_review / approval_allowed: false</div></article>
@@ -437,6 +501,10 @@ $Html = @'
         <li>graphic-output-validation.json</li>
         <li>graphic-output-review-packet.json</li>
         <li>run-metadata.json</li>
+        <li>graphics/turbo_system_focus.svg</li>
+        <li>graphics/inline_six_engine_identity_focus.svg</li>
+        <li>graphics/technical_label_density_focus.svg</li>
+        <li>graphics/reviewer_safe_minimal_focus.svg</li>
       </ul>
       <p>Guardrail: this demo does not generate final graphics, open local images, decode images, inspect pixels, fetch the network, use CV/OCR, or approve automatically.</p>
     </section>
@@ -454,6 +522,7 @@ Write-Host "Manifest: $ManifestPath"
 Write-Host "Permutations: $PermutationsPath"
 Write-Host "Validation: $ValidationPath"
 Write-Host "Review packet: $ReviewPacketPath"
+Write-Host "Graphics directory: $GraphicsDir"
 Write-Host "Browser UI: $IndexPath"
 Write-Host "Final decision: $FinalDecision"
 Write-Host "Approval allowed: $ApprovalAllowed"
