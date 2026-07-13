@@ -9,13 +9,14 @@ def test_fixture_safe_visual_placeholder_refinement_milestone_exists() -> None:
 
     expected = [
         "# Fixture-Safe Visual Placeholder Refinement v1",
-        "status: active",
+        "status: complete",
         "kickoff_status: complete",
         "phase_1_contract_status: complete",
         "phase_2_panel_design_status: complete",
         "phase_3_evidence_summary_cards_status: complete",
         "phase_4_reviewer_handoff_status: complete",
-        "phase_5_closeout_status: ready-for-verification",
+        "phase_5_closeout_status: complete",
+        "completed_on: 2026-07-13",
         "track: Business Demo Visibility Track",
         "previous_milestone: docs/500_Milestones/Constraint_Driven_Graphic_Output_Permutation_POC_v1.md",
         "previous_feedback_loop: docs/800_Demos/Constraint_Driven_Graphic_Output_Permutation_POC_Feedback_Loop.md",
@@ -100,7 +101,7 @@ def test_fixture_safe_visual_placeholder_refinement_preserves_blocked_scope() ->
         assert item in content
 
 
-def test_fixture_safe_visual_placeholder_refinement_defines_phases_and_kickoff_verification() -> None:
+def test_fixture_safe_visual_placeholder_refinement_defines_completed_phases_and_verification() -> None:
     content = MILESTONE.read_text(encoding="utf-8")
 
     expected = [
@@ -113,24 +114,14 @@ def test_fixture_safe_visual_placeholder_refinement_defines_phases_and_kickoff_v
         "phase_2_browser_placeholder_panel_design: complete",
         "phase_3_evidence_summary_cards: complete",
         "phase_4_reviewer_handoff_update: complete",
-        "phase_5_verification_and_closeout: ready-for-verification",
-        "latest_user_reported_fixture_safe_visual_placeholder_refinement_milestone_test_result: 6 passed",
-        "latest_user_reported_fixture_safe_visual_placeholder_refinement_milestone_rerun_test_result: 6 passed",
-        "latest_user_reported_fixture_safe_visual_placeholder_refinement_milestone_second_rerun_test_result: 6 passed",
-        "source: user-reported local test run",
-        "source: user-reported local test rerun",
-        "## Second verification rerun record",
-        "command: pytest tests/test_fixture_safe_visual_placeholder_refinement_milestone.py",
-        "result: 6 passed",
+        "phase_5_verification_and_closeout: complete",
+        "latest_user_reported_fixture_safe_visual_placeholder_refinement_final_milestone_test_result: 11 passed",
+        "latest_user_reported_fixture_safe_visual_placeholder_closeout_test_result: 6 passed",
+        "source: user-reported local final closeout verification",
+        "fixture_safe_visual_placeholder_refinement_milestone: 11 passed",
+        "fixture_safe_visual_placeholder_closeout: 6 passed",
         "reported_on: 2026-07-13",
         "assistant_ran_tests: false",
-        "[x] Milestone exists.",
-        "[x] Previous output-permutation POC is referenced.",
-        "[x] Feedback-loop authority is referenced.",
-        "[x] Fixture-safe visual placeholder scope is defined.",
-        "[x] Blocked outputs are preserved.",
-        "[x] Verification test result recorded.",
-        "pytest tests/test_fixture_safe_visual_placeholder_refinement_milestone.py",
     ]
     for item in expected:
         assert item in content
@@ -207,7 +198,12 @@ def test_fixture_safe_visual_placeholder_refinement_records_phase_5_closeout() -
         "## Phase 5 closeout",
         "closeout: docs/800_Demos/Fixture_Safe_Visual_Placeholder_Closeout.md",
         "verification: pytest tests/test_fixture_safe_visual_placeholder_closeout.py",
-        "status: ready-for-verification",
+        "result: 6 passed",
+        "status: complete",
+        "assistant_ran_tests: false",
+        "## Done criteria for milestone",
+        "[x] Phase 5 closeout complete.",
+        "[x] Final closeout verification recorded.",
     ]
     for item in expected:
         assert item in content
