@@ -31,6 +31,8 @@ def test_output_permutation_watch_script_writes_expected_run_artifacts() -> None
         "graphic-output-review-packet.json",
         "index.html",
         "run-metadata.json",
+        "graphics/",
+        "$GraphicsDir = Join-Path $RunDir \"graphics\"",
         "Set-Content -Path $ManifestPath -Encoding UTF8",
         "Set-Content -Path $PermutationsPath -Encoding UTF8",
         "Set-Content -Path $ValidationPath -Encoding UTF8",
@@ -143,7 +145,7 @@ def test_output_permutation_watch_script_browser_page_shows_phase_4_walkthrough(
         "browser_walkthrough = \"constraints -> permutations -> validation -> needs_review\"",
         "1. Constraints loaded",
         "2. Output permutations",
-        "3. Deterministic validation",
+        "3. Deterministic SVG graphics",
         "4. needs_review",
         "Validation outcome",
         "fixture-safe output permutations",
@@ -221,6 +223,33 @@ def test_output_permutation_watch_script_defines_evidence_summary_cards() -> Non
         assert item in content
 
 
+def test_output_permutation_watch_script_generates_deterministic_svg_graphics() -> None:
+    content = SCRIPT.read_text(encoding="utf-8")
+
+    expected = [
+        "function New-DeterministicSvgGraphic",
+        "svg_graphics_walkthrough = \"output permutations -> deterministic SVG graphics -> browser display -> structural evidence -> needs_review\"",
+        "svg_graphics = $SvgArtifacts",
+        "graphics/turbo_system_focus.svg",
+        "graphics/inline_six_engine_identity_focus.svg",
+        "graphics/technical_label_density_focus.svg",
+        "graphics/reviewer_safe_minimal_focus.svg",
+        "<svg xmlns=\"http://www.w3.org/2000/svg\"",
+        "permutation_id: $PermutationId",
+        "review_decision: needs_review",
+        "approval_allowed: false",
+        "Set-Content -Path $OutputPath -Encoding UTF8",
+        "Deterministic SVG graphics",
+        "Generated SVG artifacts",
+        "<img src=\"graphics/turbo_system_focus.svg\"",
+        "<img src=\"graphics/inline_six_engine_identity_focus.svg\"",
+        "<img src=\"graphics/technical_label_density_focus.svg\"",
+        "<img src=\"graphics/reviewer_safe_minimal_focus.svg\"",
+    ]
+    for item in expected:
+        assert item in content
+
+
 def test_output_permutation_watch_script_is_in_command_reference() -> None:
     content = COMMAND_REFERENCE.read_text(encoding="utf-8")
 
@@ -233,11 +262,17 @@ def test_output_permutation_watch_script_is_in_command_reference() -> None:
         "runs/output-poc/<scenario>/<timestamp>/graphic-output-permutations.json",
         "runs/output-poc/<scenario>/<timestamp>/graphic-output-validation.json",
         "runs/output-poc/<scenario>/<timestamp>/graphic-output-review-packet.json",
+        "runs/output-poc/<scenario>/<timestamp>/graphics/turbo_system_focus.svg",
+        "runs/output-poc/<scenario>/<timestamp>/graphics/inline_six_engine_identity_focus.svg",
+        "runs/output-poc/<scenario>/<timestamp>/graphics/technical_label_density_focus.svg",
+        "runs/output-poc/<scenario>/<timestamp>/graphics/reviewer_safe_minimal_focus.svg",
         "deterministic fixture-safe placeholder panels",
+        "deterministic SVG graphics",
         "evidence summary cards",
         "traceability labels",
         "placeholder_panels",
         "evidence_summary_cards",
+        "svg_graphics",
     ]
     for item in expected:
         assert item in content
