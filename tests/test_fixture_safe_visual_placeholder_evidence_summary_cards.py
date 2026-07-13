@@ -11,12 +11,13 @@ def test_fixture_safe_placeholder_evidence_summary_cards_exist_and_target_phase_
         "# Fixture-Safe Visual Placeholder Evidence Summary Cards",
         "status: evidence-summary-cards-defined",
         "phase: Phase 3 - evidence summary cards",
-        "phase_status: ready-for-verification",
+        "phase_status: complete",
         "milestone: docs/500_Milestones/Fixture_Safe_Visual_Placeholder_Refinement_v1.md",
         "contract: docs/800_Demos/Fixture_Safe_Visual_Placeholder_Refinement_Contract.md",
         "panel_design: docs/800_Demos/Fixture_Safe_Visual_Placeholder_Panel_Design.md",
         "scenario_key: supra_2jz_gte_twin_turbo",
         "implementation_authority: fixture-safe-visual-placeholders-only",
+        "latest_user_reported_fixture_safe_visual_placeholder_evidence_summary_cards_test_result: 7 passed",
     ]
     for item in expected:
         assert item in content
@@ -137,11 +138,16 @@ def test_fixture_safe_placeholder_evidence_summary_cards_preserve_guardrails_and
         "Pixel inspection.",
         "CV/OCR provider integration.",
         "Automatic approval.",
+        "source: user-reported local test run",
+        "command: pytest tests/test_fixture_safe_visual_placeholder_evidence_summary_cards.py",
+        "result: 7 passed",
+        "reported_on: 2026-07-13",
+        "assistant_ran_tests: false",
         "[x] Evidence summary card document exists.",
         "[x] Four required evidence cards are defined.",
         "[x] Reviewer copy requirements preserve fixture-safe scope.",
         "[x] Traceability requirements are defined.",
-        "[ ] Verification test result recorded.",
+        "[x] Verification test result recorded.",
         "pytest tests/test_fixture_safe_visual_placeholder_evidence_summary_cards.py",
     ]
     for item in expected:
