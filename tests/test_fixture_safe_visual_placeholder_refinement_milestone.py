@@ -13,13 +13,15 @@ def test_fixture_safe_visual_placeholder_refinement_milestone_exists() -> None:
         "kickoff_status: complete",
         "phase_1_contract_status: complete",
         "phase_2_panel_design_status: complete",
-        "phase_3_evidence_summary_cards_status: ready-for-verification",
+        "phase_3_evidence_summary_cards_status: complete",
+        "phase_4_reviewer_handoff_status: ready-for-verification",
         "track: Business Demo Visibility Track",
         "previous_milestone: docs/500_Milestones/Constraint_Driven_Graphic_Output_Permutation_POC_v1.md",
         "previous_feedback_loop: docs/800_Demos/Constraint_Driven_Graphic_Output_Permutation_POC_Feedback_Loop.md",
         "phase_1_contract: docs/800_Demos/Fixture_Safe_Visual_Placeholder_Refinement_Contract.md",
         "phase_2_panel_design: docs/800_Demos/Fixture_Safe_Visual_Placeholder_Panel_Design.md",
         "phase_3_evidence_summary_cards: docs/800_Demos/Fixture_Safe_Visual_Placeholder_Evidence_Summary_Cards.md",
+        "phase_4_reviewer_handoff: docs/800_Demos/Fixture_Safe_Visual_Placeholder_Reviewer_Handoff.md",
         "scenario_key: supra_2jz_gte_twin_turbo",
         "implementation_authority: fixture-safe-visual-placeholders-only",
     ]
@@ -107,8 +109,8 @@ def test_fixture_safe_visual_placeholder_refinement_defines_phases_and_kickoff_v
         "Phase 5: verification and closeout",
         "phase_1_placeholder_refinement_contract: complete",
         "phase_2_browser_placeholder_panel_design: complete",
-        "phase_3_evidence_summary_cards: ready-for-verification",
-        "phase_4_reviewer_handoff_update: pending",
+        "phase_3_evidence_summary_cards: complete",
+        "phase_4_reviewer_handoff_update: ready-for-verification",
         "phase_5_verification_and_closeout: pending",
         "latest_user_reported_fixture_safe_visual_placeholder_refinement_milestone_test_result: 6 passed",
         "latest_user_reported_fixture_safe_visual_placeholder_refinement_milestone_rerun_test_result: 6 passed",
@@ -171,6 +173,22 @@ def test_fixture_safe_visual_placeholder_refinement_records_phase_3_evidence_sum
         "## Phase 3 evidence summary cards",
         "evidence_summary_cards: docs/800_Demos/Fixture_Safe_Visual_Placeholder_Evidence_Summary_Cards.md",
         "verification: pytest tests/test_fixture_safe_visual_placeholder_evidence_summary_cards.py",
+        "latest_user_reported_fixture_safe_visual_placeholder_evidence_summary_cards_test_result: 7 passed",
+        "result: 7 passed",
+        "status: complete",
+        "assistant_ran_tests: false",
+    ]
+    for item in expected:
+        assert item in content
+
+
+def test_fixture_safe_visual_placeholder_refinement_records_phase_4_reviewer_handoff() -> None:
+    content = MILESTONE.read_text(encoding="utf-8")
+
+    expected = [
+        "## Phase 4 reviewer handoff",
+        "reviewer_handoff: docs/800_Demos/Fixture_Safe_Visual_Placeholder_Reviewer_Handoff.md",
+        "verification: pytest tests/test_fixture_safe_visual_placeholder_reviewer_handoff.py",
         "status: ready-for-verification",
     ]
     for item in expected:
