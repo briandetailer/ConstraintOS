@@ -11,7 +11,7 @@ def test_fixture_safe_placeholder_panel_design_exists_and_targets_phase_2() -> N
         "# Fixture-Safe Visual Placeholder Panel Design",
         "status: panel-design-defined",
         "phase: Phase 2 - browser placeholder panel design",
-        "phase_status: ready-for-verification",
+        "phase_status: complete",
         "milestone: docs/500_Milestones/Fixture_Safe_Visual_Placeholder_Refinement_v1.md",
         "contract: docs/800_Demos/Fixture_Safe_Visual_Placeholder_Refinement_Contract.md",
         "scenario_key: supra_2jz_gte_twin_turbo",
@@ -127,7 +127,7 @@ def test_fixture_safe_placeholder_panel_design_preserves_copy_and_traceability_r
         assert item in content
 
 
-def test_fixture_safe_placeholder_panel_design_preserves_guardrails_and_done_criteria() -> None:
+def test_fixture_safe_placeholder_panel_design_preserves_guardrails_done_criteria_and_verification() -> None:
     content = PANEL_DESIGN.read_text(encoding="utf-8")
 
     expected = [
@@ -142,11 +142,17 @@ def test_fixture_safe_placeholder_panel_design_preserves_guardrails_and_done_cri
         "Pixel inspection.",
         "CV/OCR provider integration.",
         "Automatic approval.",
+        "latest_user_reported_fixture_safe_visual_placeholder_panel_design_test_result: 7 passed",
+        "source: user-reported local test run",
+        "command: pytest tests/test_fixture_safe_visual_placeholder_panel_design.py",
+        "result: 7 passed",
+        "reported_on: 2026-07-13",
+        "assistant_ran_tests: false",
         "[x] Panel design document exists.",
         "[x] Four required placeholder panels are defined.",
         "[x] Browser copy requirements preserve fixture-safe scope.",
         "[x] Traceability requirements are defined.",
-        "[ ] Verification test result recorded.",
+        "[x] Verification test result recorded.",
         "pytest tests/test_fixture_safe_visual_placeholder_panel_design.py",
     ]
     for item in expected:
