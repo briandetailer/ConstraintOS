@@ -9,9 +9,9 @@ def test_fixture_safe_placeholder_closeout_exists_and_targets_phase_5() -> None:
 
     expected = [
         "# Fixture-Safe Visual Placeholder Closeout",
-        "status: closeout-defined",
+        "status: complete",
         "phase: Phase 5 - verification and closeout",
-        "phase_status: ready-for-verification",
+        "phase_status: complete",
         "milestone: docs/500_Milestones/Fixture_Safe_Visual_Placeholder_Refinement_v1.md",
         "contract: docs/800_Demos/Fixture_Safe_Visual_Placeholder_Refinement_Contract.md",
         "panel_design: docs/800_Demos/Fixture_Safe_Visual_Placeholder_Panel_Design.md",
@@ -91,17 +91,24 @@ def test_fixture_safe_placeholder_closeout_preserves_blocked_scope() -> None:
         assert item in content
 
 
-def test_fixture_safe_placeholder_closeout_done_criteria_and_command() -> None:
+def test_fixture_safe_placeholder_closeout_records_final_verification_and_done_criteria() -> None:
     content = CLOSEOUT.read_text(encoding="utf-8")
 
     expected = [
+        "latest_user_reported_fixture_safe_visual_placeholder_refinement_final_milestone_test_result: 11 passed",
+        "latest_user_reported_fixture_safe_visual_placeholder_closeout_test_result: 6 passed",
+        "source: user-reported local final verification",
+        "fixture_safe_visual_placeholder_refinement_milestone: 11 passed",
+        "fixture_safe_visual_placeholder_closeout: 6 passed",
+        "reported_on: 2026-07-13",
+        "assistant_ran_tests: false",
         "This milestone may be marked complete only after the final verification suite is user-reported as passing.",
         "[x] Closeout document exists.",
         "[x] Completion inventory is listed.",
         "[x] Final product state is defined.",
         "[x] Final verification suite is listed.",
         "[x] Blocked scope is preserved.",
-        "[ ] Final verification result recorded.",
+        "[x] Final verification result recorded.",
         "pytest tests/test_fixture_safe_visual_placeholder_closeout.py",
     ]
     for item in expected:
