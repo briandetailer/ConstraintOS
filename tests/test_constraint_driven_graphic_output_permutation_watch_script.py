@@ -154,6 +154,73 @@ def test_output_permutation_watch_script_browser_page_shows_phase_4_walkthrough(
         assert item in content
 
 
+def test_output_permutation_watch_script_defines_placeholder_panels_in_metadata_and_browser() -> None:
+    content = SCRIPT.read_text(encoding="utf-8")
+
+    expected = [
+        "$PlaceholderPanels = @(",
+        "browser_placeholder_walkthrough = \"output permutations -> deterministic placeholder panels -> evidence summary cards -> needs_review\"",
+        "placeholder_panels = $PlaceholderPanels",
+        "Fixture-safe placeholder panels",
+        "Browser-visible deterministic placeholder panels",
+        "id=\"fixture-safe-placeholder-panels\"",
+        "data-permutation-id=\"turbo_system_focus\"",
+        "data-visual-placeholder-type=\"schematic_block_panel\"",
+        "data-permutation-id=\"inline_six_engine_identity_focus\"",
+        "data-visual-placeholder-type=\"text_first_panel\"",
+        "data-permutation-id=\"technical_label_density_focus\"",
+        "data-visual-placeholder-type=\"label_density_panel\"",
+        "data-permutation-id=\"reviewer_safe_minimal_focus\"",
+        "data-visual-placeholder-type=\"reviewer_safe_minimal_panel\"",
+    ]
+    for item in expected:
+        assert item in content
+
+
+def test_output_permutation_watch_script_defines_fixture_safe_visual_tokens_and_traceability() -> None:
+    content = SCRIPT.read_text(encoding="utf-8")
+
+    expected = [
+        "panel_shell",
+        "title_band",
+        "schematic_block",
+        "identity_block",
+        "density_indicator",
+        "uncertainty_banner",
+        "review_footer",
+        "traceability_labels = @(",
+        "engine_identity",
+        "vehicle_identity",
+        "turbo_identity",
+        "wrong_engine_exclusion",
+        "review_safety",
+    ]
+    for item in expected:
+        assert item in content
+
+
+def test_output_permutation_watch_script_defines_evidence_summary_cards() -> None:
+    content = SCRIPT.read_text(encoding="utf-8")
+
+    expected = [
+        "$EvidenceSummaryCards = @(",
+        "evidence_summary_cards = $EvidenceSummaryCards",
+        "id=\"fixture-safe-evidence-summary-cards\"",
+        "Evidence summary cards",
+        "Fixture evidence summaries, not scoring cards",
+        "evidence_summary_card",
+        "Turbo System Evidence",
+        "Inline-Six Identity Evidence",
+        "Label Density Evidence",
+        "Reviewer-Safe Evidence",
+        "These cards do not inspect or grade final artwork",
+        "Blocked claims:",
+        "needs_review / approval_allowed: false",
+    ]
+    for item in expected:
+        assert item in content
+
+
 def test_output_permutation_watch_script_is_in_command_reference() -> None:
     content = COMMAND_REFERENCE.read_text(encoding="utf-8")
 
@@ -166,6 +233,11 @@ def test_output_permutation_watch_script_is_in_command_reference() -> None:
         "runs/output-poc/<scenario>/<timestamp>/graphic-output-permutations.json",
         "runs/output-poc/<scenario>/<timestamp>/graphic-output-validation.json",
         "runs/output-poc/<scenario>/<timestamp>/graphic-output-review-packet.json",
+        "deterministic fixture-safe placeholder panels",
+        "evidence summary cards",
+        "traceability labels",
+        "placeholder_panels",
+        "evidence_summary_cards",
     ]
     for item in expected:
         assert item in content
