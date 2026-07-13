@@ -12,10 +12,12 @@ def test_fixture_safe_visual_placeholder_refinement_milestone_exists() -> None:
         "status: active",
         "kickoff_status: complete",
         "phase_1_contract_status: complete",
+        "phase_2_panel_design_status: ready-for-verification",
         "track: Business Demo Visibility Track",
         "previous_milestone: docs/500_Milestones/Constraint_Driven_Graphic_Output_Permutation_POC_v1.md",
         "previous_feedback_loop: docs/800_Demos/Constraint_Driven_Graphic_Output_Permutation_POC_Feedback_Loop.md",
         "phase_1_contract: docs/800_Demos/Fixture_Safe_Visual_Placeholder_Refinement_Contract.md",
+        "phase_2_panel_design: docs/800_Demos/Fixture_Safe_Visual_Placeholder_Panel_Design.md",
         "scenario_key: supra_2jz_gte_twin_turbo",
         "implementation_authority: fixture-safe-visual-placeholders-only",
     ]
@@ -102,7 +104,7 @@ def test_fixture_safe_visual_placeholder_refinement_defines_phases_and_kickoff_v
         "Phase 4: reviewer handoff update",
         "Phase 5: verification and closeout",
         "phase_1_placeholder_refinement_contract: complete",
-        "phase_2_browser_placeholder_panel_design: pending",
+        "phase_2_browser_placeholder_panel_design: ready-for-verification",
         "phase_3_evidence_summary_cards: pending",
         "phase_4_reviewer_handoff_update: pending",
         "phase_5_verification_and_closeout: pending",
@@ -139,6 +141,19 @@ def test_fixture_safe_visual_placeholder_refinement_records_phase_1_contract() -
         "result: 9 passed",
         "status: complete",
         "assistant_ran_tests: false",
+    ]
+    for item in expected:
+        assert item in content
+
+
+def test_fixture_safe_visual_placeholder_refinement_records_phase_2_panel_design() -> None:
+    content = MILESTONE.read_text(encoding="utf-8")
+
+    expected = [
+        "## Phase 2 panel design",
+        "panel_design: docs/800_Demos/Fixture_Safe_Visual_Placeholder_Panel_Design.md",
+        "verification: pytest tests/test_fixture_safe_visual_placeholder_panel_design.py",
+        "status: ready-for-verification",
     ]
     for item in expected:
         assert item in content
