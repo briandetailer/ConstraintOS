@@ -4,13 +4,14 @@
 
 ```text
 milestone: Fixture-Safe Visual Placeholder Refinement v1
-status: active
+status: complete
 kickoff_status: complete
 phase_1_contract_status: complete
 phase_2_panel_design_status: complete
 phase_3_evidence_summary_cards_status: complete
 phase_4_reviewer_handoff_status: complete
-phase_5_closeout_status: ready-for-verification
+phase_5_closeout_status: complete
+completed_on: 2026-07-13
 started_on: 2026-07-13
 track: Business Demo Visibility Track
 previous_milestone: docs/500_Milestones/Constraint_Driven_Graphic_Output_Permutation_POC_v1.md
@@ -38,6 +39,10 @@ latest_user_reported_fixture_safe_visual_placeholder_evidence_summary_cards_test
 latest_user_reported_fixture_safe_visual_placeholder_evidence_summary_cards_test_result_on: 2026-07-13
 latest_user_reported_fixture_safe_visual_placeholder_reviewer_handoff_test_result: 7 passed
 latest_user_reported_fixture_safe_visual_placeholder_reviewer_handoff_test_result_on: 2026-07-13
+latest_user_reported_fixture_safe_visual_placeholder_refinement_final_milestone_test_result: 11 passed
+latest_user_reported_fixture_safe_visual_placeholder_refinement_final_milestone_test_result_on: 2026-07-13
+latest_user_reported_fixture_safe_visual_placeholder_closeout_test_result: 6 passed
+latest_user_reported_fixture_safe_visual_placeholder_closeout_test_result_on: 2026-07-13
 assistant_ran_tests: false
 assistant_ran_demo: false
 ```
@@ -147,7 +152,7 @@ phase_1_placeholder_refinement_contract: complete
 phase_2_browser_placeholder_panel_design: complete
 phase_3_evidence_summary_cards: complete
 phase_4_reviewer_handoff_update: complete
-phase_5_verification_and_closeout: ready-for-verification
+phase_5_verification_and_closeout: complete
 ```
 
 ## Verification record
@@ -229,7 +234,24 @@ assistant_ran_tests: false
 ```text
 closeout: docs/800_Demos/Fixture_Safe_Visual_Placeholder_Closeout.md
 verification: pytest tests/test_fixture_safe_visual_placeholder_closeout.py
-status: ready-for-verification
+result: 6 passed
+reported_on: 2026-07-13
+status: complete
+assistant_ran_tests: false
+```
+
+## Final verification record
+
+```text
+source: user-reported local final closeout verification
+commands:
+- pytest tests/test_fixture_safe_visual_placeholder_refinement_milestone.py
+- pytest tests/test_fixture_safe_visual_placeholder_closeout.py
+results:
+- fixture_safe_visual_placeholder_refinement_milestone: 11 passed
+- fixture_safe_visual_placeholder_closeout: 6 passed
+reported_on: 2026-07-13
+assistant_ran_tests: false
 ```
 
 ## Done criteria for kickoff slice
@@ -246,10 +268,21 @@ status: ready-for-verification
 [x] Verification test result recorded.
 ```
 
+## Done criteria for milestone
+
+```text
+[x] Kickoff verified.
+[x] Phase 1 contract complete.
+[x] Phase 2 panel design complete.
+[x] Phase 3 evidence summary cards complete.
+[x] Phase 4 reviewer handoff complete.
+[x] Phase 5 closeout complete.
+[x] Final closeout verification recorded.
+```
+
 ## Verification command
 
 ```powershell
 pytest tests/test_fixture_safe_visual_placeholder_refinement_milestone.py
-pytest tests/test_fixture_safe_visual_placeholder_reviewer_handoff.py
 pytest tests/test_fixture_safe_visual_placeholder_closeout.py
 ```
