@@ -9,7 +9,10 @@ def test_fixture_safe_placeholder_browser_implementation_milestone_exists() -> N
 
     expected = [
         "# Fixture-Safe Placeholder Browser Implementation v1",
-        "status: kickoff-ready",
+        "status: active",
+        "kickoff_status: complete",
+        "phase_1_browser_placeholder_contract_activation_status: complete",
+        "phase_2_watch_script_browser_update_status: ready-for-verification",
         "track: Business Demo Visibility Track",
         "previous_milestone: docs/500_Milestones/Fixture_Safe_Visual_Placeholder_Refinement_v1.md",
         "previous_contract: docs/800_Demos/Fixture_Safe_Visual_Placeholder_Refinement_Contract.md",
@@ -81,6 +84,22 @@ def test_fixture_safe_placeholder_browser_implementation_scopes_required_browser
         assert item in content
 
 
+def test_fixture_safe_placeholder_browser_implementation_records_script_update() -> None:
+    content = MILESTONE.read_text(encoding="utf-8")
+
+    expected = [
+        "## Implementation changes now under verification",
+        "script_update: scripts/watch-constraintos-output-poc.ps1",
+        "command_reference_update: docs/700_Use_Cases/Graphics_Validation_Command_Reference.md",
+        "verification: pytest tests/test_constraint_driven_graphic_output_permutation_watch_script.py",
+        "status: ready-for-verification",
+        "browser-visible deterministic placeholder panels and evidence summary cards",
+        "placeholder/evidence metadata in `run-metadata.json`",
+    ]
+    for item in expected:
+        assert item in content
+
+
 def test_fixture_safe_placeholder_browser_implementation_preserves_guardrails() -> None:
     content = MILESTONE.read_text(encoding="utf-8")
 
@@ -110,14 +129,20 @@ def test_fixture_safe_placeholder_browser_implementation_defines_phases_and_kick
         "Phase 3: artifact metadata update",
         "Phase 4: command reference update",
         "Phase 5: verification and closeout",
+        "latest_user_reported_fixture_safe_placeholder_browser_implementation_milestone_test_result: 6 passed",
+        "source: user-reported local test run",
+        "command: pytest tests/test_fixture_safe_placeholder_browser_implementation_milestone.py",
+        "result: 6 passed",
+        "assistant_ran_tests: false",
         "[x] Milestone exists.",
         "[x] Previous fixture-safe refinement milestone is referenced.",
         "[x] Browser implementation target is defined.",
         "[x] Existing run artifact structure is preserved.",
         "[x] Command reference maintenance is called out.",
         "[x] Blocked scope is preserved.",
-        "[ ] Verification test result recorded.",
+        "[x] Verification test result recorded.",
         "pytest tests/test_fixture_safe_placeholder_browser_implementation_milestone.py",
+        "pytest tests/test_constraint_driven_graphic_output_permutation_watch_script.py",
     ]
     for item in expected:
         assert item in content
