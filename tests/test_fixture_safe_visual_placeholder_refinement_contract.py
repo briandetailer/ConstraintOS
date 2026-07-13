@@ -11,7 +11,7 @@ def test_fixture_safe_placeholder_refinement_contract_exists_and_targets_phase_1
         "# Fixture-Safe Visual Placeholder Refinement Contract",
         "status: contract-defined",
         "phase: Phase 1 - placeholder refinement contract",
-        "phase_status: ready-for-verification",
+        "phase_status: complete",
         "milestone: docs/500_Milestones/Fixture_Safe_Visual_Placeholder_Refinement_v1.md",
         "scenario_key: supra_2jz_gte_twin_turbo",
         "implementation_authority: fixture-safe-visual-placeholders-only",
@@ -169,6 +169,12 @@ def test_fixture_safe_placeholder_refinement_contract_done_criteria_and_command(
     content = CONTRACT.read_text(encoding="utf-8")
 
     expected = [
+        "latest_user_reported_fixture_safe_visual_placeholder_refinement_contract_test_result: 9 passed",
+        "source: user-reported local test run",
+        "command: pytest tests/test_fixture_safe_visual_placeholder_refinement_contract.py",
+        "result: 9 passed",
+        "reported_on: 2026-07-13",
+        "assistant_ran_tests: false",
         "[x] Contract document exists.",
         "[x] Placeholder record schema is defined.",
         "[x] Allowed placeholder types are defined.",
@@ -179,7 +185,7 @@ def test_fixture_safe_placeholder_refinement_contract_done_criteria_and_command(
         "[x] Review semantics preserve needs_review.",
         "[x] approval_allowed remains false.",
         "[x] Blocked scope is preserved.",
-        "[ ] Verification test result recorded.",
+        "[x] Verification test result recorded.",
         "pytest tests/test_fixture_safe_visual_placeholder_refinement_contract.py",
     ]
     for item in expected:
