@@ -12,6 +12,7 @@ def test_constraint_driven_output_permutation_poc_milestone_exists() -> None:
     assert "kickoff_status: complete" in content
     assert "phase_3_watch_script_status: complete" in content
     assert "phase_4_browser_demo_status: ready-to-show" in content
+    assert "phase_5_feedback_loop_status: active" in content
     assert "Business Demo UI Toyota Supra" in content
     assert "Toyota Supra A80 2JZ-GTE Twin-Turbo Technical Graphic" in content
     assert "scenario_key: supra_2jz_gte_twin_turbo" in content
@@ -130,7 +131,9 @@ def test_constraint_driven_output_permutation_records_phase_status_summary() -> 
         "phase_2_deterministic_toyota_fixture_data: complete",
         "phase_3_watch_script: complete",
         "phase_4_browser_business_demo: ready-to-show",
-        "phase_5_feedback_loop: pending",
+        "phase_5_feedback_loop: active",
+        "feedback_loop: docs/800_Demos/Constraint_Driven_Graphic_Output_Permutation_POC_Feedback_Loop.md",
+        "verification: pytest tests/test_constraint_driven_graphic_output_permutation_feedback_loop.py",
     ]
     for item in expected:
         assert item in content
