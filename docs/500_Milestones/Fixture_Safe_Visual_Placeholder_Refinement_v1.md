@@ -5,6 +5,7 @@
 ```text
 milestone: Fixture-Safe Visual Placeholder Refinement v1
 status: kickoff-ready
+kickoff_status: complete
 started_on: 2026-07-13
 track: Business Demo Visibility Track
 previous_milestone: docs/500_Milestones/Constraint_Driven_Graphic_Output_Permutation_POC_v1.md
@@ -13,6 +14,8 @@ previous_reviewer_handoff: docs/800_Demos/Constraint_Driven_Graphic_Output_Permu
 scenario_key: supra_2jz_gte_twin_turbo
 primary_use_case: Toyota Supra A80 2JZ-GTE Twin-Turbo Technical Graphic
 implementation_authority: fixture-safe-visual-placeholders-only
+latest_user_reported_fixture_safe_visual_placeholder_refinement_milestone_test_result: 6 passed
+latest_user_reported_fixture_safe_visual_placeholder_refinement_milestone_test_result_on: 2026-07-13
 assistant_ran_tests: false
 assistant_ran_demo: false
 ```
@@ -114,6 +117,16 @@ Phase 5: verification and closeout
 - Complete the milestone only after tests pass.
 ```
 
+## Verification record
+
+```text
+source: user-reported local test run
+command: pytest tests/test_fixture_safe_visual_placeholder_refinement_milestone.py
+result: 6 passed
+reported_on: 2026-07-13
+assistant_ran_tests: false
+```
+
 ## Done criteria for kickoff slice
 
 ```text
@@ -125,7 +138,7 @@ Phase 5: verification and closeout
 [x] Allowed outputs are scoped.
 [x] Blocked outputs are preserved.
 [x] Proposed implementation phases are defined.
-[ ] Verification test result recorded.
+[x] Verification test result recorded.
 ```
 
 ## Verification command
