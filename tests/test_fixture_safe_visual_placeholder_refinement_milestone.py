@@ -9,11 +9,13 @@ def test_fixture_safe_visual_placeholder_refinement_milestone_exists() -> None:
 
     expected = [
         "# Fixture-Safe Visual Placeholder Refinement v1",
-        "status: kickoff-ready",
+        "status: active",
         "kickoff_status: complete",
+        "phase_1_contract_status: ready-for-verification",
         "track: Business Demo Visibility Track",
         "previous_milestone: docs/500_Milestones/Constraint_Driven_Graphic_Output_Permutation_POC_v1.md",
         "previous_feedback_loop: docs/800_Demos/Constraint_Driven_Graphic_Output_Permutation_POC_Feedback_Loop.md",
+        "phase_1_contract: docs/800_Demos/Fixture_Safe_Visual_Placeholder_Refinement_Contract.md",
         "scenario_key: supra_2jz_gte_twin_turbo",
         "implementation_authority: fixture-safe-visual-placeholders-only",
     ]
@@ -99,6 +101,11 @@ def test_fixture_safe_visual_placeholder_refinement_defines_phases_and_kickoff_v
         "Phase 3: evidence summary cards",
         "Phase 4: reviewer handoff update",
         "Phase 5: verification and closeout",
+        "phase_1_placeholder_refinement_contract: ready-for-verification",
+        "phase_2_browser_placeholder_panel_design: pending",
+        "phase_3_evidence_summary_cards: pending",
+        "phase_4_reviewer_handoff_update: pending",
+        "phase_5_verification_and_closeout: pending",
         "latest_user_reported_fixture_safe_visual_placeholder_refinement_milestone_test_result: 6 passed",
         "latest_user_reported_fixture_safe_visual_placeholder_refinement_milestone_rerun_test_result: 6 passed",
         "latest_user_reported_fixture_safe_visual_placeholder_refinement_milestone_second_rerun_test_result: 6 passed",
@@ -116,6 +123,19 @@ def test_fixture_safe_visual_placeholder_refinement_defines_phases_and_kickoff_v
         "[x] Blocked outputs are preserved.",
         "[x] Verification test result recorded.",
         "pytest tests/test_fixture_safe_visual_placeholder_refinement_milestone.py",
+    ]
+    for item in expected:
+        assert item in content
+
+
+def test_fixture_safe_visual_placeholder_refinement_records_phase_1_contract() -> None:
+    content = MILESTONE.read_text(encoding="utf-8")
+
+    expected = [
+        "## Phase 1 contract",
+        "contract: docs/800_Demos/Fixture_Safe_Visual_Placeholder_Refinement_Contract.md",
+        "verification: pytest tests/test_fixture_safe_visual_placeholder_refinement_contract.py",
+        "status: ready-for-verification",
     ]
     for item in expected:
         assert item in content
