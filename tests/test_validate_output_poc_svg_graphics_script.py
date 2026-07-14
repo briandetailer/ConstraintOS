@@ -29,6 +29,7 @@ def test_validate_output_poc_svg_graphics_script_finds_latest_run_and_artifacts(
         "$GraphicsDir = Join-Path $LatestRun.FullName \"graphics\"",
         "$MetadataPath = Join-Path $LatestRun.FullName \"run-metadata.json\"",
         "$IndexPath = Join-Path $LatestRun.FullName \"index.html\"",
+        "$ReviewPacketPath = Join-Path $LatestRun.FullName \"graphic-output-review-packet.json\"",
         "$ValidationReportPath = Join-Path $LatestRun.FullName \"svg-structural-validation.json\"",
     ]
     for item in expected:
@@ -105,18 +106,29 @@ def test_validate_output_poc_svg_graphics_script_writes_validation_report() -> N
     content = SCRIPT.read_text(encoding="utf-8")
 
     expected = [
-        "$ValidatedGraphics = @()",
-        "$ValidatedGraphics += [ordered]@{",
+        "svg-structural-validation.json",
         "$ValidationReport = [ordered]@{",
         "validator = \"deterministic-svg-structural-validation\"",
         "result = \"passed\"",
-        "final_decision = \"needs_review\"",
-        "approval_allowed = $false",
         "validated_graphics_count = $ValidatedGraphics.Count",
-        "validated_graphics = $ValidatedGraphics",
         "blocked_scope_preserved = @(",
         "$ValidationReport | ConvertTo-Json -Depth 8 | Set-Content -Path $ValidationReportPath -Encoding UTF8",
         "Validation report:",
+    ]
+    for item in expected:
+        assert item in content
+
+
+def test_validate_output_poc_svg_graphics_script_surfaces_validation_in_review_packet() -> None:
+    content = SCRIPT.read_text(encoding="utf-8")
+
+    expected = [
+        "$ReviewPacket = Get-Content -Path $ReviewPacketPath -Raw | ConvertFrom-Json",
+        "Add-Member -NotePropertyName \"svg_structural_validation\"",
+        "report = \"svg-structural-validation.json\"",
+        "validated_graphics_count = $ValidatedGraphics.Count",
+        "$ReviewPacket | ConvertTo-Json -Depth 12 | Set-Content -Path $ReviewPacketPath -Encoding UTF8",
+        "Review packet:",
     ]
     for item in expected:
         assert item in content
@@ -130,6 +142,7 @@ def test_validate_output_poc_svg_graphics_script_reports_success() -> None:
         "Run directory:",
         "Graphics directory:",
         "Validation report:",
+        "Review packet:",
     ]
     for item in expected:
         assert item in content
@@ -147,7 +160,8 @@ def test_validate_output_poc_svg_graphics_script_is_in_command_reference() -> No
         "are linked from `index.html`",
         "are referenced in `run-metadata.json`",
         "do not contain external image references or approval claims",
-        "writes `svg-structural-validation.json`",
+        "writes `svg-structural-validation.json` as a durable validation report",
+        "adds a `svg_structural_validation` summary to `graphic-output-review-packet.json`",
     ]
     for item in expected:
         assert item in content
