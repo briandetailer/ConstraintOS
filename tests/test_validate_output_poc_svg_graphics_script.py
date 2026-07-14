@@ -2,6 +2,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 SCRIPT = ROOT / "scripts" / "validate-output-poc-svg-graphics.ps1"
+COMMAND_REFERENCE = ROOT / "docs" / "700_Use_Cases" / "Graphics_Validation_Command_Reference.md"
 
 
 def test_validate_output_poc_svg_graphics_script_exists_and_targets_supra() -> None:
@@ -106,6 +107,23 @@ def test_validate_output_poc_svg_graphics_script_reports_success() -> None:
         "Deterministic SVG graphics validation passed.",
         "Run directory:",
         "Graphics directory:",
+    ]
+    for item in expected:
+        assert item in content
+
+
+def test_validate_output_poc_svg_graphics_script_is_in_command_reference() -> None:
+    content = COMMAND_REFERENCE.read_text(encoding="utf-8")
+
+    expected = [
+        "Constraint-driven output permutation POC - Toyota Supra",
+        ".\\scripts\\validate-output-poc-svg-graphics.ps1",
+        "pytest tests/test_validate_output_poc_svg_graphics_script.py",
+        "checks that the latest generated SVG graphics exist",
+        "contain required deterministic metadata",
+        "are linked from `index.html`",
+        "are referenced in `run-metadata.json`",
+        "do not contain external image references or approval claims",
     ]
     for item in expected:
         assert item in content
