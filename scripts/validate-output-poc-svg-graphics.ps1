@@ -61,17 +61,17 @@ foreach ($Graphic in $ExpectedGraphics) {
     $RelativePath = "graphics/$Graphic"
 
     $RequiredSvgMarkers = @(
-        "<svg xmlns=\"http://www.w3.org/2000/svg\"",
+        '<svg xmlns="http://www.w3.org/2000/svg"',
         "permutation_id: $PermutationId",
         "svg_artifact: $RelativePath",
-        "review_decision: needs_review",
-        "approval_allowed: false",
-        "renderer: deterministic-svg-output-only",
-        "id=\"deterministic-graphic-core\"",
-        "id=\"traceability-labels\"",
-        "id=\"evidence-summary\"",
-        "Toyota Supra A80",
-        "2JZ-GTE"
+        'review_decision: needs_review',
+        'approval_allowed: false',
+        'renderer: deterministic-svg-output-only',
+        'id="deterministic-graphic-core"',
+        'id="traceability-labels"',
+        'id="evidence-summary"',
+        'Toyota Supra A80',
+        '2JZ-GTE'
     )
 
     foreach ($Marker in $RequiredSvgMarkers) {
@@ -81,14 +81,14 @@ foreach ($Graphic in $ExpectedGraphics) {
     }
 
     $ForbiddenSvgMarkers = @(
-        "<image",
-        "href=\"http",
-        "href=\"file:",
-        "xlink:href=\"http",
-        "xlink:href=\"file:",
-        "auto_approved",
-        "production approval",
-        "final production artwork approved"
+        '<image',
+        'href="http',
+        'href="file:',
+        'xlink:href="http',
+        'xlink:href="file:',
+        'auto_approved',
+        'production approval',
+        'final production artwork approved'
     )
 
     foreach ($Marker in $ForbiddenSvgMarkers) {
