@@ -5,7 +5,8 @@
 ```text
 milestone: Deterministic SVG Structural Validation v1
 status: active
-phase_1_svg_structural_validator_status: ready-for-verification
+phase_1_svg_structural_validator_status: static-test-complete
+phase_1_svg_runtime_validation_status: ready-for-verification
 started_on: 2026-07-13
 track: Business Demo Visibility Track
 previous_milestone: docs/500_Milestones/Deterministic_SVG_Graphics_Renderer_v1.md
@@ -14,6 +15,8 @@ validator_script: scripts/validate-output-poc-svg-graphics.ps1
 scenario_key: supra_2jz_gte_twin_turbo
 primary_use_case: Toyota Supra A80 2JZ-GTE Twin-Turbo Technical Graphic
 implementation_authority: deterministic-svg-structural-validation-only
+latest_user_reported_svg_validator_static_test_result: 8 passed
+latest_user_reported_svg_validator_static_test_result_on: 2026-07-14
 assistant_ran_tests: false
 assistant_ran_demo: false
 ```
@@ -83,6 +86,24 @@ production approval
 final production artwork approved
 ```
 
+## Static validator test record
+
+```text
+source: user-reported local test run
+command: pytest tests/test_validate_output_poc_svg_graphics_script.py
+result: 8 passed
+reported_on: 2026-07-14
+assistant_ran_tests: false
+```
+
+## Runtime validator status
+
+```text
+command: .\scripts\validate-output-poc-svg-graphics.ps1
+status: ready-for-verification
+assistant_ran_demo: false
+```
+
 ## Explicitly blocked scope
 
 ```text
@@ -110,7 +131,8 @@ final production artwork approved
 [x] Forbidden SVG markers are listed.
 [x] Blocked scope is preserved.
 [x] Validator script exists.
-[ ] Verification result recorded.
+[x] Static validator test result recorded.
+[ ] Runtime validator result recorded.
 ```
 
 ## Verification command
