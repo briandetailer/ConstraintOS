@@ -9,9 +9,10 @@ def test_deterministic_svg_graphics_renderer_milestone_exists() -> None:
 
     expected = [
         "# Deterministic SVG Graphics Renderer v1",
-        "status: active",
-        "phase_1_svg_renderer_status: ready-for-verification",
-        "phase_1_graphics_helper_status: ready-for-verification",
+        "status: complete",
+        "phase_1_svg_renderer_status: complete",
+        "phase_1_graphics_helper_status: complete",
+        "completed_on: 2026-07-13",
         "previous_milestone: docs/500_Milestones/Fixture_Safe_Placeholder_Browser_Implementation_v1.md",
         "script: scripts/watch-constraintos-output-poc.ps1",
         "helper_script: scripts/open-latest-output-poc-graphics.ps1",
@@ -70,23 +71,22 @@ def test_deterministic_svg_graphics_renderer_defines_boundary_and_validation_tar
         assert item in content
 
 
-def test_deterministic_svg_graphics_renderer_records_implementation_under_verification() -> None:
+def test_deterministic_svg_graphics_renderer_records_completed_implementation() -> None:
     content = MILESTONE.read_text(encoding="utf-8")
 
     expected = [
+        "## Implementation completed",
         "script_update: scripts/watch-constraintos-output-poc.ps1",
         "helper_script: scripts/open-latest-output-poc-graphics.ps1",
         "command_reference_update: docs/700_Use_Cases/Graphics_Validation_Command_Reference.md",
-        "pytest tests/test_deterministic_svg_graphics_renderer_milestone.py",
-        "pytest tests/test_constraint_driven_graphic_output_permutation_watch_script.py",
-        "pytest tests/test_open_latest_output_poc_graphics_script.py",
-        "status: ready-for-verification",
+        "status: complete",
+        "result: all good",
+        "reported_on: 2026-07-13",
         "creates a `graphics/` directory",
         "writes four deterministic SVG graphics",
         "records them in `svg_graphics` metadata",
         "links them from the generated browser page",
         "opens the latest generated deterministic SVG graphics folder",
-        "prints the full path to each expected SVG artifact",
     ]
     for item in expected:
         assert item in content
@@ -112,10 +112,17 @@ def test_deterministic_svg_graphics_renderer_preserves_blocked_scope() -> None:
         assert item in content
 
 
-def test_deterministic_svg_graphics_renderer_done_criteria_and_commands() -> None:
+def test_deterministic_svg_graphics_renderer_records_verification_and_done_criteria() -> None:
     content = MILESTONE.read_text(encoding="utf-8")
 
     expected = [
+        "## Verification record",
+        "source: user-reported local verification",
+        "latest_user_reported_deterministic_svg_graphics_renderer_verification_result: all good",
+        "command: pytest tests/test_deterministic_svg_graphics_renderer_milestone.py",
+        "result: all good",
+        "assistant_ran_tests: false",
+        "assistant_ran_demo: false",
         "[x] Milestone exists.",
         "[x] Previous browser implementation milestone is referenced.",
         "[x] Deterministic SVG output target is defined.",
@@ -124,7 +131,7 @@ def test_deterministic_svg_graphics_renderer_done_criteria_and_commands() -> Non
         "[x] Structural validation target is defined.",
         "[x] SVG output implemented.",
         "[x] Latest graphics helper implemented.",
-        "[ ] Verification result recorded.",
+        "[x] Verification result recorded.",
         "pytest tests/test_deterministic_svg_graphics_renderer_milestone.py",
         "pytest tests/test_constraint_driven_graphic_output_permutation_watch_script.py",
         "pytest tests/test_open_latest_output_poc_graphics_script.py",
