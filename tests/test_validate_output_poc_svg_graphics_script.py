@@ -134,6 +134,24 @@ def test_validate_output_poc_svg_graphics_script_surfaces_validation_in_review_p
         assert item in content
 
 
+def test_validate_output_poc_svg_graphics_script_surfaces_validation_in_browser_page() -> None:
+    content = SCRIPT.read_text(encoding="utf-8")
+
+    expected = [
+        "$ValidationSummaryHtml = @\"",
+        "id=\"svg-structural-validation-summary\"",
+        "SVG structural validation",
+        "Deterministic SVG validation passed",
+        "validated SVG graphics",
+        "svg-structural-validation.json",
+        "graphic-output-review-packet.json",
+        "$UpdatedIndexContent = $IndexContent.Replace(\"  </main>\"",
+        "Browser UI updated:",
+    ]
+    for item in expected:
+        assert item in content
+
+
 def test_validate_output_poc_svg_graphics_script_reports_success() -> None:
     content = SCRIPT.read_text(encoding="utf-8")
 
@@ -143,6 +161,7 @@ def test_validate_output_poc_svg_graphics_script_reports_success() -> None:
         "Graphics directory:",
         "Validation report:",
         "Review packet:",
+        "Browser UI updated:",
     ]
     for item in expected:
         assert item in content
@@ -162,6 +181,7 @@ def test_validate_output_poc_svg_graphics_script_is_in_command_reference() -> No
         "do not contain external image references or approval claims",
         "writes `svg-structural-validation.json` as a durable validation report",
         "adds a `svg_structural_validation` summary to `graphic-output-review-packet.json`",
+        "adds a browser-visible `svg-structural-validation-summary` section to `index.html`",
     ]
     for item in expected:
         assert item in content
