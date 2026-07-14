@@ -86,8 +86,10 @@ Use this fixture-safe watch script when the audience needs to see the next produ
 .\scripts\watch-constraintos-output-poc.ps1 -Scenario supra_2jz_gte_twin_turbo
 .\scripts\watch-constraintos-output-poc.ps1 -Scenario supra_2jz_gte_twin_turbo -OpenBrowser
 .\scripts\open-latest-output-poc-graphics.ps1
+.\scripts\validate-output-poc-svg-graphics.ps1
 pytest tests/test_constraint_driven_graphic_output_permutation_watch_script.py
 pytest tests/test_open_latest_output_poc_graphics_script.py
+pytest tests/test_validate_output_poc_svg_graphics_script.py
 ```
 
 Output paths:
@@ -105,9 +107,9 @@ runs/output-poc/<scenario>/<timestamp>/graphics/technical_label_density_focus.sv
 runs/output-poc/<scenario>/<timestamp>/graphics/reviewer_safe_minimal_focus.svg
 ```
 
-The helper command `scripts/open-latest-output-poc-graphics.ps1` opens the latest generated deterministic SVG graphics folder for the Toyota Supra output POC and prints the full path to each generated SVG artifact.
+This is a static fixture-safe output-specification demo for the Toyota Supra A80 2JZ-GTE twin-turbo use case. It writes controlled permutation specs for `turbo_system_focus`, `inline_six_engine_identity_focus`, `technical_label_density_focus`, and `reviewer_safe_minimal_focus`; writes deterministic SVG graphics for each permutation; validates each as `needs_review`; and preserves `approval_allowed: false`. The generated `index.html` now includes browser-visible deterministic SVG graphics, deterministic fixture-safe placeholder panels, evidence summary cards, and traceability labels so reviewers can compare output intent without treating the page as final artwork. The generated `run-metadata.json` records `placeholder_panels`, `evidence_summary_cards`, `traceability_labels`, and `svg_graphics`.
 
-This is a static fixture-safe output-specification demo for the Toyota Supra A80 2JZ-GTE twin-turbo use case. It writes controlled permutation specs for `turbo_system_focus`, `inline_six_engine_identity_focus`, `technical_label_density_focus`, and `reviewer_safe_minimal_focus`; writes deterministic SVG graphics for each permutation; validates each as `needs_review`; and preserves `approval_allowed: false`. The generated `index.html` now includes browser-visible deterministic SVG graphics, deterministic fixture-safe placeholder panels, evidence summary cards, and traceability labels so reviewers can compare output intent without treating the page as final artwork. The generated `run-metadata.json` records `placeholder_panels`, `evidence_summary_cards`, `traceability_labels`, and `svg_graphics`. It does not generate final production graphics, load local images, decode images, inspect pixels, fetch network resources, run CV/OCR, or approve automatically.
+The helper command `scripts/open-latest-output-poc-graphics.ps1` opens the latest generated `graphics/` folder and prints the full paths to the expected SVG files. The validator command `scripts/validate-output-poc-svg-graphics.ps1` checks that the latest generated SVG graphics exist, contain required deterministic metadata, are linked from `index.html`, are referenced in `run-metadata.json`, and do not contain external image references or approval claims. This flow does not generate final production graphics, load local images, decode images, inspect pixels, fetch network resources, run CV/OCR, or approve automatically.
 
 ### Business demo UI - Toyota Supra presenter and feedback workflow
 
