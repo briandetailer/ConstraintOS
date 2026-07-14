@@ -162,11 +162,34 @@ $ReviewPacket | Add-Member -NotePropertyName "svg_structural_validation" -NotePr
 }) -Force
 $ReviewPacket | ConvertTo-Json -Depth 12 | Set-Content -Path $ReviewPacketPath -Encoding UTF8
 
+$ValidationSummaryHtml = @"
+    <section class="card" id="svg-structural-validation-summary">
+      <div class="eyebrow">SVG structural validation</div>
+      <h2>Deterministic SVG validation passed</h2>
+      <p>The latest validator run confirmed all four generated SVG graphics exist, contain required deterministic metadata, are linked from this browser page, are referenced in run-metadata.json, and preserve approval blocking.</p>
+      <div class="decision">
+        <div class="metric"><div class="value">passed</div><p>svg_structural_validation</p></div>
+        <div class="metric"><div class="value">4</div><p>validated SVG graphics</p></div>
+        <div class="metric"><div class="value">false</div><p>approval_allowed</p></div>
+      </div>
+      <p><strong>Validation report:</strong> <span class="artifact">svg-structural-validation.json</span></p>
+      <p><strong>Review packet:</strong> <span class="artifact">graphic-output-review-packet.json</span></p>
+    </section>
+"@
+
+if ($IndexContent -like '*id="svg-structural-validation-summary"*') {
+    $UpdatedIndexContent = $IndexContent
+} else {
+    $UpdatedIndexContent = $IndexContent.Replace("  </main>", "$ValidationSummaryHtml`r`n  </main>")
+}
+$UpdatedIndexContent | Set-Content -Path $IndexPath -Encoding UTF8
+
 Write-Host "Deterministic SVG graphics validation passed." -ForegroundColor Green
 Write-Host "Run directory: $($LatestRun.FullName)"
 Write-Host "Graphics directory: $GraphicsDir"
 Write-Host "Validation report: $ValidationReportPath"
 Write-Host "Review packet: $ReviewPacketPath"
+Write-Host "Browser UI updated: $IndexPath"
 foreach ($Graphic in $ExpectedGraphics) {
     Write-Host (Join-Path $GraphicsDir $Graphic)
 }
