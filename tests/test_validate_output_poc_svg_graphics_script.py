@@ -29,6 +29,7 @@ def test_validate_output_poc_svg_graphics_script_finds_latest_run_and_artifacts(
         "$GraphicsDir = Join-Path $LatestRun.FullName \"graphics\"",
         "$MetadataPath = Join-Path $LatestRun.FullName \"run-metadata.json\"",
         "$IndexPath = Join-Path $LatestRun.FullName \"index.html\"",
+        "$ValidationReportPath = Join-Path $LatestRun.FullName \"svg-structural-validation.json\"",
     ]
     for item in expected:
         assert item in content
@@ -100,6 +101,27 @@ def test_validate_output_poc_svg_graphics_script_checks_metadata_and_browser_lin
         assert item in content
 
 
+def test_validate_output_poc_svg_graphics_script_writes_validation_report() -> None:
+    content = SCRIPT.read_text(encoding="utf-8")
+
+    expected = [
+        "$ValidatedGraphics = @()",
+        "$ValidatedGraphics += [ordered]@{",
+        "$ValidationReport = [ordered]@{",
+        "validator = \"deterministic-svg-structural-validation\"",
+        "result = \"passed\"",
+        "final_decision = \"needs_review\"",
+        "approval_allowed = $false",
+        "validated_graphics_count = $ValidatedGraphics.Count",
+        "validated_graphics = $ValidatedGraphics",
+        "blocked_scope_preserved = @(",
+        "$ValidationReport | ConvertTo-Json -Depth 8 | Set-Content -Path $ValidationReportPath -Encoding UTF8",
+        "Validation report:",
+    ]
+    for item in expected:
+        assert item in content
+
+
 def test_validate_output_poc_svg_graphics_script_reports_success() -> None:
     content = SCRIPT.read_text(encoding="utf-8")
 
@@ -107,6 +129,7 @@ def test_validate_output_poc_svg_graphics_script_reports_success() -> None:
         "Deterministic SVG graphics validation passed.",
         "Run directory:",
         "Graphics directory:",
+        "Validation report:",
     ]
     for item in expected:
         assert item in content
@@ -124,6 +147,7 @@ def test_validate_output_poc_svg_graphics_script_is_in_command_reference() -> No
         "are linked from `index.html`",
         "are referenced in `run-metadata.json`",
         "do not contain external image references or approval claims",
+        "writes `svg-structural-validation.json`",
     ]
     for item in expected:
         assert item in content
