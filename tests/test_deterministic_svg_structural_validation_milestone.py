@@ -12,6 +12,8 @@ def test_deterministic_svg_structural_validation_milestone_exists() -> None:
         "status: complete",
         "phase_1_svg_structural_validator_status: complete",
         "phase_1_svg_runtime_validation_status: complete",
+        "phase_2_svg_validation_report_status: complete",
+        "phase_3_review_packet_surfacing_status: complete",
         "completed_on: 2026-07-14",
         "previous_milestone: docs/500_Milestones/Deterministic_SVG_Graphics_Renderer_v1.md",
         "renderer_script: scripts/watch-constraintos-output-poc.ps1",
@@ -20,6 +22,8 @@ def test_deterministic_svg_structural_validation_milestone_exists() -> None:
         "implementation_authority: deterministic-svg-structural-validation-only",
         "latest_user_reported_svg_validator_static_test_result: 8 passed",
         "latest_user_reported_svg_runtime_validator_result: success message received",
+        "latest_user_reported_svg_validation_report_and_review_packet_test_result: 10 passed",
+        "latest_user_reported_svg_validation_report_and_review_packet_runtime_result: success message received with validation report and review packet paths",
     ]
     for item in expected:
         assert item in content
@@ -37,6 +41,8 @@ def test_deterministic_svg_structural_validation_records_product_target() -> Non
         "Confirm each SVG is referenced in run-metadata.json.",
         "Confirm each SVG is linked from index.html.",
         "Confirm forbidden external image references are absent.",
+        "Write svg-structural-validation.json as a durable validation report.",
+        "Surface svg_structural_validation in graphic-output-review-packet.json.",
         "Preserve needs_review and approval_allowed: false.",
     ]
     for item in expected:
@@ -105,6 +111,11 @@ def test_deterministic_svg_structural_validation_records_verification_results() 
         "command: .\\scripts\\validate-output-poc-svg-graphics.ps1",
         "result: success message received",
         "assistant_ran_demo: false",
+        "## Validation report and review packet surfacing record",
+        "test_validate_output_poc_svg_graphics_script: 10 passed",
+        "runtime_validator: success message received with Validation report and Review packet paths",
+        "validation_report: runs/output-poc/supra_2jz_gte_twin_turbo/20260714-100414/svg-structural-validation.json",
+        "review_packet: runs/output-poc/supra_2jz_gte_twin_turbo/20260714-100414/graphic-output-review-packet.json",
     ]
     for item in expected:
         assert item in content
@@ -143,6 +154,9 @@ def test_deterministic_svg_structural_validation_done_criteria_and_verification(
         "[x] Validator script exists.",
         "[x] Static validator test result recorded.",
         "[x] Runtime validator result recorded.",
+        "[x] Validation report artifact implemented.",
+        "[x] Review packet surfacing implemented.",
+        "[x] Validation report and review packet verification recorded.",
         "pytest tests/test_deterministic_svg_structural_validation_milestone.py",
         "pytest tests/test_validate_output_poc_svg_graphics_script.py",
         ".\\scripts\\watch-constraintos-output-poc.ps1 -Scenario supra_2jz_gte_twin_turbo -OpenBrowser",
