@@ -9,15 +9,17 @@ def test_deterministic_svg_structural_validation_milestone_exists() -> None:
 
     expected = [
         "# Deterministic SVG Structural Validation v1",
-        "status: active",
-        "phase_1_svg_structural_validator_status: static-test-complete",
-        "phase_1_svg_runtime_validation_status: ready-for-verification",
+        "status: complete",
+        "phase_1_svg_structural_validator_status: complete",
+        "phase_1_svg_runtime_validation_status: complete",
+        "completed_on: 2026-07-14",
         "previous_milestone: docs/500_Milestones/Deterministic_SVG_Graphics_Renderer_v1.md",
         "renderer_script: scripts/watch-constraintos-output-poc.ps1",
         "validator_script: scripts/validate-output-poc-svg-graphics.ps1",
         "scenario_key: supra_2jz_gte_twin_turbo",
         "implementation_authority: deterministic-svg-structural-validation-only",
         "latest_user_reported_svg_validator_static_test_result: 8 passed",
+        "latest_user_reported_svg_runtime_validator_result: success message received",
     ]
     for item in expected:
         assert item in content
@@ -88,7 +90,7 @@ def test_deterministic_svg_structural_validation_lists_required_and_forbidden_ma
         assert item in content
 
 
-def test_deterministic_svg_structural_validation_records_static_test_result() -> None:
+def test_deterministic_svg_structural_validation_records_verification_results() -> None:
     content = MILESTONE.read_text(encoding="utf-8")
 
     expected = [
@@ -98,9 +100,11 @@ def test_deterministic_svg_structural_validation_records_static_test_result() ->
         "result: 8 passed",
         "reported_on: 2026-07-14",
         "assistant_ran_tests: false",
-        "## Runtime validator status",
+        "## Runtime validator record",
+        "source: user-reported local runtime validation",
         "command: .\\scripts\\validate-output-poc-svg-graphics.ps1",
-        "status: ready-for-verification",
+        "result: success message received",
+        "assistant_ran_demo: false",
     ]
     for item in expected:
         assert item in content
@@ -138,7 +142,7 @@ def test_deterministic_svg_structural_validation_done_criteria_and_verification(
         "[x] Forbidden SVG markers are listed.",
         "[x] Validator script exists.",
         "[x] Static validator test result recorded.",
-        "[ ] Runtime validator result recorded.",
+        "[x] Runtime validator result recorded.",
         "pytest tests/test_deterministic_svg_structural_validation_milestone.py",
         "pytest tests/test_validate_output_poc_svg_graphics_script.py",
         ".\\scripts\\watch-constraintos-output-poc.ps1 -Scenario supra_2jz_gte_twin_turbo -OpenBrowser",
