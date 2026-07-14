@@ -27,6 +27,7 @@ if ($null -eq $LatestRun) {
 $GraphicsDir = Join-Path $LatestRun.FullName "graphics"
 $MetadataPath = Join-Path $LatestRun.FullName "run-metadata.json"
 $IndexPath = Join-Path $LatestRun.FullName "index.html"
+$ValidationReportPath = Join-Path $LatestRun.FullName "svg-structural-validation.json"
 
 if (-not (Test-Path $GraphicsDir)) {
     throw "Latest output POC run does not contain a graphics directory: $GraphicsDir"
@@ -49,6 +50,8 @@ $ExpectedGraphics = @(
     "technical_label_density_focus.svg",
     "reviewer_safe_minimal_focus.svg"
 )
+
+$ValidatedGraphics = @()
 
 foreach ($Graphic in $ExpectedGraphics) {
     $GraphicPath = Join-Path $GraphicsDir $Graphic
@@ -104,11 +107,49 @@ foreach ($Graphic in $ExpectedGraphics) {
     if ($IndexContent -notlike "*$RelativePath*") {
         throw "Browser validation failed. Missing SVG artifact link: $RelativePath"
     }
+
+    $ValidatedGraphics += [ordered]@{
+        permutation_id = $PermutationId
+        svg_artifact = $RelativePath
+        svg_path = $GraphicPath
+        required_markers_present = $true
+        forbidden_markers_absent = $true
+        metadata_reference_present = $true
+        browser_link_present = $true
+        review_decision = "needs_review"
+        approval_allowed = $false
+    }
 }
+
+$ValidationReport = [ordered]@{
+    validator = "deterministic-svg-structural-validation"
+    scenario_key = $Scenario
+    run_dir = $LatestRun.FullName
+    graphics_dir = $GraphicsDir
+    validated_at_local = (Get-Date).ToString("o")
+    result = "passed"
+    final_decision = "needs_review"
+    approval_allowed = $false
+    validated_graphics_count = $ValidatedGraphics.Count
+    validated_graphics = $ValidatedGraphics
+    blocked_scope_preserved = @(
+        "No real generated final graphics",
+        "No production artwork generation",
+        "No real local image input",
+        "No external image references",
+        "No image decoding",
+        "No pixel inspection",
+        "No CV/OCR provider integration",
+        "No automatic approval"
+    )
+}
+
+$ValidationReport | ConvertTo-Json -Depth 8 | Set-Content -Path $ValidationReportPath -Encoding UTF8
 
 Write-Host "Deterministic SVG graphics validation passed." -ForegroundColor Green
 Write-Host "Run directory: $($LatestRun.FullName)"
 Write-Host "Graphics directory: $GraphicsDir"
+Write-Host "Validation report: $ValidationReportPath"
 foreach ($Graphic in $ExpectedGraphics) {
     Write-Host (Join-Path $GraphicsDir $Graphic)
 }
