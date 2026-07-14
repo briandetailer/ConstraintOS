@@ -27,6 +27,7 @@ if ($null -eq $LatestRun) {
 $GraphicsDir = Join-Path $LatestRun.FullName "graphics"
 $MetadataPath = Join-Path $LatestRun.FullName "run-metadata.json"
 $IndexPath = Join-Path $LatestRun.FullName "index.html"
+$ReviewPacketPath = Join-Path $LatestRun.FullName "graphic-output-review-packet.json"
 $ValidationReportPath = Join-Path $LatestRun.FullName "svg-structural-validation.json"
 
 if (-not (Test-Path $GraphicsDir)) {
@@ -39,6 +40,10 @@ if (-not (Test-Path $MetadataPath)) {
 
 if (-not (Test-Path $IndexPath)) {
     throw "Latest output POC run does not contain index.html: $IndexPath"
+}
+
+if (-not (Test-Path $ReviewPacketPath)) {
+    throw "Latest output POC run does not contain graphic-output-review-packet.json: $ReviewPacketPath"
 }
 
 $MetadataContent = Get-Content -Path $MetadataPath -Raw
@@ -146,10 +151,22 @@ $ValidationReport = [ordered]@{
 
 $ValidationReport | ConvertTo-Json -Depth 8 | Set-Content -Path $ValidationReportPath -Encoding UTF8
 
+$ReviewPacket = Get-Content -Path $ReviewPacketPath -Raw | ConvertFrom-Json
+$ReviewPacket | Add-Member -NotePropertyName "svg_structural_validation" -NotePropertyValue ([ordered]@{
+    validator = "deterministic-svg-structural-validation"
+    result = "passed"
+    report = "svg-structural-validation.json"
+    validated_graphics_count = $ValidatedGraphics.Count
+    final_decision = "needs_review"
+    approval_allowed = $false
+}) -Force
+$ReviewPacket | ConvertTo-Json -Depth 12 | Set-Content -Path $ReviewPacketPath -Encoding UTF8
+
 Write-Host "Deterministic SVG graphics validation passed." -ForegroundColor Green
 Write-Host "Run directory: $($LatestRun.FullName)"
 Write-Host "Graphics directory: $GraphicsDir"
 Write-Host "Validation report: $ValidationReportPath"
+Write-Host "Review packet: $ReviewPacketPath"
 foreach ($Graphic in $ExpectedGraphics) {
     Write-Host (Join-Path $GraphicsDir $Graphic)
 }
