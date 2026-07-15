@@ -9,7 +9,7 @@ phase_1_svg_structural_validator_status: complete
 phase_1_svg_runtime_validation_status: complete
 phase_2_svg_validation_report_status: complete
 phase_3_review_packet_surfacing_status: complete
-post_closeout_browser_evidence_surfacing_status: static-test-complete
+post_closeout_browser_evidence_surfacing_status: complete
 completed_on: 2026-07-14
 started_on: 2026-07-13
 track: Business Demo Visibility Track
@@ -29,6 +29,8 @@ latest_user_reported_svg_validation_report_and_review_packet_runtime_result: suc
 latest_user_reported_svg_validation_report_and_review_packet_runtime_result_on: 2026-07-14
 latest_user_reported_svg_browser_evidence_surfacing_static_test_result: 10 passed
 latest_user_reported_svg_browser_evidence_surfacing_static_test_result_on: 2026-07-14
+latest_user_reported_svg_browser_evidence_surfacing_runtime_result: proper response received
+latest_user_reported_svg_browser_evidence_surfacing_runtime_result_on: 2026-07-15
 assistant_ran_tests: false
 assistant_ran_demo: false
 ```
@@ -140,12 +142,17 @@ assistant_ran_demo: false
 ## Post-closeout browser evidence surfacing record
 
 ```text
-source: user-reported local test run
-command: pytest tests/test_validate_output_poc_svg_graphics_script.py
-result: 10 passed
-reported_on: 2026-07-14
+source: user-reported local verification
+commands:
+- pytest tests/test_validate_output_poc_svg_graphics_script.py
+- .\scripts\validate-output-poc-svg-graphics.ps1
+results:
+- test_validate_output_poc_svg_graphics_script: 10 passed
+- runtime_browser_summary: proper response received
 browser_summary_target: svg-structural-validation-summary in index.html
-runtime_browser_summary_status: pending user-reported runtime output
+runtime_browser_summary_status: complete
+browser_ui: runs/output-poc/supra_2jz_gte_twin_turbo/20260714-100414/index.html
+reported_on: 2026-07-15
 assistant_ran_tests: false
 assistant_ran_demo: false
 ```
@@ -182,6 +189,8 @@ assistant_ran_demo: false
 [x] Validation report artifact implemented.
 [x] Review packet surfacing implemented.
 [x] Validation report and review packet verification recorded.
+[x] Browser evidence surfacing static test recorded.
+[x] Browser evidence surfacing runtime update recorded.
 ```
 
 ## Verification command
