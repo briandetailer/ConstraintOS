@@ -45,6 +45,27 @@ def test_run_validated_output_poc_demo_script_runs_generate_validate_open_in_ord
     assert content.index(generate) < content.index(validate) < content.index(open_browser)
 
 
+def test_run_validated_output_poc_demo_script_writes_launcher_summary() -> None:
+    content = SCRIPT.read_text(encoding="utf-8")
+
+    expected = [
+        "$ScenarioRoot = Join-Path $RepoRoot \"runs\\output-poc\\$Scenario\"",
+        "$LatestRun = Get-ChildItem -Path $ScenarioRoot -Directory",
+        "$LauncherSummaryPath = Join-Path $LatestRun.FullName \"validated-output-poc-demo-summary.json\"",
+        "$LauncherSummary = [ordered]@{",
+        "launcher = \"validated-output-poc-demo\"",
+        "browser_ui = $IndexPath",
+        "validation_report = $ValidationReportPath",
+        "review_packet = $ReviewPacketPath",
+        "final_decision = \"needs_review\"",
+        "approval_allowed = $false",
+        "$LauncherSummary | ConvertTo-Json -Depth 8 | Set-Content -Path $LauncherSummaryPath -Encoding UTF8",
+        "Launcher summary:",
+    ]
+    for item in expected:
+        assert item in content
+
+
 def test_run_validated_output_poc_demo_script_supports_terminal_only_mode() -> None:
     content = SCRIPT.read_text(encoding="utf-8")
 
@@ -62,6 +83,11 @@ def test_run_validated_output_poc_demo_script_reports_final_blocking_semantics()
 
     expected = [
         "Validated ConstraintOS output POC demo complete.",
+        "Run directory:",
+        "Browser UI:",
+        "Validation report:",
+        "Review packet:",
+        "Launcher summary:",
         "Final decision remains: needs_review",
         "Approval allowed remains: false",
     ]
@@ -80,6 +106,7 @@ def test_run_validated_output_poc_demo_script_is_in_command_reference() -> None:
         "runs the output POC generator",
         "runs SVG structural validation",
         "opens the latest validated browser UI",
+        "validated-output-poc-demo-summary.json",
     ]
     for item in expected:
         assert item in content
