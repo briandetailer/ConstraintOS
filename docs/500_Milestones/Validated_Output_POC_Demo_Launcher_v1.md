@@ -51,6 +51,15 @@ one command -> generate output POC -> validate SVG evidence -> update browser ev
 .\scripts\run-validated-output-poc-demo.ps1 -NoOpenBrowser
 ```
 
+## Implementation under verification
+
+```text
+script: scripts/run-validated-output-poc-demo.ps1
+test: tests/test_run_validated_output_poc_demo_script.py
+command_reference_update: docs/700_Use_Cases/Graphics_Validation_Command_Reference.md
+status: ready-for-verification
+```
+
 ## Explicitly blocked scope
 
 ```text
@@ -78,7 +87,7 @@ one command -> generate output POC -> validate SVG evidence -> update browser ev
 [x] Browser helper script dependency is defined.
 [x] NoOpenBrowser mode is defined.
 [x] Blocked scope is preserved.
-[ ] Launcher script exists.
+[x] Launcher script exists.
 [ ] Verification result recorded.
 ```
 
