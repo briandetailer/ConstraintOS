@@ -14,7 +14,7 @@ def test_deterministic_svg_structural_validation_milestone_exists() -> None:
         "phase_1_svg_runtime_validation_status: complete",
         "phase_2_svg_validation_report_status: complete",
         "phase_3_review_packet_surfacing_status: complete",
-        "post_closeout_browser_evidence_surfacing_status: static-test-complete",
+        "post_closeout_browser_evidence_surfacing_status: complete",
         "completed_on: 2026-07-14",
         "previous_milestone: docs/500_Milestones/Deterministic_SVG_Graphics_Renderer_v1.md",
         "renderer_script: scripts/watch-constraintos-output-poc.ps1",
@@ -26,6 +26,7 @@ def test_deterministic_svg_structural_validation_milestone_exists() -> None:
         "latest_user_reported_svg_validation_report_and_review_packet_test_result: 10 passed",
         "latest_user_reported_svg_validation_report_and_review_packet_runtime_result: success message received with validation report and review packet paths",
         "latest_user_reported_svg_browser_evidence_surfacing_static_test_result: 10 passed",
+        "latest_user_reported_svg_browser_evidence_surfacing_runtime_result: proper response received",
     ]
     for item in expected:
         assert item in content
@@ -119,9 +120,10 @@ def test_deterministic_svg_structural_validation_records_verification_results() 
         "validation_report: runs/output-poc/supra_2jz_gte_twin_turbo/20260714-100414/svg-structural-validation.json",
         "review_packet: runs/output-poc/supra_2jz_gte_twin_turbo/20260714-100414/graphic-output-review-packet.json",
         "## Post-closeout browser evidence surfacing record",
-        "result: 10 passed",
+        "runtime_browser_summary: proper response received",
         "browser_summary_target: svg-structural-validation-summary in index.html",
-        "runtime_browser_summary_status: pending user-reported runtime output",
+        "runtime_browser_summary_status: complete",
+        "browser_ui: runs/output-poc/supra_2jz_gte_twin_turbo/20260714-100414/index.html",
     ]
     for item in expected:
         assert item in content
@@ -163,6 +165,8 @@ def test_deterministic_svg_structural_validation_done_criteria_and_verification(
         "[x] Validation report artifact implemented.",
         "[x] Review packet surfacing implemented.",
         "[x] Validation report and review packet verification recorded.",
+        "[x] Browser evidence surfacing static test recorded.",
+        "[x] Browser evidence surfacing runtime update recorded.",
         "pytest tests/test_deterministic_svg_structural_validation_milestone.py",
         "pytest tests/test_validate_output_poc_svg_graphics_script.py",
         ".\\scripts\\watch-constraintos-output-poc.ps1 -Scenario supra_2jz_gte_twin_turbo -OpenBrowser",
