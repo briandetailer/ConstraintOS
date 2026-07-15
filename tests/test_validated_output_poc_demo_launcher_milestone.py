@@ -52,6 +52,20 @@ def test_validated_output_poc_demo_launcher_lists_commands() -> None:
         assert item in content
 
 
+def test_validated_output_poc_demo_launcher_records_implementation_under_verification() -> None:
+    content = MILESTONE.read_text(encoding="utf-8")
+
+    expected = [
+        "## Implementation under verification",
+        "script: scripts/run-validated-output-poc-demo.ps1",
+        "test: tests/test_run_validated_output_poc_demo_script.py",
+        "command_reference_update: docs/700_Use_Cases/Graphics_Validation_Command_Reference.md",
+        "status: ready-for-verification",
+    ]
+    for item in expected:
+        assert item in content
+
+
 def test_validated_output_poc_demo_launcher_preserves_blocked_scope() -> None:
     content = MILESTONE.read_text(encoding="utf-8")
 
@@ -84,7 +98,7 @@ def test_validated_output_poc_demo_launcher_done_criteria() -> None:
         "[x] Browser helper script dependency is defined.",
         "[x] NoOpenBrowser mode is defined.",
         "[x] Blocked scope is preserved.",
-        "[ ] Launcher script exists.",
+        "[x] Launcher script exists.",
         "[ ] Verification result recorded.",
     ]
     for item in expected:
