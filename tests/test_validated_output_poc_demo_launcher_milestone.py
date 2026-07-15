@@ -11,6 +11,7 @@ def test_validated_output_poc_demo_launcher_milestone_exists() -> None:
         "# Validated Output POC Demo Launcher v1",
         "status: active",
         "phase_1_validated_demo_launcher_status: ready-for-verification",
+        "phase_2_validated_demo_summary_status: ready-for-verification",
         "previous_milestone: docs/500_Milestones/Deterministic_SVG_Structural_Validation_v1.md",
         "launcher_script: scripts/run-validated-output-poc-demo.ps1",
         "generator_script: scripts/watch-constraintos-output-poc.ps1",
@@ -27,9 +28,10 @@ def test_validated_output_poc_demo_launcher_records_product_target() -> None:
     content = MILESTONE.read_text(encoding="utf-8")
 
     expected = [
-        "one command -> generate output POC -> validate SVG evidence -> update browser evidence -> open latest browser UI",
+        "one command -> generate output POC -> validate SVG evidence -> write launcher summary -> update browser evidence -> open latest browser UI",
         "Run the fixture-safe output POC generator.",
         "Run the deterministic SVG structural validator.",
+        "Write validated-output-poc-demo-summary.json for the latest run.",
         "Open the latest output POC browser UI by default.",
         "Allow a NoOpenBrowser mode for terminal-only verification.",
         "Preserve needs_review and approval_allowed: false.",
@@ -52,6 +54,30 @@ def test_validated_output_poc_demo_launcher_lists_commands() -> None:
         assert item in content
 
 
+def test_validated_output_poc_demo_launcher_defines_summary_artifact() -> None:
+    content = MILESTONE.read_text(encoding="utf-8")
+
+    expected = [
+        "## Launcher summary artifact",
+        "runs/output-poc/<scenario>/<timestamp>/validated-output-poc-demo-summary.json",
+        "launcher",
+        "scenario_key",
+        "run_dir",
+        "browser_ui",
+        "validation_report",
+        "review_packet",
+        "generated_at_local",
+        "generator_script",
+        "validator_script",
+        "browser_helper_script",
+        "final_decision: needs_review",
+        "approval_allowed: false",
+        "blocked_scope_preserved",
+    ]
+    for item in expected:
+        assert item in content
+
+
 def test_validated_output_poc_demo_launcher_records_implementation_under_verification() -> None:
     content = MILESTONE.read_text(encoding="utf-8")
 
@@ -60,6 +86,7 @@ def test_validated_output_poc_demo_launcher_records_implementation_under_verific
         "script: scripts/run-validated-output-poc-demo.ps1",
         "test: tests/test_run_validated_output_poc_demo_script.py",
         "command_reference_update: docs/700_Use_Cases/Graphics_Validation_Command_Reference.md",
+        "summary_artifact: validated-output-poc-demo-summary.json",
         "status: ready-for-verification",
     ]
     for item in expected:
@@ -97,6 +124,7 @@ def test_validated_output_poc_demo_launcher_done_criteria() -> None:
         "[x] Validator script dependency is defined.",
         "[x] Browser helper script dependency is defined.",
         "[x] NoOpenBrowser mode is defined.",
+        "[x] Launcher summary artifact is defined.",
         "[x] Blocked scope is preserved.",
         "[x] Launcher script exists.",
         "[ ] Verification result recorded.",
