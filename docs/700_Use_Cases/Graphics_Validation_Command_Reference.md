@@ -77,6 +77,58 @@ runs/business-demo-ui/<scenario>/<timestamp>/run-metadata.json
 
 This is a static fixture-only browser walkthrough for the Toyota Supra A80 2JZ-GTE twin-turbo use case. It shows a business-friendly staged flow from request, to loaded constraints, to candidate evidence, to deterministic review, to `needs_review`. It does not generate final graphics, decode images, fetch network resources, run CV/OCR, or approve candidates automatically.
 
+### ConstraintOS Exercise Workbench - Toyota Supra
+
+Use this command when you want to exercise the app locally instead of inspecting hidden validation plumbing:
+
+```powershell
+.\scripts\exercise-constraintos.ps1
+.\scripts\exercise-constraintos.ps1 -NoOpenBrowser
+pytest tests/test_exercise_constraintos_script.py
+```
+
+The exercise command runs the validated output POC demo in terminal-only mode, validates the generated SVG evidence, creates `exercise-workbench.html`, embeds the four generated SVG graphics side by side, and opens the workbench by default.
+
+Expected visible browser page:
+
+```text
+ConstraintOS Exercise Workbench
+Loaded scenario
+Input constraints being exercised
+Generated output permutations
+Validation evidence
+What to inspect next
+Generated artifacts in this run
+Scope guardrails
+```
+
+Expected terminal summary:
+
+```text
+ConstraintOS Exercise Workbench ready.
+Run directory:
+Exercise workbench:
+Generated outputs: 4 SVG graphics
+Validation: passed
+Final decision remains: needs_review
+Approval allowed remains: false
+```
+
+Output paths:
+
+```text
+runs/output-poc/<scenario>/<timestamp>/exercise-workbench.html
+runs/output-poc/<scenario>/<timestamp>/index.html
+runs/output-poc/<scenario>/<timestamp>/svg-structural-validation.json
+runs/output-poc/<scenario>/<timestamp>/validated-output-poc-demo-summary.json
+runs/output-poc/<scenario>/<timestamp>/graphics/turbo_system_focus.svg
+runs/output-poc/<scenario>/<timestamp>/graphics/inline_six_engine_identity_focus.svg
+runs/output-poc/<scenario>/<timestamp>/graphics/technical_label_density_focus.svg
+runs/output-poc/<scenario>/<timestamp>/graphics/reviewer_safe_minimal_focus.svg
+```
+
+This is the fastest local app exercise path. It is still fixture-safe and deterministic: it does not generate final production graphics, load local images, decode images, inspect pixels, run CV/OCR, or approve automatically.
+
 ### Constraint-driven output permutation POC - Toyota Supra
 
 Use this fixture-safe watch script when the audience needs to see the next product-shaped demo: constraints define controlled output permutations, each permutation gets deterministic validation evidence, deterministic fixture-safe placeholder panels, evidence summary cards, traceability labels, deterministic SVG graphics, and approval remains blocked:
