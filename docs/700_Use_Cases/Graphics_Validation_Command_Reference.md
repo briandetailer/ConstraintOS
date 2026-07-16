@@ -87,17 +87,19 @@ Use this command when you want to exercise the app locally instead of inspecting
 pytest tests/test_exercise_constraintos_script.py
 ```
 
-The exercise command runs the validated output POC demo in terminal-only mode, validates the generated SVG evidence, creates `exercise-workbench.html`, embeds the four generated SVG graphics side by side, and opens the workbench by default.
+The exercise command runs the validated output POC demo in terminal-only mode, validates the generated SVG evidence, creates `exercise-state.json`, creates `exercise-workbench.html`, embeds the four generated SVG graphics side by side, adds clickable links to the key evidence artifacts, and opens the workbench by default.
 
 Expected visible browser page:
 
 ```text
 ConstraintOS Exercise Workbench
 Loaded scenario
+Exercise run flow
 Input constraints being exercised
 Generated output permutations
 Validation evidence
-What to inspect next
+Exercise prompts
+Clickable artifacts
 Generated artifacts in this run
 Scope guardrails
 ```
@@ -108,6 +110,7 @@ Expected terminal summary:
 ConstraintOS Exercise Workbench ready.
 Run directory:
 Exercise workbench:
+Exercise state:
 Generated outputs: 4 SVG graphics
 Validation: passed
 Final decision remains: needs_review
@@ -118,9 +121,12 @@ Output paths:
 
 ```text
 runs/output-poc/<scenario>/<timestamp>/exercise-workbench.html
+runs/output-poc/<scenario>/<timestamp>/exercise-state.json
 runs/output-poc/<scenario>/<timestamp>/index.html
 runs/output-poc/<scenario>/<timestamp>/svg-structural-validation.json
+runs/output-poc/<scenario>/<timestamp>/graphic-output-review-packet.json
 runs/output-poc/<scenario>/<timestamp>/validated-output-poc-demo-summary.json
+runs/output-poc/<scenario>/<timestamp>/run-metadata.json
 runs/output-poc/<scenario>/<timestamp>/graphics/turbo_system_focus.svg
 runs/output-poc/<scenario>/<timestamp>/graphics/inline_six_engine_identity_focus.svg
 runs/output-poc/<scenario>/<timestamp>/graphics/technical_label_density_focus.svg
