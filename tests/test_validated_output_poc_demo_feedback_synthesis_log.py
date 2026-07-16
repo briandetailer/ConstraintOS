@@ -2,6 +2,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 LOG = ROOT / "docs" / "800_Demos" / "Validated_Output_POC_Demo_Feedback_Synthesis_Log.md"
+COMMAND_REFERENCE = ROOT / "docs" / "700_Use_Cases" / "Graphics_Validation_Command_Reference.md"
 
 
 def test_validated_output_poc_demo_feedback_synthesis_log_exists() -> None:
@@ -100,4 +101,19 @@ def test_validated_output_poc_demo_feedback_synthesis_log_preserves_blocked_scop
         "assistant_ran_review: false",
     ]
     for item in blocked:
+        assert item in content
+
+
+def test_validated_output_poc_demo_feedback_synthesis_log_is_in_command_reference() -> None:
+    content = COMMAND_REFERENCE.read_text(encoding="utf-8")
+
+    expected = [
+        "pytest tests/test_validated_output_poc_demo_feedback_synthesis_log.py",
+        "docs/800_Demos/Validated_Output_POC_Demo_Feedback_Synthesis_Log.md",
+        "The synthesis log converts feedback-card responses into strong, mixed, or weak product signal",
+        "accepted follow-up candidates",
+        "deferred items",
+        "blocked-scope preservation",
+    ]
+    for item in expected:
         assert item in content
