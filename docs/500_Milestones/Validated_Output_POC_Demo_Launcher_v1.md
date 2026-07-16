@@ -7,6 +7,7 @@ milestone: Validated Output POC Demo Launcher v1
 status: active
 phase_1_validated_demo_launcher_status: ready-for-verification
 phase_2_validated_demo_summary_status: ready-for-verification
+phase_3_validated_demo_browser_summary_status: ready-for-verification
 started_on: 2026-07-15
 track: Business Demo Visibility Track
 previous_milestone: docs/500_Milestones/Deterministic_SVG_Structural_Validation_v1.md
@@ -23,7 +24,7 @@ assistant_ran_demo: false
 
 ## Purpose
 
-Provide a single user-facing command that runs the validated output POC demo path end to end: generate deterministic output artifacts, validate SVG structural evidence, update reviewer-facing evidence artifacts, write a launcher-level summary, and open the generated browser UI.
+Provide a single user-facing command that runs the validated output POC demo path end to end: generate deterministic output artifacts, validate SVG structural evidence, update reviewer-facing evidence artifacts, write a launcher-level summary, surface launcher evidence in the browser UI, and open the generated browser UI.
 
 ```text
 one command -> generate output POC -> validate SVG evidence -> write launcher summary -> update browser evidence -> open latest browser UI
@@ -35,6 +36,7 @@ one command -> generate output POC -> validate SVG evidence -> write launcher su
 - Run the fixture-safe output POC generator.
 - Run the deterministic SVG structural validator.
 - Write validated-output-poc-demo-summary.json for the latest run.
+- Add validated-output-poc-demo-summary to the latest browser UI.
 - Open the latest output POC browser UI by default.
 - Allow a NoOpenBrowser mode for terminal-only verification.
 - Preserve needs_review and approval_allowed: false.
@@ -77,6 +79,17 @@ approval_allowed: false
 blocked_scope_preserved
 ```
 
+## Browser summary target
+
+```text
+id="validated-output-poc-demo-summary"
+validated-output-poc-demo-summary.json
+svg-structural-validation.json
+graphic-output-review-packet.json
+final_decision: needs_review
+approval_allowed: false
+```
+
 ## Implementation under verification
 
 ```text
@@ -84,6 +97,7 @@ script: scripts/run-validated-output-poc-demo.ps1
 test: tests/test_run_validated_output_poc_demo_script.py
 command_reference_update: docs/700_Use_Cases/Graphics_Validation_Command_Reference.md
 summary_artifact: validated-output-poc-demo-summary.json
+browser_summary_target: validated-output-poc-demo-summary in index.html
 status: ready-for-verification
 ```
 
@@ -114,6 +128,7 @@ status: ready-for-verification
 [x] Browser helper script dependency is defined.
 [x] NoOpenBrowser mode is defined.
 [x] Launcher summary artifact is defined.
+[x] Browser summary target is defined.
 [x] Blocked scope is preserved.
 [x] Launcher script exists.
 [ ] Verification result recorded.
