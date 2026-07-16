@@ -66,6 +66,24 @@ def test_run_validated_output_poc_demo_script_writes_launcher_summary() -> None:
         assert item in content
 
 
+def test_run_validated_output_poc_demo_script_surfaces_launcher_summary_in_browser() -> None:
+    content = SCRIPT.read_text(encoding="utf-8")
+
+    expected = [
+        "$LauncherSummaryHtml = @\"",
+        "id=\"validated-output-poc-demo-summary\"",
+        "Validated demo launcher",
+        "One-command validated output POC complete",
+        "validated-output-poc-demo-summary.json",
+        "svg-structural-validation.json",
+        "graphic-output-review-packet.json",
+        "$UpdatedIndexContent = $IndexContent.Replace(\"  </main>\"",
+        "Browser summary updated:",
+    ]
+    for item in expected:
+        assert item in content
+
+
 def test_run_validated_output_poc_demo_script_supports_terminal_only_mode() -> None:
     content = SCRIPT.read_text(encoding="utf-8")
 
@@ -88,6 +106,7 @@ def test_run_validated_output_poc_demo_script_reports_final_blocking_semantics()
         "Validation report:",
         "Review packet:",
         "Launcher summary:",
+        "Browser summary updated:",
         "Final decision remains: needs_review",
         "Approval allowed remains: false",
     ]
@@ -107,6 +126,7 @@ def test_run_validated_output_poc_demo_script_is_in_command_reference() -> None:
         "runs SVG structural validation",
         "opens the latest validated browser UI",
         "validated-output-poc-demo-summary.json",
+        "adds a browser-visible `validated-output-poc-demo-summary` section to `index.html`",
     ]
     for item in expected:
         assert item in content
