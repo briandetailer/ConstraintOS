@@ -74,6 +74,30 @@ $LauncherSummary = [ordered]@{
 
 $LauncherSummary | ConvertTo-Json -Depth 8 | Set-Content -Path $LauncherSummaryPath -Encoding UTF8
 
+$IndexContent = Get-Content -Path $IndexPath -Raw
+$LauncherSummaryHtml = @"
+    <section class="card" id="validated-output-poc-demo-summary">
+      <div class="eyebrow">Validated demo launcher</div>
+      <h2>One-command validated output POC complete</h2>
+      <p>The validated launcher generated the output POC, ran deterministic SVG structural validation, wrote reviewer evidence artifacts, and preserved manual review blocking.</p>
+      <div class="decision">
+        <div class="metric"><div class="value">needs_review</div><p>final decision</p></div>
+        <div class="metric"><div class="value">false</div><p>approval_allowed</p></div>
+        <div class="metric"><div class="value">passed</div><p>SVG validation</p></div>
+      </div>
+      <p><strong>Launcher summary:</strong> <span class="artifact">validated-output-poc-demo-summary.json</span></p>
+      <p><strong>Validation report:</strong> <span class="artifact">svg-structural-validation.json</span></p>
+      <p><strong>Review packet:</strong> <span class="artifact">graphic-output-review-packet.json</span></p>
+    </section>
+"@
+
+if ($IndexContent -like '*id="validated-output-poc-demo-summary"*') {
+    $UpdatedIndexContent = $IndexContent
+} else {
+    $UpdatedIndexContent = $IndexContent.Replace("  </main>", "$LauncherSummaryHtml`r`n  </main>")
+}
+$UpdatedIndexContent | Set-Content -Path $IndexPath -Encoding UTF8
+
 if ($NoOpenBrowser) {
     Write-Host "NoOpenBrowser was provided. Skipping latest browser UI launch." -ForegroundColor Yellow
 } else {
@@ -88,5 +112,6 @@ Write-Host "Browser UI: $IndexPath"
 Write-Host "Validation report: $ValidationReportPath"
 Write-Host "Review packet: $ReviewPacketPath"
 Write-Host "Launcher summary: $LauncherSummaryPath"
+Write-Host "Browser summary updated: $IndexPath"
 Write-Host "Final decision remains: needs_review"
 Write-Host "Approval allowed remains: false"
