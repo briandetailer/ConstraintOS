@@ -14,12 +14,14 @@ def test_validated_output_poc_demo_launcher_milestone_exists() -> None:
         "phase_2_validated_demo_summary_status: ready-for-verification",
         "phase_3_validated_demo_browser_summary_status: ready-for-verification",
         "phase_4_validated_demo_reviewer_handoff_status: ready-for-verification",
+        "phase_5_validated_demo_feedback_card_status: ready-for-use",
         "previous_milestone: docs/500_Milestones/Deterministic_SVG_Structural_Validation_v1.md",
         "launcher_script: scripts/run-validated-output-poc-demo.ps1",
         "generator_script: scripts/watch-constraintos-output-poc.ps1",
         "validator_script: scripts/validate-output-poc-svg-graphics.ps1",
         "browser_helper_script: scripts/open-latest-output-poc-browser.ps1",
         "reviewer_handoff: docs/800_Demos/Validated_Output_POC_Demo_Reviewer_Handoff.md",
+        "feedback_card: docs/800_Demos/Validated_Output_POC_Demo_Feedback_Card.md",
         "scenario_key: supra_2jz_gte_twin_turbo",
         "implementation_authority: deterministic-fixture-safe-validated-demo-launcher-only",
     ]
@@ -31,12 +33,13 @@ def test_validated_output_poc_demo_launcher_records_product_target() -> None:
     content = MILESTONE.read_text(encoding="utf-8")
 
     expected = [
-        "one command -> generate output POC -> validate SVG evidence -> write launcher summary -> update browser evidence -> reviewer handoff -> open latest browser UI",
+        "one command -> generate output POC -> validate SVG evidence -> write launcher summary -> update browser evidence -> reviewer handoff -> feedback card -> open latest browser UI",
         "Run the fixture-safe output POC generator.",
         "Run the deterministic SVG structural validator.",
         "Write validated-output-poc-demo-summary.json for the latest run.",
         "Add validated-output-poc-demo-summary to the latest browser UI.",
         "Provide a reviewer handoff for the validated one-command demo path.",
+        "Provide a reviewer feedback card for structured product signal.",
         "Open the latest output POC browser UI by default.",
         "Allow a NoOpenBrowser mode for terminal-only verification.",
         "Preserve needs_review and approval_allowed: false.",
@@ -55,6 +58,7 @@ def test_validated_output_poc_demo_launcher_lists_commands() -> None:
         "pytest tests/test_validated_output_poc_demo_launcher_milestone.py",
         "pytest tests/test_run_validated_output_poc_demo_script.py",
         "pytest tests/test_validated_output_poc_demo_reviewer_handoff.py",
+        "pytest tests/test_validated_output_poc_demo_feedback_card.py",
     ]
     for item in expected:
         assert item in content
@@ -116,6 +120,23 @@ def test_validated_output_poc_demo_launcher_defines_reviewer_handoff() -> None:
         assert item in content
 
 
+def test_validated_output_poc_demo_launcher_defines_feedback_card() -> None:
+    content = MILESTONE.read_text(encoding="utf-8")
+
+    expected = [
+        "## Reviewer feedback card",
+        "docs/800_Demos/Validated_Output_POC_Demo_Feedback_Card.md",
+        "product clarity",
+        "evidence confidence",
+        "browser usability",
+        "approval safety",
+        "product gaps",
+        "without authorizing real image generation, real image input, or automatic approval",
+    ]
+    for item in expected:
+        assert item in content
+
+
 def test_validated_output_poc_demo_launcher_records_implementation_under_verification() -> None:
     content = MILESTONE.read_text(encoding="utf-8")
 
@@ -128,6 +149,8 @@ def test_validated_output_poc_demo_launcher_records_implementation_under_verific
         "browser_summary_target: validated-output-poc-demo-summary in index.html",
         "reviewer_handoff: docs/800_Demos/Validated_Output_POC_Demo_Reviewer_Handoff.md",
         "reviewer_handoff_test: tests/test_validated_output_poc_demo_reviewer_handoff.py",
+        "feedback_card: docs/800_Demos/Validated_Output_POC_Demo_Feedback_Card.md",
+        "feedback_card_test: tests/test_validated_output_poc_demo_feedback_card.py",
         "status: ready-for-verification",
     ]
     for item in expected:
@@ -168,6 +191,7 @@ def test_validated_output_poc_demo_launcher_done_criteria() -> None:
         "[x] Launcher summary artifact is defined.",
         "[x] Browser summary target is defined.",
         "[x] Reviewer handoff is defined.",
+        "[x] Reviewer feedback card is defined.",
         "[x] Blocked scope is preserved.",
         "[x] Launcher script exists.",
         "[ ] Verification result recorded.",
