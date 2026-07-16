@@ -2,6 +2,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 CHECKLIST = ROOT / "docs" / "800_Demos" / "Validated_Output_POC_Demo_Readiness_Checklist.md"
+COMMAND_REFERENCE = ROOT / "docs" / "700_Use_Cases" / "Graphics_Validation_Command_Reference.md"
 
 
 def test_validated_output_poc_demo_readiness_checklist_exists() -> None:
@@ -115,6 +116,21 @@ def test_validated_output_poc_demo_readiness_checklist_preserves_blocked_scope_a
         "ready_to_show: false",
         "assistant_ran_tests: false",
         "assistant_ran_demo: false",
+    ]
+    for item in expected:
+        assert item in content
+
+
+def test_validated_output_poc_demo_readiness_checklist_is_in_command_reference() -> None:
+    content = COMMAND_REFERENCE.read_text(encoding="utf-8")
+
+    expected = [
+        "pytest tests/test_validated_output_poc_demo_readiness_checklist.py",
+        "Readiness checklist:",
+        "docs/800_Demos/Validated_Output_POC_Demo_Readiness_Checklist.md",
+        "local verification gate",
+        "not-ready conditions",
+        "ready-to-show decision rule",
     ]
     for item in expected:
         assert item in content
