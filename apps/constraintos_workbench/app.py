@@ -105,7 +105,7 @@ def run_exercise_pipeline(repo_root: Path) -> dict[str, Any]:
 
 
 def html_page() -> str:
-    return """<!doctype html>
+    return r"""<!doctype html>
 <html lang="en">
 <head>
   <meta charset="utf-8" />
@@ -153,7 +153,7 @@ def html_page() -> str:
       <div class="card">
         <h2>Run the app</h2>
         <p>No terminal command required for the recipient. The app runs the local pipeline behind this browser UI.</p>
-        <button id="runButton" onclick="runDemo()">Run ConstraintOS Demo</button>
+        <button id="runButton" type="button">Run ConstraintOS Demo</button>
       </div>
       <div class="card">
         <h2>Safety state</h2>
@@ -184,7 +184,9 @@ def html_page() -> str:
       const frame = document.getElementById('workbenchFrame');
       button.disabled = true;
       links.innerHTML = '';
-      status.textContent = 'Running ConstraintOS pipeline...\n\nThis can take a moment while the app generates outputs, validates SVG evidence, and writes the workbench artifacts.';
+      card.style.display = 'none';
+      frame.removeAttribute('src');
+      status.textContent = 'Button click received.\n\nRunning ConstraintOS pipeline...\n\nThis can take a moment while the app generates outputs, validates SVG evidence, and writes the workbench artifacts.';
       try {
         const response = await fetch('/api/run', { method: 'POST' });
         const data = await response.json();
@@ -201,6 +203,13 @@ def html_page() -> str:
         button.disabled = false;
       }
     }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      const button = document.getElementById('runButton');
+      const status = document.getElementById('status');
+      button.addEventListener('click', runDemo);
+      status.textContent = 'Ready to run ConstraintOS. Click Run ConstraintOS Demo to start.';
+    });
   </script>
 </body>
 </html>"""
