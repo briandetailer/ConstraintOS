@@ -4,11 +4,15 @@ on:
   push:
     branches:
       - main
-      - phase-1-cli-tooling
   pull_request:
     branches:
       - main
       - phase-1-cli-tooling
+  workflow_dispatch:
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   test:
