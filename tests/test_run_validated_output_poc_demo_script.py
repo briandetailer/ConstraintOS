@@ -122,11 +122,17 @@ def test_run_validated_output_poc_demo_script_is_in_command_reference() -> None:
         ".\\scripts\\run-validated-output-poc-demo.ps1",
         ".\\scripts\\run-validated-output-poc-demo.ps1 -NoOpenBrowser",
         "pytest tests/test_run_validated_output_poc_demo_script.py",
+        "pytest tests/test_validated_output_poc_demo_reviewer_handoff.py",
+        "docs/800_Demos/Validated_Output_POC_Demo_Reviewer_Handoff.md",
         "runs the output POC generator",
         "runs SVG structural validation",
         "opens the latest validated browser UI",
         "validated-output-poc-demo-summary.json",
         "adds a browser-visible `validated-output-poc-demo-summary` section to `index.html`",
+        "expected terminal evidence",
+        "expected browser evidence",
+        "expected run artifacts",
+        "ready-to-show decision rule",
     ]
     for item in expected:
         assert item in content
