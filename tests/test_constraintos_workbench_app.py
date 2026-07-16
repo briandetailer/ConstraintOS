@@ -38,6 +38,23 @@ def test_constraintos_workbench_app_serves_pretty_browser_front_door() -> None:
         assert item in content
 
 
+def test_constraintos_workbench_app_binds_button_with_valid_javascript() -> None:
+    content = APP.read_text(encoding="utf-8")
+
+    expected = [
+        "return r\"\"\"<!doctype html>",
+        '<button id="runButton" type="button">Run ConstraintOS Demo</button>',
+        "async function runDemo()",
+        "document.addEventListener('DOMContentLoaded'",
+        "button.addEventListener('click', runDemo)",
+        "Button click received.\\n\\nRunning ConstraintOS pipeline...",
+        "Ready to run ConstraintOS. Click Run ConstraintOS Demo to start.",
+        "frame.removeAttribute('src')",
+    ]
+    for item in expected:
+        assert item in content
+
+
 def test_constraintos_workbench_app_runs_pipeline_from_browser_api() -> None:
     content = APP.read_text(encoding="utf-8")
 
