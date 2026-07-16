@@ -67,14 +67,18 @@ ConstraintOS Workbench Demo App
 How to run:
 1. Double-click: ConstraintOS Workbench.exe
 2. Your browser will open to the local Workbench app.
-3. Click: Run ConstraintOS Demo
-4. Review the generated workbench and candidate SVG outputs.
+3. Edit the browser request if desired.
+4. Choose the output focus and output count.
+5. Click: Run ConstraintOS Demo
+6. Review the generated workbench and candidate SVG outputs.
+7. Open the captured browser request JSON from the artifact links if you want to inspect exactly what was submitted.
 
 Notes:
 - This is a local portable demo app.
 - It does not require the recipient to open the repository.
 - It does not require typing PowerShell commands.
 - It runs on localhost and writes run artifacts inside this app folder.
+- It captures browser input as browser-request.json for traceability.
 - Close the app window to stop the local server.
 
 Current guardrails:
