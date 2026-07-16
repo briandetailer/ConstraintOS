@@ -27,6 +27,7 @@ def test_exercise_constraintos_wraps_validated_demo_and_uses_latest_run() -> Non
         "& $ValidatedDemoScript -Scenario $Scenario -NoOpenBrowser",
         "$LatestRun = Get-ChildItem -Path $ScenarioRoot -Directory",
         "$WorkbenchPath = Join-Path $RunDir \"exercise-workbench.html\"",
+        "$ExerciseStatePath = Join-Path $RunDir \"exercise-state.json\"",
         "$LauncherSummaryPath = Join-Path $RunDir \"validated-output-poc-demo-summary.json\"",
     ]
     for item in expected:
@@ -52,6 +53,23 @@ def test_exercise_constraintos_requires_expected_artifacts() -> None:
         assert item in content
 
 
+def test_exercise_constraintos_writes_exercise_state() -> None:
+    content = SCRIPT.read_text(encoding="utf-8")
+
+    expected = [
+        "$ExerciseState = [ordered]@{",
+        "exercise_mode = \"ConstraintOS Exercise Workbench\"",
+        "exercise_mode_version = \"v1\"",
+        "primary_use_case = \"Toyota Supra A80 2JZ-GTE Twin-Turbo Technical Graphic\"",
+        "generated_outputs = @(",
+        "next_exercise_prompts = @(",
+        "scope_guardrails = @(",
+        "$ExerciseState | ConvertTo-Json -Depth 8 | Set-Content -Path $ExerciseStatePath -Encoding UTF8",
+    ]
+    for item in expected:
+        assert item in content
+
+
 def test_exercise_constraintos_creates_visible_workbench() -> None:
     content = SCRIPT.read_text(encoding="utf-8")
 
@@ -59,10 +77,12 @@ def test_exercise_constraintos_creates_visible_workbench() -> None:
         "ConstraintOS Exercise Workbench",
         "Exercise Mode v1",
         "Loaded scenario",
+        "Exercise run flow",
         "Input constraints being exercised",
         "Generated output permutations",
         "Validation evidence",
-        "What to inspect next",
+        "Exercise prompts",
+        "Clickable artifacts",
         "Generated artifacts in this run",
         "Scope guardrails",
     ]
@@ -82,6 +102,28 @@ def test_exercise_constraintos_embeds_all_four_svg_outputs() -> None:
         "Inline-six identity focus",
         "Technical label density focus",
         "Reviewer-safe minimal focus",
+        "Open SVG artifact",
+    ]
+    for item in expected:
+        assert item in content
+
+
+def test_exercise_constraintos_links_key_artifacts() -> None:
+    content = SCRIPT.read_text(encoding="utf-8")
+
+    expected = [
+        'href="exercise-state.json"',
+        'href="index.html"',
+        'href="svg-structural-validation.json"',
+        'href="graphic-output-review-packet.json"',
+        'href="validated-output-poc-demo-summary.json"',
+        'href="run-metadata.json"',
+        "Exercise state",
+        "Original browser UI",
+        "SVG validation report",
+        "Review packet",
+        "Launcher summary",
+        "Run metadata",
     ]
     for item in expected:
         assert item in content
@@ -94,6 +136,7 @@ def test_exercise_constraintos_prints_short_exercise_summary() -> None:
         "ConstraintOS Exercise Workbench ready.",
         "Run directory:",
         "Exercise workbench:",
+        "Exercise state:",
         "Generated outputs: 4 SVG graphics",
         "Validation: passed",
         "Final decision remains: needs_review",
