@@ -91,6 +91,7 @@ Use this fixture-safe watch script when the audience needs to see the next produ
 .\scripts\open-latest-output-poc-browser.ps1
 .\scripts\validate-output-poc-svg-graphics.ps1
 pytest tests/test_run_validated_output_poc_demo_script.py
+pytest tests/test_validated_output_poc_demo_reviewer_handoff.py
 pytest tests/test_constraint_driven_graphic_output_permutation_watch_script.py
 pytest tests/test_open_latest_output_poc_graphics_script.py
 pytest tests/test_open_latest_output_poc_browser_script.py
@@ -114,9 +115,15 @@ runs/output-poc/<scenario>/<timestamp>/graphics/technical_label_density_focus.sv
 runs/output-poc/<scenario>/<timestamp>/graphics/reviewer_safe_minimal_focus.svg
 ```
 
+Reviewer handoff:
+
+```text
+docs/800_Demos/Validated_Output_POC_Demo_Reviewer_Handoff.md
+```
+
 This is a static fixture-safe output-specification demo for the Toyota Supra A80 2JZ-GTE twin-turbo use case. It writes controlled permutation specs for `turbo_system_focus`, `inline_six_engine_identity_focus`, `technical_label_density_focus`, and `reviewer_safe_minimal_focus`; writes deterministic SVG graphics for each permutation; validates each as `needs_review`; and preserves `approval_allowed: false`. The generated `index.html` now includes browser-visible deterministic SVG graphics, deterministic fixture-safe placeholder panels, evidence summary cards, traceability labels, SVG structural validation evidence, and validated-demo launcher evidence so reviewers can compare output intent without treating the page as final artwork. The generated `run-metadata.json` records `placeholder_panels`, `evidence_summary_cards`, `traceability_labels`, and `svg_graphics`.
 
-The one-command launcher `scripts/run-validated-output-poc-demo.ps1` runs the output POC generator, runs SVG structural validation, writes `validated-output-poc-demo-summary.json`, adds a browser-visible `validated-output-poc-demo-summary` section to `index.html`, and opens the latest validated browser UI by default. Use `-NoOpenBrowser` for terminal-only verification. The helper command `scripts/open-latest-output-poc-graphics.ps1` opens the latest generated `graphics/` folder and prints the full paths to the expected SVG files. The helper command `scripts/open-latest-output-poc-browser.ps1` opens the latest generated browser UI and warns if the SVG structural validation summary has not been added yet. The validator command `scripts/validate-output-poc-svg-graphics.ps1` checks that the latest generated SVG graphics exist, contain required deterministic metadata, are linked from `index.html`, are referenced in `run-metadata.json`, do not contain external image references or approval claims, writes `svg-structural-validation.json` as a durable validation report, adds a `svg_structural_validation` summary to `graphic-output-review-packet.json`, and adds a browser-visible `svg-structural-validation-summary` section to `index.html`. This flow does not generate final production graphics, load local images, decode images, inspect pixels, fetch network resources, run CV/OCR, or approve automatically.
+The one-command launcher `scripts/run-validated-output-poc-demo.ps1` runs the output POC generator, runs SVG structural validation, writes `validated-output-poc-demo-summary.json`, adds a browser-visible `validated-output-poc-demo-summary` section to `index.html`, and opens the latest validated browser UI by default. Use `-NoOpenBrowser` for terminal-only verification. The reviewer handoff explains the one-command entry point, expected terminal evidence, expected browser evidence, expected run artifacts, and ready-to-show decision rule. The helper command `scripts/open-latest-output-poc-graphics.ps1` opens the latest generated `graphics/` folder and prints the full paths to the expected SVG files. The helper command `scripts/open-latest-output-poc-browser.ps1` opens the latest generated browser UI and warns if the SVG structural validation summary has not been added yet. The validator command `scripts/validate-output-poc-svg-graphics.ps1` checks that the latest generated SVG graphics exist, contain required deterministic metadata, are linked from `index.html`, are referenced in `run-metadata.json`, do not contain external image references or approval claims, writes `svg-structural-validation.json` as a durable validation report, adds a `svg_structural_validation` summary to `graphic-output-review-packet.json`, and adds a browser-visible `svg-structural-validation-summary` section to `index.html`. This flow does not generate final production graphics, load local images, decode images, inspect pixels, fetch network resources, run CV/OCR, or approve automatically.
 
 ### Business demo UI - Toyota Supra presenter and feedback workflow
 
