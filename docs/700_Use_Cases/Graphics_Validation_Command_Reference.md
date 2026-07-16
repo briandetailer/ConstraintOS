@@ -77,6 +77,22 @@ runs/business-demo-ui/<scenario>/<timestamp>/run-metadata.json
 
 This is a static fixture-only browser walkthrough for the Toyota Supra A80 2JZ-GTE twin-turbo use case. It shows a business-friendly staged flow from request, to loaded constraints, to candidate evidence, to deterministic review, to `needs_review`. It does not generate final graphics, decode images, fetch network resources, run CV/OCR, or approve candidates automatically.
 
+### One-click ConstraintOS Workbench launcher
+
+Use this root-level launcher when you want someone to exercise the app without typing a PowerShell command:
+
+```text
+Launch-ConstraintOS-Workbench.cmd
+```
+
+Verify the one-click launcher contract:
+
+```powershell
+pytest tests/test_one_click_constraintos_workbench_launcher.py
+```
+
+The launcher is designed for double-click use from the repository root. It finds `scripts\exercise-constraintos.ps1`, runs it through Windows PowerShell with `-NoProfile` and `-ExecutionPolicy Bypass`, opens the browser workbench, reports success, and keeps the launcher window open if an error occurs so the user can read what failed.
+
 ### ConstraintOS Exercise Workbench - Toyota Supra
 
 Use this command when you want to exercise the app locally instead of inspecting hidden validation plumbing:
