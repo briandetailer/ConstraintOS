@@ -27,12 +27,37 @@ def test_constraintos_workbench_app_serves_pretty_browser_front_door() -> None:
         "ConstraintOS Workbench App",
         "Portable Workbench App",
         "Run ConstraintOS Demo",
-        "Demo input",
+        "Browser request input",
+        "Graphic request",
+        "Output focus",
+        "Output count",
         "Run the app",
         "Safety state",
         "App status",
         "Generated Workbench",
         "manual review only",
+    ]
+    for item in expected:
+        assert item in content
+
+
+def test_constraintos_workbench_app_captures_browser_request_fields() -> None:
+    content = APP.read_text(encoding="utf-8")
+
+    expected = [
+        "DEFAULT_DEMO_REQUEST",
+        "normalize_demo_request",
+        'textarea id="requestText"',
+        'select id="requestedFocus"',
+        'select id="outputCount"',
+        "technical_comparison",
+        "turbo_system",
+        "inline_six_identity",
+        "reviewer_safe",
+        "readDemoRequest()",
+        "request_text: document.getElementById('requestText').value",
+        "requested_focus: document.getElementById('requestedFocus').value",
+        "output_count: Number(document.getElementById('outputCount').value)",
     ]
     for item in expected:
         assert item in content
@@ -47,9 +72,26 @@ def test_constraintos_workbench_app_binds_button_with_valid_javascript() -> None
         "async function runDemo()",
         "document.addEventListener('DOMContentLoaded'",
         "button.addEventListener('click', runDemo)",
-        "Button click received.\\n\\nRunning ConstraintOS pipeline...",
-        "Ready to run ConstraintOS. Click Run ConstraintOS Demo to start.",
+        "Browser request received.\\n\\n",
+        "Ready to run ConstraintOS. Edit the browser request, then click Run ConstraintOS Demo.",
         "frame.removeAttribute('src')",
+    ]
+    for item in expected:
+        assert item in content
+
+
+def test_constraintos_workbench_app_posts_browser_request_to_api() -> None:
+    content = APP.read_text(encoding="utf-8")
+
+    expected = [
+        "const demoRequest = readDemoRequest();",
+        "fetch('/api/run', {",
+        "method: 'POST'",
+        "headers: { 'Content-Type': 'application/json' }",
+        "body: JSON.stringify({ demo_request: demoRequest })",
+        "_read_json_body",
+        "demo_request = normalize_demo_request(payload)",
+        "Invalid browser request JSON",
     ]
     for item in expected:
         assert item in content
@@ -59,15 +101,31 @@ def test_constraintos_workbench_app_runs_pipeline_from_browser_api() -> None:
     content = APP.read_text(encoding="utf-8")
 
     expected = [
-        "def run_exercise_pipeline(repo_root: Path)",
+        "def run_exercise_pipeline(repo_root: Path, demo_request: dict[str, Any])",
         'script = repo_root / "scripts" / "exercise-constraintos.ps1"',
         '"powershell.exe"',
         '"-ExecutionPolicy"',
         '"Bypass"',
         '"-NoOpenBrowser"',
         'if parsed.path != "/api/run"',
-        "fetch('/api/run', { method: 'POST' })",
         "RUN_LOCK",
+    ]
+    for item in expected:
+        assert item in content
+
+
+def test_constraintos_workbench_app_persists_browser_request_artifact_and_state() -> None:
+    content = APP.read_text(encoding="utf-8")
+
+    expected = [
+        "persist_browser_request",
+        "browser-request.json",
+        "browser_request",
+        "status\": \"captured",
+        "source\": \"browser_form",
+        "exercise_state[\"browser_request\"] = demo_request",
+        "browser_request_url",
+        "Open captured browser request",
     ]
     for item in expected:
         assert item in content
