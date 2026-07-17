@@ -1,0 +1,34 @@
+{
+  "request_id": "rpi5-io-plate-001",
+  "request_text": "Create a repeatable top-view technical I/O plate of a Raspberry Pi 5. Find authoritative references first, show and label the requested connectors, preserve the real board layout, and do not invent hidden or unsupported components.",
+  "subject": "Raspberry Pi 5",
+  "output_kind": "technical_component_plate",
+  "viewpoint": "locked_top_view",
+  "constraints": {
+    "required_visible_features": [
+      "40-pin GPIO header",
+      "dual micro-HDMI ports",
+      "two USB 3.0 ports",
+      "two USB 2.0 ports",
+      "Gigabit Ethernet",
+      "USB-C power",
+      "MIPI camera/display connectors",
+      "PCIe FFC connector",
+      "RTC battery connector",
+      "PWM fan connector"
+    ],
+    "forbidden_features": [
+      "invented connectors",
+      "generated text inside the base image",
+      "unregistered callouts",
+      "hidden-component inference",
+      "automatic production approval"
+    ],
+    "repeatability_required": true,
+    "authoritative_sources_required": true,
+    "labels_required": true,
+    "novel_view_requested": false,
+    "allow_exploratory_generation": false,
+    "manual_review_required": true
+  }
+}
