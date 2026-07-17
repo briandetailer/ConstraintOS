@@ -2,16 +2,21 @@ import hashlib
 import importlib.util
 import json
 import shutil
+import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-CORE_APP = ROOT / "apps" / "constraintos_workbench" / "app_v2.py"
-UI_APP = ROOT / "apps" / "constraintos_workbench" / "app_v3.py"
-LEGACY_APP = ROOT / "apps" / "constraintos_workbench" / "app.py"
-SPEC = importlib.util.spec_from_file_location("constraintos_workbench_app_v2", CORE_APP)
-assert SPEC is not None and SPEC.loader is not None
-app = importlib.util.module_from_spec(SPEC)
-SPEC.loader.exec_module(app)
+APP_DIR = ROOT / "apps" / "constraintos_workbench"
+CORE_APP = APP_DIR / "app_v2.py"
+UI_APP = APP_DIR / "app_v3.py"
+LEGACY_APP = APP_DIR / "app.py"
+if str(APP_DIR) not in sys.path:
+    sys.path.insert(0, str(APP_DIR))
+UI_SPEC = importlib.util.spec_from_file_location("constraintos_workbench_app_v3", UI_APP)
+assert UI_SPEC is not None and UI_SPEC.loader is not None
+ui = importlib.util.module_from_spec(UI_SPEC)
+UI_SPEC.loader.exec_module(ui)
+app = ui.CORE
 
 PACKAGER = ROOT / "scripts" / "package-constraintos-workbench-app.ps1"
 CONTRACT = (
@@ -19,6 +24,12 @@ CONTRACT = (
     / "config"
     / "technical-source-plate-contracts"
     / "toyota-supra-a80-2jz-gte-v1.json"
+)
+COMPONENT_REGISTRY = (
+    ROOT
+    / "config"
+    / "technical-component-registries"
+    / "toyota-supra-a80-2jz-gte-source-plate-v1.json"
 )
 
 
@@ -31,6 +42,15 @@ def install_test_source_package(app_root: Path) -> Path:
     )
     contract_target.parent.mkdir(parents=True, exist_ok=True)
     shutil.copyfile(CONTRACT, contract_target)
+
+    registry_target = (
+        app_root
+        / "config"
+        / "technical-component-registries"
+        / "toyota-supra-a80-2jz-gte-source-plate-v1.json"
+    )
+    registry_target.parent.mkdir(parents=True, exist_ok=True)
+    shutil.copyfile(COMPONENT_REGISTRY, registry_target)
 
     package_root = (
         app_root
@@ -85,10 +105,12 @@ def test_workbench_separates_exploration_from_technical_rendering() -> None:
     assert "technical_output_allowed" in content
 
 
-def test_repeatability_evidence_is_visible_without_opening_json() -> None:
+def test_repeatability_and_registry_evidence_is_visible_without_opening_json() -> None:
     content = UI_APP.read_text(encoding="utf-8")
 
     assert "Repeat-render comparison:" in content
+    assert "Registered callouts:" in content
+    assert "Component registry:" in content
     assert "Current output SHA-256:" in content
     assert "Previous output SHA-256:" in content
     assert "Source SHA-256:" in content
@@ -143,7 +165,7 @@ def test_source_status_requires_digest_match(tmp_path: Path) -> None:
     assert blocked["reason"] == "source_digest_mismatch"
 
 
-def test_source_plate_render_is_byte_repeatable(tmp_path: Path) -> None:
+def test_source_plate_render_is_byte_repeatable_with_registered_callouts(tmp_path: Path) -> None:
     install_test_source_package(tmp_path)
     scenario_root = tmp_path / "runs" / "output-poc" / app.SCENARIO
     first_run = scenario_root / "run-001"
@@ -151,8 +173,8 @@ def test_source_plate_render_is_byte_repeatable(tmp_path: Path) -> None:
     first_run.mkdir(parents=True)
     second_run.mkdir(parents=True)
 
-    first = app.render_registered_source_plate(tmp_path, first_run)
-    second = app.render_registered_source_plate(tmp_path, second_run)
+    first = ui.render_registered_source_plate(tmp_path, first_run)
+    second = ui.render_registered_source_plate(tmp_path, second_run)
 
     first_svg = first_run / first["output_file"]
     second_svg = second_run / second["output_file"]
@@ -160,20 +182,45 @@ def test_source_plate_render_is_byte_repeatable(tmp_path: Path) -> None:
     assert first["repeat_render_comparison"]["status"] == "baseline_created"
     assert second["repeat_render_comparison"]["status"] == "passed"
     assert first["source_sha256"] == second["source_sha256"]
+    assert second["registered_callout_count"] == 4
     assert second["generated_text_inside_source_raster"] is False
-    assert second["annotation_source"] == "registered_source_plate_contract"
+    assert second["annotation_source"] == "registered_component_registry"
+    assert second["annotation_strings_registry_backed"] is True
+    assert second["callout_targets_registry_backed"] is True
+    assert second["hidden_geometry_inferred"] is False
     assert second["approval_allowed"] is False
+    svg_content = second_svg.read_text(encoding="utf-8")
+    assert "2JZ-COMP-001" in svg_content
+    assert "2JZ-COMP-004" in svg_content
+    assert "Turbocharger hardware is not fully exposed" in svg_content
 
 
 def test_source_plate_contract_limits_capabilities() -> None:
     contract = json.loads(CONTRACT.read_text(encoding="utf-8"))
 
+    assert contract["contract_version"] == "2.0.0"
     assert contract["production_mode"] == "source_plate_annotation"
     assert contract["canonical_source"]["authority"] == "Toyota Motor Corporation"
     assert contract["annotations"]["provider_generated_text_allowed"] is False
-    assert contract["annotations"]["component_callouts_in_this_contract"] is False
+    assert contract["annotations"]["component_callouts_in_this_contract"] is True
+    assert contract["annotations"]["component_callout_source"] == "registered_component_registry"
+    assert contract["capability_limits"]["component_callouts_allowed"] is True
+    assert contract["capability_limits"]["component_callouts_limited_to_registered_visible_components"] is True
     assert contract["capability_limits"]["novel_camera_views_allowed"] is False
     assert contract["capability_limits"]["hidden_geometry_inference_allowed"] is False
+
+
+def test_component_registry_uses_only_registered_visible_targets() -> None:
+    registry = json.loads(COMPONENT_REGISTRY.read_text(encoding="utf-8"))
+
+    assert registry["status"] == "active"
+    assert registry["coordinate_system"] == "normalized_source_raster"
+    assert len(registry["components"]) == 4
+    assert all(item["confidence"] == "high" for item in registry["components"])
+    assert all(item["visibility"].startswith("clearly_visible") for item in registry["components"])
+    assert registry["guardrails"]["unregistered_callouts_allowed"] is False
+    assert registry["guardrails"]["hidden_component_callouts_allowed"] is False
+    assert registry["guardrails"]["provider_generated_text_allowed"] is False
 
 
 def test_packager_copies_registered_config_and_materialized_toyota_package() -> None:
