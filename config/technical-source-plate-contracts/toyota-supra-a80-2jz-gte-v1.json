@@ -1,6 +1,6 @@
 {
-  "contract_id": "constraintos-source-plate/toyota-supra-a80-2jz-gte/v1",
-  "contract_version": "1.0.0",
+  "contract_id": "constraintos-source-plate/toyota-supra-a80-2jz-gte/v2",
+  "contract_version": "2.0.0",
   "status": "active",
   "scenario_id": "toyota_supra_a80_2jz_gte",
   "production_mode": "source_plate_annotation",
@@ -9,32 +9,43 @@
     "source_class": "official_web_2d_source_plate",
     "authority": "Toyota Motor Corporation"
   },
-  "render_preset_version": "source-plate-svg/v1",
+  "component_registry": "config/technical-component-registries/toyota-supra-a80-2jz-gte-source-plate-v1.json",
+  "render_preset_version": "source-plate-svg/v2",
   "output": {
-    "width": 1600,
-    "height": 1200,
+    "width": 1800,
+    "height": 1300,
     "format": "svg"
   },
   "source_placement": {
-    "x": 70,
-    "y": 135,
-    "width": 1460,
-    "height": 860,
+    "x": 350,
+    "y": 150,
+    "width": 1100,
+    "height": 888,
     "preserve_aspect_ratio": "xMidYMid meet"
   },
   "annotations": {
-    "annotation_kind": "registry_backed_metadata",
+    "annotation_kind": "registry_backed_component_callouts",
     "title": "TOYOTA SUPRA A80 — 2JZ-GTE",
-    "subtitle": "Official Toyota source plate · fixed-view deterministic composition",
-    "footer": "3.0-liter inline-six · Two-way twin-turbo system · Source-backed identity plate",
+    "subtitle": "Official Toyota fixed-view source plate · deterministic registered annotation",
+    "footer": "3.0-liter inline-six · Two-way twin-turbo system · ETCS on turbo models",
     "provider_generated_text_allowed": false,
-    "component_callouts_in_this_contract": false
+    "component_callouts_in_this_contract": true,
+    "component_callout_source": "registered_component_registry",
+    "annotation_text_inside_source_raster_allowed": false
   },
   "capability_limits": {
     "novel_camera_views_allowed": false,
     "exploded_views_allowed": false,
     "hidden_geometry_inference_allowed": false,
-    "component_callouts_allowed": false
+    "component_callouts_allowed": true,
+    "component_callouts_limited_to_registered_visible_components": true
+  },
+  "validation": {
+    "source_digest_match_required": true,
+    "annotation_strings_registry_backed_required": true,
+    "callout_targets_registry_backed_required": true,
+    "repeat_render_comparison_required": true,
+    "comparison_scope": "matching_contract_id_and_render_preset"
   },
   "review": {
     "approval_allowed": false,
