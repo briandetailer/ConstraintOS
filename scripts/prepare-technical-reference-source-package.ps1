@@ -51,11 +51,13 @@ foreach ($Source in $Scenario.sources) {
     try {
         if ($Force -or -not (Test-Path $TargetPath)) {
             Write-Host "Downloading $($Source.source_id)..."
-            Invoke-WebRequest \
-                -Uri ([string]$Source.download_url) \
-                -OutFile $TargetPath \
-                -UseBasicParsing \
-                -Headers @{ "User-Agent" = "ConstraintOS-Reference-Package/1.0" }
+            $RequestParameters = @{
+                Uri = [string]$Source.download_url
+                OutFile = $TargetPath
+                UseBasicParsing = $true
+                Headers = @{ "User-Agent" = "ConstraintOS-Reference-Package/1.0" }
+            }
+            Invoke-WebRequest @RequestParameters
         }
 
         $File = Get-Item $TargetPath
