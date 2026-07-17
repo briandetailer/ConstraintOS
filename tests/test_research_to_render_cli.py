@@ -50,9 +50,11 @@ def test_windows_exercise_runs_request_research_and_render_planning() -> None:
     assert "raspberry-pi-5-discovered-sources.json" in content
     assert "runtime.research_to_render.cli" in content
     assert "research-to-render-plan.json" in content
-    assert "runs\research-to-render\raspberry-pi-5-io-plate" in content
+    assert r"runs\research-to-render\raspberry-pi-5-io-plate" in content
     assert "LiveWebSearch" in content
-    assert "OPENAI_API_KEY" in content
+    assert "Import-PersistedOpenAIKey" in content
+    assert "EnvironmentVariableTarget]::User" in content
+    assert "set-openai-api-key.ps1 once" in content
     assert "--live-web-search" in content
 
 
