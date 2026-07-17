@@ -1,3 +1,4 @@
+from .discovery import DiscoveryError, OpenAIWebDiscoveryProvider
 from .models import (
     ConstraintRequest,
     OrchestrationResult,
@@ -10,6 +11,8 @@ from .orchestrator import ResearchToRenderOrchestrator
 
 __all__ = [
     "ConstraintRequest",
+    "DiscoveryError",
+    "OpenAIWebDiscoveryProvider",
     "OrchestrationResult",
     "RenderPlan",
     "ResearchPlan",
