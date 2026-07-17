@@ -1,0 +1,95 @@
+[
+  {
+    "source_id": "rpi5-official-step-2026",
+    "title": "Raspberry Pi 5 official 3D STEP — no graphics",
+    "authority": "Raspberry Pi Ltd",
+    "url": "https://pip-assets.raspberrypi.com/categories/892-raspberry-pi-5",
+    "download_url": "https://pip-assets.raspberrypi.com/categories/892-raspberry-pi-5/documents/RP-010083-CA-1-rpi-5%203D%20STEP%20-%20No%20Graphics%20small%20file.zip",
+    "source_class": "official_web_3d_geometry",
+    "formats": ["zip", "step"],
+    "authoritative": true,
+    "supports_features": [
+      "40-pin GPIO header",
+      "dual micro-HDMI ports",
+      "two USB 3.0 ports",
+      "two USB 2.0 ports",
+      "Gigabit Ethernet",
+      "USB-C power",
+      "MIPI camera/display connectors",
+      "PCIe FFC connector",
+      "RTC battery connector",
+      "PWM fan connector"
+    ],
+    "evidence_claims": [
+      "official board geometry",
+      "connector placement",
+      "board outline and mounting geometry"
+    ],
+    "usage_terms_status": "review_required_before_distribution"
+  },
+  {
+    "source_id": "rpi5-official-mechanical-drawing-2025",
+    "title": "Raspberry Pi 5 official mechanical drawing",
+    "authority": "Raspberry Pi Ltd",
+    "url": "https://pip-assets.raspberrypi.com/categories/892-raspberry-pi-5/documents/RP-008347-DS-1-raspberry-pi-5-mechanical-drawing.pdf",
+    "download_url": "https://pip-assets.raspberrypi.com/categories/892-raspberry-pi-5/documents/RP-008347-DS-1-raspberry-pi-5-mechanical-drawing.pdf",
+    "source_class": "official_web_mechanical_drawing",
+    "formats": ["pdf"],
+    "authoritative": true,
+    "supports_features": [],
+    "evidence_claims": [
+      "85 mm by 58 mm board envelope",
+      "mounting-hole locations",
+      "connector projection dimensions"
+    ],
+    "usage_terms_status": "review_required_before_distribution"
+  },
+  {
+    "source_id": "rpi5-official-product-brief-2026",
+    "title": "Raspberry Pi 5 product brief",
+    "authority": "Raspberry Pi Ltd",
+    "url": "https://pip-assets.raspberrypi.com/categories/892-raspberry-pi-5/documents/RP-008348-DS-6-raspberry-pi-5-product-brief.pdf",
+    "download_url": "https://pip-assets.raspberrypi.com/categories/892-raspberry-pi-5/documents/RP-008348-DS-6-raspberry-pi-5-product-brief.pdf",
+    "source_class": "official_web_product_documentation",
+    "formats": ["pdf"],
+    "authoritative": true,
+    "supports_features": [
+      "40-pin GPIO header",
+      "dual micro-HDMI ports",
+      "two USB 3.0 ports",
+      "two USB 2.0 ports",
+      "Gigabit Ethernet",
+      "USB-C power",
+      "MIPI camera/display connectors",
+      "PCIe FFC connector",
+      "RTC battery connector"
+    ],
+    "evidence_claims": [
+      "official product identity",
+      "official connector and interface inventory",
+      "official electrical and physical specification"
+    ],
+    "usage_terms_status": "review_required_before_distribution"
+  },
+  {
+    "source_id": "rpi5-official-hardware-documentation-2026",
+    "title": "Raspberry Pi computer hardware documentation",
+    "authority": "Raspberry Pi Ltd",
+    "url": "https://www.raspberrypi.com/documentation/computers/raspberry-pi.html",
+    "download_url": "https://www.raspberrypi.com/documentation/computers/raspberry-pi.html",
+    "source_class": "official_web_component_documentation",
+    "formats": ["html"],
+    "authoritative": true,
+    "supports_features": [
+      "RTC battery connector",
+      "PWM fan connector",
+      "USB-C power"
+    ],
+    "evidence_claims": [
+      "fan connector location and pinout",
+      "RTC battery connector identity and location",
+      "USB and power behavior"
+    ],
+    "usage_terms_status": "review_required_before_distribution"
+  }
+]
