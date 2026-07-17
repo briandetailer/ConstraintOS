@@ -16,6 +16,8 @@ def previous_compatible_output_digest(
     current_run_dir: Path,
     contract_id: str,
     render_preset_version: str,
+    component_registry_id: str,
+    component_registry_version: str,
 ) -> str | None:
     scenario_root = app_root / "runs" / "output-poc" / CORE.SCENARIO
     if not scenario_root.exists():
@@ -34,10 +36,46 @@ def previous_compatible_output_digest(
             continue
         if manifest.get("render_preset_version") != render_preset_version:
             continue
+        if manifest.get("component_registry_id") != component_registry_id:
+            continue
+        if manifest.get("component_registry_version") != component_registry_version:
+            continue
         digest = manifest.get("output_sha256")
         if isinstance(digest, str) and digest:
             return digest
     return None
+
+
+def validate_component_registry_layout(
+    registry: dict[str, Any],
+    width: int,
+    height: int,
+) -> list[str]:
+    validated: list[str] = []
+    for component in registry.get("components", []):
+        component_id = str(component["component_id"])
+        anchor = component["anchor"]
+        anchor_x = float(anchor["x"])
+        anchor_y = float(anchor["y"])
+        if not (0.0 <= anchor_x <= 1.0 and 0.0 <= anchor_y <= 1.0):
+            raise RuntimeError(f"Component {component_id} has an anchor outside the source raster.")
+
+        label_position = component["label_position"]
+        label_x = float(label_position["x"])
+        label_y = float(label_position["y"])
+        text_anchor = str(label_position["text_anchor"])
+        if text_anchor not in {"start", "middle", "end"}:
+            raise RuntimeError(f"Component {component_id} has an unsupported text anchor.")
+        if not (50.0 <= label_x <= width - 50.0 and 80.0 <= label_y <= height - 80.0):
+            raise RuntimeError(f"Component {component_id} label position is outside the output safe area.")
+
+        route = component["route"]
+        for route_key in ("elbow_x", "line_end_x"):
+            route_x = float(route[route_key])
+            if not (24.0 <= route_x <= width - 24.0):
+                raise RuntimeError(f"Component {component_id} route is outside the output bounds.")
+        validated.append(component_id)
+    return validated
 
 
 def component_callout_svg(
@@ -95,6 +133,7 @@ def render_registered_source_plate(
     placement = contract["source_placement"]
     annotations = contract["annotations"]
     components = registry["components"]
+    validated_component_ids = validate_component_registry_layout(registry, width, height)
     callouts = "".join(component_callout_svg(component, placement) for component in components)
     notes = registry["system_notes"]
     escaped_title = html.escape(str(annotations["title"]))
@@ -128,6 +167,8 @@ def render_registered_source_plate(
         run_dir,
         str(contract["contract_id"]),
         str(contract["render_preset_version"]),
+        str(registry["registry_id"]),
+        str(registry["registry_version"]),
     )
     comparison_status = (
         "baseline_created"
@@ -146,14 +187,17 @@ def render_registered_source_plate(
         "contract_id": contract["contract_id"],
         "render_preset_version": contract["render_preset_version"],
         "component_registry_id": registry["registry_id"],
+        "component_registry_version": registry["registry_version"],
         "registered_callout_count": len(components),
+        "validated_component_ids": validated_component_ids,
+        "callout_layout_bounds_passed": True,
         "output_file": "technical-render/toyota-2jz-gte-source-backed-plate.svg",
         "output_sha256": output_digest,
         "repeat_render_comparison": {
             "status": comparison_status,
             "previous_output_sha256": previous_digest,
             "current_output_sha256": output_digest,
-            "comparison_scope": "matching_contract_id_and_render_preset",
+            "comparison_scope": "matching_contract_render_preset_and_component_registry_version",
         },
         "generated_text_inside_source_raster": False,
         "annotation_source": "registered_component_registry",
@@ -178,6 +222,14 @@ def html_page() -> str:
         "deterministic registry-backed component callout overlay",
     )
     content = content.replace(
+        '<iframe id="technicalFrame" class="technical-frame"></iframe>',
+        '<img id="technicalFrame" class="technical-frame" alt="Source-backed Toyota technical plate"/>',
+    )
+    content = content.replace(
+        ".technical-frame { min-height:760px; border:0; }",
+        ".technical-frame { display:block; height:auto; border:0; }",
+    )
+    content = content.replace(
         '<p id="technicalLinks"></p>',
         '<div id="technicalSummary" class="status">Repeat-render and component-registry evidence will appear here after a source-backed run.</div><p id="technicalLinks"></p>',
     )
@@ -187,7 +239,7 @@ def html_page() -> str:
     )
     content = content.replace(
         "document.getElementById('technicalLinks').innerHTML='<a href=\"'+data.technical_render_url+'\" target=\"_blank\">Open source-backed SVG</a> · <a href=\"'+data.technical_render_manifest_url+'\" target=\"_blank\">Open technical render manifest</a>';",
-        "const repeat=data.technical_render.repeat_render_comparison;document.getElementById('technicalSummary').textContent='Repeat-render comparison: '+repeat.status+'\\nRegistered callouts: '+data.technical_render.registered_callout_count+'\\nComponent registry: '+data.technical_render.component_registry_id+'\\nCurrent output SHA-256: '+repeat.current_output_sha256+'\\nPrevious output SHA-256: '+(repeat.previous_output_sha256||'none')+'\\nSource SHA-256: '+data.technical_render.source_sha256;document.getElementById('technicalLinks').innerHTML='<a href=\"'+data.technical_render_url+'\" target=\"_blank\">Open source-backed plate</a> · <a href=\"'+data.technical_render_manifest_url+'\" target=\"_blank\">Open repeatability manifest</a>';",
+        "const repeat=data.technical_render.repeat_render_comparison;document.getElementById('technicalSummary').textContent='Repeat-render comparison: '+repeat.status+'\\nRegistered callouts: '+data.technical_render.registered_callout_count+'\\nComponent registry: '+data.technical_render.component_registry_id+' @ '+data.technical_render.component_registry_version+'\\nCallout layout bounds: '+data.technical_render.callout_layout_bounds_passed+'\\nCurrent output SHA-256: '+repeat.current_output_sha256+'\\nPrevious output SHA-256: '+(repeat.previous_output_sha256||'none')+'\\nSource SHA-256: '+data.technical_render.source_sha256;document.getElementById('technicalLinks').innerHTML='<a href=\"'+data.technical_render_url+'\" target=\"_blank\">Open source-backed plate</a> · <a href=\"'+data.technical_render_manifest_url+'\" target=\"_blank\">Open repeatability manifest</a>';",
     )
     return content
 
