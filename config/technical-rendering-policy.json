@@ -1,0 +1,50 @@
+{
+  "policy_id": "constraintos-technical-rendering/v1",
+  "policy_version": "1.0.0",
+  "status": "active",
+  "production_output": {
+    "renderer_class": "deterministic_geometry",
+    "canonical_asset_required": true,
+    "locked_camera_required": true,
+    "locked_render_preset_required": true,
+    "component_registry_required": true,
+    "deterministic_annotation_overlay_required": true,
+    "fail_closed_when_requirements_missing": true
+  },
+  "text_to_image": {
+    "role": "exploratory_reference_only",
+    "production_technical_output_allowed": false,
+    "production_approval_allowed": false,
+    "provider_generated_labels_allowed": false,
+    "provider_generated_dimensions_allowed": false,
+    "provider_generated_legends_allowed": false,
+    "artifact_directory": "exploratory-generated-references"
+  },
+  "annotation": {
+    "rendered_inside_raster_base_plate": false,
+    "approved_source": "component_label_registry",
+    "output_format": "svg_overlay",
+    "component_anchor_required": true,
+    "leader_line_target_required": true
+  },
+  "required_preflight_gates": [
+    "canonical_asset_present",
+    "canonical_asset_digest_matches",
+    "expected_component_inventory_present",
+    "locked_view_definition_present",
+    "render_preset_version_matches"
+  ],
+  "required_output_gates": [
+    "output_dimensions_match",
+    "forbidden_raster_text_absent",
+    "annotation_strings_registry_backed",
+    "callout_targets_registry_backed",
+    "orientation_matches_view_contract",
+    "repeat_render_difference_within_tolerance"
+  ],
+  "review": {
+    "manual_review_required": true,
+    "manual_review_substitutes_for_missing_preflight": false,
+    "default_decision": "needs_review"
+  }
+}
