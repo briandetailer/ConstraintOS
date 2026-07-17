@@ -1,6 +1,6 @@
 {
   "registry_id": "constraintos-component-registry/toyota-supra-a80-2jz-gte-source-plate/v1",
-  "registry_version": "1.0.0",
+  "registry_version": "1.1.0",
   "status": "active",
   "scenario_id": "toyota_supra_a80_2jz_gte",
   "source_id": "toyota-2jz-gte-official-image-1993",
@@ -48,8 +48,8 @@
       "component_id": "2JZ-COMP-003",
       "label": "Cylinder-head cover",
       "anchor": {"x": 0.625, "y": 0.435},
-      "label_position": {"x": 1510, "y": 420, "text_anchor": "start"},
-      "route": {"elbow_x": 1485, "line_end_x": 1500},
+      "label_position": {"x": 1730, "y": 420, "text_anchor": "end"},
+      "route": {"elbow_x": 1485, "line_end_x": 1515},
       "visibility": "clearly_visible",
       "confidence": "high",
       "evidence_source_ids": ["toyota-2jz-gte-official-image-1993"]
@@ -58,8 +58,8 @@
       "component_id": "2JZ-COMP-004",
       "label": "ETCS throttle-control actuator",
       "anchor": {"x": 0.540, "y": 0.705},
-      "label_position": {"x": 1510, "y": 780, "text_anchor": "start"},
-      "route": {"elbow_x": 1485, "line_end_x": 1500},
+      "label_position": {"x": 1730, "y": 780, "text_anchor": "end"},
+      "route": {"elbow_x": 1485, "line_end_x": 1515},
       "visibility": "clearly_visible_with_etcs_marking",
       "confidence": "high",
       "evidence_source_ids": [
