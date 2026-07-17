@@ -69,9 +69,16 @@ How to run:
 2. Your browser will open to the local Workbench app.
 3. Edit the browser request if desired.
 4. Choose the output focus and output count.
-5. Click: Run ConstraintOS Demo
-6. Review the generated workbench and candidate SVG outputs.
-7. Open the captured browser request JSON from the artifact links if you want to inspect exactly what was submitted.
+5. Optional: check Generate real image candidates with OpenAI Images API.
+6. Click: Run ConstraintOS Demo
+7. Review the generated workbench, candidate SVG outputs, and optional PNG image candidates.
+8. Open the captured browser request JSON from the artifact links if you want to inspect exactly what was submitted.
+
+Optional real image generation:
+- Real image generation requires OPENAI_API_KEY to be set in the Windows environment before launching the app.
+- Do not place the API key in this app folder or commit it to source control.
+- When enabled, the app calls the OpenAI Images API from the local backend and writes PNG candidates under the run folder.
+- Real generated image candidates remain needs_review and approval_allowed: false.
 
 Notes:
 - This is a local portable demo app.
@@ -82,10 +89,9 @@ Notes:
 - Close the app window to stop the local server.
 
 Current guardrails:
-- No real generated final graphics.
 - No production artwork approval.
 - No local image input.
-- No image decoding.
+- No image decoding of user files.
 - No pixel inspection.
 - No CV/OCR integration.
 - No automatic approval.
