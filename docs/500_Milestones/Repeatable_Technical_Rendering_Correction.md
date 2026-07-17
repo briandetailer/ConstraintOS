@@ -8,6 +8,8 @@ status: active
 started_on: 2026-07-17
 trigger: Workbench real-image output review failed
 branch: phase-1-cli-tooling
+current_checkpoint: Toyota source-plate path accepted; responsive v3 presentation pending local verification
+next_major_scenario: NASA Perseverance registered geometry rendering
 ```
 
 ## Original example-selection requirement
@@ -43,9 +45,9 @@ All reviewed outputs are rejected. They are not acceptable technical-drawing can
 
 ## Root cause
 
-The Workbench real-image path performs unconstrained text-to-image generation after the deterministic exercise pipeline. It does not condition generation on the registered official web sources, use a canonical source plate or geometry asset, apply a locked view, or enforce a technical validation gate.
+The Workbench real-image path performed unconstrained text-to-image generation after the deterministic exercise pipeline. It did not condition generation on the registered official web sources, use a canonical source plate or geometry asset, apply a locked view, or enforce a technical validation gate.
 
-The current path therefore proves provider connectivity only. It does not prove ConstraintOS-controlled technical illustration.
+That path proved provider connectivity only. It did not prove ConstraintOS-controlled technical illustration.
 
 ## Corrected source architecture
 
@@ -98,7 +100,7 @@ blocked:
 - claims of 3D geometric repeatability
 ```
 
-The Toyota 2JZ-GTE example currently qualifies for this path. Toyota provides an official fixed-view engine image and an official Supra technical release. Those sources support repeatable annotated plates from the registered view, not arbitrary generated engine views.
+The Toyota 2JZ-GTE example qualifies for this path. Toyota provides an official fixed-view engine image and an official Supra technical release. Those sources support repeatable annotated plates from the registered view, not arbitrary generated engine views.
 
 ### Mode C: reference bundle only
 
@@ -165,6 +167,7 @@ A technical output must fail closed unless the gates applicable to its productio
 - forbidden_raster_text_absent
 - annotation_strings_registry_backed
 - callout_targets_registry_backed
+- callout_layout_bounds_passed
 - orientation_matches_view_contract
 - repeat_render_difference_within_tolerance
 ```
@@ -173,19 +176,19 @@ Manual review remains required after automated validation, but manual review mus
 
 ## Workbench behavior correction
 
-The Workbench must separate three distinct capabilities:
+The Workbench separates three distinct capabilities:
 
 ```text
-Explore with Generated Raster References
+Explore Generated Raster References
 - optional OpenAI image generation
 - stochastic
 - may contain invented geometry
 - no technical approval path
 
-Render from Registered Source Plate
+Render Registered Toyota Source Plate
 - authoritative fixed source plate required
-- deterministic crop and annotation
-- novel views blocked
+- deterministic crop and registry-backed annotation
+- novel views and hidden geometry blocked
 
 Render from Registered Geometry
 - verified 3D geometry required
@@ -193,7 +196,33 @@ Render from Registered Geometry
 - deterministic annotation overlay
 ```
 
-The existing label `Run with Real Images` is misleading and must be replaced. Provider-generated rasters must not be described as technical drawing candidates.
+Provider-generated rasters are not described as technical drawing candidates.
+
+## Toyota acceptance evidence
+
+The Toyota source package and technical release were materialized successfully on Windows. The source-policy test group reported `15 passed`, and both the NASA and Toyota preparation scripts reported `source_files_materialized`.
+
+The packaged Toyota Workbench path was then exercised twice. Both runs completed in `source_plate_render` mode. The user confirmed the expected repeat-render responses were correct and supplied a screenshot of the actual source-backed plate.
+
+The screenshot established:
+
+```text
+[x] official Toyota source plate visibly used
+[x] deterministic title and registry-backed callout overlay present
+[x] engine identity recognizably Toyota 2JZ-GTE
+[x] no image-model-generated technical text
+[x] repeat-render workflow completed
+[x] manual-review and approval blocking retained
+```
+
+The screenshot also revealed two presentation defects:
+
+```text
+- source-backed SVG displayed in a scrolling iframe rather than scaling to the Workbench card
+- right-side labels extended beyond the visible presentation area
+```
+
+The v3 presentation contract corrects those defects by embedding the SVG as a responsive image, moving right-side labels inside the output bounds, and adding a fail-closed callout-layout bounds gate. Because the contract, render preset, and component registry version changed, the v3 renderer intentionally starts a new repeatability baseline.
 
 ## Implementation slices
 
@@ -204,18 +233,23 @@ The existing label `Run with Real Images` is misleading and must be replaced. Pr
 [x] Register official NASA and Toyota source packages
 [x] Add local source materialization and SHA-256 manifest workflow
 [x] Exclude materialized source binaries from source control
-[ ] Rename Workbench real-image path and artifact manifest
-[ ] Remove label-generation instructions from image-provider prompts
-[ ] Add source-package preflight status to Workbench
-[ ] Add fail-closed source-plate rendering action
-[ ] Ingest and hash official Toyota source plate and technical release
-[ ] Define Toyota fixed-view contract and component anchors
-[ ] Add deterministic SVG annotation pipeline for Toyota plate
-[ ] Ingest and hash official NASA Perseverance geometry
+[x] Rename Workbench real-image path and artifact manifest
+[x] Remove label-generation instructions from image-provider prompts
+[x] Add source-package preflight status to Workbench
+[x] Add fail-closed source-plate rendering action
+[x] Ingest and hash official Toyota source plate and technical release
+[x] Define Toyota fixed-view contract and component anchors
+[x] Add deterministic SVG annotation pipeline for Toyota plate
+[x] Add repeat-render comparison gate for Toyota source plates
+[x] Package the deterministic Toyota source-backed renderer with Workbench
+[x] Run Toyota use case and record initial acceptance evidence
+[x] Add responsive plate presentation and callout-layout bounds gate
+[x] Ingest and hash official NASA Perseverance geometry
 [ ] Define NASA component registry, camera, and render preset
-[ ] Add repeat-render comparison gate
-[ ] Package the deterministic source-backed renderer with Workbench
-[ ] Re-run the Toyota and NASA use cases and record acceptance evidence
+[ ] Add deterministic NASA geometry renderer
+[ ] Add NASA repeat-render comparison gate
+[ ] Package the NASA geometry renderer with Workbench
+[ ] Run NASA use case and record acceptance evidence
 ```
 
 ## Acceptance criteria
@@ -229,10 +263,11 @@ This milestone is complete only when:
 4. No generated text appears inside the raster base plate.
 5. Every visible annotation comes from an approved registry entry.
 6. Every leader line resolves to a registered component anchor.
-7. Toyota output is recognizably and verifiably based on the official 2JZ-GTE source plate.
-8. NASA output is recognizably and verifiably rendered from the official Perseverance geometry.
-9. Missing or changed source assets block production rendering.
-10. Text-to-image output cannot enter the production approval path.
+7. Every callout label and route remains inside the output safe area.
+8. Toyota output is recognizably and verifiably based on the official 2JZ-GTE source plate.
+9. NASA output is recognizably and verifiably rendered from the official Perseverance geometry.
+10. Missing or changed source assets block production rendering.
+11. Text-to-image output cannot enter the production approval path.
 ```
 
 ## Guardrails
@@ -247,4 +282,5 @@ This milestone is complete only when:
 [x] Preserve provider generation only as an explicitly exploratory feature
 [x] Require a canonical source package for production technical drawings
 [x] Limit each scenario to capabilities supported by its source evidence
+[x] Fail closed when registered callout presentation is out of bounds
 ```
