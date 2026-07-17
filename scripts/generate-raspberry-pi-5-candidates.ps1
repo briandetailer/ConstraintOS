@@ -1,6 +1,7 @@
 param(
     [string]$OutputRoot,
     [switch]$Generate,
+    [switch]$Validate,
     [switch]$OpenResult
 )
 
@@ -25,12 +26,17 @@ foreach ($RequiredPath in @($RequestPath, $SourcesPath, $SourcePlateManifest)) {
 if (-not (Get-Command python -ErrorAction SilentlyContinue)) {
     throw "Python was not found on PATH."
 }
+if ($Validate -and -not $Generate) {
+    throw "-Validate requires -Generate because candidate images must exist first."
+}
 
 $Timestamp = (Get-Date).ToUniversalTime().ToString("yyyyMMdd-HHmmss")
 $RunRoot = Join-Path $OutputRoot $Timestamp
 New-Item -ItemType Directory -Force -Path $RunRoot | Out-Null
 $PlanPath = Join-Path $RunRoot "research-to-render-plan.json"
 $GenerationPackagePath = Join-Path $RunRoot "generation-package.json"
+$CandidateManifestPath = Join-Path $RunRoot "generated-candidate-manifest.json"
+$ValidationManifestPath = Join-Path $RunRoot "candidate-validation-manifest.json"
 
 Push-Location $RepoRoot
 try {
@@ -56,6 +62,16 @@ try {
     if ($LASTEXITCODE -ne 0) {
         throw "Reference-conditioned candidate generation failed with exit code $LASTEXITCODE."
     }
+
+    if ($Validate) {
+        python -m runtime.research_to_render.candidate_validation `
+            --generation-package $GenerationPackagePath `
+            --candidate-manifest $CandidateManifestPath `
+            --output-root $RunRoot
+        if ($LASTEXITCODE -ne 0) {
+            Write-Warning "Candidate validation completed with rejected output. Review the evidence manifest."
+        }
+    }
 }
 finally {
     Pop-Location
@@ -64,14 +80,20 @@ finally {
 Write-Host "ConstraintOS generation run: $RunRoot" -ForegroundColor Green
 Write-Host "Generation package: $GenerationPackagePath"
 if ($Generate) {
-    Write-Host "Candidate manifest: $(Join-Path $RunRoot 'generated-candidate-manifest.json')"
+    Write-Host "Candidate manifest: $CandidateManifestPath"
 }
 else {
     Write-Host "No image-provider call was made. Re-run with -Generate to create the candidate artwork."
 }
+if ($Validate) {
+    Write-Host "Validation manifest: $ValidationManifestPath"
+}
 
 if ($OpenResult) {
-    if ($Generate) {
+    if ($Validate -and (Test-Path $ValidationManifestPath)) {
+        Start-Process $ValidationManifestPath
+    }
+    elseif ($Generate) {
         $Candidate = Join-Path $RunRoot "generated-candidates\candidate-01.png"
         if (Test-Path $Candidate) {
             Start-Process $Candidate
