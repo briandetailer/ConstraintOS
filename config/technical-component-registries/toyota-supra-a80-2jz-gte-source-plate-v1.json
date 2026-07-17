@@ -1,0 +1,90 @@
+{
+  "registry_id": "constraintos-component-registry/toyota-supra-a80-2jz-gte-source-plate/v1",
+  "registry_version": "1.0.0",
+  "status": "active",
+  "scenario_id": "toyota_supra_a80_2jz_gte",
+  "source_id": "toyota-2jz-gte-official-image-1993",
+  "source_native_dimensions": {
+    "width": 1000,
+    "height": 807
+  },
+  "coordinate_system": "normalized_source_raster",
+  "evidence_sources": [
+    {
+      "source_id": "toyota-2jz-gte-official-image-1993",
+      "authority": "Toyota Motor Corporation",
+      "url": "https://global.toyota/en/download/41120967/",
+      "role": "visible_component_and_anchor_evidence"
+    },
+    {
+      "source_id": "toyota-supra-launch-release-1993",
+      "authority": "Toyota Motor Corporation",
+      "url": "https://global.toyota/en/detail/7868203",
+      "role": "engine_identity_inline_six_twin_turbo_and_etcs_evidence"
+    }
+  ],
+  "components": [
+    {
+      "component_id": "2JZ-COMP-001",
+      "label": "Intake manifold plenum",
+      "anchor": {"x": 0.405, "y": 0.255},
+      "label_position": {"x": 70, "y": 330, "text_anchor": "start"},
+      "route": {"elbow_x": 315, "line_end_x": 300},
+      "visibility": "clearly_visible",
+      "confidence": "high",
+      "evidence_source_ids": ["toyota-2jz-gte-official-image-1993"]
+    },
+    {
+      "component_id": "2JZ-COMP-002",
+      "label": "Engine oil filler cap",
+      "anchor": {"x": 0.338, "y": 0.510},
+      "label_position": {"x": 70, "y": 650, "text_anchor": "start"},
+      "route": {"elbow_x": 315, "line_end_x": 300},
+      "visibility": "clearly_visible",
+      "confidence": "high",
+      "evidence_source_ids": ["toyota-2jz-gte-official-image-1993"]
+    },
+    {
+      "component_id": "2JZ-COMP-003",
+      "label": "Cylinder-head cover",
+      "anchor": {"x": 0.625, "y": 0.435},
+      "label_position": {"x": 1510, "y": 420, "text_anchor": "start"},
+      "route": {"elbow_x": 1485, "line_end_x": 1500},
+      "visibility": "clearly_visible",
+      "confidence": "high",
+      "evidence_source_ids": ["toyota-2jz-gte-official-image-1993"]
+    },
+    {
+      "component_id": "2JZ-COMP-004",
+      "label": "ETCS throttle-control actuator",
+      "anchor": {"x": 0.540, "y": 0.705},
+      "label_position": {"x": 1510, "y": 780, "text_anchor": "start"},
+      "route": {"elbow_x": 1485, "line_end_x": 1500},
+      "visibility": "clearly_visible_with_etcs_marking",
+      "confidence": "high",
+      "evidence_source_ids": [
+        "toyota-2jz-gte-official-image-1993",
+        "toyota-supra-launch-release-1993"
+      ]
+    }
+  ],
+  "system_notes": [
+    {
+      "note_id": "2JZ-NOTE-001",
+      "text": "Toyota identifies the 2JZ-GTE as a 3.0-liter inline-six two-way twin-turbo engine.",
+      "evidence_source_ids": ["toyota-supra-launch-release-1993"]
+    },
+    {
+      "note_id": "2JZ-NOTE-002",
+      "text": "Turbocharger hardware is not fully exposed in this fixed source view; hidden geometry is not inferred.",
+      "evidence_source_ids": ["toyota-2jz-gte-official-image-1993"]
+    }
+  ],
+  "guardrails": {
+    "labels_must_match_registry": true,
+    "anchors_must_match_registry": true,
+    "unregistered_callouts_allowed": false,
+    "hidden_component_callouts_allowed": false,
+    "provider_generated_text_allowed": false
+  }
+}
