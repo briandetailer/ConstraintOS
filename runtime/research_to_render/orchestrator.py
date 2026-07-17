@@ -147,8 +147,30 @@ class ResearchToRenderOrchestrator:
             if source.source_class in DOCUMENTATION_SOURCE_CLASSES
         )
 
-        if geometry_sources:
+        if source_plates and not request.novel_view_requested:
+            production_mode = "source_plate_annotation"
+            mode_selection_reason = (
+                "authoritative_fixed_view_source_plate_satisfies_requested_view_"
+                "without_geometry_reconstruction"
+            )
+            canonical_sources = source_plates
+            mode_workers = (
+                "source_plate_normalizer",
+                "component_anchor_registry_builder",
+                "deterministic_svg_renderer",
+            )
+            mode_blockers = (
+                "source_plate_not_materialized_or_digest_verified",
+                "fixed_view_contract_not_registered",
+                "component_anchor_registry_not_built",
+                "render_preset_not_registered",
+            )
+        elif geometry_sources:
             production_mode = "geometry_render"
+            mode_selection_reason = (
+                "verified_geometry_required_for_requested_view_or_no_suitable_"
+                "fixed_source_plate"
+            )
             canonical_sources = geometry_sources
             mode_workers = (
                 "geometry_normalizer",
@@ -162,22 +184,9 @@ class ResearchToRenderOrchestrator:
                 "locked_camera_not_registered",
                 "render_preset_not_registered",
             )
-        elif source_plates and not request.novel_view_requested:
-            production_mode = "source_plate_annotation"
-            canonical_sources = source_plates
-            mode_workers = (
-                "source_plate_normalizer",
-                "component_anchor_registry_builder",
-                "deterministic_svg_renderer",
-            )
-            mode_blockers = (
-                "source_plate_not_materialized_or_digest_verified",
-                "fixed_view_contract_not_registered",
-                "component_anchor_registry_not_built",
-                "render_preset_not_registered",
-            )
         else:
             production_mode = "reference_bundle_only"
+            mode_selection_reason = "no_supported_visual_or_geometry_base_source"
             canonical_sources = ()
             mode_workers = ("evidence_report_builder",)
             mode_blockers = ("no_supported_production_base_source",)
@@ -228,6 +237,7 @@ class ResearchToRenderOrchestrator:
         ]
         return RenderPlan(
             production_mode=production_mode,
+            mode_selection_reason=mode_selection_reason,
             canonical_source_ids=canonical_sources,
             annotation_source_ids=documentation,
             required_workers=workers,
