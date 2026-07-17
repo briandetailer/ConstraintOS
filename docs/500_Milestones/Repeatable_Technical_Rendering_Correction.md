@@ -10,6 +10,19 @@ trigger: Workbench real-image output review failed
 branch: phase-1-cli-tooling
 ```
 
+## Original example-selection requirement
+
+The NASA, Toyota, and other demonstration scenarios were selected because useful example information is available on the web. The correction must preserve that requirement.
+
+```text
+example_selection: sufficient web-available reference information
+proprietary_3d_purchase_required: false
+source_preference: official and authoritative web sources first
+production_capability: limited to what the available source package can support
+```
+
+ConstraintOS must turn those sources into versioned, hashed, auditable reference packages. It must not ignore the available references and ask an image model to recreate the subject from text alone.
+
 ## Incident
 
 The packaged ConstraintOS Workbench successfully reached the image provider and produced PNG artifacts, but the resulting images failed the product requirement for repeatable technical drawings.
@@ -30,86 +43,123 @@ All reviewed outputs are rejected. They are not acceptable technical-drawing can
 
 ## Root cause
 
-The Workbench real-image path currently performs unconstrained text-to-image generation after the deterministic exercise pipeline. It does not use a canonical engine asset, locked camera, component geometry, reference-conditioned generation, deterministic label overlay, or technical validation gate.
+The Workbench real-image path performs unconstrained text-to-image generation after the deterministic exercise pipeline. It does not condition generation on the registered official web sources, use a canonical source plate or geometry asset, apply a locked view, or enforce a technical validation gate.
 
 The current path therefore proves provider connectivity only. It does not prove ConstraintOS-controlled technical illustration.
+
+## Corrected source architecture
+
+A canonical source asset may be two-dimensional or three-dimensional. The source type determines what ConstraintOS is allowed to produce.
+
+### Mode A: geometry render
+
+Use when official or verified 3D geometry is available.
+
+```text
+accepted_sources:
+- official_web_3d_geometry
+- verified_local_geometry
+
+allowed:
+- locked deterministic camera views
+- deterministic line and material rendering
+- repeat-render comparison
+- deterministic SVG annotation overlays
+
+required:
+- downloaded source file
+- provenance record
+- file digest
+- normalized geometry
+- component inventory
+- locked camera and render preset
+```
+
+The NASA Perseverance example qualifies for this path because official NASA/JPL geometry is available online in downloadable 3D formats.
+
+### Mode B: source-plate annotation
+
+Use when an authoritative fixed-view image is available but verified 3D geometry is not.
+
+```text
+accepted_sources:
+- official_web_2d_source_plate
+
+allowed:
+- repeatable output from the registered fixed source plate
+- deterministic crop and scaling
+- deterministic SVG titles, labels, callouts, and legends
+- component anchors registered against the fixed plate
+
+blocked:
+- invented camera angles
+- exploded views not present in source evidence
+- hidden geometry reconstruction
+- claims of 3D geometric repeatability
+```
+
+The Toyota 2JZ-GTE example currently qualifies for this path. Toyota provides an official fixed-view engine image and an official Supra technical release. Those sources support repeatable annotated plates from the registered view, not arbitrary generated engine views.
+
+### Mode C: reference bundle only
+
+Use when documentation is sufficient for validation and terminology but not for a production base plate.
+
+```text
+allowed:
+- identity validation
+- terminology registry evidence
+- component and constraint research
+
+blocked:
+- production technical base plate
+```
 
 ## Product correction
 
 ```text
 text_to_image_role: exploratory_reference_only
 text_to_image_production_technical_output: prohibited
-canonical_geometry_required: true
-locked_camera_required: true
-locked_render_preset_required: true
-component_registry_required: true
+canonical_source_package_required: true
+canonical_asset_may_be_2d_or_3d: true
+capability_must_not_exceed_source_package: true
 provider_generated_labels: prohibited
 technical_labels: deterministic_overlay_only
-production_output_without_canonical_asset: fail_closed
+production_output_without_required_source_evidence: fail_closed
 ```
 
-A generated raster may be retained as an exploratory reference artifact, but it must never be represented as a repeatable technical drawing or a production candidate.
+A generated raster may be retained as an exploratory artifact, but it must never be represented as a repeatable technical drawing or a production candidate.
 
-## Correct production architecture
+## Source-package ingestion
 
-### 1. Canonical source geometry
+Registered web sources are materialized locally rather than committed as untracked binaries.
 
-A verified Toyota 2JZ-GTE source asset must be imported and normalized. The source may be a controlled Blender scene or a supported 3D interchange asset converted into one.
-
-The canonical asset record must include:
+The preparation workflow must:
 
 ```text
-- asset identifier and version
-- source/provenance record
-- file digest
-- unit scale
-- coordinate system
-- object/component inventory
-- engine orientation definition
-- approved visible and hidden components
+1. read config/technical-reference-source-registry.json
+2. download only registered ingestion sources
+3. preserve the source page and download URL
+4. calculate SHA-256 for every downloaded file
+5. write source-package-manifest.json
+6. record usage-terms review status
+7. remain production_ready: false until later technical preflight gates pass
 ```
 
-### 2. Deterministic renderer
+Materialized files are stored under `reference-sources/`, which is excluded from source control.
 
-The technical base plate must be rendered from the canonical asset using locked values for:
+## Validation gates
 
-```text
-- camera transform and projection
-- object visibility
-- line-render settings
-- lighting
-- materials or monochrome treatment
-- resolution and crop
-- background
-- render engine and version
-```
-
-The same asset, render preset, and view definition must produce the same composition on repeated runs within an explicitly defined pixel-difference tolerance.
-
-### 3. Deterministic annotation layer
-
-The image provider must not render titles, labels, legends, measurements, arrows, or callout text.
-
-All annotation must be generated separately as SVG or another deterministic vector layer using:
+A technical output must fail closed unless the gates applicable to its production mode pass:
 
 ```text
-- approved label strings
-- component identifiers
-- stored anchor points
-- controlled typography
-- controlled leader-line routing
-- collision and margin checks
-```
-
-### 4. Validation gates
-
-A technical output must fail closed unless all required gates pass:
-
-```text
+- canonical_source_package_present
+- source_provenance_recorded
+- source_usage_terms_recorded
 - canonical_asset_present
 - canonical_asset_digest_matches
+- requested_capability_supported_by_source_class
 - expected_component_inventory_present
-- locked_view_definition_present
+- locked_view_or_source_plate_definition_present
 - render_preset_version_matches
 - output_dimensions_match
 - forbidden_raster_text_absent
@@ -123,7 +173,7 @@ Manual review remains required after automated validation, but manual review mus
 
 ## Workbench behavior correction
 
-The Workbench must separate two distinct capabilities:
+The Workbench must separate three distinct capabilities:
 
 ```text
 Explore with Generated Raster References
@@ -131,32 +181,41 @@ Explore with Generated Raster References
 - stochastic
 - may contain invented geometry
 - no technical approval path
-- stored under exploratory-reference artifacts
 
-Render Repeatable Technical Drawing
-- canonical geometry required
-- deterministic renderer required
-- deterministic annotation overlay required
-- blocked until all preflight gates are satisfied
+Render from Registered Source Plate
+- authoritative fixed source plate required
+- deterministic crop and annotation
+- novel views blocked
+
+Render from Registered Geometry
+- verified 3D geometry required
+- deterministic camera and renderer
+- deterministic annotation overlay
 ```
 
-The existing label `Run with Real Images` is misleading and must be replaced. The UI must not describe provider-generated rasters as technical drawing candidates.
+The existing label `Run with Real Images` is misleading and must be replaced. Provider-generated rasters must not be described as technical drawing candidates.
 
 ## Implementation slices
 
 ```text
-[ ] Add executable technical-rendering policy manifest
-[ ] Add tests enforcing text-to-image exploratory-only status
+[x] Add executable technical-rendering policy manifest
+[x] Add tests enforcing text-to-image exploratory-only status
+[x] Add web-available reference-source strategy to policy
+[x] Register official NASA and Toyota source packages
+[x] Add local source materialization and SHA-256 manifest workflow
+[x] Exclude materialized source binaries from source control
 [ ] Rename Workbench real-image path and artifact manifest
 [ ] Remove label-generation instructions from image-provider prompts
-[ ] Add canonical-asset preflight status to Workbench
-[ ] Add fail-closed Repeatable Technical Drawing action
-[ ] Define canonical 2JZ-GTE asset manifest and object registry
-[ ] Add locked Blender render preset and view contract
-[ ] Add deterministic SVG annotation pipeline
+[ ] Add source-package preflight status to Workbench
+[ ] Add fail-closed source-plate rendering action
+[ ] Ingest and hash official Toyota source plate and technical release
+[ ] Define Toyota fixed-view contract and component anchors
+[ ] Add deterministic SVG annotation pipeline for Toyota plate
+[ ] Ingest and hash official NASA Perseverance geometry
+[ ] Define NASA component registry, camera, and render preset
 [ ] Add repeat-render comparison gate
-[ ] Package the deterministic renderer with the Workbench
-[ ] Re-run the Supra use case and record acceptance evidence
+[ ] Package the deterministic source-backed renderer with Workbench
+[ ] Re-run the Toyota and NASA use cases and record acceptance evidence
 ```
 
 ## Acceptance criteria
@@ -164,22 +223,28 @@ The existing label `Run with Real Images` is misleading and must be replaced. Th
 This milestone is complete only when:
 
 ```text
-1. Repeated runs from the same canonical asset and view produce the same technical base plate within the approved tolerance.
-2. No generated text appears inside the raster base plate.
-3. Every visible annotation comes from an approved registry entry.
-4. Every leader line resolves to a registered component anchor.
-5. The output is recognizably and verifiably a Toyota 2JZ-GTE inline-six twin-turbo engine.
-6. A missing or changed canonical asset blocks production rendering.
-7. Text-to-image output cannot enter the production approval path.
+1. The registered web source files are materialized and hash-verified.
+2. Output capability cannot exceed the registered source class.
+3. Repeated runs from the same source package produce the same base plate within the approved tolerance.
+4. No generated text appears inside the raster base plate.
+5. Every visible annotation comes from an approved registry entry.
+6. Every leader line resolves to a registered component anchor.
+7. Toyota output is recognizably and verifiably based on the official 2JZ-GTE source plate.
+8. NASA output is recognizably and verifiably rendered from the official Perseverance geometry.
+9. Missing or changed source assets block production rendering.
+10. Text-to-image output cannot enter the production approval path.
 ```
 
 ## Guardrails
 
 ```text
 [x] Reject the four reviewed PNG outputs
+[x] Preserve the original web-available-example requirement
+[x] Do not require a proprietary 3D purchase for every scenario
 [x] Do not solve the failure by adding more prompt prose alone
 [x] Do not ask an image model to generate technical labels
 [x] Do not claim repeatability from stochastic text-to-image output
 [x] Preserve provider generation only as an explicitly exploratory feature
-[x] Require canonical geometry for production technical drawings
+[x] Require a canonical source package for production technical drawings
+[x] Limit each scenario to capabilities supported by its source evidence
 ```
