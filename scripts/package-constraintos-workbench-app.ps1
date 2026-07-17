@@ -76,6 +76,8 @@ How to run:
 
 Optional real image generation:
 - Real image generation requires OPENAI_API_KEY to be visible to the app process before launching ConstraintOS Workbench.exe.
+- Do not use literal placeholder text such as your_api_key_here, paste_your_key_here, or api_key_here.
+- The browser Provider status card must show status: ready before Run with Real Images is enabled.
 - The browser Provider status card shows whether the launched app can see OPENAI_API_KEY.
 - Do not place the API key in this app folder or commit it to source control.
 - When enabled, the app calls the OpenAI Images API from the local backend and writes PNG candidates under the run folder.
