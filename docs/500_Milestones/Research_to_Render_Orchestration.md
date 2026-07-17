@@ -7,54 +7,76 @@ milestone: Research-to-Render Orchestration
 status: active
 started_on: 2026-07-17
 branch: phase-1-cli-tooling
-trigger: user clarified that ConstraintOS must research each imagery request rather than begin from a pre-registered renderer
-current_checkpoint: request-driven research, capability selection, source materialization, and deterministic PDF source-plate extraction implemented
-next_checkpoint: review extracted Raspberry Pi source plate and build its component-anchor and label registry
+trigger: ConstraintOS must research each book-imagery request and create new constrained artwork from that evidence
+current_checkpoint: reference-conditioned generation package, candidate generator, and independent visual validator implemented
+next_checkpoint: run the Raspberry Pi reference-conditioned candidate through the provider and review validation evidence
 ```
 
 ## Product intent
 
-ConstraintOS accepts an imagery request and its constraints, researches reference material for that request, determines what the evidence supports, creates imagery using the selected evidence-backed method, and validates the output against the original constraints.
+ConstraintOS exists to populate required imagery for a publication from user-supplied constraints. Research material is evidence supplied to the generation pipeline. It is not automatically the final artwork.
 
 ```text
-request + constraints
+book image request
         ↓
-constraint normalization
+constraint extraction and normalization
         ↓
-research planning
+request-derived web research
         ↓
-web source discovery
+authority, relevance, and capability evaluation
         ↓
-source authority and relevance evaluation
+versioned and hashed reference package
         ↓
-capability classification
+generation-constraint compiler
         ↓
-versioned reference package
+reference-conditioned image-generation worker
         ↓
-source-backed render planning
+generated candidate artwork
         ↓
-deterministic or research-conditioned imagery
+independent reference + constraint validation
         ↓
-constraint and evidence validation
+repair / rerender / reject / manual review
         ↓
-manual review + provenance report
+deterministic labels, callouts, and publication finishing
 ```
 
-The Toyota and NASA paths remain regression fixtures. They do not define the user-facing architecture.
+The Toyota, NASA, Raspberry Pi, and other examples are regression fixtures for this general mechanism. They do not define separate hardcoded products.
 
-## New example outside the original fixture set
+## Drift correction
 
-The first generalized request is:
+The first source-backed implementation stopped at deterministic source extraction and source-plate annotation. That was useful for provenance and repeatability, but it omitted the central product stage: creating new imagery from the researched reference package.
+
+The corrected distinction is:
+
+```text
+request: annotate this exact source image
+→ source_plate_annotation
+
+request: create new book artwork using this evidence
+→ reference_conditioned_generation
+
+request: create a new viewpoint supported by verified geometry
+→ geometry_render
+
+insufficient visual or geometry evidence
+→ reference_bundle_only
+```
+
+A matching source image is therefore not the final book illustration unless the request explicitly asks to annotate that source image.
+
+## Generalized Raspberry Pi request
 
 ```text
 Create a repeatable top-view technical I/O plate of a Raspberry Pi 5.
-Find authoritative references first.
-Show and label the requested connectors.
+Research authoritative references first.
 Preserve the real board layout.
+Show all required connectors.
 Do not invent hidden or unsupported components.
+Create new publication-ready technical artwork.
+Do not generate labels inside the raster.
 ```
 
-Required visible features include:
+Required visible features:
 
 ```text
 - 40-pin GPIO header
@@ -69,141 +91,168 @@ Required visible features include:
 - PWM fan connector
 ```
 
-The fixture does not identify a prebuilt scenario key as the source of truth. The request supplies subject, viewpoint, required visible features, forbidden features, repeatability, source-authority, labeling, exploratory-generation, and review constraints.
+Visual constraints include a locked orthographic top view, complete uncropped board, publication-ready controlled linework, white background, restrained grayscale and blue palette, and clean space for deterministic annotations.
 
 ## Research architecture
 
 ### Constraint parser
 
-`ConstraintRequest` normalizes the user request into executable fields. Required visible features may not be empty, and authority, repeatability, labeling, viewpoint, exploratory-generation, and review requirements are explicit.
+`ConstraintRequest` normalizes subject, output type, viewpoint, required visible features, forbidden features, repeatability, source-authority requirements, labeling strategy, exploratory-generation policy, and manual-review requirements.
 
-### Research planner
-
-The planner generates subject-specific searches for:
+The request fixture also carries explicit `visual_output` constraints:
 
 ```text
-- official product documentation
-- official mechanical drawings
-- official STEP/CAD/3D geometry
-- official component and connector documentation
+- illustration style
+- composition
+- palette
+- background
+- surface treatment
+- label strategy
+- output size
+- quality
+- candidate count
 ```
 
-Research stops only after subject identity, requested-feature coverage, source provenance, usage-review state, and a supported rendering mode have been resolved or explicitly reported incomplete.
+### Research planner and discovery
 
-### Source discovery
+The planner derives searches from the request rather than a scenario key. It searches for official product imagery, technical documentation, mechanical drawings, and verified geometry.
 
-Two modes are supported:
+Two discovery modes remain available:
 
 ```text
 recorded_source_fixture
 - deterministic regression testing
 - no API credits
-- known source inventory
 
 openai_responses_web_search
-- live request-driven web research
-- uses Responses API web search
-- uses strict JSON-schema output
-- requires OPENAI_API_KEY
-- records response ID, model, search queries, and candidate count
+- live request-driven research
+- strict structured source records
+- URLs must be discovered rather than invented
 ```
-
-The live discovery prompt prohibits invented URLs and returns source evidence only. It does not ask the model to generate imagery.
 
 ### Source evaluation
 
-When authoritative sources are required, non-authoritative candidates are rejected. Each requested feature must be backed by at least one selected source or reported unsupported.
+Each required feature must be supported by selected evidence or reported unsupported. Non-authoritative candidates are rejected when authority is required.
 
-A source class determines capability:
+Source classes limit what the system may do:
 
 ```text
 official_web_2d_source_plate
-- may support deterministic fixed-view annotation
+- binding identity, geometry, placement, proportion, and viewpoint reference
+- supports reference-conditioned generation for a matching requested view
+- supports direct annotation only when explicitly requested
 
-official_web_3d_geometry
-verified_local_geometry
-- may support deterministic geometry rendering and novel locked views
+official_web_3d_geometry / verified_local_geometry
+- supports normalized deterministic rendering
+- supports novel locked views
+- may also produce controlled generation references
 
 official_web_mechanical_drawing
-- supporting dimensional evidence only
-- cannot be promoted automatically into a component-rich source plate
+- supporting dimensional evidence
+- cannot silently become a component-rich base image
 
-official_web_*_documentation
-- identity, terminology, connector inventory, and label evidence
-- not a base image by itself
+official documentation
+- identity, terminology, component inventory, and validation evidence
+- does not create imagery by itself
 ```
 
-## Least-complex sufficient rendering rule
+## Reference-conditioned generation package
 
-ConstraintOS selects the least-complex authoritative method that satisfies the request.
+`candidate_generation.py` compiles the request, render plan, and extracted reference manifest into a provider-neutral generation package.
 
-For the Raspberry Pi 5 locked top-view request:
+The package records:
 
 ```text
-selected_mode: source_plate_annotation
-reason: authoritative_fixed_view_source_plate_satisfies_requested_view_without_geometry_reconstruction
-canonical_source: official Raspberry Pi product-brief top-view image
-annotation_evidence: official product brief + official hardware documentation
-mechanical_evidence: official mechanical drawing
-geometry_fallback: official Raspberry Pi STEP package
+- request ID and subject
+- selected production mode
+- exact required visible features
+- exact forbidden features
+- explicit visual-output constraints
+- canonical reference file and SHA-256
+- binding reference roles
+- compiled prompt and prompt SHA-256
+- provider/tool configuration
+- candidate count
+- required post-generation workers
 ```
 
-For a request that changes only the viewpoint to a novel locked oblique view:
+The compiled prompt requires a **new illustration** while treating the attached source as binding evidence for identity, silhouette, proportions, orientation, component count, and relative placement. It prohibits generic substitution, invented geometry, cropped required features, generated labels, dimensions, arrows, title blocks, and unrelated scenery.
+
+The reference is sent to the image worker as a high-detail image input. The image-generation tool is configured for an edit/reference-conditioned action with high input fidelity. Generated PNG candidates and their SHA-256 digests are recorded in `generated-candidate-manifest.json`.
+
+Provider generation cannot approve its own output.
+
+## Independent visual constraint validation
+
+`candidate_validation.py` sends the authoritative reference and generated candidate to a separate validation call.
+
+It requires strict structured evidence for:
 
 ```text
-selected_mode: geometry_render
-reason: verified_geometry_required_for_requested_view_or_no_suitable_fixed_source_plate
-canonical_source: official Raspberry Pi STEP package
+- subject identity
+- requested viewpoint
+- every exact required visible feature
+- every exact forbidden feature
+- requested visual style
+- reference fidelity
+- repair instructions
 ```
 
-This prevents both overuse of stochastic generation and unnecessary 3D reconstruction.
-
-## Deterministic source-plate extraction
-
-The selected Raspberry Pi source plate is an embedded raster on page index 1 of the official product brief. ConstraintOS does not redraw it.
-
-The registered extraction workflow:
+Validation is fail-closed:
 
 ```text
-1. read source-package-manifest.json
-2. locate rpi5-official-top-view-source-plate-2026
-3. verify the downloaded PDF SHA-256
-4. open the registered page
-5. enumerate embedded rasters
-6. select the largest raster satisfying minimum dimensions and pixel area
-7. preserve the extracted encoded image bytes
-8. calculate output SHA-256
-9. write source-plate-extraction-manifest.json
-10. leave production_ready and approval_allowed false
+any failed check
+→ rejected
+
+any uncertain check and no failed check
+→ needs_review
+
+all checks pass
+→ machine_passed, but manual review still required
+
+missing, duplicated, or unexpected constraint checks
+→ rejected
 ```
 
-The extraction contract explicitly prohibits automatic component identification and production approval. It creates the canonical visual asset needed for the next anchor-registration slice; it does not claim that labels are already validated.
+The validator writes per-candidate evidence and a candidate-validation manifest. It never enables automatic production approval.
 
-## Fail-closed state
+## Annotation and publication finishing
 
-The source-plate path remains blocked until:
+The image model creates the base illustration and composition. It does not create production typography.
+
+After a candidate passes automated validation and human review:
 
 ```text
-- source package is materialized and SHA-256 verified
-- source plate is extracted and manually reviewed
-- fixed-view contract is registered
-- requested component anchors are registered
-- approved label strings are linked to official evidence
-- deterministic SVG render preset is registered
-- usage terms are reviewed
+approved generated base illustration
+        ↓
+registered component anchors
+        ↓
+deterministic SVG labels and leader lines
+        ↓
+layout bounds and typography checks
+        ↓
+publication export
 ```
 
-The geometry fallback remains blocked until:
+This preserves the original book workflow: AI-generated illustration, deterministic technical text and finishing.
+
+## Repeatability definition
+
+Reference-conditioned generation is stochastic. ConstraintOS must not claim byte-identical image output from repeated provider calls.
+
+Repeatability for this mode means:
 
 ```text
-- STEP archive is materialized and SHA-256 verified
-- archive is extracted
-- geometry is normalized
-- component inventory is registered
-- camera and render preset are locked
-- repeat-render comparison is implemented
-- usage terms are reviewed
+- same normalized request schema
+- same researched reference package and digests
+- same compiled constraints and prompt digest
+- same provider/tool configuration
+- candidate artifact digests recorded
+- every candidate evaluated by the same validation schema
+- failed candidates repaired, rerendered, or rejected
 ```
+
+Byte-repeat comparison remains appropriate for deterministic source annotation and deterministic geometry rendering, not for stochastic candidate generation.
 
 ## Implemented artifacts
 
@@ -213,17 +262,25 @@ runtime/research_to_render/orchestrator.py
 runtime/research_to_render/discovery.py
 runtime/research_to_render/cli.py
 runtime/research_to_render/source_plate.py
+runtime/research_to_render/candidate_generation.py
+runtime/research_to_render/candidate_validation.py
+
 config/research-to-render-examples/raspberry-pi-5-io-plate-request.json
 config/research-to-render-examples/raspberry-pi-5-discovered-sources.json
 config/research-source-plate-extraction/raspberry-pi-5-product-brief-v1.json
 config/technical-reference-source-registry.json
+
 scripts/exercise-research-to-render.ps1
 scripts/prepare-technical-reference-source-package.ps1
 scripts/prepare-raspberry-pi-5-source-plate.ps1
+scripts/generate-raspberry-pi-5-candidates.ps1
+
 tests/test_research_to_render_orchestration.py
 tests/test_research_to_render_cli.py
 tests/test_research_to_render_discovery.py
 tests/test_research_source_plate_extraction.py
+tests/test_reference_conditioned_candidate_generation.py
+tests/test_reference_conditioned_candidate_validation.py
 ```
 
 Installed CLIs:
@@ -231,6 +288,8 @@ Installed CLIs:
 ```text
 cos-research-render
 cos-extract-source-plate
+cos-generate-candidates
+cos-validate-generated-candidates
 ```
 
 ## Implementation slices
@@ -239,44 +298,41 @@ cos-extract-source-plate
 [x] Add request and source models
 [x] Add request-derived research planner
 [x] Add authoritative source evaluator
-[x] Add source-class capability classifier
-[x] Add least-complex sufficient render-mode selection
-[x] Add deterministic recorded-source fixture mode
-[x] Add live OpenAI Responses web-search discovery adapter
-[x] Add strict source-discovery JSON schema
-[x] Add research-to-render CLI
-[x] Add Windows exercise script
-[x] Make source-package materializer registry-driven
-[x] Add Raspberry Pi 5 request outside the original four examples
-[x] Register official Raspberry Pi source plate, STEP, drawing, and documentation
-[x] Register deterministic product-brief source-plate extraction contract
-[x] Add digest-verified embedded-raster extraction worker
-[x] Add Windows source-plate preparation script
-[ ] Materialize and hash Raspberry Pi source package on Windows
-[ ] Extract and visually review official top-view source plate on Windows
-[ ] Build Raspberry Pi component-anchor and label registry
-[ ] Add deterministic Raspberry Pi SVG plate renderer
-[ ] Add repeat-render comparison
-[ ] Add Workbench request input for generalized orchestration
-[ ] Run live discovery and compare it with recorded fixture
-[ ] Record visual acceptance evidence
+[x] Add live and recorded source discovery
+[x] Add registry-driven source materialization
+[x] Extract and hash a canonical visual reference
+[x] Add explicit visual-generation constraints
+[x] Distinguish direct annotation from new-artwork generation
+[x] Add reference-conditioned generation-package compiler
+[x] Supply the canonical reference image to the image worker
+[x] Add generated-candidate artifact manifests and hashes
+[x] Add independent strict visual constraint validator
+[x] Add Windows compile / generate / validate exercise
+[ ] Run the first live reference-conditioned Raspberry Pi candidate
+[ ] Review machine validation evidence and candidate image
+[ ] Add repair/rerender loop
+[ ] Add post-approval deterministic annotation stage
+[ ] Add generalized Workbench request UI
+[ ] Apply the generalized mechanism to the book illustration inventory
 ```
 
 ## Acceptance criteria
 
 ```text
-1. A new request can be planned without adding a hardcoded application route.
-2. Research queries derive from the request subject and required features.
-3. Live discovery returns web-found source candidates using a strict schema.
-4. Non-authoritative sources are rejected when authority is required.
-5. Every required visible feature is evidenced or explicitly unsupported.
-6. Source capability may not exceed its source class.
-7. Mechanical drawings cannot silently become component-rich base plates.
-8. A sufficient fixed source plate is preferred over unnecessary geometry reconstruction.
-9. Novel viewpoints select verified geometry when available.
-10. Image generation is not required for the Raspberry Pi technical plate.
-11. Source-document and extracted-image digests are recorded.
-12. Extracted source bytes are preserved without model-generated alteration.
-13. Rendering remains fail-closed until anchor, preset, repeatability, and usage gates pass.
-14. Final imagery is validated against the original request and preserves manual review.
+1. A new request can enter the pipeline without a hardcoded renderer route.
+2. Research searches derive from the request and its required features.
+3. Every selected source has authority, provenance, role, and usage state.
+4. Every required visual feature is supported or explicitly blocked.
+5. A reference image is used as generation evidence, not mistaken for final artwork.
+6. All delivered visual constraints are compiled into the generation package.
+7. The actual reference image is supplied to the generation worker.
+8. The image worker produces a new candidate illustration rather than a text-only or source-copy artifact.
+9. Generated text and technical labels are prohibited in candidate rasters.
+10. Candidate images and provider requests are digest-traceable.
+11. An independent worker validates the candidate against the reference and every constraint.
+12. Missing or uncertain validation evidence cannot silently pass.
+13. Failed candidates are repaired, rerendered, or rejected.
+14. Human review remains mandatory.
+15. Deterministic labels and publication finishing occur only after candidate approval.
+16. The resulting mechanism can be applied to the image inventory for the book.
 ```
