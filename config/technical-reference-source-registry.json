@@ -1,0 +1,114 @@
+{
+  "registry_id": "constraintos-technical-reference-sources/v1",
+  "registry_version": "1.0.0",
+  "status": "active",
+  "selection_principle": "Use examples with sufficient web-available reference information to build auditable ConstraintOS source packages.",
+  "source_precedence": [
+    "official_primary_source",
+    "manufacturer_or_mission_source",
+    "verified_secondary_source"
+  ],
+  "scenarios": [
+    {
+      "scenario_id": "nasa_perseverance_rover",
+      "subject": "NASA Mars 2020 Perseverance Rover",
+      "source_package_status": "available_not_yet_ingested",
+      "preferred_production_mode": "geometry_render",
+      "capabilities": {
+        "deterministic_geometry_render": true,
+        "novel_locked_views": true,
+        "deterministic_annotation_overlay": true,
+        "text_to_image_required": false
+      },
+      "sources": [
+        {
+          "source_id": "nasa-perseverance-3d-resource-2025",
+          "authority": "NASA/JPL-Caltech",
+          "source_class": "official_web_3d_geometry",
+          "url": "https://science.nasa.gov/3d-resources/mars-2020-perseverance-rover/",
+          "available_formats": [
+            "blend",
+            "glb"
+          ],
+          "purpose": [
+            "canonical_geometry",
+            "component_inventory",
+            "locked_view_rendering"
+          ],
+          "observed_available_on": "2026-07-17",
+          "ingestion_required": true
+        },
+        {
+          "source_id": "nasa-perseverance-3d-resource-2020",
+          "authority": "NASA/JPL-Caltech",
+          "source_class": "official_web_3d_geometry",
+          "url": "https://science.nasa.gov/resource/mars-perseverance-rover-3d-model/",
+          "available_formats": [
+            "gltf",
+            "usdz"
+          ],
+          "purpose": [
+            "alternate_official_geometry",
+            "provenance_cross_check"
+          ],
+          "observed_available_on": "2026-07-17",
+          "ingestion_required": true
+        }
+      ],
+      "production_limit": "Production rendering remains blocked until an official geometry file is downloaded, hashed, normalized, and registered."
+    },
+    {
+      "scenario_id": "toyota_supra_a80_2jz_gte",
+      "subject": "Toyota Supra A80 2JZ-GTE twin-turbo engine",
+      "source_package_status": "available_not_yet_ingested",
+      "preferred_production_mode": "source_plate_annotation",
+      "capabilities": {
+        "deterministic_geometry_render": false,
+        "novel_locked_views": false,
+        "deterministic_source_plate_annotation": true,
+        "deterministic_annotation_overlay": true,
+        "text_to_image_required": false
+      },
+      "sources": [
+        {
+          "source_id": "toyota-2jz-gte-official-image-1993",
+          "authority": "Toyota Motor Corporation",
+          "source_class": "official_web_2d_source_plate",
+          "url": "https://global.toyota/en/download/41120967/",
+          "available_formats": [
+            "official_high_resolution_image"
+          ],
+          "purpose": [
+            "canonical_source_plate",
+            "engine_identity_reference",
+            "component_anchor_registration"
+          ],
+          "observed_available_on": "2026-07-17",
+          "ingestion_required": true
+        },
+        {
+          "source_id": "toyota-supra-launch-release-1993",
+          "authority": "Toyota Motor Corporation",
+          "source_class": "official_web_technical_documentation",
+          "url": "https://global.toyota/en/detail/7868203",
+          "purpose": [
+            "identity_evidence",
+            "inline_six_evidence",
+            "two_way_twin_turbo_evidence",
+            "approved_label_registry_evidence"
+          ],
+          "observed_available_on": "2026-07-17",
+          "ingestion_required": true
+        }
+      ],
+      "production_limit": "The official Toyota image can support repeatable annotated plates from its fixed view. Novel camera angles, exploded views, or hidden geometry remain blocked until verified 3D geometry is added."
+    }
+  ],
+  "scenario_onboarding_rule": {
+    "web_source_inventory_required": true,
+    "capability_classification_required": true,
+    "source_digest_required_after_ingestion": true,
+    "usage_terms_record_required": true,
+    "production_capability_may_not_exceed_source_package": true
+  }
+}
