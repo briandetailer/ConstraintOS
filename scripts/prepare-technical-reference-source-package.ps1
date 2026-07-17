@@ -1,6 +1,6 @@
 param(
     [Parameter(Mandatory = $true)]
-    [ValidateSet("nasa_perseverance_rover", "toyota_supra_a80_2jz_gte")]
+    [ValidateNotNullOrEmpty()]
     [string]$ScenarioId,
 
     [string]$OutputRoot,
@@ -24,7 +24,8 @@ if ([string]::IsNullOrWhiteSpace($OutputRoot)) {
 $Registry = Get-Content -Raw -Encoding UTF8 $RegistryPath | ConvertFrom-Json
 $Scenario = $Registry.scenarios | Where-Object { $_.scenario_id -eq $ScenarioId } | Select-Object -First 1
 if ($null -eq $Scenario) {
-    throw "Scenario is not registered: $ScenarioId"
+    $AvailableScenarios = ($Registry.scenarios | ForEach-Object { $_.scenario_id }) -join ", "
+    throw "Scenario is not registered: $ScenarioId. Available scenarios: $AvailableScenarios"
 }
 
 $ScenarioRoot = Join-Path $OutputRoot $ScenarioId
@@ -82,7 +83,7 @@ foreach ($Source in $Scenario.sources) {
 
 $Manifest = [ordered]@{
     manifest_id = "constraintos-reference-source-package/v1"
-    manifest_version = "1.0.0"
+    manifest_version = "1.1.0"
     scenario_id = [string]$Scenario.scenario_id
     subject = [string]$Scenario.subject
     preferred_production_mode = [string]$Scenario.preferred_production_mode
