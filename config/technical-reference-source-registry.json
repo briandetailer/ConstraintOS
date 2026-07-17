@@ -1,6 +1,6 @@
 {
   "registry_id": "constraintos-technical-reference-sources/v1",
-  "registry_version": "1.1.0",
+  "registry_version": "1.2.0",
   "status": "active",
   "selection_principle": "Use examples with sufficient web-available reference information to build auditable ConstraintOS source packages.",
   "source_precedence": [
@@ -112,6 +112,99 @@
         }
       ],
       "production_limit": "The official Toyota image can support repeatable annotated plates from its fixed view. Novel camera angles, exploded views, or hidden geometry remain blocked until verified 3D geometry is added."
+    },
+    {
+      "scenario_id": "raspberry_pi_5_io_plate",
+      "subject": "Raspberry Pi 5 top-view technical I/O plate",
+      "source_package_status": "available_not_yet_ingested",
+      "preferred_production_mode": "geometry_render",
+      "capabilities": {
+        "deterministic_geometry_render": true,
+        "novel_locked_views": true,
+        "deterministic_annotation_overlay": true,
+        "mechanical_dimension_validation": true,
+        "text_to_image_required": false
+      },
+      "sources": [
+        {
+          "source_id": "rpi5-official-step-2026",
+          "authority": "Raspberry Pi Ltd",
+          "source_class": "official_web_3d_geometry",
+          "url": "https://pip-assets.raspberrypi.com/categories/892-raspberry-pi-5",
+          "download_url": "https://pip-assets.raspberrypi.com/categories/892-raspberry-pi-5/documents/RP-010083-CA-1-rpi-5%203D%20STEP%20-%20No%20Graphics%20small%20file.zip",
+          "target_filename": "raspberry-pi-5-official-step-no-graphics.zip",
+          "available_formats": [
+            "zip",
+            "step"
+          ],
+          "purpose": [
+            "canonical_geometry",
+            "connector_placement",
+            "locked_top_view_rendering"
+          ],
+          "observed_available_on": "2026-07-17",
+          "usage_terms_status": "review_required_before_distribution",
+          "ingestion_required": true
+        },
+        {
+          "source_id": "rpi5-official-mechanical-drawing-2025",
+          "authority": "Raspberry Pi Ltd",
+          "source_class": "official_web_mechanical_drawing",
+          "url": "https://pip-assets.raspberrypi.com/categories/892-raspberry-pi-5/documents/RP-008347-DS-1-raspberry-pi-5-mechanical-drawing.pdf",
+          "download_url": "https://pip-assets.raspberrypi.com/categories/892-raspberry-pi-5/documents/RP-008347-DS-1-raspberry-pi-5-mechanical-drawing.pdf",
+          "target_filename": "raspberry-pi-5-mechanical-drawing.pdf",
+          "available_formats": [
+            "pdf"
+          ],
+          "purpose": [
+            "board_dimensions",
+            "mounting_hole_validation",
+            "geometry_cross_check"
+          ],
+          "observed_available_on": "2026-07-17",
+          "usage_terms_status": "review_required_before_distribution",
+          "ingestion_required": true
+        },
+        {
+          "source_id": "rpi5-official-product-brief-2026",
+          "authority": "Raspberry Pi Ltd",
+          "source_class": "official_web_product_documentation",
+          "url": "https://pip-assets.raspberrypi.com/categories/892-raspberry-pi-5/documents/RP-008348-DS-6-raspberry-pi-5-product-brief.pdf",
+          "download_url": "https://pip-assets.raspberrypi.com/categories/892-raspberry-pi-5/documents/RP-008348-DS-6-raspberry-pi-5-product-brief.pdf",
+          "target_filename": "raspberry-pi-5-product-brief.pdf",
+          "available_formats": [
+            "pdf"
+          ],
+          "purpose": [
+            "product_identity",
+            "connector_inventory",
+            "approved_label_evidence"
+          ],
+          "observed_available_on": "2026-07-17",
+          "usage_terms_status": "review_required_before_distribution",
+          "ingestion_required": true
+        },
+        {
+          "source_id": "rpi5-official-hardware-documentation-2026",
+          "authority": "Raspberry Pi Ltd",
+          "source_class": "official_web_component_documentation",
+          "url": "https://www.raspberrypi.com/documentation/computers/raspberry-pi.html",
+          "download_url": "https://www.raspberrypi.com/documentation/computers/raspberry-pi.html",
+          "target_filename": "raspberry-pi-5-hardware-documentation.html",
+          "available_formats": [
+            "html"
+          ],
+          "purpose": [
+            "fan_connector_evidence",
+            "rtc_connector_evidence",
+            "approved_component_terminology"
+          ],
+          "observed_available_on": "2026-07-17",
+          "usage_terms_status": "review_required_before_distribution",
+          "ingestion_required": true
+        }
+      ],
+      "production_limit": "The official STEP package can support deterministic locked views after extraction and geometry normalization. Connector labels remain blocked until a component inventory is cross-checked against official product and hardware documentation."
     }
   ],
   "scenario_onboarding_rule": {
