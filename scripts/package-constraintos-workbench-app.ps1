@@ -68,14 +68,15 @@ How to run:
 1. Double-click: ConstraintOS Workbench.exe
 2. Your browser will open to the local Workbench app.
 3. Edit the browser request if desired.
-4. Choose the output focus and output count.
-5. Optional: check Generate real image candidates with OpenAI Images API.
-6. Click: Run ConstraintOS Demo
-7. Review the generated workbench, candidate SVG outputs, and optional PNG image candidates.
+4. Choose the output focus, output count, and image model.
+5. Check the Provider status card.
+6. Click Run Deterministic Demo for SVG-only output, or click Run with Real Images to create PNG candidates through the OpenAI Images API.
+7. Review the generated workbench, candidate SVG outputs, and generated PNG image candidates.
 8. Open the captured browser request JSON from the artifact links if you want to inspect exactly what was submitted.
 
 Optional real image generation:
-- Real image generation requires OPENAI_API_KEY to be set in the Windows environment before launching the app.
+- Real image generation requires OPENAI_API_KEY to be visible to the app process before launching ConstraintOS Workbench.exe.
+- The browser Provider status card shows whether the launched app can see OPENAI_API_KEY.
 - Do not place the API key in this app folder or commit it to source control.
 - When enabled, the app calls the OpenAI Images API from the local backend and writes PNG candidates under the run folder.
 - Real generated image candidates remain needs_review and approval_allowed: false.
