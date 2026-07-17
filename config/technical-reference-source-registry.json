@@ -1,6 +1,6 @@
 {
   "registry_id": "constraintos-technical-reference-sources/v1",
-  "registry_version": "1.0.0",
+  "registry_version": "1.1.0",
   "status": "active",
   "selection_principle": "Use examples with sufficient web-available reference information to build auditable ConstraintOS source packages.",
   "source_precedence": [
@@ -26,6 +26,8 @@
           "authority": "NASA/JPL-Caltech",
           "source_class": "official_web_3d_geometry",
           "url": "https://science.nasa.gov/3d-resources/mars-2020-perseverance-rover/",
+          "download_url": "https://raw.githubusercontent.com/nasa/NASA-3D-Resources/master/3D%20Models/Mars%202020%20Perseverance%20Rover/Mars%202020%20Perseverance%20Rover.glb",
+          "target_filename": "mars-2020-perseverance-rover.glb",
           "available_formats": [
             "blend",
             "glb"
@@ -36,6 +38,7 @@
             "locked_view_rendering"
           ],
           "observed_available_on": "2026-07-17",
+          "usage_terms_status": "review_required_before_distribution",
           "ingestion_required": true
         },
         {
@@ -52,7 +55,8 @@
             "provenance_cross_check"
           ],
           "observed_available_on": "2026-07-17",
-          "ingestion_required": true
+          "usage_terms_status": "review_required_before_distribution",
+          "ingestion_required": false
         }
       ],
       "production_limit": "Production rendering remains blocked until an official geometry file is downloaded, hashed, normalized, and registered."
@@ -75,6 +79,8 @@
           "authority": "Toyota Motor Corporation",
           "source_class": "official_web_2d_source_plate",
           "url": "https://global.toyota/en/download/41120967/",
+          "download_url": "https://global.toyota/pages/news/older/images/1993/05/24/19930524_01_11_s.jpg",
+          "target_filename": "toyota-2jz-gte-official-source-plate.jpg",
           "available_formats": [
             "official_high_resolution_image"
           ],
@@ -84,6 +90,7 @@
             "component_anchor_registration"
           ],
           "observed_available_on": "2026-07-17",
+          "usage_terms_status": "review_required_before_distribution",
           "ingestion_required": true
         },
         {
@@ -91,6 +98,8 @@
           "authority": "Toyota Motor Corporation",
           "source_class": "official_web_technical_documentation",
           "url": "https://global.toyota/en/detail/7868203",
+          "download_url": "https://global.toyota/en/detail/7868203",
+          "target_filename": "toyota-supra-launch-release-1993.html",
           "purpose": [
             "identity_evidence",
             "inline_six_evidence",
@@ -98,6 +107,7 @@
             "approved_label_registry_evidence"
           ],
           "observed_available_on": "2026-07-17",
+          "usage_terms_status": "review_required_before_distribution",
           "ingestion_required": true
         }
       ],
