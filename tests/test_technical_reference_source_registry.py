@@ -34,7 +34,7 @@ def test_reference_source_registry_is_active() -> None:
     registry = load_registry()
 
     assert registry["registry_id"] == "constraintos-technical-reference-sources/v1"
-    assert registry["registry_version"] == "1.5.0"
+    assert registry["registry_version"] == "1.6.0"
     assert registry["status"] == "active"
     assert "web-available reference information" in registry["selection_principle"]
 
@@ -89,7 +89,7 @@ def test_toyota_uses_official_source_plate_and_release() -> None:
     assert "Novel camera angles" in toyota["production_limit"]
 
 
-def test_raspberry_pi_5_prefers_fixed_source_plate_and_retains_geometry_fallback() -> None:
+def test_raspberry_pi_5_uses_reference_conditioned_generation_and_geometry_fallback() -> None:
     raspberry_pi = scenario("raspberry_pi_5_io_plate")
     source_classes = {item["source_class"] for item in raspberry_pi["sources"]}
     required_sources = [
@@ -103,11 +103,18 @@ def test_raspberry_pi_5_prefers_fixed_source_plate_and_retains_geometry_fallback
         for item in source_item.get("available_formats", [])
     }
 
-    assert raspberry_pi["preferred_production_mode"] == "source_plate_annotation"
+    assert raspberry_pi["preferred_production_mode"] == (
+        "reference_conditioned_generation"
+    )
+    assert raspberry_pi["capabilities"]["reference_conditioned_generation"] is True
     assert raspberry_pi["capabilities"]["deterministic_source_plate_annotation"] is True
     assert raspberry_pi["capabilities"]["deterministic_geometry_render"] is True
     assert raspberry_pi["capabilities"]["mechanical_dimension_validation"] is True
-    assert raspberry_pi["capabilities"]["text_to_image_required"] is False
+    assert (
+        raspberry_pi["capabilities"]["image_generation_required_for_new_artwork"]
+        is True
+    )
+    assert raspberry_pi["capabilities"]["text_only_image_generation_allowed"] is False
     assert {
         "official_web_2d_source_plate",
         "official_web_3d_geometry",
@@ -126,7 +133,15 @@ def test_raspberry_pi_5_prefers_fixed_source_plate_and_retains_geometry_fallback
         "rpi5-official-top-view-source-plate-2026",
         "rpi5-official-product-brief-2026",
     }
-    assert "source plate is preferred" in raspberry_pi["production_limit"]
+    source_plate = source(
+        "raspberry_pi_5_io_plate",
+        "rpi5-official-top-view-source-plate-2026",
+    )
+    assert "canonical_generation_reference" in source_plate["purpose"]
+    assert "constraint_validation_reference" in source_plate["purpose"]
+    assert "binding reference supplied to the image-generation worker" in raspberry_pi[
+        "production_limit"
+    ]
     assert "STEP package remains a fallback" in raspberry_pi["production_limit"]
 
 
@@ -155,6 +170,7 @@ def test_raspberry_pi_html_documentation_is_reference_only() -> None:
     assert "reject automated downloads" in hardware_docs["source_access_note"]
     assert "fan_connector_evidence" in hardware_docs["purpose"]
     assert "approved_component_terminology" in hardware_docs["purpose"]
+    assert "generation_constraint_evidence" in hardware_docs["purpose"]
 
 
 def test_all_downloaded_sources_require_usage_review() -> None:
