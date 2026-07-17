@@ -57,66 +57,97 @@ def test_authoritative_sources_cover_every_required_feature() -> None:
     request, sources = load_fixture()
     result = ResearchToRenderOrchestrator().orchestrate_payload(request, sources)
 
-    assert len(result.selected_sources) == 4
+    assert len(result.selected_sources) == 5
     assert all(source.authoritative for source in result.selected_sources)
     assert result.source_evaluation.unsupported_required_features == ()
     assert set(result.source_evaluation.supported_features) == set(
         result.request.required_visible_features
     )
+    assert "official_web_2d_source_plate" in result.source_evaluation.available_source_classes
     assert "official_web_3d_geometry" in result.source_evaluation.available_source_classes
     assert "official_web_mechanical_drawing" in result.source_evaluation.available_source_classes
     assert "official_web_product_documentation" in result.source_evaluation.available_source_classes
 
 
-def test_capability_classifier_selects_source_backed_geometry_rendering() -> None:
+def test_capability_classifier_prefers_sufficient_fixed_source_plate() -> None:
     request, sources = load_fixture()
     result = ResearchToRenderOrchestrator().orchestrate_payload(request, sources)
     plan = result.render_plan
 
-    assert plan.production_mode == "geometry_render"
-    assert plan.canonical_source_ids == ("rpi5-official-step-2026",)
+    assert plan.production_mode == "source_plate_annotation"
+    assert plan.mode_selection_reason == (
+        "authoritative_fixed_view_source_plate_satisfies_requested_view_"
+        "without_geometry_reconstruction"
+    )
+    assert plan.canonical_source_ids == (
+        "rpi5-official-top-view-source-plate-2026",
+    )
     assert set(plan.annotation_source_ids) == {
         "rpi5-official-product-brief-2026",
         "rpi5-official-hardware-documentation-2026",
     }
-    assert "locked_camera_renderer" in plan.required_workers
-    assert "deterministic_annotation_renderer" in plan.required_workers
-    assert "constraint_validator" in plan.required_workers
+    assert "source_plate_normalizer" in plan.required_workers
+    assert "component_anchor_registry_builder" in plan.required_workers
+    assert "deterministic_svg_renderer" in plan.required_workers
+    assert "locked_camera_renderer" not in plan.required_workers
     assert "text_to_image_generator" not in plan.required_workers
     assert "image_generator" not in plan.required_workers
     assert plan.exploratory_generation_allowed is False
 
 
-def test_render_plan_fails_closed_before_sources_are_materialized() -> None:
+def test_novel_view_constraint_promotes_verified_geometry() -> None:
+    request, sources = load_fixture()
+    request["viewpoint"] = "locked_oblique_view"
+    request["constraints"]["novel_view_requested"] = True
+
+    result = ResearchToRenderOrchestrator().orchestrate_payload(request, sources)
+    plan = result.render_plan
+
+    assert plan.production_mode == "geometry_render"
+    assert plan.mode_selection_reason == (
+        "verified_geometry_required_for_requested_view_or_no_suitable_"
+        "fixed_source_plate"
+    )
+    assert plan.canonical_source_ids == ("rpi5-official-step-2026",)
+    assert "geometry_normalizer" in plan.required_workers
+    assert "locked_camera_renderer" in plan.required_workers
+
+
+def test_render_plan_fails_closed_before_source_plate_is_registered() -> None:
     request, sources = load_fixture()
     result = ResearchToRenderOrchestrator().orchestrate_payload(request, sources)
     plan = result.render_plan
 
     assert plan.production_ready is False
-    assert "geometry_not_materialized_or_digest_verified" in plan.preflight_blockers
-    assert "geometry_not_normalized" in plan.preflight_blockers
-    assert "component_registry_not_built" in plan.preflight_blockers
-    assert "locked_camera_not_registered" in plan.preflight_blockers
+    assert "source_plate_not_materialized_or_digest_verified" in plan.preflight_blockers
+    assert "fixed_view_contract_not_registered" in plan.preflight_blockers
+    assert "component_anchor_registry_not_built" in plan.preflight_blockers
+    assert "render_preset_not_registered" in plan.preflight_blockers
     assert "source_usage_terms_review_required" in plan.preflight_blockers
     assert "provider_generated_technical_text" in plan.blocked_capabilities
     assert "hidden_geometry_inference" in plan.blocked_capabilities
+    assert "novel_camera_views" in plan.blocked_capabilities
     assert "repeat_render_difference_within_tolerance" in plan.validation_gates
 
 
 def test_mechanical_drawing_alone_cannot_be_promoted_to_component_plate() -> None:
     request, sources = load_fixture()
-    without_geometry = [
+    supporting_only = [
         source
         for source in sources
-        if source["source_class"] != "official_web_3d_geometry"
+        if source["source_class"]
+        not in {"official_web_3d_geometry", "official_web_2d_source_plate"}
     ]
     result = ResearchToRenderOrchestrator().orchestrate_payload(
         request,
-        without_geometry,
+        supporting_only,
     )
 
     assert result.status == "blocked"
     assert result.render_plan.production_mode == "reference_bundle_only"
+    assert result.render_plan.mode_selection_reason == (
+        "no_supported_visual_or_geometry_base_source"
+    )
     assert result.render_plan.canonical_source_ids == ()
     assert "no_supported_production_base_source" in result.render_plan.preflight_blockers
 
@@ -152,4 +183,7 @@ def test_orchestration_result_serializes_as_deterministic_json_data() -> None:
 
     assert first == second
     assert json.dumps(first, sort_keys=True) == json.dumps(second, sort_keys=True)
-    assert first["render_plan"]["production_mode"] == "geometry_render"
+    assert first["render_plan"]["production_mode"] == "source_plate_annotation"
+    assert first["render_plan"]["mode_selection_reason"].startswith(
+        "authoritative_fixed_view_source_plate"
+    )
