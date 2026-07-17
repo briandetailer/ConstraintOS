@@ -8,6 +8,27 @@ param(
 $ErrorActionPreference = "Stop"
 Set-StrictMode -Version Latest
 
+function Import-PersistedOpenAIKey {
+    $ProcessValue = [Environment]::GetEnvironmentVariable(
+        "OPENAI_API_KEY",
+        [EnvironmentVariableTarget]::Process
+    )
+    if (-not [string]::IsNullOrWhiteSpace($ProcessValue)) {
+        return $true
+    }
+
+    $PersistedValue = [Environment]::GetEnvironmentVariable(
+        "OPENAI_API_KEY",
+        [EnvironmentVariableTarget]::User
+    )
+    if ([string]::IsNullOrWhiteSpace($PersistedValue)) {
+        return $false
+    }
+
+    $env:OPENAI_API_KEY = $PersistedValue
+    return $true
+}
+
 $RepoRoot = Split-Path -Parent $PSScriptRoot
 $RequestPath = Join-Path $RepoRoot "config\research-to-render-examples\raspberry-pi-5-io-plate-request.json"
 $SourcesPath = Join-Path $RepoRoot "config\research-to-render-examples\raspberry-pi-5-discovered-sources.json"
@@ -28,6 +49,9 @@ if (-not (Get-Command python -ErrorAction SilentlyContinue)) {
 }
 if ($Validate -and -not $Generate) {
     throw "-Validate requires -Generate because candidate images must exist first."
+}
+if (($Generate -or $Validate) -and -not (Import-PersistedOpenAIKey)) {
+    throw "No persisted OpenAI API key was found. Run .\scripts\set-openai-api-key.ps1 once, then rerun this command."
 }
 
 $Timestamp = (Get-Date).ToUniversalTime().ToString("yyyyMMdd-HHmmss")
