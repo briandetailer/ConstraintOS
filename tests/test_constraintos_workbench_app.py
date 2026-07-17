@@ -26,8 +26,8 @@ def test_constraintos_workbench_app_serves_pretty_browser_front_door() -> None:
     expected = [
         "ConstraintOS Workbench App",
         "Portable Workbench App",
-        "Run ConstraintOS Demo",
         "Browser request input",
+        "Provider status",
         "Run the app",
         "Safety state",
         "App status",
@@ -38,17 +38,20 @@ def test_constraintos_workbench_app_serves_pretty_browser_front_door() -> None:
         assert item in content
 
 
-def test_constraintos_workbench_app_binds_button_with_valid_javascript() -> None:
+def test_constraintos_workbench_app_binds_explicit_run_buttons_with_valid_javascript() -> None:
     content = APP.read_text(encoding="utf-8")
 
     expected = [
         "return r\"\"\"<!doctype html>",
-        '<button id="runButton" type="button">Run ConstraintOS Demo</button>',
-        "async function runDemo()",
+        '<button id="deterministicRunButton"',
+        "Run Deterministic Demo",
+        '<button id="realImageRunButton"',
+        "Run with Real Images",
         "document.addEventListener('DOMContentLoaded'",
-        "button.addEventListener('click', runDemo)",
+        "deterministicButton.addEventListener('click', () => runDemo(false))",
+        "realButton.addEventListener('click', () => runDemo(true))",
         "Browser request received.\\n\\n",
-        "Ready to run ConstraintOS. Edit the browser request, optionally enable real images, then click Run ConstraintOS Demo.",
+        "Ready to run ConstraintOS. Edit the browser request, then choose deterministic or real-image generation.",
         "frame.removeAttribute('src')",
     ]
     for item in expected:
@@ -63,10 +66,11 @@ def test_constraintos_workbench_app_accepts_browser_request_input() -> None:
         "requestText",
         "requestedFocus",
         "outputCount",
-        "function readDemoRequest()",
+        "function readDemoRequest(enableRealImages)",
         "request_text: document.getElementById('requestText').value",
         "requested_focus: document.getElementById('requestedFocus').value",
         "output_count: Number(document.getElementById('outputCount').value)",
+        "enable_real_images: enableRealImages",
         "body: JSON.stringify({ demo_request: demoRequest })",
         "Open captured browser request",
     ]
@@ -108,13 +112,31 @@ def test_constraintos_workbench_app_runs_pipeline_from_browser_api() -> None:
         assert item in content
 
 
+def test_constraintos_workbench_app_surfaces_provider_status_before_running_real_images() -> None:
+    content = APP.read_text(encoding="utf-8")
+
+    expected = [
+        "def provider_status() -> dict[str, Any]",
+        'if parsed.path == "/api/provider-status"',
+        "api_key_visible_to_app",
+        "missing_api_key",
+        "Provider status",
+        "refreshProviderStatus()",
+        "providerReady",
+        "realButton.disabled = !providerReady",
+        "OPENAI_API_KEY is not visible to this app process",
+    ]
+    for item in expected:
+        assert item in content
+
+
 def test_constraintos_workbench_app_supports_optional_openai_image_generation() -> None:
     content = APP.read_text(encoding="utf-8")
 
     expected = [
         'OPENAI_IMAGES_ENDPOINT = "https://api.openai.com/v1/images/generations"',
-        "enableRealImages",
-        "Generate real image candidates with OpenAI Images API",
+        "enable_real_images",
+        "Run with Real Images",
         "OPENAI_API_KEY",
         '"gpt-image-1-mini"',
         '"gpt-image-1"',
@@ -123,6 +145,7 @@ def test_constraintos_workbench_app_supports_optional_openai_image_generation() 
         '"Authorization": f"Bearer {api_key}"',
         '"output_format": "png"',
         "base64.b64decode(b64_json)",
+        "image_payload.get(\"url\")",
     ]
     for item in expected:
         assert item in content
