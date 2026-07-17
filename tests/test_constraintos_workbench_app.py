@@ -1,268 +1,184 @@
+import hashlib
+import json
+import shutil
 from pathlib import Path
 
+import importlib.util
+
 ROOT = Path(__file__).resolve().parents[1]
-APP = ROOT / "apps" / "constraintos_workbench" / "app.py"
+APP = ROOT / "apps" / "constraintos_workbench" / "app_v2.py"
+SPEC = importlib.util.spec_from_file_location("constraintos_workbench_app_v2", APP)
+assert SPEC is not None and SPEC.loader is not None
+app = importlib.util.module_from_spec(SPEC)
+SPEC.loader.exec_module(app)
+
 PACKAGER = ROOT / "scripts" / "package-constraintos-workbench-app.ps1"
+CONTRACT = (
+    ROOT
+    / "config"
+    / "technical-source-plate-contracts"
+    / "toyota-supra-a80-2jz-gte-v1.json"
+)
 
 
-def test_constraintos_workbench_app_server_exists_and_targets_localhost() -> None:
+def install_test_source_package(app_root: Path) -> Path:
+    contract_target = (
+        app_root
+        / "config"
+        / "technical-source-plate-contracts"
+        / "toyota-supra-a80-2jz-gte-v1.json"
+    )
+    contract_target.parent.mkdir(parents=True, exist_ok=True)
+    shutil.copyfile(CONTRACT, contract_target)
+
+    package_root = (
+        app_root
+        / "reference-sources"
+        / "toyota_supra_a80_2jz_gte"
+    )
+    source_file = package_root / "files" / "toyota-2jz-gte-official-source-plate.jpg"
+    source_file.parent.mkdir(parents=True, exist_ok=True)
+    source_file.write_bytes(b"deterministic-toyota-source-plate")
+    digest = hashlib.sha256(source_file.read_bytes()).hexdigest()
+    manifest = {
+        "manifest_id": "constraintos-reference-source-package/v1",
+        "scenario_id": "toyota_supra_a80_2jz_gte",
+        "preflight_status": "source_files_materialized",
+        "materialized_sources": [
+            {
+                "source_id": "toyota-2jz-gte-official-image-1993",
+                "local_file": "files/toyota-2jz-gte-official-source-plate.jpg",
+                "sha256": digest,
+                "status": "materialized",
+            }
+        ],
+    }
+    (package_root / "source-package-manifest.json").write_text(
+        json.dumps(manifest, indent=2),
+        encoding="utf-8",
+    )
+    return source_file
+
+
+def test_source_backed_workbench_is_the_packaged_entry_point() -> None:
+    app_content = APP.read_text(encoding="utf-8")
+    packager_content = PACKAGER.read_text(encoding="utf-8")
+
+    assert 'HOST = "127.0.0.1"' in app_content
+    assert "ThreadingHTTPServer" in app_content
+    assert "webbrowser.open(url)" in app_content
+    assert 'apps\\constraintos_workbench\\app_v2.py' in packager_content
+
+
+def test_workbench_separates_exploration_from_technical_rendering() -> None:
     content = APP.read_text(encoding="utf-8")
 
-    expected = [
-        "HOST = \"127.0.0.1\"",
-        "PORT = int(os.environ.get(\"CONSTRAINTOS_WORKBENCH_PORT\", \"8787\"))",
-        "ThreadingHTTPServer",
-        "webbrowser.open(url)",
-        "ConstraintOS Workbench app running.",
-        "Close this window to stop the local app server.",
-    ]
-    for item in expected:
-        assert item in content
+    assert "Explore Generated Raster References" in content
+    assert "Render Registered Toyota Source Plate" in content
+    assert "Exploratory Generated Raster References" in content
+    assert "These images may invent geometry" in content
+    assert "Run with Real Images" not in content
+    assert "exploratory_reference_only" in content
+    assert "technical_output_allowed" in content
 
 
-def test_constraintos_workbench_app_serves_pretty_browser_front_door() -> None:
-    content = APP.read_text(encoding="utf-8")
+def test_exploratory_prompt_prohibits_generated_technical_text() -> None:
+    prompt = app.build_exploratory_prompt(
+        app.DEFAULT_REQUEST,
+        app.EXPLORATORY_PROFILES[0],
+    )
 
-    expected = [
-        "ConstraintOS Workbench App",
-        "Portable Workbench App",
-        "Browser request input",
-        "Provider status",
-        "Run Deterministic Demo",
-        "Run with Real Images",
-        "Safety state",
-        "App status",
-        "Generated Workbench",
-        "manual review only",
-    ]
-    for item in expected:
-        assert item in content
+    assert "Do not include any words, letters, numbers, labels" in prompt
+    assert "Do not represent the output as a technical drawing" in prompt
+    assert "engineering labels" not in prompt
+    assert "dense technical callouts" not in prompt
 
 
-def test_constraintos_workbench_app_accepts_browser_request_input() -> None:
-    content = APP.read_text(encoding="utf-8")
+def test_source_status_fails_closed_without_materialized_package(tmp_path: Path) -> None:
+    contract_target = (
+        tmp_path
+        / "config"
+        / "technical-source-plate-contracts"
+        / "toyota-supra-a80-2jz-gte-v1.json"
+    )
+    contract_target.parent.mkdir(parents=True)
+    shutil.copyfile(CONTRACT, contract_target)
 
-    expected = [
-        "def normalize_demo_request(payload: dict[str, Any] | None)",
-        "requestText",
-        "requestedFocus",
-        "outputCount",
-        "imageModel",
-        "function readDemoRequest(enableRealImages)",
-        "request_text: document.getElementById('requestText').value",
-        "requested_focus: document.getElementById('requestedFocus').value",
-        "output_count: Number(document.getElementById('outputCount').value)",
-        "enable_real_images: enableRealImages",
-        "body: JSON.stringify({ demo_request: demoRequest })",
-        "Open captured browser request",
-    ]
-    for item in expected:
-        assert item in content
+    status = app.technical_source_status(tmp_path)
+
+    assert status["ready"] is False
+    assert status["status"] == "blocked"
+    assert status["reason"] == "source_package_missing"
 
 
-def test_constraintos_workbench_app_persists_browser_request_and_handles_bom_json() -> None:
-    content = APP.read_text(encoding="utf-8")
+def test_source_status_requires_digest_match(tmp_path: Path) -> None:
+    source_file = install_test_source_package(tmp_path)
+    ready = app.technical_source_status(tmp_path)
 
-    expected = [
-        "def read_json_file(path: Path) -> dict[str, Any]",
-        "encoding=\"utf-8-sig\"",
-        "def persist_browser_request(run_dir: Path, demo_request: dict[str, Any]) -> Path",
-        "browser-request.json",
-        "write_json_file(request_path, request_payload)",
-        "exercise_state[\"browser_request\"] = demo_request",
-        "browser_request_url",
-    ]
-    for item in expected:
-        assert item in content
+    assert ready["ready"] is True
+    assert ready["status"] == "ready"
+    assert ready["production_mode"] == "source_plate_annotation"
+    assert ready["production_ready"] is False
+    assert ready["approval_allowed"] is False
 
+    source_file.write_bytes(b"changed-source-plate")
+    blocked = app.technical_source_status(tmp_path)
 
-def test_constraintos_workbench_app_runs_pipeline_from_browser_api() -> None:
-    content = APP.read_text(encoding="utf-8")
-
-    expected = [
-        "def run_exercise_pipeline(repo_root: Path, demo_request: dict[str, Any])",
-        'script = repo_root / "scripts" / "exercise-constraintos.ps1"',
-        '"powershell.exe"',
-        '"-ExecutionPolicy"',
-        '"Bypass"',
-        '"-NoOpenBrowser"',
-        'if parsed.path != "/api/run"',
-        "fetch('/api/run', {",
-        "RUN_LOCK",
-    ]
-    for item in expected:
-        assert item in content
+    assert blocked["ready"] is False
+    assert blocked["reason"] == "source_digest_mismatch"
 
 
-def test_constraintos_workbench_app_checks_provider_status_before_real_images() -> None:
-    content = APP.read_text(encoding="utf-8")
+def test_source_plate_render_is_byte_repeatable(tmp_path: Path) -> None:
+    install_test_source_package(tmp_path)
+    scenario_root = tmp_path / "runs" / "output-poc" / app.SCENARIO
+    first_run = scenario_root / "run-001"
+    second_run = scenario_root / "run-002"
+    first_run.mkdir(parents=True)
+    second_run.mkdir(parents=True)
 
-    expected = [
-        "def provider_status() -> dict[str, Any]",
-        "openai_api_key_looks_placeholder",
-        "api_key_looks_placeholder",
-        "placeholder_api_key",
-        "/api/provider-status",
-        "async function refreshProviderStatus()",
-        "providerReady = data.status === 'ready'",
-        "realButton.disabled = !providerReady",
-        "missing or still looks like placeholder text",
-    ]
-    for item in expected:
-        assert item in content
+    first = app.render_registered_source_plate(tmp_path, first_run)
+    second = app.render_registered_source_plate(tmp_path, second_run)
 
-
-def test_constraintos_workbench_app_supports_optional_openai_image_generation() -> None:
-    content = APP.read_text(encoding="utf-8")
-
-    expected = [
-        'OPENAI_IMAGES_ENDPOINT = "https://api.openai.com/v1/images/generations"',
-        "OPENAI_API_KEY",
-        '"gpt-image-1-mini"',
-        '"gpt-image-1"',
-        "def call_openai_image_generation(prompt: str, model: str, api_key: str) -> bytes",
-        "urllib.request.Request",
-        '"Authorization": f"Bearer {api_key}"',
-        '"output_format": "png"',
-        "base64.b64decode(b64_json)",
-        "image_url",
-    ]
-    for item in expected:
-        assert item in content
+    first_svg = first_run / first["output_file"]
+    second_svg = second_run / second["output_file"]
+    assert first_svg.read_bytes() == second_svg.read_bytes()
+    assert first["repeat_render_comparison"]["status"] == "baseline_created"
+    assert second["repeat_render_comparison"]["status"] == "passed"
+    assert first["source_sha256"] == second["source_sha256"]
+    assert second["generated_text_inside_source_raster"] is False
+    assert second["annotation_source"] == "registered_source_plate_contract"
+    assert second["approval_allowed"] is False
 
 
-def test_constraintos_workbench_app_sanitizes_openai_provider_errors() -> None:
-    content = APP.read_text(encoding="utf-8")
+def test_source_plate_contract_limits_capabilities() -> None:
+    contract = json.loads(CONTRACT.read_text(encoding="utf-8"))
 
-    expected = [
-        "def provider_http_error_message(exc: urllib.error.HTTPError) -> str",
-        "Intentionally discard provider body so API-key fragments are never surfaced",
-        "OpenAI rejected the API key",
-        "HTTP 401",
-        "rate limit or quota was exceeded",
-        "Check the API key, model access, request limits, and account billing",
-    ]
-    for item in expected:
-        assert item in content
+    assert contract["production_mode"] == "source_plate_annotation"
+    assert contract["canonical_source"]["authority"] == "Toyota Motor Corporation"
+    assert contract["annotations"]["provider_generated_text_allowed"] is False
+    assert contract["annotations"]["component_callouts_in_this_contract"] is False
+    assert contract["capability_limits"]["novel_camera_views_allowed"] is False
+    assert contract["capability_limits"]["hidden_geometry_inference_allowed"] is False
 
 
-def test_constraintos_workbench_app_writes_real_image_artifacts_for_manual_review() -> None:
-    content = APP.read_text(encoding="utf-8")
-
-    expected = [
-        "def generate_real_images(repo_root: Path, run_dir: Path, demo_request: dict[str, Any]) -> list[dict[str, Any]]",
-        "generated-images",
-        "real-image-generation-manifest.json",
-        "openai_images_api",
-        "review_decision",
-        "needs_review",
-        "approval_allowed",
-        "False",
-        "real_image_generation",
-        "generated_images",
-    ]
-    for item in expected:
-        assert item in content
-
-
-def test_constraintos_workbench_app_renders_real_image_cards_and_serves_pngs() -> None:
-    content = APP.read_text(encoding="utf-8")
-
-    expected = [
-        "Generated Real Image Candidates",
-        "renderGeneratedImages(data.generated_images || [])",
-        "Open PNG artifact",
-        "image_url",
-        'elif artifact_path.suffix.lower() == ".png"',
-        'content_type = "image/png"',
-    ]
-    for item in expected:
-        assert item in content
-
-
-def test_constraintos_workbench_app_returns_generated_workbench_artifacts() -> None:
-    content = APP.read_text(encoding="utf-8")
-
-    expected = [
-        "exercise-workbench.html",
-        "exercise-state.json",
-        "workbench_url",
-        "exercise_state_url",
-        "generated workbench",
-        "Open generated workbench",
-        "Open exercise state JSON",
-        "needs_review",
-        "approval_allowed: false",
-    ]
-    for item in expected:
-        assert item in content
-
-
-def test_constraintos_workbench_app_serves_only_run_artifacts() -> None:
-    content = APP.read_text(encoding="utf-8")
-
-    expected = [
-        'if parsed.path.startswith("/artifact/")',
-        "def _serve_artifact",
-        'runs_root = (self.repo_root / "runs").resolve()',
-        "Artifact not found",
-        'content_type = "text/html; charset=utf-8"',
-        'content_type = "application/json; charset=utf-8"',
-        'content_type = "image/svg+xml"',
-        'content_type = "image/png"',
-    ]
-    for item in expected:
-        assert item in content
-
-
-def test_constraintos_workbench_packager_builds_portable_app_folder() -> None:
+def test_packager_copies_registered_config_and_materialized_toyota_package() -> None:
     content = PACKAGER.read_text(encoding="utf-8")
 
-    expected = [
-        'apps\\constraintos_workbench\\app.py',
-        'dist',
-        'ConstraintOS Workbench',
-        'ConstraintOS Workbench.exe',
-        'python -m venv',
-        'pip install --upgrade pip pyinstaller',
-        '--onedir',
-        '--name "ConstraintOS Workbench"',
-        'Copy-Item -Recurse -Force (Join-Path $RepoRoot "scripts")',
-        'README-FIRST.txt',
-    ]
-    for item in expected:
-        assert item in content
+    assert 'Copy-Item -Recurse -Force (Join-Path $RepoRoot "config")' in content
+    assert 'reference-sources\\toyota_supra_a80_2jz_gte' in content
+    assert "Copying materialized Toyota reference package" in content
+    assert "source-package-manifest.json" in content
+    assert "Explore Generated Raster References" in content
+    assert "Render Registered Toyota Source Plate" in content
+    assert "Run with Real Images" not in content
 
 
-def test_constraintos_workbench_packaged_readme_is_recipient_facing() -> None:
-    content = PACKAGER.read_text(encoding="utf-8")
+def test_app_serves_source_status_and_required_artifact_types() -> None:
+    content = APP.read_text(encoding="utf-8")
 
-    expected = [
-        "Double-click: ConstraintOS Workbench.exe",
-        "Your browser will open to the local Workbench app.",
-        "Edit the browser request if desired.",
-        "Run Deterministic Demo",
-        "Run with Real Images",
-        "It does not require the recipient to open the repository.",
-        "It does not require typing PowerShell commands.",
-        "Close the app window to stop the local server.",
-    ]
-    for item in expected:
-        assert item in content
-
-
-def test_constraintos_workbench_packaged_readme_documents_optional_real_images() -> None:
-    content = PACKAGER.read_text(encoding="utf-8")
-
-    expected = [
-        "Optional real image generation:",
-        "OPENAI_API_KEY",
-        "Provider status card",
-        "Do not place the API key in this app folder or commit it to source control.",
-        "OpenAI Images API",
-        "PNG candidates",
-        "needs_review",
-        "approval_allowed: false",
-    ]
-    for item in expected:
-        assert item in content
+    assert 'parsed.path == "/api/source-status"' in content
+    assert "technical_source_status(self.app_root)" in content
+    assert 'content_type = "image/svg+xml"' in content
+    assert 'content_type = "image/jpeg"' in content
+    assert "technical-render-manifest.json" in content
+    assert "exploratory-reference-manifest.json" in content
