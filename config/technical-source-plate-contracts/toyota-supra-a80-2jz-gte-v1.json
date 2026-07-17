@@ -1,0 +1,43 @@
+{
+  "contract_id": "constraintos-source-plate/toyota-supra-a80-2jz-gte/v1",
+  "contract_version": "1.0.0",
+  "status": "active",
+  "scenario_id": "toyota_supra_a80_2jz_gte",
+  "production_mode": "source_plate_annotation",
+  "canonical_source": {
+    "source_id": "toyota-2jz-gte-official-image-1993",
+    "source_class": "official_web_2d_source_plate",
+    "authority": "Toyota Motor Corporation"
+  },
+  "render_preset_version": "source-plate-svg/v1",
+  "output": {
+    "width": 1600,
+    "height": 1200,
+    "format": "svg"
+  },
+  "source_placement": {
+    "x": 70,
+    "y": 135,
+    "width": 1460,
+    "height": 860,
+    "preserve_aspect_ratio": "xMidYMid meet"
+  },
+  "annotations": {
+    "annotation_kind": "registry_backed_metadata",
+    "title": "TOYOTA SUPRA A80 — 2JZ-GTE",
+    "subtitle": "Official Toyota source plate · fixed-view deterministic composition",
+    "footer": "3.0-liter inline-six · Two-way twin-turbo system · Source-backed identity plate",
+    "provider_generated_text_allowed": false,
+    "component_callouts_in_this_contract": false
+  },
+  "capability_limits": {
+    "novel_camera_views_allowed": false,
+    "exploded_views_allowed": false,
+    "hidden_geometry_inference_allowed": false,
+    "component_callouts_allowed": false
+  },
+  "review": {
+    "approval_allowed": false,
+    "default_decision": "needs_review"
+  }
+}
