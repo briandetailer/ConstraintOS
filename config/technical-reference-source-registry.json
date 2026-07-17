@@ -1,6 +1,6 @@
 {
   "registry_id": "constraintos-technical-reference-sources/v1",
-  "registry_version": "1.5.0",
+  "registry_version": "1.6.0",
   "status": "active",
   "selection_principle": "Use examples with sufficient web-available reference information to build auditable ConstraintOS source packages.",
   "source_precedence": [
@@ -93,14 +93,16 @@
       "scenario_id": "raspberry_pi_5_io_plate",
       "subject": "Raspberry Pi 5 top-view technical I/O plate",
       "source_package_status": "available_not_yet_ingested",
-      "preferred_production_mode": "source_plate_annotation",
+      "preferred_production_mode": "reference_conditioned_generation",
       "capabilities": {
+        "reference_conditioned_generation": true,
         "deterministic_source_plate_annotation": true,
         "deterministic_geometry_render": true,
         "novel_locked_views": true,
         "deterministic_annotation_overlay": true,
         "mechanical_dimension_validation": true,
-        "text_to_image_required": false
+        "image_generation_required_for_new_artwork": true,
+        "text_only_image_generation_allowed": false
       },
       "sources": [
         {
@@ -111,7 +113,7 @@
           "download_url": "https://pip-assets.raspberrypi.com/categories/892-raspberry-pi-5/documents/RP-008348-DS-6-raspberry-pi-5-product-brief.pdf",
           "target_filename": "raspberry-pi-5-official-top-view-source-plate.pdf",
           "available_formats": ["pdf_page", "embedded_raster"],
-          "purpose": ["canonical_source_plate", "fixed_top_view", "component_anchor_registration"],
+          "purpose": ["canonical_generation_reference", "fixed_top_view", "subject_identity", "component_layout", "constraint_validation_reference"],
           "observed_available_on": "2026-07-17",
           "usage_terms_status": "review_required_before_distribution",
           "ingestion_required": true
@@ -152,7 +154,7 @@
           "download_url": "https://pip-assets.raspberrypi.com/categories/892-raspberry-pi-5/documents/RP-008348-DS-6-raspberry-pi-5-product-brief.pdf",
           "target_filename": "raspberry-pi-5-product-brief.pdf",
           "available_formats": ["pdf"],
-          "purpose": ["product_identity", "connector_inventory", "approved_label_evidence"],
+          "purpose": ["product_identity", "connector_inventory", "approved_label_evidence", "generation_constraint_evidence"],
           "observed_available_on": "2026-07-17",
           "usage_terms_status": "review_required_before_distribution",
           "ingestion_required": true
@@ -165,7 +167,7 @@
           "download_url": "https://www.raspberrypi.com/documentation/computers/raspberry-pi.html",
           "target_filename": "raspberry-pi-5-hardware-documentation.html",
           "available_formats": ["html"],
-          "purpose": ["fan_connector_evidence", "rtc_connector_evidence", "approved_component_terminology"],
+          "purpose": ["fan_connector_evidence", "rtc_connector_evidence", "approved_component_terminology", "generation_constraint_evidence"],
           "observed_available_on": "2026-07-17",
           "usage_terms_status": "review_required_before_distribution",
           "materialization_requirement": "reference_only",
@@ -173,7 +175,7 @@
           "ingestion_required": false
         }
       ],
-      "production_limit": "For the requested locked top view, the official product-brief source plate is preferred because it satisfies the view without reconstruction. The official STEP package remains a fallback for novel viewpoints after extraction and geometry normalization. Labels remain blocked until a component-anchor registry is cross-checked against official product and hardware documentation."
+      "production_limit": "The extracted official top-view image is a binding reference supplied to the image-generation worker, not the final book artwork. ConstraintOS must compile the request constraints, generate new candidate illustrations conditioned on this reference, independently validate each candidate against the same evidence, and add deterministic labels only after a candidate passes validation and manual review. The STEP package remains a fallback for novel viewpoints."
     }
   ],
   "scenario_onboarding_rule": {
