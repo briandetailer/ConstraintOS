@@ -12,6 +12,8 @@ from pathlib import Path
 from typing import Any, Mapping
 
 RESPONSES_ENDPOINT = "https://api.openai.com/v1/responses"
+ALLOWED_OUTPUT_SIZES = {"1024x1024", "1536x1024", "1024x1536", "auto"}
+ALLOWED_QUALITIES = {"low", "medium", "high", "auto"}
 
 
 class CandidateGenerationError(RuntimeError):
@@ -76,6 +78,14 @@ def _string_list(value: Any) -> list[str]:
     raise CandidateGenerationError("Expected a string or list of strings in generation constraints.")
 
 
+def _bounded_integer(value: Any, *, default: int, minimum: int, maximum: int) -> int:
+    try:
+        parsed = int(value)
+    except (TypeError, ValueError):
+        parsed = default
+    return max(minimum, min(parsed, maximum))
+
+
 def _visual_constraints(request_payload: Mapping[str, Any]) -> dict[str, Any]:
     constraints = request_payload.get("constraints", {})
     if not isinstance(constraints, Mapping):
@@ -85,6 +95,16 @@ def _visual_constraints(request_payload: Mapping[str, Any]) -> dict[str, Any]:
         visual = {}
     if not isinstance(visual, Mapping):
         raise CandidateGenerationError("constraints.visual_output must be an object.")
+    output_size = str(visual.get("output_size", "1024x1024")).strip()
+    quality = str(visual.get("quality", "high")).strip()
+    if output_size not in ALLOWED_OUTPUT_SIZES:
+        raise CandidateGenerationError(
+            f"Unsupported image output size in visual constraints: {output_size}"
+        )
+    if quality not in ALLOWED_QUALITIES:
+        raise CandidateGenerationError(
+            f"Unsupported image quality in visual constraints: {quality}"
+        )
     return {
         "illustration_style": str(
             visual.get(
@@ -106,9 +126,14 @@ def _visual_constraints(request_payload: Mapping[str, Any]) -> dict[str, Any]:
                 "no generated text; labels and callouts are added after validation",
             )
         ).strip(),
-        "output_size": str(visual.get("output_size", "1024x1024")).strip(),
-        "quality": str(visual.get("quality", "high")).strip(),
-        "candidate_count": max(1, min(int(visual.get("candidate_count", 1)), 4)),
+        "output_size": output_size,
+        "quality": quality,
+        "candidate_count": _bounded_integer(
+            visual.get("candidate_count", 1),
+            default=1,
+            minimum=1,
+            maximum=4,
+        ),
     }
 
 
@@ -145,7 +170,7 @@ DELIVERABLE
 - Surface treatment: {visual['surface_treatment']}
 
 GEOMETRY AND IDENTITY LOCK
-- Preserve the real layout, silhouette, proportions, orientation, connector count, and relative component placement shown in the authoritative reference.
+- Preserve the real layout, silhouette, proportions, orientation, component count, and relative component placement shown in the authoritative reference.
 - The reference is evidence, not a loose inspiration image.
 - Do not substitute a generic object, redesign the subject, simplify away required components, or invent hidden geometry.
 - Reference source ID: {reference_record['source_id']}
@@ -183,18 +208,18 @@ def compile_generation_package(
 
     if orchestration.get("status") != "planned":
         raise CandidateGenerationError("Research-to-render orchestration is not in planned state.")
-    render_plan = orchestration.get("render_plan", {})
-    if render_plan.get("production_mode") not in {
-        "source_plate_annotation",
-        "reference_conditioned_generation",
-    }:
+    orchestration_request = orchestration.get("request", {})
+    if orchestration_request.get("request_id") != request_payload.get("request_id"):
         raise CandidateGenerationError(
-            "This generation worker currently requires an approved source-plate reference path."
+            "The orchestration plan was compiled for a different request."
+        )
+    render_plan = orchestration.get("render_plan", {})
+    if render_plan.get("production_mode") != "reference_conditioned_generation":
+        raise CandidateGenerationError(
+            "This worker requires a reference_conditioned_generation render plan."
         )
     if source_manifest.get("status") != "extracted":
         raise CandidateGenerationError("The derived source plate is not in extracted state.")
-    if source_manifest.get("scenario_id") != "raspberry_pi_5_io_plate":
-        raise CandidateGenerationError("The source-plate manifest does not match this generation fixture.")
 
     reference_path = _resolve_manifest_file(
         source_plate_manifest_path,
@@ -211,7 +236,7 @@ def compile_generation_package(
 
     source_id = str(source_manifest["source_id"])
     canonical_ids = [str(item) for item in render_plan.get("canonical_source_ids", [])]
-    if canonical_ids and source_id not in canonical_ids:
+    if not canonical_ids or source_id not in canonical_ids:
         raise CandidateGenerationError(
             "The extracted reference is not one of the orchestration plan's canonical sources."
         )
@@ -219,6 +244,7 @@ def compile_generation_package(
     visual = _visual_constraints(request_payload)
     reference_record = {
         "source_id": source_id,
+        "scenario_id": source_manifest.get("scenario_id"),
         "local_file": str(reference_path),
         "sha256": observed_digest,
         "mime_type": _mime_type(reference_path),
@@ -228,13 +254,14 @@ def compile_generation_package(
             "component_layout",
             "proportion",
             "viewpoint",
+            "candidate_validation_reference",
         ],
     }
     prompt = build_compiled_prompt(request_payload, reference_record, visual)
     constraints = request_payload.get("constraints", {})
     package = {
         "manifest_id": "constraintos-reference-conditioned-generation-package/v1",
-        "manifest_version": "1.0.0",
+        "manifest_version": "1.1.0",
         "status": "ready_for_generation",
         "request_id": request_payload["request_id"],
         "subject": request_payload["subject"],
@@ -256,6 +283,7 @@ def compile_generation_package(
             "deterministic_annotation_required_after_validation": True,
         },
         "compiled_prompt": prompt,
+        "compiled_prompt_sha256": hashlib.sha256(prompt.encode("utf-8")).hexdigest(),
         "provider": {
             "api": "openai_responses",
             "endpoint": RESPONSES_ENDPOINT,
@@ -304,6 +332,8 @@ def build_responses_payload(generation_package: Mapping[str, Any]) -> dict[str, 
     ]
     for reference in references:
         reference_path = Path(str(reference["local_file"]))
+        if not reference_path.exists():
+            raise CandidateGenerationError(f"Reference image is missing: {reference_path}")
         observed_digest = sha256_file(reference_path)
         if observed_digest != str(reference["sha256"]):
             raise CandidateGenerationError(
@@ -324,6 +354,19 @@ def build_responses_payload(generation_package: Mapping[str, Any]) -> dict[str, 
     }
 
 
+def _api_key_looks_placeholder(api_key: str) -> bool:
+    lowered = api_key.casefold().strip()
+    markers = (
+        "your_api_key",
+        "paste_your",
+        "api_key_here",
+        "replace_me",
+        "placeholder",
+        "example",
+    )
+    return bool(lowered) and any(marker in lowered for marker in markers)
+
+
 def _provider_http_error(exc: urllib.error.HTTPError) -> CandidateGenerationError:
     _ = exc.read()
     if exc.code == 401:
@@ -342,7 +385,12 @@ def _provider_http_error(exc: urllib.error.HTTPError) -> CandidateGenerationErro
 def _extract_image_result(response_payload: Mapping[str, Any]) -> bytes:
     for item in response_payload.get("output", []):
         if item.get("type") == "image_generation_call" and item.get("result"):
-            return base64.b64decode(item["result"])
+            try:
+                return base64.b64decode(item["result"], validate=True)
+            except (ValueError, TypeError) as exc:
+                raise CandidateGenerationError(
+                    "OpenAI image_generation_call returned invalid base64 image data."
+                ) from exc
     raise CandidateGenerationError(
         "OpenAI response did not contain a completed image_generation_call result."
     )
@@ -365,6 +413,8 @@ def generate_candidates(
         raise CandidateGenerationError(
             "Reference-conditioned candidate generation requires OPENAI_API_KEY."
         )
+    if _api_key_looks_placeholder(resolved_key):
+        raise CandidateGenerationError("OPENAI_API_KEY looks like placeholder text.")
 
     output_root = output_root.resolve()
     candidate_root = output_root / "generated-candidates"
@@ -372,12 +422,13 @@ def generate_candidates(
     candidates: list[dict[str, Any]] = []
     response_ids: list[str | None] = []
     request_payload = build_responses_payload(generation_package)
+    request_payload_json = json.dumps(request_payload, sort_keys=True)
     request_endpoint = endpoint or str(generation_package["provider"]["endpoint"])
 
     for index in range(1, int(generation_package["candidate_count"]) + 1):
         http_request = urllib.request.Request(
             request_endpoint,
-            data=json.dumps(request_payload).encode("utf-8"),
+            data=request_payload_json.encode("utf-8"),
             headers={
                 "Authorization": f"Bearer {resolved_key}",
                 "Content-Type": "application/json",
@@ -420,6 +471,9 @@ def generate_candidates(
         "generation_package": str(generation_package_path),
         "generation_package_sha256": sha256_file(generation_package_path),
         "provider": "openai_responses_image_generation",
+        "provider_request_sha256": hashlib.sha256(
+            request_payload_json.encode("utf-8")
+        ).hexdigest(),
         "provider_response_ids": response_ids,
         "candidate_count": len(candidates),
         "candidates": candidates,
