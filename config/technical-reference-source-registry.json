@@ -1,6 +1,6 @@
 {
   "registry_id": "constraintos-technical-reference-sources/v1",
-  "registry_version": "1.4.0",
+  "registry_version": "1.5.0",
   "status": "active",
   "selection_principle": "Use examples with sufficient web-available reference information to build auditable ConstraintOS source packages.",
   "source_precedence": [
@@ -127,6 +127,7 @@
           "purpose": ["canonical_geometry_fallback", "connector_placement", "novel_locked_view_rendering"],
           "observed_available_on": "2026-07-17",
           "usage_terms_status": "review_required_before_distribution",
+          "materialization_requirement": "optional",
           "ingestion_required": true
         },
         {
@@ -140,6 +141,7 @@
           "purpose": ["board_dimensions", "mounting_hole_validation", "geometry_cross_check"],
           "observed_available_on": "2026-07-17",
           "usage_terms_status": "review_required_before_distribution",
+          "materialization_requirement": "optional",
           "ingestion_required": true
         },
         {
