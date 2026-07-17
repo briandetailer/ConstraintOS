@@ -1,5 +1,7 @@
 param(
     [string]$OutputRoot,
+    [switch]$LiveWebSearch,
+    [string]$ResearchModel,
     [switch]$OpenResult
 )
 
@@ -17,11 +19,14 @@ if ([string]::IsNullOrWhiteSpace($OutputRoot)) {
 if (-not (Test-Path $RequestPath)) {
     throw "Missing request fixture: $RequestPath"
 }
-if (-not (Test-Path $SourcesPath)) {
+if (-not $LiveWebSearch -and -not (Test-Path $SourcesPath)) {
     throw "Missing discovered-source fixture: $SourcesPath"
 }
 if (-not (Get-Command python -ErrorAction SilentlyContinue)) {
     throw "Python was not found on PATH."
+}
+if ($LiveWebSearch -and [string]::IsNullOrWhiteSpace($env:OPENAI_API_KEY)) {
+    throw "Live web discovery requires OPENAI_API_KEY to be set before running this script."
 }
 
 $Timestamp = (Get-Date).ToUniversalTime().ToString("yyyyMMdd-HHmmss")
@@ -29,12 +34,27 @@ $RunRoot = Join-Path $OutputRoot $Timestamp
 New-Item -ItemType Directory -Force -Path $RunRoot | Out-Null
 $OutputPath = Join-Path $RunRoot "research-to-render-plan.json"
 
+$Arguments = @(
+    "-m",
+    "runtime.research_to_render.cli",
+    "--request",
+    $RequestPath,
+    "--output",
+    $OutputPath
+)
+if ($LiveWebSearch) {
+    $Arguments += "--live-web-search"
+    if (-not [string]::IsNullOrWhiteSpace($ResearchModel)) {
+        $Arguments += @("--research-model", $ResearchModel)
+    }
+}
+else {
+    $Arguments += @("--sources", $SourcesPath)
+}
+
 Push-Location $RepoRoot
 try {
-    python -m runtime.research_to_render.cli `
-        --request $RequestPath `
-        --sources $SourcesPath `
-        --output $OutputPath
+    python @Arguments
     if ($LASTEXITCODE -ne 0) {
         throw "Research-to-render planning failed with exit code $LASTEXITCODE."
     }
@@ -43,7 +63,9 @@ finally {
     Pop-Location
 }
 
+$DiscoveryMode = if ($LiveWebSearch) { "live OpenAI web search" } else { "recorded source fixture" }
 Write-Host "Research-to-render plan created." -ForegroundColor Green
+Write-Host "Discovery mode: $DiscoveryMode"
 Write-Host "Output: $OutputPath"
 
 if ($OpenResult) {
