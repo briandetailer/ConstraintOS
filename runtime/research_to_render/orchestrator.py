@@ -19,6 +19,8 @@ GEOMETRY_SOURCE_CLASSES = {
 }
 SOURCE_PLATE_CLASSES = {
     "official_web_2d_source_plate",
+}
+SUPPORTING_SOURCE_CLASSES = {
     "official_web_mechanical_drawing",
 }
 DOCUMENTATION_SOURCE_CLASSES = {
@@ -78,6 +80,12 @@ class ResearchToRenderOrchestrator:
             _normalized(feature): feature for feature in request.required_visible_features
         }
 
+        supported_classes = (
+            GEOMETRY_SOURCE_CLASSES
+            | SOURCE_PLATE_CLASSES
+            | SUPPORTING_SOURCE_CLASSES
+            | DOCUMENTATION_SOURCE_CLASSES
+        )
         for candidate in candidates:
             if request.authoritative_sources_required and not candidate.authoritative:
                 rejected[candidate.source_id] = "not_authoritative"
@@ -86,11 +94,7 @@ class ResearchToRenderOrchestrator:
                 _normalized(feature) for feature in candidate.supports_features
             }
             has_feature_evidence = bool(candidate_features & required_normalized.keys())
-            has_structural_value = candidate.source_class in (
-                GEOMETRY_SOURCE_CLASSES
-                | SOURCE_PLATE_CLASSES
-                | DOCUMENTATION_SOURCE_CLASSES
-            )
+            has_structural_value = candidate.source_class in supported_classes
             if not has_feature_evidence and not has_structural_value:
                 rejected[candidate.source_id] = "not_relevant_to_requested_output"
                 continue
