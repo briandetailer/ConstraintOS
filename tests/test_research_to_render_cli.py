@@ -28,9 +28,16 @@ def test_research_to_render_cli_writes_a_planned_artifact(tmp_path: Path) -> Non
     payload = json.loads(output.read_text(encoding="utf-8"))
     assert payload["status"] == "planned"
     assert payload["request"]["subject"] == "Raspberry Pi 5"
-    assert payload["render_plan"]["production_mode"] == "geometry_render"
+    assert payload["render_plan"]["production_mode"] == "source_plate_annotation"
+    assert payload["render_plan"]["mode_selection_reason"].startswith(
+        "authoritative_fixed_view_source_plate"
+    )
+    assert payload["render_plan"]["canonical_source_ids"] == [
+        "rpi5-official-top-view-source-plate-2026"
+    ]
     assert payload["render_plan"]["production_ready"] is False
     assert payload["source_evaluation"]["unsupported_required_features"] == []
+    assert payload["discovery"]["provider"] == "recorded_source_fixture"
 
 
 def test_windows_exercise_runs_request_research_and_render_planning() -> None:
@@ -41,6 +48,9 @@ def test_windows_exercise_runs_request_research_and_render_planning() -> None:
     assert "runtime.research_to_render.cli" in content
     assert "research-to-render-plan.json" in content
     assert "runs\\research-to-render\\raspberry-pi-5-io-plate" in content
+    assert "LiveWebSearch" in content
+    assert "OPENAI_API_KEY" in content
+    assert "--live-web-search" in content
 
 
 def test_installed_cli_entry_point_is_declared() -> None:
