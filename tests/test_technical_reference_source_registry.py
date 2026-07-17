@@ -20,7 +20,7 @@ def test_reference_source_registry_is_active() -> None:
     registry = load_registry()
 
     assert registry["registry_id"] == "constraintos-technical-reference-sources/v1"
-    assert registry["registry_version"] == "1.1.0"
+    assert registry["registry_version"] == "1.2.0"
     assert registry["status"] == "active"
     assert "web-available reference information" in registry["selection_principle"]
 
@@ -55,6 +55,29 @@ def test_toyota_uses_official_source_plate_and_release() -> None:
     assert all(source.get("download_url") for source in required_sources)
     assert all(source.get("target_filename") for source in required_sources)
     assert "Novel camera angles" in toyota["production_limit"]
+
+
+def test_raspberry_pi_5_combines_geometry_dimensions_and_component_evidence() -> None:
+    raspberry_pi = scenario("raspberry_pi_5_io_plate")
+    source_classes = {item["source_class"] for item in raspberry_pi["sources"]}
+    required_sources = [source for source in raspberry_pi["sources"] if source["ingestion_required"]]
+    formats = {item for source in raspberry_pi["sources"] for item in source.get("available_formats", [])}
+
+    assert raspberry_pi["preferred_production_mode"] == "geometry_render"
+    assert raspberry_pi["capabilities"]["deterministic_geometry_render"] is True
+    assert raspberry_pi["capabilities"]["mechanical_dimension_validation"] is True
+    assert raspberry_pi["capabilities"]["text_to_image_required"] is False
+    assert {
+        "official_web_3d_geometry",
+        "official_web_mechanical_drawing",
+        "official_web_product_documentation",
+        "official_web_component_documentation",
+    }.issubset(source_classes)
+    assert {"step", "pdf", "html"}.issubset(formats)
+    assert all(source["authority"] == "Raspberry Pi Ltd" for source in raspberry_pi["sources"])
+    assert all(source.get("download_url") for source in required_sources)
+    assert all(source.get("target_filename") for source in required_sources)
+    assert "component inventory" in raspberry_pi["production_limit"]
 
 
 def test_all_materialized_sources_require_usage_review() -> None:
