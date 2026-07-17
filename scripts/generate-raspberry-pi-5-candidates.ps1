@@ -37,6 +37,7 @@ $PlanPath = Join-Path $RunRoot "research-to-render-plan.json"
 $GenerationPackagePath = Join-Path $RunRoot "generation-package.json"
 $CandidateManifestPath = Join-Path $RunRoot "generated-candidate-manifest.json"
 $ValidationManifestPath = Join-Path $RunRoot "candidate-validation-manifest.json"
+$CandidatePath = Join-Path $RunRoot "generated-candidates\candidate-01.png"
 
 Push-Location $RepoRoot
 try {
@@ -80,6 +81,7 @@ finally {
 Write-Host "ConstraintOS generation run: $RunRoot" -ForegroundColor Green
 Write-Host "Generation package: $GenerationPackagePath"
 if ($Generate) {
+    Write-Host "Generated candidate: $CandidatePath"
     Write-Host "Candidate manifest: $CandidateManifestPath"
 }
 else {
@@ -90,19 +92,13 @@ if ($Validate) {
 }
 
 if ($OpenResult) {
+    if ($Generate -and (Test-Path $CandidatePath)) {
+        Start-Process $CandidatePath
+    }
     if ($Validate -and (Test-Path $ValidationManifestPath)) {
         Start-Process $ValidationManifestPath
     }
-    elseif ($Generate) {
-        $Candidate = Join-Path $RunRoot "generated-candidates\candidate-01.png"
-        if (Test-Path $Candidate) {
-            Start-Process $Candidate
-        }
-        else {
-            Start-Process $RunRoot
-        }
-    }
-    else {
+    elseif (-not $Generate) {
         Start-Process $GenerationPackagePath
     }
 }
