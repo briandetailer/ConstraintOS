@@ -6,12 +6,13 @@ Set-StrictMode -Version Latest
 $ErrorActionPreference = "Stop"
 
 $RepoRoot = Split-Path -Parent $PSScriptRoot
-$AppEntry = Join-Path $RepoRoot "apps\constraintos_workbench\app.py"
+$AppEntry = Join-Path $RepoRoot "apps\constraintos_workbench\app_v2.py"
 $BuildRoot = Join-Path $RepoRoot ".build\constraintos-workbench-app"
 $VenvRoot = Join-Path $BuildRoot ".venv"
 $DistRoot = Join-Path $RepoRoot "dist"
 $AppDist = Join-Path $DistRoot "ConstraintOS Workbench"
 $LauncherExe = Join-Path $AppDist "ConstraintOS Workbench.exe"
+$ToyotaSourcePackage = Join-Path $RepoRoot "reference-sources\toyota_supra_a80_2jz_gte"
 
 if (-not (Test-Path $AppEntry)) {
     throw "ConstraintOS Workbench app entry point missing: $AppEntry"
@@ -42,7 +43,7 @@ if (-not (Test-Path $PythonExe)) {
 Write-Host "Installing packaging dependencies..." -ForegroundColor Cyan
 & $PythonExe -m pip install --upgrade pip pyinstaller
 
-Write-Host "Building portable ConstraintOS Workbench app..." -ForegroundColor Cyan
+Write-Host "Building source-backed ConstraintOS Workbench app..." -ForegroundColor Cyan
 & $PythonExe -m PyInstaller `
     --noconfirm `
     --clean `
@@ -59,6 +60,17 @@ if (-not (Test-Path $LauncherExe)) {
 
 Write-Host "Copying bundled ConstraintOS runtime assets..." -ForegroundColor Cyan
 Copy-Item -Recurse -Force (Join-Path $RepoRoot "scripts") (Join-Path $AppDist "scripts")
+Copy-Item -Recurse -Force (Join-Path $RepoRoot "config") (Join-Path $AppDist "config")
+
+$PackagedReferenceRoot = Join-Path $AppDist "reference-sources"
+New-Item -ItemType Directory -Force -Path $PackagedReferenceRoot | Out-Null
+if (Test-Path $ToyotaSourcePackage) {
+    Write-Host "Copying materialized Toyota reference package..." -ForegroundColor Cyan
+    Copy-Item -Recurse -Force $ToyotaSourcePackage $PackagedReferenceRoot
+}
+else {
+    Write-Warning "Toyota reference source package was not found. The packaged source-backed render action will remain blocked."
+}
 
 $ReadmePath = Join-Path $AppDist "README-FIRST.txt"
 @"
@@ -67,36 +79,43 @@ ConstraintOS Workbench Demo App
 How to run:
 1. Double-click: ConstraintOS Workbench.exe
 2. Your browser will open to the local Workbench app.
-3. Edit the browser request if desired.
-4. Choose the output focus, output count, and image model.
-5. Check the Provider status card.
-6. Click Run Deterministic Demo for SVG-only output, or click Run with Real Images to create PNG candidates through the OpenAI Images API.
-7. Review the generated workbench, candidate SVG outputs, and generated PNG image candidates.
-8. Open the captured browser request JSON from the artifact links if you want to inspect exactly what was submitted.
+3. Review both status cards:
+   - OpenAI exploratory provider
+   - Registered Toyota source package
+4. Choose one action:
+   - Run Deterministic Demo
+   - Explore Generated Raster References
+   - Render Registered Toyota Source Plate
+5. Review the generated workbench and manifests.
 
-Optional real image generation:
-- Real image generation requires OPENAI_API_KEY to be visible to the app process before launching ConstraintOS Workbench.exe.
+Source-backed Toyota rendering:
+- The Toyota source package must be materialized before packaging.
+- The package script copies reference-sources\toyota_supra_a80_2jz_gte into the portable app when it exists.
+- The browser source status must show ready before source-backed rendering is enabled.
+- The app verifies the source file SHA-256 against source-package-manifest.json.
+- The output is a deterministic SVG composition using the registered official Toyota source plate.
+- It is a local source-backed draft and remains needs_review with approval_allowed: false.
+- Novel camera angles, exploded views, hidden geometry, and component callouts remain blocked by the current source-plate contract.
+
+Exploratory raster references:
+- OPENAI_API_KEY is optional and is only used for Explore Generated Raster References.
 - Do not use literal placeholder text such as your_api_key_here, paste_your_key_here, or api_key_here.
-- The browser Provider status card must show status: ready before Run with Real Images is enabled.
-- The browser Provider status card shows whether the launched app can see OPENAI_API_KEY.
+- Generated raster references may invent geometry.
+- They are explicitly exploratory_reference_only.
+- They are not technical drawings and cannot enter a production approval path.
 - Do not place the API key in this app folder or commit it to source control.
-- When enabled, the app calls the OpenAI Images API from the local backend and writes PNG candidates under the run folder.
-- Real generated image candidates remain needs_review and approval_allowed: false.
 
 Notes:
 - This is a local portable demo app.
 - It does not require the recipient to open the repository.
-- It does not require typing PowerShell commands.
 - It runs on localhost and writes run artifacts inside this app folder.
 - It captures browser input as browser-request.json for traceability.
 - Close the app window to stop the local server.
 
 Current guardrails:
 - No production artwork approval.
-- No local image input.
-- No image decoding of user files.
-- No pixel inspection.
-- No CV/OCR integration.
+- No provider-generated labels, dimensions, legends, or callouts.
+- No technical claims beyond the registered source package.
 - No automatic approval.
 "@ | Set-Content -Path $ReadmePath -Encoding UTF8
 
