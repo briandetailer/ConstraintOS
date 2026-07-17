@@ -6,7 +6,7 @@ Set-StrictMode -Version Latest
 $ErrorActionPreference = "Stop"
 
 $RepoRoot = Split-Path -Parent $PSScriptRoot
-$AppEntry = Join-Path $RepoRoot "apps\constraintos_workbench\app_v2.py"
+$AppEntry = Join-Path $RepoRoot "apps\constraintos_workbench\app_v3.py"
 $BuildRoot = Join-Path $RepoRoot ".build\constraintos-workbench-app"
 $VenvRoot = Join-Path $BuildRoot ".venv"
 $DistRoot = Join-Path $RepoRoot "dist"
@@ -94,6 +94,10 @@ Source-backed Toyota rendering:
 - The browser source status must show ready before source-backed rendering is enabled.
 - The app verifies the source file SHA-256 against source-package-manifest.json.
 - The output is a deterministic SVG composition using the registered official Toyota source plate.
+- The App status card shows the repeat-render comparison status and both output SHA-256 values.
+- The source-backed result card includes direct links to Open source-backed plate and Open repeatability manifest.
+- A completed second run with repeat-render comparison: passed confirms byte-identical output.
+- No screenshot is required for repeatability verification; the manifest and hashes are the acceptance evidence.
 - It is a local source-backed draft and remains needs_review with approval_allowed: false.
 - Novel camera angles, exploded views, hidden geometry, and component callouts remain blocked by the current source-plate contract.
 
@@ -114,8 +118,9 @@ Notes:
 
 Current guardrails:
 - No production artwork approval.
-- No provider-generated labels, dimensions, legends, or callouts.
-- No technical claims beyond the registered source package.
+- No provider-generated technical labels.
+- No invented source-backed camera views.
+- No hidden geometry inference.
 - No automatic approval.
 "@ | Set-Content -Path $ReadmePath -Encoding UTF8
 
