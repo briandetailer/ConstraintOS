@@ -1,12 +1,16 @@
 from __future__ import annotations
 
+import base64
 import json
 import os
 import posixpath
 import subprocess
 import sys
 import threading
+import time
+import urllib.error
 import urllib.parse
+import urllib.request
 import webbrowser
 from http import HTTPStatus
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
@@ -16,13 +20,38 @@ from typing import Any
 HOST = "127.0.0.1"
 PORT = int(os.environ.get("CONSTRAINTOS_WORKBENCH_PORT", "8787"))
 SCENARIO = "supra_2jz_gte_twin_turbo"
+OPENAI_IMAGES_ENDPOINT = "https://api.openai.com/v1/images/generations"
 RUN_LOCK = threading.Lock()
 DEFAULT_DEMO_REQUEST: dict[str, Any] = {
     "scenario_key": SCENARIO,
     "request_text": "Create a technical graphic for a Toyota Supra A80 2JZ-GTE twin-turbo engine that demonstrates controlled output permutations and preserves manual review.",
     "requested_focus": "technical_comparison",
     "output_count": 4,
+    "enable_real_images": False,
+    "image_model": "gpt-image-1-mini",
 }
+OUTPUT_PROFILES = [
+    {
+        "id": "turbo_system_focus",
+        "title": "Turbo system focus",
+        "prompt_focus": "emphasize the twin-turbo routing, intake flow, exhaust-side energy path, intercooler flow, and engineering labels",
+    },
+    {
+        "id": "inline_six_identity_focus",
+        "title": "Inline-six identity focus",
+        "prompt_focus": "emphasize the long inline-six cylinder layout, 2JZ-GTE identity, Toyota Supra A80 context, and avoid V6/V8/rotary visual cues",
+    },
+    {
+        "id": "technical_label_density_focus",
+        "title": "Technical label density focus",
+        "prompt_focus": "emphasize dense but readable technical callouts, component labels, evidence-style annotation, and schematic clarity",
+    },
+    {
+        "id": "reviewer_safe_minimal_focus",
+        "title": "Reviewer-safe minimal focus",
+        "prompt_focus": "emphasize a clean reviewer-safe concept image with minimal labels, no production approval language, and clear manual-review candidate status",
+    },
+]
 APP_STATE: dict[str, Any] = {
     "status": "idle",
     "scenario_key": SCENARIO,
@@ -57,6 +86,14 @@ def latest_run_dir(repo_root: Path) -> Path | None:
     return max(run_dirs, key=lambda path: path.stat().st_mtime)
 
 
+def read_json_file(path: Path) -> dict[str, Any]:
+    return json.loads(path.read_text(encoding="utf-8-sig"))
+
+
+def write_json_file(path: Path, payload: dict[str, Any]) -> None:
+    path.write_text(json.dumps(payload, indent=2), encoding="utf-8")
+
+
 def normalize_demo_request(payload: dict[str, Any] | None) -> dict[str, Any]:
     raw_request = (payload or {}).get("demo_request", payload or {})
     if not isinstance(raw_request, dict):
@@ -65,6 +102,8 @@ def normalize_demo_request(payload: dict[str, Any] | None) -> dict[str, Any]:
     request_text = str(raw_request.get("request_text") or DEFAULT_DEMO_REQUEST["request_text"]).strip()
     requested_focus = str(raw_request.get("requested_focus") or DEFAULT_DEMO_REQUEST["requested_focus"]).strip()
     output_count_raw = raw_request.get("output_count", DEFAULT_DEMO_REQUEST["output_count"])
+    enable_real_images = bool(raw_request.get("enable_real_images", DEFAULT_DEMO_REQUEST["enable_real_images"]))
+    image_model = str(raw_request.get("image_model") or DEFAULT_DEMO_REQUEST["image_model"]).strip()
     try:
         output_count = int(output_count_raw)
     except (TypeError, ValueError):
@@ -75,12 +114,16 @@ def normalize_demo_request(payload: dict[str, Any] | None) -> dict[str, Any]:
         request_text = DEFAULT_DEMO_REQUEST["request_text"]
     if requested_focus not in {"technical_comparison", "turbo_system", "inline_six_identity", "reviewer_safe"}:
         requested_focus = DEFAULT_DEMO_REQUEST["requested_focus"]
+    if image_model not in {"gpt-image-1-mini", "gpt-image-1"}:
+        image_model = DEFAULT_DEMO_REQUEST["image_model"]
 
     return {
         "scenario_key": SCENARIO,
         "request_text": request_text,
         "requested_focus": requested_focus,
         "output_count": output_count,
+        "enable_real_images": enable_real_images,
+        "image_model": image_model,
         "source": "browser_form",
     }
 
@@ -92,17 +135,122 @@ def persist_browser_request(run_dir: Path, demo_request: dict[str, Any]) -> Path
         "status": "captured",
         "note": "This request was submitted from the ConstraintOS Workbench browser UI and captured before manual-review output generation.",
     }
-    request_path.write_text(json.dumps(request_payload, indent=2), encoding="utf-8")
+    write_json_file(request_path, request_payload)
 
     exercise_state_path = run_dir / "exercise-state.json"
     if exercise_state_path.exists():
-        exercise_state = json.loads(exercise_state_path.read_text(encoding="utf-8-sig"))
+        exercise_state = read_json_file(exercise_state_path)
         exercise_state["browser_request"] = demo_request
         artifacts = exercise_state.setdefault("generated_artifacts", [])
         if "browser-request.json" not in artifacts:
             artifacts.append("browser-request.json")
-        exercise_state_path.write_text(json.dumps(exercise_state, indent=2), encoding="utf-8")
+        write_json_file(exercise_state_path, exercise_state)
     return request_path
+
+
+def build_image_prompt(demo_request: dict[str, Any], profile: dict[str, str]) -> str:
+    return (
+        f"{demo_request['request_text']}\n\n"
+        f"Create candidate image: {profile['title']}.\n"
+        f"Visual focus: {profile['prompt_focus']}.\n"
+        "Requirements: relevant to the prompt, technical/engineering presentation, Toyota Supra A80 2JZ-GTE twin-turbo identity, "
+        "inline-six engine architecture, no V6, no V8, no rotary engine, no unrelated vehicles, no fake approval stamps, "
+        "no final production approval language. Make it a review candidate suitable for ConstraintOS manual review."
+    )
+
+
+def call_openai_image_generation(prompt: str, model: str, api_key: str) -> bytes:
+    primary_payload = {"model": model, "prompt": prompt, "size": "1024x1024", "quality": "low", "output_format": "png"}
+    fallback_payload = {"model": model, "prompt": prompt}
+    last_error: Exception | None = None
+    for payload in (primary_payload, fallback_payload):
+        try:
+            request = urllib.request.Request(
+                OPENAI_IMAGES_ENDPOINT,
+                data=json.dumps(payload).encode("utf-8"),
+                headers={"Authorization": f"Bearer {api_key}", "Content-Type": "application/json"},
+                method="POST",
+            )
+            with urllib.request.urlopen(request, timeout=180) as response:  # noqa: S310 - controlled OpenAI endpoint
+                response_payload = json.loads(response.read().decode("utf-8-sig"))
+            b64_json = response_payload.get("data", [{}])[0].get("b64_json")
+            if not b64_json:
+                raise RuntimeError(f"OpenAI image response did not include b64_json: {response_payload}")
+            return base64.b64decode(b64_json)
+        except urllib.error.HTTPError as exc:
+            error_body = exc.read().decode("utf-8-sig", errors="replace")
+            last_error = RuntimeError(f"OpenAI image generation failed with HTTP {exc.code}: {error_body}")
+            if exc.code != 400:
+                break
+        except Exception as exc:  # noqa: BLE001
+            last_error = exc
+            break
+    raise RuntimeError(str(last_error or "OpenAI image generation failed."))
+
+
+def generate_real_images(repo_root: Path, run_dir: Path, demo_request: dict[str, Any]) -> list[dict[str, Any]]:
+    if not demo_request.get("enable_real_images"):
+        return []
+
+    api_key = os.environ.get("OPENAI_API_KEY", "").strip()
+    if not api_key:
+        raise RuntimeError(
+            "Real image generation was requested, but OPENAI_API_KEY is not set for this Windows user/session. "
+            "Set OPENAI_API_KEY, rebuild/relaunch the app, then run again."
+        )
+
+    generated_root = run_dir / "generated-images"
+    generated_root.mkdir(parents=True, exist_ok=True)
+    selected_profiles = OUTPUT_PROFILES[: int(demo_request["output_count"])]
+    generated_images: list[dict[str, Any]] = []
+
+    for index, profile in enumerate(selected_profiles, start=1):
+        prompt = build_image_prompt(demo_request, profile)
+        filename = f"{index:02d}-{profile['id']}.png"
+        output_path = generated_root / filename
+        image_bytes = call_openai_image_generation(prompt, str(demo_request["image_model"]), api_key)
+        output_path.write_bytes(image_bytes)
+        generated_images.append(
+            {
+                "id": profile["id"],
+                "title": profile["title"],
+                "provider": "openai_images_api",
+                "model": demo_request["image_model"],
+                "prompt": prompt,
+                "output_file": f"generated-images/{filename}",
+                "review_decision": "needs_review",
+                "approval_allowed": False,
+            }
+        )
+        time.sleep(0.2)
+
+    manifest_path = run_dir / "real-image-generation-manifest.json"
+    manifest = {
+        "status": "complete",
+        "provider": "openai_images_api",
+        "model": demo_request["image_model"],
+        "scenario_key": SCENARIO,
+        "image_count": len(generated_images),
+        "generated_images": generated_images,
+        "approval_allowed": False,
+        "review_decision": "needs_review",
+        "note": "Real generated image candidates are artifacts for manual review only.",
+    }
+    write_json_file(manifest_path, manifest)
+
+    exercise_state_path = run_dir / "exercise-state.json"
+    if exercise_state_path.exists():
+        exercise_state = read_json_file(exercise_state_path)
+        exercise_state["real_image_generation"] = manifest
+        artifacts = exercise_state.setdefault("generated_artifacts", [])
+        if "real-image-generation-manifest.json" not in artifacts:
+            artifacts.append("real-image-generation-manifest.json")
+        for item in generated_images:
+            if item["output_file"] not in artifacts:
+                artifacts.append(item["output_file"])
+        write_json_file(exercise_state_path, exercise_state)
+
+    return generated_images
 
 
 def run_exercise_pipeline(repo_root: Path, demo_request: dict[str, Any]) -> dict[str, Any]:
@@ -110,27 +258,12 @@ def run_exercise_pipeline(repo_root: Path, demo_request: dict[str, Any]) -> dict
     if not script.exists():
         raise FileNotFoundError(f"Missing workbench exercise script: {script}")
 
-    command = [
-        "powershell.exe",
-        "-NoProfile",
-        "-ExecutionPolicy",
-        "Bypass",
-        "-File",
-        str(script),
-        "-NoOpenBrowser",
-    ]
-    completed = subprocess.run(
-        command,
-        cwd=str(repo_root),
-        capture_output=True,
-        text=True,
-        check=False,
-    )
+    command = ["powershell.exe", "-NoProfile", "-ExecutionPolicy", "Bypass", "-File", str(script), "-NoOpenBrowser"]
+    completed = subprocess.run(command, cwd=str(repo_root), capture_output=True, text=True, check=False)
     if completed.returncode != 0:
         raise RuntimeError(
             "ConstraintOS exercise pipeline failed.\n"
-            f"Exit code: {completed.returncode}\n\n"
-            f"STDOUT:\n{completed.stdout}\n\nSTDERR:\n{completed.stderr}"
+            f"Exit code: {completed.returncode}\n\nSTDOUT:\n{completed.stdout}\n\nSTDERR:\n{completed.stderr}"
         )
 
     run_dir = latest_run_dir(repo_root)
@@ -145,9 +278,15 @@ def run_exercise_pipeline(repo_root: Path, demo_request: dict[str, Any]) -> dict
         raise RuntimeError(f"Exercise state was not created: {exercise_state}")
 
     browser_request = persist_browser_request(run_dir, demo_request)
+    generated_images = generate_real_images(repo_root, run_dir, demo_request)
     relative_workbench = workbench.relative_to(repo_root).as_posix()
     relative_state = exercise_state.relative_to(repo_root).as_posix()
     relative_request = browser_request.relative_to(repo_root).as_posix()
+
+    response_images = []
+    for image in generated_images:
+        image_path = run_dir / image["output_file"]
+        response_images.append({**image, "image_url": f"/artifact/{image_path.relative_to(repo_root).as_posix()}"})
 
     return {
         "status": "complete",
@@ -156,6 +295,9 @@ def run_exercise_pipeline(repo_root: Path, demo_request: dict[str, Any]) -> dict
         "request_text": demo_request["request_text"],
         "requested_focus": demo_request["requested_focus"],
         "output_count": demo_request["output_count"],
+        "enable_real_images": demo_request["enable_real_images"],
+        "image_model": demo_request["image_model"],
+        "generated_images": response_images,
         "workbench_url": f"/artifact/{relative_workbench}",
         "exercise_state_url": f"/artifact/{relative_state}",
         "browser_request_url": f"/artifact/{relative_request}",
@@ -184,6 +326,7 @@ def html_page() -> str:
     option { color: #07111f; }
     button { appearance: none; border: 0; border-radius: 16px; padding: 16px 22px; font-size: 17px; font-weight: 700; color: #07111f; background: #83f2bf; cursor: pointer; box-shadow: 0 18px 36px rgba(0,0,0,.28); }
     button:disabled { opacity: .55; cursor: not-allowed; }
+    input[type="checkbox"] { transform: scale(1.25); margin-right: 8px; }
     .subhead { max-width: 960px; font-size: 18px; }
     .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px; }
     .card { background: rgba(10, 17, 34, .82); border: 1px solid rgba(255,255,255,.14); border-radius: 20px; padding: 22px; box-shadow: 0 18px 40px rgba(0,0,0,.28); }
@@ -195,6 +338,9 @@ def html_page() -> str:
     .status { white-space: pre-wrap; color: #dce8ff; background: rgba(255,255,255,.06); border-radius: 14px; padding: 14px; }
     iframe { width: 100%; min-height: 760px; border: 1px solid rgba(255,255,255,.16); border-radius: 20px; background: white; }
     a { color: #9bd4ff; }
+    .image-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 16px; }
+    .image-card img { width: 100%; border-radius: 14px; background: white; }
+    .muted { color: #9fafc9; font-size: 13px; }
     @media (max-width: 900px) { .input-card { grid-column: span 1; } }
   </style>
 </head>
@@ -204,7 +350,7 @@ def html_page() -> str:
     <span class="pill">localhost</span>
     <span class="pill blocked">manual review only</span>
     <h1>ConstraintOS Workbench</h1>
-    <p class="subhead">A one-click local demo app. Describe what you want, click Run Demo, and the browser sends that request through the ConstraintOS pipeline.</p>
+    <p class="subhead">A one-click local demo app. Describe what you want, click Run Demo, and the browser sends that request through the ConstraintOS pipeline. Real image candidates are optional and require OPENAI_API_KEY on this machine.</p>
   </header>
   <main>
     <section class="grid">
@@ -214,94 +360,26 @@ def html_page() -> str:
         <label for="requestText">Graphic request</label>
         <textarea id="requestText">Create a technical graphic for a Toyota Supra A80 2JZ-GTE twin-turbo engine that demonstrates controlled output permutations and preserves manual review.</textarea>
         <label for="requestedFocus">Output focus</label>
-        <select id="requestedFocus">
-          <option value="technical_comparison">Technical comparison</option>
-          <option value="turbo_system">Turbo system focus</option>
-          <option value="inline_six_identity">Inline-six identity focus</option>
-          <option value="reviewer_safe">Reviewer-safe minimal focus</option>
-        </select>
+        <select id="requestedFocus"><option value="technical_comparison">Technical comparison</option><option value="turbo_system">Turbo system focus</option><option value="inline_six_identity">Inline-six identity focus</option><option value="reviewer_safe">Reviewer-safe minimal focus</option></select>
         <label for="outputCount">Output count</label>
-        <select id="outputCount">
-          <option value="4" selected>4 candidate outputs</option>
-          <option value="3">3 candidate outputs</option>
-          <option value="2">2 candidate outputs</option>
-          <option value="1">1 candidate output</option>
-        </select>
+        <select id="outputCount"><option value="4" selected>4 candidate outputs</option><option value="3">3 candidate outputs</option><option value="2">2 candidate outputs</option><option value="1">1 candidate output</option></select>
+        <label for="imageModel">Image model</label>
+        <select id="imageModel"><option value="gpt-image-1-mini" selected>gpt-image-1-mini</option><option value="gpt-image-1">gpt-image-1</option></select>
+        <label><input id="enableRealImages" type="checkbox" /> Generate real image candidates with OpenAI Images API</label>
+        <p class="muted">Requires <code>OPENAI_API_KEY</code> set in the Windows environment before launching the app. Real image candidates remain <code>needs_review</code> and <code>approval_allowed: false</code>.</p>
       </div>
-      <div class="card">
-        <h2>Run the app</h2>
-        <p>No terminal command required for the recipient. The app runs the local pipeline behind this browser UI.</p>
-        <button id="runButton" type="button">Run ConstraintOS Demo</button>
-      </div>
-      <div class="card">
-        <h2>Safety state</h2>
-        <p>Generated results remain reviewer candidates. Approval is blocked until a human reviewer decides what to do next.</p>
-        <span class="pill warn">needs_review</span>
-        <span class="pill blocked">approval_allowed: false</span>
-      </div>
+      <div class="card"><h2>Run the app</h2><p>No terminal command required for the recipient. The app runs the local pipeline behind this browser UI.</p><button id="runButton" type="button">Run ConstraintOS Demo</button></div>
+      <div class="card"><h2>Safety state</h2><p>Generated results remain reviewer candidates. Approval is blocked until a human reviewer decides what to do next.</p><span class="pill warn">needs_review</span><span class="pill blocked">approval_allowed: false</span></div>
     </section>
-
-    <section class="card">
-      <h2>App status</h2>
-      <div id="status" class="status">Ready to run ConstraintOS.</div>
-      <p id="artifactLinks"></p>
-    </section>
-
-    <section class="card" id="workbenchCard" style="display:none">
-      <h2>Generated Workbench</h2>
-      <iframe id="workbenchFrame" title="ConstraintOS generated workbench"></iframe>
-    </section>
+    <section class="card"><h2>App status</h2><div id="status" class="status">Ready to run ConstraintOS.</div><p id="artifactLinks"></p></section>
+    <section class="card" id="imageCard" style="display:none"><h2>Generated Real Image Candidates</h2><p>These are real generated PNG candidates from the browser prompt. They are review artifacts, not approved final artwork.</p><div id="generatedImages" class="image-grid"></div></section>
+    <section class="card" id="workbenchCard" style="display:none"><h2>Generated Workbench</h2><iframe id="workbenchFrame" title="ConstraintOS generated workbench"></iframe></section>
   </main>
-
   <script>
-    function readDemoRequest() {
-      return {
-        scenario_key: 'supra_2jz_gte_twin_turbo',
-        request_text: document.getElementById('requestText').value,
-        requested_focus: document.getElementById('requestedFocus').value,
-        output_count: Number(document.getElementById('outputCount').value)
-      };
-    }
-
-    async function runDemo() {
-      const button = document.getElementById('runButton');
-      const status = document.getElementById('status');
-      const links = document.getElementById('artifactLinks');
-      const card = document.getElementById('workbenchCard');
-      const frame = document.getElementById('workbenchFrame');
-      const demoRequest = readDemoRequest();
-      button.disabled = true;
-      links.innerHTML = '';
-      card.style.display = 'none';
-      frame.removeAttribute('src');
-      status.textContent = 'Browser request received.\n\n' + demoRequest.request_text + '\n\nRunning ConstraintOS pipeline...';
-      try {
-        const response = await fetch('/api/run', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ demo_request: demoRequest })
-        });
-        const data = await response.json();
-        if (!response.ok) {
-          throw new Error(data.error || 'Unknown ConstraintOS failure');
-        }
-        status.textContent = 'Complete.\n\nRequest: ' + data.request_text + '\nFocus: ' + data.requested_focus + '\nOutputs requested: ' + data.output_count + '\nRun directory: ' + data.run_dir + '\nDecision: needs_review\nApproval allowed: false';
-        links.innerHTML = '<a href="' + data.workbench_url + '" target="_blank">Open generated workbench</a> · <a href="' + data.exercise_state_url + '" target="_blank">Open exercise state JSON</a> · <a href="' + data.browser_request_url + '" target="_blank">Open captured browser request</a>';
-        frame.src = data.workbench_url;
-        card.style.display = 'block';
-      } catch (error) {
-        status.textContent = 'ConstraintOS run failed.\n\n' + error;
-      } finally {
-        button.disabled = false;
-      }
-    }
-
-    document.addEventListener('DOMContentLoaded', () => {
-      const button = document.getElementById('runButton');
-      const status = document.getElementById('status');
-      button.addEventListener('click', runDemo);
-      status.textContent = 'Ready to run ConstraintOS. Edit the browser request, then click Run ConstraintOS Demo.';
-    });
+    function readDemoRequest() { return { scenario_key: 'supra_2jz_gte_twin_turbo', request_text: document.getElementById('requestText').value, requested_focus: document.getElementById('requestedFocus').value, output_count: Number(document.getElementById('outputCount').value), enable_real_images: document.getElementById('enableRealImages').checked, image_model: document.getElementById('imageModel').value }; }
+    function renderGeneratedImages(images) { const imageCard = document.getElementById('imageCard'); const container = document.getElementById('generatedImages'); container.innerHTML = ''; if (!images || images.length === 0) { imageCard.style.display = 'none'; return; } images.forEach((image) => { const card = document.createElement('div'); card.className = 'card image-card'; card.innerHTML = '<h3>' + image.title + '</h3><img src="' + image.image_url + '" alt="' + image.title + '" /><p><a href="' + image.image_url + '" target="_blank">Open PNG artifact</a></p><p class="muted">Model: ' + image.model + ' · Decision: needs_review · Approval allowed: false</p>'; container.appendChild(card); }); imageCard.style.display = 'block'; }
+    async function runDemo() { const button = document.getElementById('runButton'); const status = document.getElementById('status'); const links = document.getElementById('artifactLinks'); const card = document.getElementById('workbenchCard'); const frame = document.getElementById('workbenchFrame'); const imageCard = document.getElementById('imageCard'); const demoRequest = readDemoRequest(); button.disabled = true; links.innerHTML = ''; card.style.display = 'none'; imageCard.style.display = 'none'; frame.removeAttribute('src'); status.textContent = 'Browser request received.\n\n' + demoRequest.request_text + '\n\nRunning ConstraintOS pipeline...' + (demoRequest.enable_real_images ? '\n\nReal image generation is enabled. This may take longer and uses API credits.' : ''); try { const response = await fetch('/api/run', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ demo_request: demoRequest }) }); const data = await response.json(); if (!response.ok) { throw new Error(data.error || 'Unknown ConstraintOS failure'); } status.textContent = 'Complete.\n\nRequest: ' + data.request_text + '\nFocus: ' + data.requested_focus + '\nOutputs requested: ' + data.output_count + '\nReal images: ' + (data.generated_images || []).length + '\nRun directory: ' + data.run_dir + '\nDecision: needs_review\nApproval allowed: false'; links.innerHTML = '<a href="' + data.workbench_url + '" target="_blank">Open generated workbench</a> · <a href="' + data.exercise_state_url + '" target="_blank">Open exercise state JSON</a> · <a href="' + data.browser_request_url + '" target="_blank">Open captured browser request</a>'; renderGeneratedImages(data.generated_images || []); frame.src = data.workbench_url; card.style.display = 'block'; } catch (error) { status.textContent = 'ConstraintOS run failed.\n\n' + error; } finally { button.disabled = false; } }
+    document.addEventListener('DOMContentLoaded', () => { const button = document.getElementById('runButton'); const status = document.getElementById('status'); button.addEventListener('click', runDemo); status.textContent = 'Ready to run ConstraintOS. Edit the browser request, optionally enable real images, then click Run ConstraintOS Demo.'; });
   </script>
 </body>
 </html>"""
@@ -380,6 +458,8 @@ class WorkbenchHandler(BaseHTTPRequestHandler):
             content_type = "application/json; charset=utf-8"
         elif artifact_path.suffix.lower() == ".svg":
             content_type = "image/svg+xml"
+        elif artifact_path.suffix.lower() == ".png":
+            content_type = "image/png"
         payload = artifact_path.read_bytes()
         self.send_response(HTTPStatus.OK)
         self.send_header("Content-Type", content_type)
