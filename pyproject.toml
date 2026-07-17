@@ -24,6 +24,7 @@ cos-graphics-candidates = "constraintos.candidate_manifests_cli:main"
 cos-graphics-byte-loader = "constraintos.candidate_image_byte_loader_cli:main"
 cos-research-render = "runtime.research_to_render.cli:main"
 cos-extract-source-plate = "runtime.research_to_render.source_plate:main"
+cos-generate-candidates = "runtime.research_to_render.candidate_generation:main"
 
 [tool.setuptools.packages.find]
 where = ["src", "."]
