@@ -30,6 +30,7 @@ htmlcov/
 reports/
 .constraintos/
 runs/
+reference-sources/
 
 # Misc
 *.log
