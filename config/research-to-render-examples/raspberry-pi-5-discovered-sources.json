@@ -1,5 +1,33 @@
 [
   {
+    "source_id": "rpi5-official-top-view-source-plate-2026",
+    "title": "Raspberry Pi 5 product brief overview top-view image",
+    "authority": "Raspberry Pi Ltd",
+    "url": "https://pip-assets.raspberrypi.com/categories/892-raspberry-pi-5/documents/RP-008348-DS-6-raspberry-pi-5-product-brief.pdf#page=2",
+    "download_url": "https://pip-assets.raspberrypi.com/categories/892-raspberry-pi-5/documents/RP-008348-DS-6-raspberry-pi-5-product-brief.pdf",
+    "source_class": "official_web_2d_source_plate",
+    "formats": ["pdf_page", "embedded_raster"],
+    "authoritative": true,
+    "supports_features": [
+      "40-pin GPIO header",
+      "dual micro-HDMI ports",
+      "two USB 3.0 ports",
+      "two USB 2.0 ports",
+      "Gigabit Ethernet",
+      "USB-C power",
+      "MIPI camera/display connectors",
+      "PCIe FFC connector",
+      "RTC battery connector",
+      "PWM fan connector"
+    ],
+    "evidence_claims": [
+      "official top-view board image",
+      "fixed-view connector placement",
+      "suitable base plate for deterministic annotation after crop registration"
+    ],
+    "usage_terms_status": "review_required_before_distribution"
+  },
+  {
     "source_id": "rpi5-official-step-2026",
     "title": "Raspberry Pi 5 official 3D STEP — no graphics",
     "authority": "Raspberry Pi Ltd",
