@@ -69,15 +69,15 @@ def test_authoritative_sources_cover_every_required_feature() -> None:
     assert "official_web_product_documentation" in result.source_evaluation.available_source_classes
 
 
-def test_capability_classifier_prefers_sufficient_fixed_source_plate() -> None:
+def test_book_illustration_request_selects_reference_conditioned_generation() -> None:
     request, sources = load_fixture()
     result = ResearchToRenderOrchestrator().orchestrate_payload(request, sources)
     plan = result.render_plan
 
-    assert plan.production_mode == "source_plate_annotation"
+    assert plan.production_mode == "reference_conditioned_generation"
     assert plan.mode_selection_reason == (
-        "authoritative_fixed_view_source_plate_satisfies_requested_view_"
-        "without_geometry_reconstruction"
+        "authoritative_fixed_view_reference_supports_new_constrained_"
+        "illustration_without_geometry_reconstruction"
     )
     assert plan.canonical_source_ids == (
         "rpi5-official-top-view-source-plate-2026",
@@ -87,12 +87,31 @@ def test_capability_classifier_prefers_sufficient_fixed_source_plate() -> None:
         "rpi5-official-hardware-documentation-2026",
     }
     assert "source_plate_normalizer" in plan.required_workers
+    assert "generation_constraint_compiler" in plan.required_workers
+    assert "reference_conditioned_image_generator" in plan.required_workers
+    assert "visual_constraint_validator" in plan.required_workers
+    assert "deterministic_annotation_renderer" in plan.required_workers
+    assert "component_anchor_registry_builder" not in plan.required_workers
+    assert "deterministic_svg_renderer" not in plan.required_workers
+    assert "locked_camera_renderer" not in plan.required_workers
+    assert plan.exploratory_generation_allowed is False
+
+
+def test_explicit_source_annotation_request_uses_direct_annotation_path() -> None:
+    request, sources = load_fixture()
+    request["output_kind"] = "annotated_source_plate"
+
+    result = ResearchToRenderOrchestrator().orchestrate_payload(request, sources)
+    plan = result.render_plan
+
+    assert plan.production_mode == "source_plate_annotation"
+    assert plan.mode_selection_reason == (
+        "request_explicitly_requires_annotation_of_an_authoritative_fixed_source_plate"
+    )
     assert "component_anchor_registry_builder" in plan.required_workers
     assert "deterministic_svg_renderer" in plan.required_workers
-    assert "locked_camera_renderer" not in plan.required_workers
-    assert "text_to_image_generator" not in plan.required_workers
-    assert "image_generator" not in plan.required_workers
-    assert plan.exploratory_generation_allowed is False
+    assert "reference_conditioned_image_generator" not in plan.required_workers
+    assert "repeat_render_difference_within_tolerance" in plan.validation_gates
 
 
 def test_novel_view_constraint_promotes_verified_geometry() -> None:
@@ -113,21 +132,25 @@ def test_novel_view_constraint_promotes_verified_geometry() -> None:
     assert "locked_camera_renderer" in plan.required_workers
 
 
-def test_render_plan_fails_closed_before_source_plate_is_registered() -> None:
+def test_generation_plan_fails_closed_before_reference_generation_is_configured() -> None:
     request, sources = load_fixture()
     result = ResearchToRenderOrchestrator().orchestrate_payload(request, sources)
     plan = result.render_plan
 
     assert plan.production_ready is False
     assert "source_plate_not_materialized_or_digest_verified" in plan.preflight_blockers
-    assert "fixed_view_contract_not_registered" in plan.preflight_blockers
-    assert "component_anchor_registry_not_built" in plan.preflight_blockers
-    assert "render_preset_not_registered" in plan.preflight_blockers
+    assert "generation_package_not_compiled" in plan.preflight_blockers
+    assert "image_generation_provider_not_configured" in plan.preflight_blockers
+    assert "visual_constraint_validator_not_configured" in plan.preflight_blockers
     assert "source_usage_terms_review_required" in plan.preflight_blockers
     assert "provider_generated_technical_text" in plan.blocked_capabilities
     assert "hidden_geometry_inference" in plan.blocked_capabilities
     assert "novel_camera_views" in plan.blocked_capabilities
-    assert "repeat_render_difference_within_tolerance" in plan.validation_gates
+    assert "generation_package_digest_recorded" in plan.validation_gates
+    assert "reference_image_supplied_to_generator" in plan.validation_gates
+    assert "generated_candidate_digest_recorded" in plan.validation_gates
+    assert "candidate_visual_constraint_validation_complete" in plan.validation_gates
+    assert "repeat_render_difference_within_tolerance" not in plan.validation_gates
 
 
 def test_mechanical_drawing_alone_cannot_be_promoted_to_component_plate() -> None:
@@ -183,7 +206,9 @@ def test_orchestration_result_serializes_as_deterministic_json_data() -> None:
 
     assert first == second
     assert json.dumps(first, sort_keys=True) == json.dumps(second, sort_keys=True)
-    assert first["render_plan"]["production_mode"] == "source_plate_annotation"
+    assert first["render_plan"]["production_mode"] == (
+        "reference_conditioned_generation"
+    )
     assert first["render_plan"]["mode_selection_reason"].startswith(
-        "authoritative_fixed_view_source_plate"
+        "authoritative_fixed_view_reference"
     )
