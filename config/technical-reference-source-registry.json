@@ -1,6 +1,6 @@
 {
   "registry_id": "constraintos-technical-reference-sources/v1",
-  "registry_version": "1.3.0",
+  "registry_version": "1.4.0",
   "status": "active",
   "selection_principle": "Use examples with sufficient web-available reference information to build auditable ConstraintOS source packages.",
   "source_precedence": [
@@ -166,7 +166,9 @@
           "purpose": ["fan_connector_evidence", "rtc_connector_evidence", "approved_component_terminology"],
           "observed_available_on": "2026-07-17",
           "usage_terms_status": "review_required_before_distribution",
-          "ingestion_required": true
+          "materialization_requirement": "reference_only",
+          "source_access_note": "The official HTML documentation may reject automated downloads. Preserve its URL and evidence role without blocking package preflight.",
+          "ingestion_required": false
         }
       ],
       "production_limit": "For the requested locked top view, the official product-brief source plate is preferred because it satisfies the view without reconstruction. The official STEP package remains a fallback for novel viewpoints after extraction and geometry normalization. Labels remain blocked until a component-anchor registry is cross-checked against official product and hardware documentation."
