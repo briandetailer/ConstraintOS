@@ -230,3 +230,19 @@ def test_constraintos_workbench_packaged_readme_is_recipient_facing() -> None:
     ]
     for item in expected:
         assert item in content
+
+
+def test_constraintos_workbench_packaged_readme_documents_optional_real_images() -> None:
+    content = PACKAGER.read_text(encoding="utf-8")
+
+    expected = [
+        "Optional real image generation:",
+        "OPENAI_API_KEY",
+        "Do not place the API key in this app folder or commit it to source control.",
+        "OpenAI Images API",
+        "PNG candidates",
+        "needs_review",
+        "approval_allowed: false",
+    ]
+    for item in expected:
+        assert item in content
