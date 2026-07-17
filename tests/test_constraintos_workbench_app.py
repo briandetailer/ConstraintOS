@@ -111,12 +111,21 @@ def test_repeatability_and_registry_evidence_is_visible_without_opening_json() -
     assert "Repeat-render comparison:" in content
     assert "Registered callouts:" in content
     assert "Component registry:" in content
+    assert "Callout layout bounds:" in content
     assert "Current output SHA-256:" in content
     assert "Previous output SHA-256:" in content
     assert "Source SHA-256:" in content
     assert "Open source-backed plate" in content
     assert "Open repeatability manifest" in content
     assert "technical_render?.repeat_render_comparison?.status" in content
+
+
+def test_technical_plate_is_embedded_as_responsive_image_not_scrolling_iframe() -> None:
+    page = ui.html_page()
+
+    assert '<img id="technicalFrame" class="technical-frame"' in page
+    assert '<iframe id="technicalFrame"' not in page
+    assert ".technical-frame { display:block; height:auto; border:0; }" in page
 
 
 def test_exploratory_prompt_prohibits_generated_technical_text() -> None:
@@ -183,12 +192,18 @@ def test_source_plate_render_is_byte_repeatable_with_registered_callouts(tmp_pat
     assert second["repeat_render_comparison"]["status"] == "passed"
     assert first["source_sha256"] == second["source_sha256"]
     assert second["registered_callout_count"] == 4
+    assert second["component_registry_version"] == "1.1.0"
+    assert second["callout_layout_bounds_passed"] is True
+    assert len(second["validated_component_ids"]) == 4
     assert second["generated_text_inside_source_raster"] is False
     assert second["annotation_source"] == "registered_component_registry"
     assert second["annotation_strings_registry_backed"] is True
     assert second["callout_targets_registry_backed"] is True
     assert second["hidden_geometry_inferred"] is False
     assert second["approval_allowed"] is False
+    assert second["repeat_render_comparison"]["comparison_scope"] == (
+        "matching_contract_render_preset_and_component_registry_version"
+    )
     svg_content = second_svg.read_text(encoding="utf-8")
     assert "2JZ-COMP-001" in svg_content
     assert "2JZ-COMP-004" in svg_content
@@ -198,29 +213,56 @@ def test_source_plate_render_is_byte_repeatable_with_registered_callouts(tmp_pat
 def test_source_plate_contract_limits_capabilities() -> None:
     contract = json.loads(CONTRACT.read_text(encoding="utf-8"))
 
-    assert contract["contract_version"] == "2.0.0"
+    assert contract["contract_version"] == "3.0.0"
     assert contract["production_mode"] == "source_plate_annotation"
     assert contract["canonical_source"]["authority"] == "Toyota Motor Corporation"
+    assert contract["output"]["browser_presentation"] == "responsive_embedded_image"
     assert contract["annotations"]["provider_generated_text_allowed"] is False
     assert contract["annotations"]["component_callouts_in_this_contract"] is True
     assert contract["annotations"]["component_callout_source"] == "registered_component_registry"
+    assert contract["annotations"]["callout_labels_must_remain_inside_output_bounds"] is True
     assert contract["capability_limits"]["component_callouts_allowed"] is True
     assert contract["capability_limits"]["component_callouts_limited_to_registered_visible_components"] is True
     assert contract["capability_limits"]["novel_camera_views_allowed"] is False
     assert contract["capability_limits"]["hidden_geometry_inference_allowed"] is False
+    assert contract["validation"]["callout_layout_bounds_required"] is True
 
 
 def test_component_registry_uses_only_registered_visible_targets() -> None:
     registry = json.loads(COMPONENT_REGISTRY.read_text(encoding="utf-8"))
 
     assert registry["status"] == "active"
+    assert registry["registry_version"] == "1.1.0"
     assert registry["coordinate_system"] == "normalized_source_raster"
     assert len(registry["components"]) == 4
     assert all(item["confidence"] == "high" for item in registry["components"])
     assert all(item["visibility"].startswith("clearly_visible") for item in registry["components"])
+    right_components = registry["components"][2:]
+    assert all(item["label_position"]["text_anchor"] == "end" for item in right_components)
+    assert all(item["label_position"]["x"] <= 1750 for item in right_components)
     assert registry["guardrails"]["unregistered_callouts_allowed"] is False
     assert registry["guardrails"]["hidden_component_callouts_allowed"] is False
     assert registry["guardrails"]["provider_generated_text_allowed"] is False
+
+
+def test_component_registry_layout_validation_fails_closed() -> None:
+    registry = json.loads(COMPONENT_REGISTRY.read_text(encoding="utf-8"))
+    validated = ui.validate_component_registry_layout(registry, 1800, 1300)
+
+    assert validated == [
+        "2JZ-COMP-001",
+        "2JZ-COMP-002",
+        "2JZ-COMP-003",
+        "2JZ-COMP-004",
+    ]
+
+    registry["components"][0]["label_position"]["x"] = -10
+    try:
+        ui.validate_component_registry_layout(registry, 1800, 1300)
+    except RuntimeError as exc:
+        assert "outside the output safe area" in str(exc)
+    else:
+        raise AssertionError("Out-of-bounds component label should fail closed")
 
 
 def test_packager_copies_registered_config_and_materialized_toyota_package() -> None:
