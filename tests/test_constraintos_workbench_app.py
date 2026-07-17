@@ -1,13 +1,14 @@
 import hashlib
+import importlib.util
 import json
 import shutil
 from pathlib import Path
 
-import importlib.util
-
 ROOT = Path(__file__).resolve().parents[1]
-APP = ROOT / "apps" / "constraintos_workbench" / "app_v2.py"
-SPEC = importlib.util.spec_from_file_location("constraintos_workbench_app_v2", APP)
+CORE_APP = ROOT / "apps" / "constraintos_workbench" / "app_v2.py"
+UI_APP = ROOT / "apps" / "constraintos_workbench" / "app_v3.py"
+LEGACY_APP = ROOT / "apps" / "constraintos_workbench" / "app.py"
+SPEC = importlib.util.spec_from_file_location("constraintos_workbench_app_v2", CORE_APP)
 assert SPEC is not None and SPEC.loader is not None
 app = importlib.util.module_from_spec(SPEC)
 SPEC.loader.exec_module(app)
@@ -61,17 +62,19 @@ def install_test_source_package(app_root: Path) -> Path:
 
 
 def test_source_backed_workbench_is_the_packaged_entry_point() -> None:
-    app_content = APP.read_text(encoding="utf-8")
+    core_content = CORE_APP.read_text(encoding="utf-8")
+    legacy_content = LEGACY_APP.read_text(encoding="utf-8")
     packager_content = PACKAGER.read_text(encoding="utf-8")
 
-    assert 'HOST = "127.0.0.1"' in app_content
-    assert "ThreadingHTTPServer" in app_content
-    assert "webbrowser.open(url)" in app_content
-    assert 'apps\\constraintos_workbench\\app_v2.py' in packager_content
+    assert 'HOST = "127.0.0.1"' in core_content
+    assert "ThreadingHTTPServer" in core_content
+    assert "webbrowser.open(url)" in core_content
+    assert 'with_name("app_v3.py")' in legacy_content
+    assert 'apps\\constraintos_workbench\\app_v3.py' in packager_content
 
 
 def test_workbench_separates_exploration_from_technical_rendering() -> None:
-    content = APP.read_text(encoding="utf-8")
+    content = CORE_APP.read_text(encoding="utf-8")
 
     assert "Explore Generated Raster References" in content
     assert "Render Registered Toyota Source Plate" in content
@@ -80,6 +83,18 @@ def test_workbench_separates_exploration_from_technical_rendering() -> None:
     assert "Run with Real Images" not in content
     assert "exploratory_reference_only" in content
     assert "technical_output_allowed" in content
+
+
+def test_repeatability_evidence_is_visible_without_opening_json() -> None:
+    content = UI_APP.read_text(encoding="utf-8")
+
+    assert "Repeat-render comparison:" in content
+    assert "Current output SHA-256:" in content
+    assert "Previous output SHA-256:" in content
+    assert "Source SHA-256:" in content
+    assert "Open source-backed plate" in content
+    assert "Open repeatability manifest" in content
+    assert "technical_render?.repeat_render_comparison?.status" in content
 
 
 def test_exploratory_prompt_prohibits_generated_technical_text() -> None:
@@ -170,11 +185,13 @@ def test_packager_copies_registered_config_and_materialized_toyota_package() -> 
     assert "source-package-manifest.json" in content
     assert "Explore Generated Raster References" in content
     assert "Render Registered Toyota Source Plate" in content
+    assert "repeat-render comparison status" in content
+    assert "No screenshot is required" in content
     assert "Run with Real Images" not in content
 
 
 def test_app_serves_source_status_and_required_artifact_types() -> None:
-    content = APP.read_text(encoding="utf-8")
+    content = CORE_APP.read_text(encoding="utf-8")
 
     assert 'parsed.path == "/api/source-status"' in content
     assert "technical_source_status(self.app_root)" in content
