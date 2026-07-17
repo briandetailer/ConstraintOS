@@ -1,15 +1,57 @@
 {
   "policy_id": "constraintos-technical-rendering/v1",
-  "policy_version": "1.0.0",
+  "policy_version": "1.1.0",
   "status": "active",
+  "source_strategy": {
+    "selection_principle": "examples_are_selected_for_web_available_reference_material",
+    "canonical_source_package_required": true,
+    "authoritative_web_sources_allowed": true,
+    "proprietary_3d_purchase_required": false,
+    "capability_must_not_exceed_available_source_evidence": true,
+    "accepted_source_classes": [
+      "official_web_3d_geometry",
+      "official_web_2d_source_plate",
+      "official_web_technical_documentation",
+      "verified_local_geometry"
+    ]
+  },
   "production_output": {
-    "renderer_class": "deterministic_geometry",
+    "renderer_class": "deterministic_source_backed",
     "canonical_asset_required": true,
-    "locked_camera_required": true,
+    "canonical_asset_may_be_2d_or_3d": true,
+    "locked_camera_required_for_geometry_rendering": true,
+    "locked_source_crop_required_for_source_plate_rendering": true,
     "locked_render_preset_required": true,
     "component_registry_required": true,
     "deterministic_annotation_overlay_required": true,
     "fail_closed_when_requirements_missing": true
+  },
+  "production_modes": {
+    "geometry_render": {
+      "allowed_source_classes": [
+        "official_web_3d_geometry",
+        "verified_local_geometry"
+      ],
+      "novel_views_allowed": true,
+      "locked_camera_required": true,
+      "repeat_render_comparison_required": true
+    },
+    "source_plate_annotation": {
+      "allowed_source_classes": [
+        "official_web_2d_source_plate"
+      ],
+      "novel_views_allowed": false,
+      "locked_source_crop_required": true,
+      "deterministic_annotation_overlay_required": true,
+      "repeat_render_comparison_required": true
+    },
+    "reference_bundle_only": {
+      "allowed_source_classes": [
+        "official_web_technical_documentation"
+      ],
+      "production_base_plate_allowed": false,
+      "use": "constraint_validation_and_component_registry_evidence"
+    }
   },
   "text_to_image": {
     "role": "exploratory_reference_only",
@@ -28,10 +70,14 @@
     "leader_line_target_required": true
   },
   "required_preflight_gates": [
+    "canonical_source_package_present",
+    "source_provenance_recorded",
+    "source_usage_terms_recorded",
     "canonical_asset_present",
     "canonical_asset_digest_matches",
+    "requested_capability_supported_by_source_class",
     "expected_component_inventory_present",
-    "locked_view_definition_present",
+    "locked_view_or_source_plate_definition_present",
     "render_preset_version_matches"
   ],
   "required_output_gates": [
