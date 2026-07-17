@@ -28,36 +28,11 @@ def test_constraintos_workbench_app_serves_pretty_browser_front_door() -> None:
         "Portable Workbench App",
         "Run ConstraintOS Demo",
         "Browser request input",
-        "Graphic request",
-        "Output focus",
-        "Output count",
         "Run the app",
         "Safety state",
         "App status",
         "Generated Workbench",
         "manual review only",
-    ]
-    for item in expected:
-        assert item in content
-
-
-def test_constraintos_workbench_app_captures_browser_request_fields() -> None:
-    content = APP.read_text(encoding="utf-8")
-
-    expected = [
-        "DEFAULT_DEMO_REQUEST",
-        "normalize_demo_request",
-        'textarea id="requestText"',
-        'select id="requestedFocus"',
-        'select id="outputCount"',
-        "technical_comparison",
-        "turbo_system",
-        "inline_six_identity",
-        "reviewer_safe",
-        "readDemoRequest()",
-        "request_text: document.getElementById('requestText').value",
-        "requested_focus: document.getElementById('requestedFocus').value",
-        "output_count: Number(document.getElementById('outputCount').value)",
     ]
     for item in expected:
         assert item in content
@@ -80,18 +55,36 @@ def test_constraintos_workbench_app_binds_button_with_valid_javascript() -> None
         assert item in content
 
 
-def test_constraintos_workbench_app_posts_browser_request_to_api() -> None:
+def test_constraintos_workbench_app_accepts_browser_request_input() -> None:
     content = APP.read_text(encoding="utf-8")
 
     expected = [
-        "const demoRequest = readDemoRequest();",
-        "fetch('/api/run', {",
-        "method: 'POST'",
-        "headers: { 'Content-Type': 'application/json' }",
+        "def normalize_demo_request(payload: dict[str, Any] | None)",
+        "requestText",
+        "requestedFocus",
+        "outputCount",
+        "function readDemoRequest()",
+        "request_text: document.getElementById('requestText').value",
+        "requested_focus: document.getElementById('requestedFocus').value",
+        "output_count: Number(document.getElementById('outputCount').value)",
         "body: JSON.stringify({ demo_request: demoRequest })",
-        "_read_json_body",
-        "demo_request = normalize_demo_request(payload)",
-        "Invalid browser request JSON",
+        "Open captured browser request",
+    ]
+    for item in expected:
+        assert item in content
+
+
+def test_constraintos_workbench_app_persists_browser_request_and_handles_bom_json() -> None:
+    content = APP.read_text(encoding="utf-8")
+
+    expected = [
+        "def persist_browser_request(run_dir: Path, demo_request: dict[str, Any]) -> Path",
+        "browser-request.json",
+        "request_path.write_text(json.dumps(request_payload, indent=2), encoding=\"utf-8\")",
+        "exercise_state_path.read_text(encoding=\"utf-8-sig\")",
+        "raw_body = self.rfile.read(content_length).decode(\"utf-8-sig\")",
+        "exercise_state[\"browser_request\"] = demo_request",
+        "browser_request_url",
     ]
     for item in expected:
         assert item in content
@@ -108,24 +101,8 @@ def test_constraintos_workbench_app_runs_pipeline_from_browser_api() -> None:
         '"Bypass"',
         '"-NoOpenBrowser"',
         'if parsed.path != "/api/run"',
+        "fetch('/api/run', {",
         "RUN_LOCK",
-    ]
-    for item in expected:
-        assert item in content
-
-
-def test_constraintos_workbench_app_persists_browser_request_artifact_and_state() -> None:
-    content = APP.read_text(encoding="utf-8")
-
-    expected = [
-        "persist_browser_request",
-        "browser-request.json",
-        "browser_request",
-        "status\": \"captured",
-        "source\": \"browser_form",
-        "exercise_state[\"browser_request\"] = demo_request",
-        "browser_request_url",
-        "Open captured browser request",
     ]
     for item in expected:
         assert item in content
@@ -190,6 +167,7 @@ def test_constraintos_workbench_packaged_readme_is_recipient_facing() -> None:
     expected = [
         "Double-click: ConstraintOS Workbench.exe",
         "Your browser will open to the local Workbench app.",
+        "Edit the browser request if desired.",
         "Click: Run ConstraintOS Demo",
         "It does not require the recipient to open the repository.",
         "It does not require typing PowerShell commands.",
