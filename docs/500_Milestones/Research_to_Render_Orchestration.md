@@ -8,8 +8,8 @@ status: active
 started_on: 2026-07-17
 branch: phase-1-cli-tooling
 trigger: user clarified that ConstraintOS must research each imagery request rather than begin from a pre-registered renderer
-current_checkpoint: request-driven planning, recorded-source evaluation, live web discovery adapter, and capability-based render selection implemented
-next_checkpoint: materialize Raspberry Pi 5 sources and build the first request-derived source-plate contract and component-anchor registry
+current_checkpoint: request-driven research, capability selection, source materialization, and deterministic PDF source-plate extraction implemented
+next_checkpoint: review extracted Raspberry Pi source plate and build its component-anchor and label registry
 ```
 
 ## Product intent
@@ -158,13 +158,34 @@ canonical_source: official Raspberry Pi STEP package
 
 This prevents both overuse of stochastic generation and unnecessary 3D reconstruction.
 
-## Fail-closed state
+## Deterministic source-plate extraction
 
-Planning does not claim that imagery is ready. The source-plate path remains blocked until:
+The selected Raspberry Pi source plate is an embedded raster on page index 1 of the official product brief. ConstraintOS does not redraw it.
+
+The registered extraction workflow:
 
 ```text
-- source plate is materialized and SHA-256 verified
-- product image crop is registered
+1. read source-package-manifest.json
+2. locate rpi5-official-top-view-source-plate-2026
+3. verify the downloaded PDF SHA-256
+4. open the registered page
+5. enumerate embedded rasters
+6. select the largest raster satisfying minimum dimensions and pixel area
+7. preserve the extracted encoded image bytes
+8. calculate output SHA-256
+9. write source-plate-extraction-manifest.json
+10. leave production_ready and approval_allowed false
+```
+
+The extraction contract explicitly prohibits automatic component identification and production approval. It creates the canonical visual asset needed for the next anchor-registration slice; it does not claim that labels are already validated.
+
+## Fail-closed state
+
+The source-plate path remains blocked until:
+
+```text
+- source package is materialized and SHA-256 verified
+- source plate is extracted and manually reviewed
 - fixed-view contract is registered
 - requested component anchors are registered
 - approved label strings are linked to official evidence
@@ -191,20 +212,25 @@ runtime/research_to_render/models.py
 runtime/research_to_render/orchestrator.py
 runtime/research_to_render/discovery.py
 runtime/research_to_render/cli.py
+runtime/research_to_render/source_plate.py
 config/research-to-render-examples/raspberry-pi-5-io-plate-request.json
 config/research-to-render-examples/raspberry-pi-5-discovered-sources.json
+config/research-source-plate-extraction/raspberry-pi-5-product-brief-v1.json
 config/technical-reference-source-registry.json
 scripts/exercise-research-to-render.ps1
 scripts/prepare-technical-reference-source-package.ps1
+scripts/prepare-raspberry-pi-5-source-plate.ps1
 tests/test_research_to_render_orchestration.py
 tests/test_research_to_render_cli.py
 tests/test_research_to_render_discovery.py
+tests/test_research_source_plate_extraction.py
 ```
 
-Installed CLI:
+Installed CLIs:
 
 ```text
 cos-research-render
+cos-extract-source-plate
 ```
 
 ## Implementation slices
@@ -223,8 +249,11 @@ cos-research-render
 [x] Make source-package materializer registry-driven
 [x] Add Raspberry Pi 5 request outside the original four examples
 [x] Register official Raspberry Pi source plate, STEP, drawing, and documentation
+[x] Register deterministic product-brief source-plate extraction contract
+[x] Add digest-verified embedded-raster extraction worker
+[x] Add Windows source-plate preparation script
 [ ] Materialize and hash Raspberry Pi source package on Windows
-[ ] Register product-brief source-plate crop
+[ ] Extract and visually review official top-view source plate on Windows
 [ ] Build Raspberry Pi component-anchor and label registry
 [ ] Add deterministic Raspberry Pi SVG plate renderer
 [ ] Add repeat-render comparison
@@ -246,6 +275,8 @@ cos-research-render
 8. A sufficient fixed source plate is preferred over unnecessary geometry reconstruction.
 9. Novel viewpoints select verified geometry when available.
 10. Image generation is not required for the Raspberry Pi technical plate.
-11. Rendering remains fail-closed until materialization, registry, preset, and usage gates pass.
-12. Final imagery is validated against the original request and preserves manual review.
+11. Source-document and extracted-image digests are recorded.
+12. Extracted source bytes are preserved without model-generated alteration.
+13. Rendering remains fail-closed until anchor, preset, repeatability, and usage gates pass.
+14. Final imagery is validated against the original request and preserves manual review.
 ```
