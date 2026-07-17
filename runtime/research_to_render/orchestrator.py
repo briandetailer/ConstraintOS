@@ -28,6 +28,10 @@ DOCUMENTATION_SOURCE_CLASSES = {
     "official_web_product_documentation",
     "official_web_component_documentation",
 }
+DIRECT_ANNOTATION_OUTPUT_KINDS = {
+    "annotated_source_plate",
+    "source_plate_annotation",
+}
 
 
 def _normalized(value: str) -> str:
@@ -147,11 +151,13 @@ class ResearchToRenderOrchestrator:
             if source.source_class in DOCUMENTATION_SOURCE_CLASSES
         )
 
-        if source_plates and not request.novel_view_requested:
+        direct_annotation_requested = (
+            request.output_kind in DIRECT_ANNOTATION_OUTPUT_KINDS
+        )
+        if source_plates and not request.novel_view_requested and direct_annotation_requested:
             production_mode = "source_plate_annotation"
             mode_selection_reason = (
-                "authoritative_fixed_view_source_plate_satisfies_requested_view_"
-                "without_geometry_reconstruction"
+                "request_explicitly_requires_annotation_of_an_authoritative_fixed_source_plate"
             )
             canonical_sources = source_plates
             mode_workers = (
@@ -164,6 +170,34 @@ class ResearchToRenderOrchestrator:
                 "fixed_view_contract_not_registered",
                 "component_anchor_registry_not_built",
                 "render_preset_not_registered",
+            )
+            mode_validation_gates = (
+                "repeat_render_difference_within_tolerance",
+            )
+        elif source_plates and not request.novel_view_requested:
+            production_mode = "reference_conditioned_generation"
+            mode_selection_reason = (
+                "authoritative_fixed_view_reference_supports_new_constrained_"
+                "illustration_without_geometry_reconstruction"
+            )
+            canonical_sources = source_plates
+            mode_workers = (
+                "source_plate_normalizer",
+                "generation_constraint_compiler",
+                "reference_conditioned_image_generator",
+                "visual_constraint_validator",
+            )
+            mode_blockers = (
+                "source_plate_not_materialized_or_digest_verified",
+                "generation_package_not_compiled",
+                "image_generation_provider_not_configured",
+                "visual_constraint_validator_not_configured",
+            )
+            mode_validation_gates = (
+                "generation_package_digest_recorded",
+                "reference_image_supplied_to_generator",
+                "generated_candidate_digest_recorded",
+                "candidate_visual_constraint_validation_complete",
             )
         elif geometry_sources:
             production_mode = "geometry_render"
@@ -184,12 +218,16 @@ class ResearchToRenderOrchestrator:
                 "locked_camera_not_registered",
                 "render_preset_not_registered",
             )
+            mode_validation_gates = (
+                "repeat_render_difference_within_tolerance",
+            )
         else:
             production_mode = "reference_bundle_only"
             mode_selection_reason = "no_supported_visual_or_geometry_base_source"
             canonical_sources = ()
             mode_workers = ("evidence_report_builder",)
             mode_blockers = ("no_supported_production_base_source",)
+            mode_validation_gates = ()
 
         blockers = list(mode_blockers)
         if evaluation.unsupported_required_features:
@@ -220,7 +258,7 @@ class ResearchToRenderOrchestrator:
             "constraint_validator",
             "provenance_report_builder",
         )
-        validation_gates = [
+        validation_gates = (
             "request_constraints_normalized",
             "authoritative_source_requirement_satisfied",
             "source_provenance_recorded",
@@ -229,12 +267,12 @@ class ResearchToRenderOrchestrator:
             "canonical_source_digest_matches",
             "requested_features_evidence_backed",
             "render_mode_supported_by_source_class",
+            *mode_validation_gates,
             "annotation_strings_registry_backed",
             "callout_targets_registry_backed",
             "forbidden_features_absent",
-            "repeat_render_difference_within_tolerance",
             "manual_review_required",
-        ]
+        )
         return RenderPlan(
             production_mode=production_mode,
             mode_selection_reason=mode_selection_reason,
