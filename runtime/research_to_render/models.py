@@ -147,6 +147,7 @@ class SourceEvaluation:
 @dataclass(frozen=True)
 class RenderPlan:
     production_mode: str
+    mode_selection_reason: str
     canonical_source_ids: tuple[str, ...]
     annotation_source_ids: tuple[str, ...]
     required_workers: tuple[str, ...]
