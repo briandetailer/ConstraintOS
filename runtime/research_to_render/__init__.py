@@ -1,3 +1,12 @@
+from .candidate_generation import (
+    CandidateGenerationError,
+    compile_generation_package,
+    generate_candidates,
+)
+from .candidate_validation import (
+    CandidateValidationError,
+    validate_candidates,
+)
 from .discovery import DiscoveryError, OpenAIWebDiscoveryProvider
 from .models import (
     ConstraintRequest,
@@ -10,6 +19,8 @@ from .models import (
 from .orchestrator import ResearchToRenderOrchestrator
 
 __all__ = [
+    "CandidateGenerationError",
+    "CandidateValidationError",
     "ConstraintRequest",
     "DiscoveryError",
     "OpenAIWebDiscoveryProvider",
@@ -19,4 +30,7 @@ __all__ = [
     "ResearchToRenderOrchestrator",
     "SourceCandidate",
     "SourceEvaluation",
+    "compile_generation_package",
+    "generate_candidates",
+    "validate_candidates",
 ]
