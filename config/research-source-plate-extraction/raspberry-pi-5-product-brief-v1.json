@@ -1,0 +1,37 @@
+{
+  "contract_id": "constraintos-source-extraction/raspberry-pi-5-product-brief/v1",
+  "contract_version": "1.0.0",
+  "status": "active",
+  "scenario_id": "raspberry_pi_5_io_plate",
+  "source_id": "rpi5-official-top-view-source-plate-2026",
+  "source_class": "official_web_2d_source_plate",
+  "authority": "Raspberry Pi Ltd",
+  "document_page_index": 1,
+  "selection_strategy": "largest_embedded_raster_on_page",
+  "selection_requirements": {
+    "minimum_width": 400,
+    "minimum_height": 200,
+    "minimum_pixel_area": 150000,
+    "reject_soft_masks": false
+  },
+  "output": {
+    "directory": "derived",
+    "filename_stem": "raspberry-pi-5-official-top-view-source-plate",
+    "preserve_extracted_encoding": true
+  },
+  "validation": {
+    "source_package_manifest_required": true,
+    "source_document_digest_match_required": true,
+    "page_index_must_exist": true,
+    "embedded_raster_required": true,
+    "output_digest_required": true,
+    "manual_review_required": true
+  },
+  "capability_limits": {
+    "fixed_view_only": true,
+    "novel_view_allowed": false,
+    "generated_text_inside_source_raster_allowed": false,
+    "automatic_component_identification_allowed": false,
+    "automatic_production_approval_allowed": false
+  }
+}
