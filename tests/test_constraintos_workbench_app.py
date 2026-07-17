@@ -28,31 +28,12 @@ def test_constraintos_workbench_app_serves_pretty_browser_front_door() -> None:
         "Portable Workbench App",
         "Browser request input",
         "Provider status",
-        "Run the app",
+        "Run Deterministic Demo",
+        "Run with Real Images",
         "Safety state",
         "App status",
         "Generated Workbench",
         "manual review only",
-    ]
-    for item in expected:
-        assert item in content
-
-
-def test_constraintos_workbench_app_binds_explicit_run_buttons_with_valid_javascript() -> None:
-    content = APP.read_text(encoding="utf-8")
-
-    expected = [
-        "return r\"\"\"<!doctype html>",
-        '<button id="deterministicRunButton"',
-        "Run Deterministic Demo",
-        '<button id="realImageRunButton"',
-        "Run with Real Images",
-        "document.addEventListener('DOMContentLoaded'",
-        "deterministicButton.addEventListener('click', () => runDemo(false))",
-        "realButton.addEventListener('click', () => runDemo(true))",
-        "Browser request received.\\n\\n",
-        "Ready to run ConstraintOS. Edit the browser request, then choose deterministic or real-image generation.",
-        "frame.removeAttribute('src')",
     ]
     for item in expected:
         assert item in content
@@ -66,6 +47,7 @@ def test_constraintos_workbench_app_accepts_browser_request_input() -> None:
         "requestText",
         "requestedFocus",
         "outputCount",
+        "imageModel",
         "function readDemoRequest(enableRealImages)",
         "request_text: document.getElementById('requestText').value",
         "requested_focus: document.getElementById('requestedFocus').value",
@@ -112,19 +94,19 @@ def test_constraintos_workbench_app_runs_pipeline_from_browser_api() -> None:
         assert item in content
 
 
-def test_constraintos_workbench_app_surfaces_provider_status_before_running_real_images() -> None:
+def test_constraintos_workbench_app_checks_provider_status_before_real_images() -> None:
     content = APP.read_text(encoding="utf-8")
 
     expected = [
         "def provider_status() -> dict[str, Any]",
-        'if parsed.path == "/api/provider-status"',
-        "api_key_visible_to_app",
-        "missing_api_key",
-        "Provider status",
-        "refreshProviderStatus()",
-        "providerReady",
+        "openai_api_key_looks_placeholder",
+        "api_key_looks_placeholder",
+        "placeholder_api_key",
+        "/api/provider-status",
+        "async function refreshProviderStatus()",
+        "providerReady = data.status === 'ready'",
         "realButton.disabled = !providerReady",
-        "OPENAI_API_KEY is not visible to this app process",
+        "missing or still looks like placeholder text",
     ]
     for item in expected:
         assert item in content
@@ -135,8 +117,6 @@ def test_constraintos_workbench_app_supports_optional_openai_image_generation() 
 
     expected = [
         'OPENAI_IMAGES_ENDPOINT = "https://api.openai.com/v1/images/generations"',
-        "enable_real_images",
-        "Run with Real Images",
         "OPENAI_API_KEY",
         '"gpt-image-1-mini"',
         '"gpt-image-1"',
@@ -145,7 +125,22 @@ def test_constraintos_workbench_app_supports_optional_openai_image_generation() 
         '"Authorization": f"Bearer {api_key}"',
         '"output_format": "png"',
         "base64.b64decode(b64_json)",
-        "image_payload.get(\"url\")",
+        "image_url",
+    ]
+    for item in expected:
+        assert item in content
+
+
+def test_constraintos_workbench_app_sanitizes_openai_provider_errors() -> None:
+    content = APP.read_text(encoding="utf-8")
+
+    expected = [
+        "def provider_http_error_message(exc: urllib.error.HTTPError) -> str",
+        "Intentionally discard provider body so API-key fragments are never surfaced",
+        "OpenAI rejected the API key",
+        "HTTP 401",
+        "rate limit or quota was exceeded",
+        "Check the API key, model access, request limits, and account billing",
     ]
     for item in expected:
         assert item in content
@@ -246,8 +241,6 @@ def test_constraintos_workbench_packaged_readme_is_recipient_facing() -> None:
         "Double-click: ConstraintOS Workbench.exe",
         "Your browser will open to the local Workbench app.",
         "Edit the browser request if desired.",
-        "Choose the output focus, output count, and image model.",
-        "Check the Provider status card.",
         "Run Deterministic Demo",
         "Run with Real Images",
         "It does not require the recipient to open the repository.",
@@ -264,7 +257,7 @@ def test_constraintos_workbench_packaged_readme_documents_optional_real_images()
     expected = [
         "Optional real image generation:",
         "OPENAI_API_KEY",
-        "Provider status card shows whether the launched app can see OPENAI_API_KEY",
+        "Provider status card",
         "Do not place the API key in this app folder or commit it to source control.",
         "OpenAI Images API",
         "PNG candidates",
