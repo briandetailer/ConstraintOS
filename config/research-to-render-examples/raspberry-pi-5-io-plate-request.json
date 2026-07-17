@@ -24,6 +24,17 @@
       "hidden-component inference",
       "automatic production approval"
     ],
+    "visual_output": {
+      "illustration_style": "publication-ready technical line illustration with controlled outlines and precise component separation",
+      "composition": "orthographic top view, complete board visible, centered with clean surrounding annotation space",
+      "palette": "neutral grayscale board rendering with restrained blue accents on external I/O connector groups",
+      "background": "plain white background",
+      "surface_treatment": "clean engineered surfaces, consistent line weight, no sketchiness, no decorative texture",
+      "label_strategy": "generate no text or callouts in the raster; deterministic labels and leader lines are added after candidate validation",
+      "output_size": "1024x1024",
+      "quality": "high",
+      "candidate_count": 1
+    },
     "repeatability_required": true,
     "authoritative_sources_required": true,
     "labels_required": true,
