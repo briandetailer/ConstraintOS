@@ -20,6 +20,7 @@ def test_reference_source_registry_is_active() -> None:
     registry = load_registry()
 
     assert registry["registry_id"] == "constraintos-technical-reference-sources/v1"
+    assert registry["registry_version"] == "1.1.0"
     assert registry["status"] == "active"
     assert "web-available reference information" in registry["selection_principle"]
 
@@ -28,6 +29,7 @@ def test_perseverance_uses_official_web_geometry() -> None:
     perseverance = scenario("nasa_perseverance_rover")
     source_classes = {item["source_class"] for item in perseverance["sources"]}
     formats = {item for source in perseverance["sources"] for item in source.get("available_formats", [])}
+    required_sources = [source for source in perseverance["sources"] if source["ingestion_required"]]
 
     assert perseverance["preferred_production_mode"] == "geometry_render"
     assert perseverance["capabilities"]["deterministic_geometry_render"] is True
@@ -35,11 +37,14 @@ def test_perseverance_uses_official_web_geometry() -> None:
     assert "official_web_3d_geometry" in source_classes
     assert {"blend", "glb"}.issubset(formats)
     assert all(source["authority"] == "NASA/JPL-Caltech" for source in perseverance["sources"])
+    assert all(source.get("download_url") for source in required_sources)
+    assert all(source.get("target_filename") for source in required_sources)
 
 
 def test_toyota_uses_official_source_plate_and_release() -> None:
     toyota = scenario("toyota_supra_a80_2jz_gte")
     source_classes = {item["source_class"] for item in toyota["sources"]}
+    required_sources = [source for source in toyota["sources"] if source["ingestion_required"]]
 
     assert toyota["preferred_production_mode"] == "source_plate_annotation"
     assert toyota["capabilities"]["deterministic_source_plate_annotation"] is True
@@ -47,7 +52,16 @@ def test_toyota_uses_official_source_plate_and_release() -> None:
     assert "official_web_2d_source_plate" in source_classes
     assert "official_web_technical_documentation" in source_classes
     assert all(source["authority"] == "Toyota Motor Corporation" for source in toyota["sources"])
+    assert all(source.get("download_url") for source in required_sources)
+    assert all(source.get("target_filename") for source in required_sources)
     assert "Novel camera angles" in toyota["production_limit"]
+
+
+def test_all_materialized_sources_require_usage_review() -> None:
+    for item in load_registry()["scenarios"]:
+        for source in item["sources"]:
+            if source["ingestion_required"]:
+                assert source["usage_terms_status"] == "review_required_before_distribution"
 
 
 def test_scenario_capability_cannot_exceed_ingested_sources() -> None:
