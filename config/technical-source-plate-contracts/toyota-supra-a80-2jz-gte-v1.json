@@ -1,6 +1,6 @@
 {
-  "contract_id": "constraintos-source-plate/toyota-supra-a80-2jz-gte/v2",
-  "contract_version": "2.0.0",
+  "contract_id": "constraintos-source-plate/toyota-supra-a80-2jz-gte/v3",
+  "contract_version": "3.0.0",
   "status": "active",
   "scenario_id": "toyota_supra_a80_2jz_gte",
   "production_mode": "source_plate_annotation",
@@ -10,11 +10,12 @@
     "authority": "Toyota Motor Corporation"
   },
   "component_registry": "config/technical-component-registries/toyota-supra-a80-2jz-gte-source-plate-v1.json",
-  "render_preset_version": "source-plate-svg/v2",
+  "render_preset_version": "source-plate-svg/v3",
   "output": {
     "width": 1800,
     "height": 1300,
-    "format": "svg"
+    "format": "svg",
+    "browser_presentation": "responsive_embedded_image"
   },
   "source_placement": {
     "x": 350,
@@ -31,7 +32,8 @@
     "provider_generated_text_allowed": false,
     "component_callouts_in_this_contract": true,
     "component_callout_source": "registered_component_registry",
-    "annotation_text_inside_source_raster_allowed": false
+    "annotation_text_inside_source_raster_allowed": false,
+    "callout_labels_must_remain_inside_output_bounds": true
   },
   "capability_limits": {
     "novel_camera_views_allowed": false,
@@ -44,8 +46,9 @@
     "source_digest_match_required": true,
     "annotation_strings_registry_backed_required": true,
     "callout_targets_registry_backed_required": true,
+    "callout_layout_bounds_required": true,
     "repeat_render_comparison_required": true,
-    "comparison_scope": "matching_contract_id_and_render_preset"
+    "comparison_scope": "matching_contract_render_preset_and_component_registry_version"
   },
   "review": {
     "approval_allowed": false,
