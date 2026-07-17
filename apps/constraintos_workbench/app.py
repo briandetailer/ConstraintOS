@@ -86,21 +86,61 @@ def latest_run_dir(repo_root: Path) -> Path | None:
     return max(run_dirs, key=lambda path: path.stat().st_mtime)
 
 
+def openai_api_key_value() -> str:
+    return os.environ.get("OPENAI_API_KEY", "").strip()
+
+
+def openai_api_key_looks_placeholder(api_key: str) -> bool:
+    lowered = api_key.lower().strip()
+    placeholder_markers = [
+        "your_api_key_here",
+        "paste_your_key_here",
+        "your_api",
+        "api_key_here",
+        "key_here",
+        "replace_me",
+        "example",
+        "placeholder",
+    ]
+    return bool(lowered) and any(marker in lowered for marker in placeholder_markers)
+
+
 def provider_status() -> dict[str, Any]:
-    api_key_present = bool(os.environ.get("OPENAI_API_KEY", "").strip())
+    api_key = openai_api_key_value()
+    api_key_present = bool(api_key)
+    api_key_placeholder = openai_api_key_looks_placeholder(api_key)
+    ready = api_key_present and not api_key_placeholder
+    if ready:
+        message = "OPENAI_API_KEY is visible to this app process and does not look like a placeholder. Real image generation can run."
+    elif api_key_placeholder:
+        message = "OPENAI_API_KEY is visible, but it looks like placeholder text. Replace it with a real secret key before running real image generation."
+    else:
+        message = "OPENAI_API_KEY is not visible to this app process. Real image generation will not run until the app is launched from an environment that has the key."
     return {
         "provider": "openai_images_api",
         "endpoint": OPENAI_IMAGES_ENDPOINT,
         "api_key_visible_to_app": api_key_present,
-        "status": "ready" if api_key_present else "missing_api_key",
+        "api_key_looks_placeholder": api_key_placeholder,
+        "status": "ready" if ready else ("placeholder_api_key" if api_key_placeholder else "missing_api_key"),
         "default_model": DEFAULT_DEMO_REQUEST["image_model"],
         "supported_models": ["gpt-image-1-mini", "gpt-image-1"],
-        "message": (
-            "OPENAI_API_KEY is visible to this app process. Real image generation can run."
-            if api_key_present
-            else "OPENAI_API_KEY is not visible to this app process. Real image generation will not run until the app is launched from an environment that has the key."
-        ),
+        "message": message,
     }
+
+
+def require_ready_openai_api_key() -> str:
+    api_key = openai_api_key_value()
+    if not api_key:
+        raise RuntimeError(
+            "Real image generation was requested, but OPENAI_API_KEY is not visible to this app process. "
+            "Set OPENAI_API_KEY before launching ConstraintOS Workbench, then restart the app and run again."
+        )
+    if openai_api_key_looks_placeholder(api_key):
+        raise RuntimeError(
+            "Real image generation was requested, but OPENAI_API_KEY looks like placeholder text. "
+            "Create a real API key in the OpenAI dashboard, set OPENAI_API_KEY to that value, restart the app, then run again."
+        )
+    return api_key
 
 
 def read_json_file(path: Path) -> dict[str, Any]:
@@ -176,6 +216,18 @@ def build_image_prompt(demo_request: dict[str, Any], profile: dict[str, str]) ->
     )
 
 
+def provider_http_error_message(exc: urllib.error.HTTPError) -> str:
+    _ = exc.read()  # Intentionally discard provider body so API-key fragments are never surfaced in the app UI.
+    if exc.code == 401:
+        return (
+            "OpenAI image generation failed with HTTP 401: OpenAI rejected the API key. "
+            "Replace any placeholder value with a real secret key, restart the app from that environment, and try again."
+        )
+    if exc.code == 429:
+        return "OpenAI image generation failed with HTTP 429: rate limit or quota was exceeded. Check API usage/billing and try again later."
+    return f"OpenAI image generation failed with HTTP {exc.code}. Check the API key, model access, request limits, and account billing."
+
+
 def call_openai_image_generation(prompt: str, model: str, api_key: str) -> bytes:
     primary_payload = {"model": model, "prompt": prompt, "size": "1024x1024", "quality": "low", "output_format": "png"}
     fallback_payload = {"model": model, "prompt": prompt}
@@ -198,10 +250,9 @@ def call_openai_image_generation(prompt: str, model: str, api_key: str) -> bytes
             if image_url:
                 with urllib.request.urlopen(image_url, timeout=180) as image_response:  # noqa: S310 - OpenAI-provided image URL
                     return image_response.read()
-            raise RuntimeError(f"OpenAI image response did not include b64_json or url: {response_payload}")
+            raise RuntimeError("OpenAI image response did not include b64_json or url.")
         except urllib.error.HTTPError as exc:
-            error_body = exc.read().decode("utf-8-sig", errors="replace")
-            last_error = RuntimeError(f"OpenAI image generation failed with HTTP {exc.code}: {error_body}")
+            last_error = RuntimeError(provider_http_error_message(exc))
             if exc.code != 400:
                 break
         except Exception as exc:  # noqa: BLE001
@@ -214,13 +265,7 @@ def generate_real_images(repo_root: Path, run_dir: Path, demo_request: dict[str,
     if not demo_request.get("enable_real_images"):
         return []
 
-    api_key = os.environ.get("OPENAI_API_KEY", "").strip()
-    if not api_key:
-        raise RuntimeError(
-            "Real image generation was requested, but OPENAI_API_KEY is not visible to this app process. "
-            "Set OPENAI_API_KEY before launching ConstraintOS Workbench, then restart the app and run again."
-        )
-
+    api_key = require_ready_openai_api_key()
     generated_root = run_dir / "generated-images"
     generated_root.mkdir(parents=True, exist_ok=True)
     selected_profiles = OUTPUT_PROFILES[: int(demo_request["output_count"])]
@@ -401,8 +446,8 @@ def html_page() -> str:
     let providerReady = false;
     function readDemoRequest(enableRealImages) { return { scenario_key: 'supra_2jz_gte_twin_turbo', request_text: document.getElementById('requestText').value, requested_focus: document.getElementById('requestedFocus').value, output_count: Number(document.getElementById('outputCount').value), enable_real_images: enableRealImages, image_model: document.getElementById('imageModel').value }; }
     function renderGeneratedImages(images) { const imageCard = document.getElementById('imageCard'); const container = document.getElementById('generatedImages'); container.innerHTML = ''; if (!images || images.length === 0) { imageCard.style.display = 'none'; return; } images.forEach((image) => { const card = document.createElement('div'); card.className = 'card image-card'; card.innerHTML = '<h3>' + image.title + '</h3><img src="' + image.image_url + '" alt="' + image.title + '" /><p><a href="' + image.image_url + '" target="_blank">Open PNG artifact</a></p><p class="muted">Model: ' + image.model + ' · Decision: needs_review · Approval allowed: false</p>'; container.appendChild(card); }); imageCard.style.display = 'block'; }
-    async function refreshProviderStatus() { const box = document.getElementById('providerStatus'); const realButton = document.getElementById('realImageRunButton'); try { const response = await fetch('/api/provider-status'); const data = await response.json(); providerReady = data.api_key_visible_to_app === true; box.textContent = 'Provider: ' + data.provider + '\nEndpoint: ' + data.endpoint + '\nAPI key visible to app: ' + providerReady + '\nStatus: ' + data.status + '\n' + data.message; realButton.disabled = !providerReady; if (!providerReady) { realButton.title = 'OPENAI_API_KEY is not visible to this app process. Set it before launching the app.'; } } catch (error) { providerReady = false; box.textContent = 'Provider status check failed.\n\n' + error; realButton.disabled = true; } }
-    async function runDemo(enableRealImages) { const deterministicButton = document.getElementById('deterministicRunButton'); const realButton = document.getElementById('realImageRunButton'); const status = document.getElementById('status'); const links = document.getElementById('artifactLinks'); const card = document.getElementById('workbenchCard'); const frame = document.getElementById('workbenchFrame'); const imageCard = document.getElementById('imageCard'); const demoRequest = readDemoRequest(enableRealImages); if (enableRealImages && !providerReady) { status.textContent = 'Real image generation is not ready.\n\nOPENAI_API_KEY is not visible to this app process. Set it before launching ConstraintOS Workbench, restart the app, then use Run with Real Images.'; return; } deterministicButton.disabled = true; realButton.disabled = true; links.innerHTML = ''; card.style.display = 'none'; imageCard.style.display = 'none'; frame.removeAttribute('src'); status.textContent = 'Browser request received.\n\n' + demoRequest.request_text + '\n\nRunning ConstraintOS pipeline...' + (demoRequest.enable_real_images ? '\n\nReal image generation is enabled. This may take longer and uses API credits.' : '\n\nReal image generation is off for this run.'); try { const response = await fetch('/api/run', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ demo_request: demoRequest }) }); const data = await response.json(); if (!response.ok) { throw new Error(data.error || 'Unknown ConstraintOS failure'); } status.textContent = 'Complete.\n\nRequest: ' + data.request_text + '\nFocus: ' + data.requested_focus + '\nOutputs requested: ' + data.output_count + '\nReal images: ' + (data.generated_images || []).length + '\nRun directory: ' + data.run_dir + '\nDecision: needs_review\nApproval allowed: false'; links.innerHTML = '<a href="' + data.workbench_url + '" target="_blank">Open generated workbench</a> · <a href="' + data.exercise_state_url + '" target="_blank">Open exercise state JSON</a> · <a href="' + data.browser_request_url + '" target="_blank">Open captured browser request</a>'; renderGeneratedImages(data.generated_images || []); frame.src = data.workbench_url; card.style.display = 'block'; } catch (error) { status.textContent = 'ConstraintOS run failed.\n\n' + error; } finally { deterministicButton.disabled = false; realButton.disabled = !providerReady; } }
+    async function refreshProviderStatus() { const box = document.getElementById('providerStatus'); const realButton = document.getElementById('realImageRunButton'); try { const response = await fetch('/api/provider-status'); const data = await response.json(); providerReady = data.status === 'ready'; box.textContent = 'Provider: ' + data.provider + '\nEndpoint: ' + data.endpoint + '\nAPI key visible to app: ' + data.api_key_visible_to_app + '\nPlaceholder key detected: ' + data.api_key_looks_placeholder + '\nStatus: ' + data.status + '\n' + data.message; realButton.disabled = !providerReady; if (!providerReady) { realButton.title = data.message; } } catch (error) { providerReady = false; box.textContent = 'Provider status check failed.\n\n' + error; realButton.disabled = true; } }
+    async function runDemo(enableRealImages) { const deterministicButton = document.getElementById('deterministicRunButton'); const realButton = document.getElementById('realImageRunButton'); const status = document.getElementById('status'); const links = document.getElementById('artifactLinks'); const card = document.getElementById('workbenchCard'); const frame = document.getElementById('workbenchFrame'); const imageCard = document.getElementById('imageCard'); const demoRequest = readDemoRequest(enableRealImages); if (enableRealImages && !providerReady) { status.textContent = 'Real image generation is not ready.\n\nOPENAI_API_KEY is missing or still looks like placeholder text. Create a real API key, set OPENAI_API_KEY before launching ConstraintOS Workbench, restart the app, then use Run with Real Images.'; return; } deterministicButton.disabled = true; realButton.disabled = true; links.innerHTML = ''; card.style.display = 'none'; imageCard.style.display = 'none'; frame.removeAttribute('src'); status.textContent = 'Browser request received.\n\n' + demoRequest.request_text + '\n\nRunning ConstraintOS pipeline...' + (demoRequest.enable_real_images ? '\n\nReal image generation is enabled. This may take longer and uses API credits.' : '\n\nReal image generation is off for this run.'); try { const response = await fetch('/api/run', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ demo_request: demoRequest }) }); const data = await response.json(); if (!response.ok) { throw new Error(data.error || 'Unknown ConstraintOS failure'); } status.textContent = 'Complete.\n\nRequest: ' + data.request_text + '\nFocus: ' + data.requested_focus + '\nOutputs requested: ' + data.output_count + '\nReal images: ' + (data.generated_images || []).length + '\nRun directory: ' + data.run_dir + '\nDecision: needs_review\nApproval allowed: false'; links.innerHTML = '<a href="' + data.workbench_url + '" target="_blank">Open generated workbench</a> · <a href="' + data.exercise_state_url + '" target="_blank">Open exercise state JSON</a> · <a href="' + data.browser_request_url + '" target="_blank">Open captured browser request</a>'; renderGeneratedImages(data.generated_images || []); frame.src = data.workbench_url; card.style.display = 'block'; } catch (error) { status.textContent = 'ConstraintOS run failed.\n\n' + error; } finally { deterministicButton.disabled = false; realButton.disabled = !providerReady; } }
     document.addEventListener('DOMContentLoaded', () => { const deterministicButton = document.getElementById('deterministicRunButton'); const realButton = document.getElementById('realImageRunButton'); const status = document.getElementById('status'); deterministicButton.addEventListener('click', () => runDemo(false)); realButton.addEventListener('click', () => runDemo(true)); status.textContent = 'Ready to run ConstraintOS. Edit the browser request, then choose deterministic or real-image generation.'; refreshProviderStatus(); });
   </script>
 </body>
