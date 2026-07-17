@@ -96,7 +96,7 @@ def persist_browser_request(run_dir: Path, demo_request: dict[str, Any]) -> Path
 
     exercise_state_path = run_dir / "exercise-state.json"
     if exercise_state_path.exists():
-        exercise_state = json.loads(exercise_state_path.read_text(encoding="utf-8"))
+        exercise_state = json.loads(exercise_state_path.read_text(encoding="utf-8-sig"))
         exercise_state["browser_request"] = demo_request
         artifacts = exercise_state.setdefault("generated_artifacts", [])
         if "browser-request.json" not in artifacts:
@@ -328,7 +328,7 @@ class WorkbenchHandler(BaseHTTPRequestHandler):
         content_length = int(self.headers.get("Content-Length", "0") or "0")
         if content_length == 0:
             return {}
-        raw_body = self.rfile.read(content_length).decode("utf-8")
+        raw_body = self.rfile.read(content_length).decode("utf-8-sig")
         return json.loads(raw_body)
 
     def do_GET(self) -> None:
