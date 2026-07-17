@@ -1,27 +1,13 @@
 from __future__ import annotations
 
 import html
-import importlib.util
 import shutil
 from pathlib import Path
-from types import ModuleType
 from typing import Any
 
-
-def load_source_backed_core() -> ModuleType:
-    app_path = Path(__file__).with_name("app_v2.py")
-    spec = importlib.util.spec_from_file_location(
-        "constraintos_workbench_source_backed_core",
-        app_path,
-    )
-    if spec is None or spec.loader is None:
-        raise RuntimeError(f"Unable to load source-backed Workbench core: {app_path}")
-    module = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(module)
-    return module
+import app_v2 as CORE
 
 
-CORE = load_source_backed_core()
 BASE_HTML_PAGE = CORE.html_page
 
 
