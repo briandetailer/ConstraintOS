@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import json
-from pathlib import Path
 from typing import Any
 
 import pytest
@@ -164,7 +163,10 @@ def test_explicit_nested_constraint_payload_uses_defaults_without_provider() -> 
     assert result["intake"]["provider"] == "explicit_structured_request"
 
 
-def test_natural_language_intake_requires_process_credential() -> None:
+def test_natural_language_intake_requires_process_credential(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    monkeypatch.delenv("OPENAI_API_KEY", raising=False)
     provider = intake.OpenAIConstraintIntakeProvider(api_key="")
 
     with pytest.raises(intake.IntakeError, match="requires OPENAI_API_KEY"):
