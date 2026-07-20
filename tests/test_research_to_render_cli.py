@@ -52,9 +52,8 @@ def test_windows_exercise_runs_request_research_and_render_planning() -> None:
     assert "research-to-render-plan.json" in content
     assert r"runs\research-to-render\raspberry-pi-5-io-plate" in content
     assert "LiveWebSearch" in content
-    assert "Import-PersistedOpenAIKey" in content
-    assert "EnvironmentVariableTarget]::User" in content
-    assert "set-openai-api-key.ps1 once" in content
+    assert r"lib\openai-credential.ps1" in content
+    assert "Ensure-ConstraintOSOpenAIKey" in content
     assert "--live-web-search" in content
 
 
@@ -68,6 +67,9 @@ def test_windows_generation_exercise_compiles_generates_and_validates() -> None:
     assert "candidate-validation-manifest.json" in content
     assert "-Validate requires -Generate" in content
     assert 'Arguments += "--generate"' in content
+    assert r"lib\openai-credential.ps1" in content
+    assert "Ensure-ConstraintOSOpenAIKey" in content
+    assert "No persisted OpenAI API key was found" not in content
 
 
 def test_installed_cli_entry_points_are_declared() -> None:
