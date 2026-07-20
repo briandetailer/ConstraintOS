@@ -2,11 +2,17 @@ param(
     [string]$OutputRoot,
     [switch]$Generate,
     [switch]$Validate,
+    [int]$MaxRepairAttempts = 2,
+    [switch]$DisableAutoRepair,
     [switch]$OpenResult
 )
 
 $ErrorActionPreference = "Stop"
 Set-StrictMode -Version Latest
+
+if ($MaxRepairAttempts -lt 0 -or $MaxRepairAttempts -gt 5) {
+    throw "MaxRepairAttempts must be between 0 and 5."
+}
 
 $CredentialHelper = Join-Path $PSScriptRoot "lib\openai-credential.ps1"
 if (-not (Test-Path $CredentialHelper)) {
@@ -46,7 +52,10 @@ $PlanPath = Join-Path $RunRoot "research-to-render-plan.json"
 $GenerationPackagePath = Join-Path $RunRoot "generation-package.json"
 $CandidateManifestPath = Join-Path $RunRoot "generated-candidate-manifest.json"
 $ValidationManifestPath = Join-Path $RunRoot "candidate-validation-manifest.json"
+$RepairLoopManifestPath = Join-Path $RunRoot "candidate-repair-loop-manifest.json"
 $CandidatePath = Join-Path $RunRoot "generated-candidates\candidate-01.png"
+$FinalCandidatePath = $CandidatePath
+$FinalValidationManifestPath = $ValidationManifestPath
 
 Push-Location $RepoRoot
 try {
@@ -78,8 +87,31 @@ try {
             --generation-package $GenerationPackagePath `
             --candidate-manifest $CandidateManifestPath `
             --output-root $RunRoot
-        if ($LASTEXITCODE -ne 0) {
-            Write-Warning "Candidate validation completed with rejected output. Review the evidence manifest."
+        $InitialValidationExitCode = $LASTEXITCODE
+        if ($InitialValidationExitCode -ne 0) {
+            Write-Warning "Initial candidate validation rejected the output. Starting bounded repair when enabled."
+        }
+
+        if (-not $DisableAutoRepair -and $MaxRepairAttempts -gt 0) {
+            python -m runtime.research_to_render.candidate_repair `
+                --generation-package $GenerationPackagePath `
+                --candidate-manifest $CandidateManifestPath `
+                --validation-manifest $ValidationManifestPath `
+                --output-root $RunRoot `
+                --max-attempts $MaxRepairAttempts
+            $RepairExitCode = $LASTEXITCODE
+            if ($RepairExitCode -ne 0) {
+                Write-Warning "The bounded repair loop ended without a machine pass. Manual review or additional research is required."
+            }
+            if (Test-Path $RepairLoopManifestPath) {
+                $RepairSummary = Get-Content $RepairLoopManifestPath -Raw | ConvertFrom-Json
+                if (-not [string]::IsNullOrWhiteSpace([string]$RepairSummary.final_candidate_file)) {
+                    $FinalCandidatePath = [string]$RepairSummary.final_candidate_file
+                }
+                if (-not [string]::IsNullOrWhiteSpace([string]$RepairSummary.final_validation_manifest)) {
+                    $FinalValidationManifestPath = [string]$RepairSummary.final_validation_manifest
+                }
+            }
         }
     }
 }
@@ -90,22 +122,30 @@ finally {
 Write-Host "ConstraintOS generation run: $RunRoot" -ForegroundColor Green
 Write-Host "Generation package: $GenerationPackagePath"
 if ($Generate) {
-    Write-Host "Generated candidate: $CandidatePath"
-    Write-Host "Candidate manifest: $CandidateManifestPath"
+    Write-Host "Initial candidate: $CandidatePath"
+    Write-Host "Initial candidate manifest: $CandidateManifestPath"
 }
 else {
     Write-Host "No image-provider call was made. Re-run with -Generate to create the candidate artwork."
 }
 if ($Validate) {
-    Write-Host "Validation manifest: $ValidationManifestPath"
+    Write-Host "Initial validation manifest: $ValidationManifestPath"
+    if (Test-Path $RepairLoopManifestPath) {
+        Write-Host "Repair-loop manifest: $RepairLoopManifestPath"
+        Write-Host "Final candidate: $FinalCandidatePath"
+        Write-Host "Final validation manifest: $FinalValidationManifestPath"
+    }
 }
 
 if ($OpenResult) {
-    if ($Generate -and (Test-Path $CandidatePath)) {
-        Start-Process $CandidatePath
+    if ($Generate -and (Test-Path $FinalCandidatePath)) {
+        Start-Process $FinalCandidatePath
     }
-    if ($Validate -and (Test-Path $ValidationManifestPath)) {
-        Start-Process $ValidationManifestPath
+    if ($Validate -and (Test-Path $FinalValidationManifestPath)) {
+        Start-Process $FinalValidationManifestPath
+    }
+    if ($Validate -and (Test-Path $RepairLoopManifestPath)) {
+        Start-Process $RepairLoopManifestPath
     }
     elseif (-not $Generate) {
         Start-Process $GenerationPackagePath
